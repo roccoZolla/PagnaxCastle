@@ -1,3 +1,6 @@
+// velocita sprite
+float spriteSpeed = 2;
+
 // gestione comandi
 void handlePlayerMovement() {
   if (keyPressed) {

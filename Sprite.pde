@@ -1,4 +1,4 @@
-class Sprite {
+public class Sprite {
   int x=0;
   int y=0;
   final String id;
