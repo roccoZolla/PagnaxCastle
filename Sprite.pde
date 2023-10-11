@@ -51,7 +51,15 @@ public class Sprite {
     image(img, spritePosition.x, spritePosition.y);
   }
   
+  void display(int tileSize) {
+    image(img, spritePosition.x * tileSize, spritePosition.y * tileSize, img.width, img.height);
+  }
+  
   void setSpritePosition(PVector spritePosition){
     this.spritePosition = spritePosition;
+  }  
+  
+  PVector getSpritePosition(){
+    return spritePosition;
   }
 }

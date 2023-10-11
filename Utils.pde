@@ -1,5 +1,5 @@
 // velocita sprite
-float spriteSpeed = 2;
+float spriteSpeed = 1.5;
 
 // gestione comandi
 void handlePlayerMovement() {
@@ -8,13 +8,13 @@ void handlePlayerMovement() {
     int newX = (int) player.spritePosition.x;
     
     if (keyCode == UP) {
-      newY -= spriteSpeed;
+      movePlayer(0, -spriteSpeed);
     } else if (keyCode == DOWN) {
-      newY += spriteSpeed;
+      movePlayer(0, spriteSpeed);
     } else if (keyCode == LEFT) {
-      newX -= spriteSpeed;
+      movePlayer(-spriteSpeed, 0);
     } else if (keyCode == RIGHT) {
-      newX += spriteSpeed;
+      movePlayer(spriteSpeed, 0);
     }
     
     player.spritePosition.x = newX;
@@ -28,10 +28,17 @@ void handlePlayerMovement() {
   }
 }
 
-// gestione collisioni
-boolean checkCollision(int newX, int newY, Sprite sprite1, Sprite sprite2) {
-  return !(newX + sprite1.img.width < sprite2.spritePosition.x ||
-          newX > sprite2.spritePosition.x + sprite2.img.width ||
-          newY + sprite1.img.height < sprite2.spritePosition.y ||
-          newY > sprite2.spritePosition.y + sprite2.img.height);
+void movePlayer(float dx, float dy) {
+  // Calcola le nuove coordinate del giocatore
+  float newX = player.spritePosition.x + dx / (map.getTileSize() * zoom);
+  float newY = player.spritePosition.y + dy / (map.getTileSize() * zoom);
+  
+  // Verifica se la nuova posizione è valida
+  int roundedX = round(newX);
+  int roundedY = round(newY);
+  
+  if (roundedX >= 0 && roundedX < map.getCols() && roundedY >= 0 && roundedY < map.getRows() && map.getMap()[roundedX][roundedY] != 0) {
+    player.spritePosition.x = newX;
+    player.spritePosition.y = newY;
+  }
 }

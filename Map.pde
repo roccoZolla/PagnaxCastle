@@ -82,6 +82,10 @@ class Map {
     return rows;
   }
   
+  int[][] getMap() {
+    return map;
+  }
+  
   // metodi per la generazione delle stanze
   private void generateRooms() {
     for (int i = 0; i < 8; i++) {

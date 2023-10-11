@@ -22,4 +22,8 @@ public class Player {
   void setSprite(Sprite player) {
     this.player = player;
   }
+  
+  void displayPlayer(int tileSize){
+    player.display(tileSize);
+  }
 }

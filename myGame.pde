@@ -1,12 +1,13 @@
 Player p1;
 Sprite player;
-
 Map map;
+
+int playerSize = 10;
 
 // Variabili per la posizione della camera
 float cameraX = 0;
 float cameraY = 0;
-float zoom = 1.0;    // dimensione ideale
+float zoom = 5.0;    // dimensione ideale
 float easing = 0.1;
 
 void setup() {
@@ -22,13 +23,12 @@ void setup() {
   System.out.println(map.getCols());
   System.out.println(map.getRows());
   System.out.println(map.getTileSize());
-  System.out.println(player.spritePosition);
   
   p1 = new Player(50, player);
   
   p1.getSprite().setSpritePosition(map.getStartRoom());
   
-  // enemy = new Sprite("enemy", "data/tile_0109.png", 3 * width / 4, height / 2);
+  System.out.println(p1.getSprite().getSpritePosition());
 }
 
 void draw() {
@@ -57,5 +57,5 @@ void draw() {
   map.showMap();
   
   // Disegna l'immagine associata all'oggetto Sprite sulla posizione (x, y) dell'oggetto
-  player.display();
+  p1.displayPlayer(map.getTileSize());
 }
