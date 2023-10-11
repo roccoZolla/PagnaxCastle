@@ -1,6 +1,5 @@
 public class Sprite {
-  int x=0;
-  int y=0;
+  PVector spritePosition;
   final String id;
   final PImage img;
   
@@ -9,47 +8,50 @@ public class Sprite {
     img=loadImage(imagePath);
   }
   
-  Sprite(String id, String imagePath, int x, int y) {
+  Sprite(String id, String imagePath, PVector spritePosition) {
     this.id=id;
-    img=loadImage(imagePath);
-    this.x=x;
-    this.y=y;
+    img = loadImage(imagePath);
+    this.spritePosition = spritePosition;
   }
   
   // metodi 
   public void incX() {
-    x++;
+    spritePosition.x++;
   }
   
   public void decX() {
-    x--;
+    spritePosition.x--;
   }
   
   public void incY() {
-    y++;
+    spritePosition.y++;
   }
   
   public void decY() {
-    y--;
+    spritePosition.y--;
   }
   
   public void setX(int x) {
-    this.x=x;
+    this.spritePosition.x=x;
   }
   
   public void setY(int y) {
-    this.y=y;
+    this.spritePosition.y=y;
   }
   
   public void incX(int x) {
-    this.x+=x;
+    this.spritePosition.x+=x;
   }
   
   public void incY(int y) {
-    this.y+=y;
+    this.spritePosition.y+=y;
   }
   
   void display() {
-    image(img, x, y);
+    image(img, spritePosition.x, spritePosition.y);
+  }
+  
+  void setSpritePosition(PVector spritePosition){
+    this.spritePosition = spritePosition;
   }
 }

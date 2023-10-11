@@ -1,6 +1,6 @@
 public class Player {
-  int playerHP;
-  Sprite player;
+  private int playerHP;
+  private Sprite player;
   
   Player(int playerHP, Sprite player){
     this.playerHP = playerHP;

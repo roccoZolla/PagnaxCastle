@@ -4,8 +4,8 @@ float spriteSpeed = 2;
 // gestione comandi
 void handlePlayerMovement() {
   if (keyPressed) {
-    int newY = player.y;
-    int newX = player.x;
+    int newY = (int) player.spritePosition.y;
+    int newX = (int) player.spritePosition.x;
     
     if (keyCode == UP) {
       newY -= spriteSpeed;
@@ -17,15 +17,21 @@ void handlePlayerMovement() {
       newX += spriteSpeed;
     }
     
+    player.spritePosition.x = newX;
+    player.spritePosition.y = newY;
+    
     // Verifica le collisioni prima di spostare il giocatore
-    if (!checkCollision(newX, newY, player, enemy)) {
-      player.x = newX;
-      player.y = newY;
-    }
+    //if (!checkCollision(newX, newY, player, enemy)) {
+    //  player.spritePosition.x = newX;
+    //  player.spritePosition.y = newY;
+    //}
   }
 }
 
 // gestione collisioni
 boolean checkCollision(int newX, int newY, Sprite sprite1, Sprite sprite2) {
-  return !(newX + sprite1.img.width < sprite2.x || newX > sprite2.x + sprite2.img.width || newY + sprite1.img.height < sprite2.y || newY > sprite2.y + sprite2.img.height);
+  return !(newX + sprite1.img.width < sprite2.spritePosition.x ||
+          newX > sprite2.spritePosition.x + sprite2.img.width ||
+          newY + sprite1.img.height < sprite2.spritePosition.y ||
+          newY > sprite2.spritePosition.y + sprite2.img.height);
 }
