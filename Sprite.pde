@@ -1,18 +1,18 @@
-public class Sprite {
-  PVector spritePosition;
-  final String id;
-  final PImage img;
+public abstract class Sprite {
+  private PVector spritePosition;
+  int id;
+  PImage img;
   
-  Sprite(String id, String imagePath) {
-    this.id=id;
-    img=loadImage(imagePath);
-  }
+  //Sprite(String id, String imagePath) {
+  //  this.id=id;
+  //  img=loadImage(imagePath);
+  //}
   
-  Sprite(String id, String imagePath, PVector spritePosition) {
-    this.id=id;
-    img = loadImage(imagePath);
-    this.spritePosition = spritePosition;
-  }
+  //Sprite(String id, String imagePath, PVector spritePosition) {
+  //  this.id=id;
+  //  img = loadImage(imagePath);
+  //  this.spritePosition = spritePosition;
+  //}
   
   // metodi 
   public void incX() {
@@ -55,11 +55,13 @@ public class Sprite {
     image(img, spritePosition.x * tileSize, spritePosition.y * tileSize, img.width, img.height);
   }
   
-  void setSpritePosition(PVector spritePosition){
+  // imposta la posizione dello sprite nella mappa
+  void setPosition(PVector spritePosition){
     this.spritePosition = spritePosition;
   }  
   
-  PVector getSpritePosition(){
+  // ottieni la posizione dello sprite mnella mappa
+  PVector getPosition(){
     return spritePosition;
   }
 }

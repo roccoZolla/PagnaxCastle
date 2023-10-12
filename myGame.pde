@@ -1,13 +1,12 @@
 Player p1;
-Sprite player;
 Map map;
 
-int playerSize = 10;
+PImage player;
 
 // Variabili per la posizione della camera
 float cameraX = 0;
 float cameraY = 0;
-float zoom = 5.0;    // dimensione ideale
+float zoom = 1.0;    // dimensione ideale
 float easing = 0.1;
 
 void setup() {
@@ -17,26 +16,28 @@ void setup() {
   map = new Map();
   map.setMap();
   
-  player = new Sprite("warrior", "data/tile_0088.png");
+  player = loadImage("data/tile_0088.png");
   
   System.out.println(map.getStartRoom());
   System.out.println(map.getCols());
   System.out.println(map.getRows());
   System.out.println(map.getTileSize());
   
-  p1 = new Player(50, player);
+  p1 = new Player(1, 50, player);
   
-  p1.getSprite().setSpritePosition(map.getStartRoom());
+  p1.setPosition(map.getStartRoom());
   
-  System.out.println(p1.getSprite().getSpritePosition());
+  p1.setPosition(map.getStartRoom());
+  
+  System.out.println(p1.getPosition());
 }
 
 void draw() {
   // Cancella lo schermo
   background(0); 
   
-  float targetCameraX = p1.getSprite().spritePosition.x * map.getTileSize() * zoom - width / 2;
-  float targetCameraY = p1.getSprite().spritePosition.y * map.getTileSize() * zoom - height / 2;
+  float targetCameraX = p1.getPosition().x * map.getTileSize() * zoom - width / 2;
+  float targetCameraY = p1.getPosition().y * map.getTileSize() * zoom - height / 2;
   
   // Limita la telecamera in modo che non esca dalla mappa
   targetCameraX = constrain(targetCameraX, 0, map.getCols() * map.getTileSize() * zoom - width);
