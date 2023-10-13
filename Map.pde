@@ -7,7 +7,7 @@ class Map {
   
   private PImage treasureImage;
   private int spawnLevel = 3; // Livello di spawn (puoi impostarlo come desideri)
-  private ArrayList<PVector> treasures; // Memorizza le posizioni degli oggetti
+  private ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
   
   private PImage finalFloorImage;
   
@@ -28,6 +28,7 @@ class Map {
     rows = height / tileSize;
     map = new int[cols][rows];
     rooms = new ArrayList<PVector>();
+    treasures = new ArrayList<Chest>(); // Inizializza l'arraylist qui
     
     floorImage = loadImage("data/environment/tile_0042.png"); 
     wallImage = loadImage("data/environment/tile_0014.png");   
@@ -50,7 +51,8 @@ class Map {
     map[int(rooms.get(endRoomIndex).x)][int(rooms.get(endRoomIndex).y)] = 3; // Stanza finale
     
     // genera i loot
-    generateTreasures();
+    // generateTreasures();
+    generateRandomChests();
   }
   
   void showMap() {
@@ -211,23 +213,32 @@ class Map {
           }
         }
       }
-    }
-    
-  private void generateTreasures() {
-    treasures = new ArrayList<PVector>();
+  }
   
-    int maxTreasures = min(spawnLevel, rooms.size()); // Assicura che spawnLevel non superi il numero di stanze
-  
-    for (int i = 0; i < maxTreasures; i++) {
-      int randomRoomIndex = int(random(rooms.size()));
-      PVector roomPosition = rooms.get(randomRoomIndex);
-  
-      int x = (int) roomPosition.x;
-      int y = (int) roomPosition.y;
-      
-      if(map[x][y] == 1) map[x][y] = 6;
-  
-      treasures.add(new PVector(x, y));
+  private void generateRandomChests() {
+    for (int i = 0; i < spawnLevel; i++) {
+      int x, y;
+      boolean positionOccupied;
+
+      do {
+        // Scegli una posizione casuale sulla mappa
+        x = int(random(cols));
+        y = int(random(rows));
+
+        // Verifica se la posizione è già occupata da un muro o parete
+        positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5;
+      } while (positionOccupied);
+
+      // Crea una nuova cassa e imposta le sue proprietà
+      Chest chest = new Chest();
+      chest.setIsOpen(random(1) < 0.5); // Casualemente aperta o chiusa
+      chest.setOpenWith(new Item("key")); // Imposta un oggetto necessario per aprirla
+
+      // Aggiungi la cassa alla lista delle casse
+      // E imposta la posizione sulla mappa
+      chest.setPosition(new PVector(x, y));
+      map[(int) chest.getPosition().x][(int) chest.getPosition().y] = 6;
+      treasures.add(chest);
     }
   }
 
@@ -245,7 +256,6 @@ class Map {
           int x = (int) roomPosition.x;
           int y = (int) roomPosition.y;
           
-  
           // Crea un nemico con valori casuali di HP e un'immagine casuale
           int enemyHP = 30;
           PImage enemyImage = loadImage("data/npc/tile_0109.png");
