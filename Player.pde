@@ -1,10 +1,12 @@
-public class Player {
+public class Player extends Sprite{
   private int playerHP;
-  private Sprite player;
+  // attributo per l'arma del giocatore
   
-  Player(int playerHP, Sprite player){
+  
+  Player(int id, int playerHP, PImage player){
+    this.id = id;
     this.playerHP = playerHP;
-    this.player = player;
+    this.img = player;
   }
   
   int getPlayerHP(){
@@ -15,15 +17,7 @@ public class Player {
     this.playerHP = playerHP;
   }
   
-  Sprite getSprite() {
-    return player;
-  }  
-  
-  void setSprite(Sprite player) {
-    this.player = player;
-  }
-  
   void displayPlayer(int tileSize){
-    player.display(tileSize);
+    display(tileSize);
   }
 }
