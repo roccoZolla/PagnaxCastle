@@ -231,6 +231,7 @@ class Map {
 
       // Crea una nuova cassa e imposta le sue proprietà
       Chest chest = new Chest();
+      chest.setName("cassa di merda");
       chest.setIsOpen(random(1) < 0.5); // Casualemente aperta o chiusa
       chest.setOpenWith(new Item("key")); // Imposta un oggetto necessario per aprirla
 
@@ -260,7 +261,7 @@ class Map {
           int enemyHP = 30;
           PImage enemyImage = loadImage("data/npc/tile_0109.png");
   
-          Enemy enemy = new Enemy(i, enemyHP, enemyImage);
+          Enemy enemy = new Enemy(i, enemyHP, "nemico", enemyImage);
           enemy.setPosition(new PVector(x, y));
           
           if(map[x][y] == 1) map[x][y] = 7;
@@ -270,4 +271,22 @@ class Map {
       }
   }
   
+  public String getObjectAtCell(int x, int y) {
+    int tileType = map[x][y];
+    if (tileType == 6) {
+        for (Chest treasure : treasures) {
+            if (treasure.getPosition().x == x && treasure.getPosition().y == y) {
+                return treasure.getName();
+            }
+        }
+    } else if (tileType == 7) {
+      // La cella contiene un nemico, restituisci l'oggetto Nemico        
+      for (Enemy enemy : enemies) {
+            if (enemy.getPosition().x == x && enemy.getPosition().y == y) {
+                return enemy.getName();
+            }
+        }
+    }
+    return null; // Non c'è nessun oggetto nella cella
+  }
 }

@@ -1,5 +1,5 @@
 // velocita sprite
-float spriteSpeed = 0.5;
+float spriteSpeed = 0.1;
 
 // gestione comandi
 void handlePlayerMovement() {
@@ -44,7 +44,7 @@ void handlePlayerMovement() {
 }
 
 // disegna i bordi delle celle su cui si trova il mouse
-void drawWhiteBorders(float x, float y) {
+void drawCellBorders(float x, float y) {
   float leftX = x * map.getTileSize();
   float topY = y * map.getTileSize();
   float rightX = leftX + map.getTileSize();

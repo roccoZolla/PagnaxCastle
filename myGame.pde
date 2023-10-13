@@ -72,7 +72,15 @@ void draw() {
   // Verifica se il mouse è sopra una casella valida
   if (cellX >= 0 && cellX < map.getCols() && cellY >= 0 && cellY < map.getRows()) {
     // Disegna i bordi della casella in bianco
-    drawWhiteBorders(cellX, cellY);
+    drawCellBorders(cellX, cellY);
+  }
+  
+  String  objectAtMouse = map.getObjectAtCell(cellX, cellY);
+  if (objectAtMouse != null) {
+    fill(255); // Colore del testo (bianco)
+    textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    textSize(24); // Imposta la dimensione del testo
+    text(objectAtMouse, 20, 20); // Disegna il testo a una posizione desiderata (es. 20, 20)
   }
   
   float fps = frameRate;
