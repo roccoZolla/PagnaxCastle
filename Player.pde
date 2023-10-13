@@ -17,14 +17,6 @@ public class Player extends Sprite{
     this.playerHP = playerHP;
   }
   
-  //Sprite getSprite() {
-  //  return player;
-  //}  
-  
-  void setSprite(PImage player) {
-    this.img = player;
-  }
-  
   void displayPlayer(int tileSize){
     display(tileSize);
   }

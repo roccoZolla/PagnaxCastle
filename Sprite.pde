@@ -64,4 +64,12 @@ public abstract class Sprite {
   PVector getPosition(){
     return spritePosition;
   }
+  
+  PImage getSprite(){
+    return img;
+  }
+  
+  void setSprite(PImage img) {
+    this.img = img;
+  }
 }

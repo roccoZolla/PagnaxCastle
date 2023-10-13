@@ -16,6 +16,9 @@ class Map {
   private int[][] map;
   private ArrayList<PVector> rooms; // Memorizza le posizioni delle stanze
   
+  private int numberOfEnemies = 20;  // livello di spawn dei nemici
+  private ArrayList<Enemy> enemies; // Lista dei nemici
+  
   private int startRoomIndex;
   private int endRoomIndex;
   
@@ -41,6 +44,9 @@ class Map {
     
     // Collega le stanze con corridoi
     connectRooms();
+    
+    // aggiungi i nemici
+    generateEnemies();
     
     // Imposta le stanze iniziale e finale
     map[int(rooms.get(startRoomIndex).x)][int(rooms.get(startRoomIndex).y)] = 2; // Stanza iniziale
@@ -91,7 +97,14 @@ class Map {
           case 6:
           // tesori
             image(treasureImage, x * tileSize, y * tileSize, tileSize, tileSize);
-          break;         
+          break;
+          
+          case 7:
+          // nemici
+          for(Enemy enemy : enemies) {
+            image(enemy.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
+          }
+          break;
         }
       }
     }
@@ -116,6 +129,10 @@ class Map {
   int[][] getMap() {
     return map;
   }
+  
+  ArrayList<Enemy> getEnemies() {
+    return enemies;
+  } 
   
   // metodi per la generazione delle stanze
   private void generateRooms() {
@@ -210,12 +227,39 @@ class Map {
       int x = (int) roomPosition.x;
       int y = (int) roomPosition.y;
       
-      if(map[x][y] == 1 ) map[x][y] = 6;
+      if(map[x][y] == 1) map[x][y] = 6;
   
       treasures.add(new PVector(x, y));
     }
   }
 
-
-      
+  
+  // spawner basilare di nemici
+  private void generateEnemies() {
+      enemies = new ArrayList<Enemy>();
+  
+      for (int i = 0; i < numberOfEnemies; i++) {
+          // Scegli una stanza casuale
+          int roomIndex = int(random(rooms.size()));
+          PVector roomPosition = rooms.get(roomIndex);
+  
+          // Genera una posizione casuale all'interno della stanza
+          int x = (int) roomPosition.x;
+          int y = (int) roomPosition.y;
+          
+  
+          // Crea un nemico con valori casuali di HP e un'immagine casuale
+          int enemyHP = 30;
+          PImage enemyImage = loadImage("data/npc/tile_0109.png");
+  
+          Enemy enemy = new Enemy(i, enemyHP, enemyImage);
+          enemy.setPosition(new PVector(x, y));
+          
+          if(map[x][y] == 1) map[x][y] = 7;
+  
+          // Aggiungi il nemico alla lista
+          enemies.add(enemy);
+      }
+  }
+  
 }
