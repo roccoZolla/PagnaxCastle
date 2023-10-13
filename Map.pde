@@ -29,11 +29,8 @@ class Map {
     map = new int[cols][rows];
     rooms = new ArrayList<PVector>();
     
-    // Carica l'immagine per il pavimento
     floorImage = loadImage("data/environment/tile_0042.png"); 
-    // Carica l'immagine per le pareti
     wallImage = loadImage("data/environment/tile_0014.png");   
-    // carica immagine per i contorni delle stanze 
     roomOutlineImage = loadImage("data/environment/tile_0005.png");
     hallwayImage = loadImage("data/environment/tile_0049.png");
     finalFloorImage = loadImage("data/environment/tile_0024.png");
@@ -109,6 +106,7 @@ class Map {
       }
     }
   }
+
   
   PVector getStartRoom() {
     return rooms.get(startRoomIndex);
@@ -150,8 +148,8 @@ class Map {
   }
   
   private void generateRandomRoom() {
-    int roomWidth = int(random(5, 15));
-    int roomHeight = int(random(5, 15));
+    int roomWidth = int(random(5, 20));
+    int roomHeight = int(random(5, 20));
     int roomX, roomY;
   
     boolean roomOverlap;
