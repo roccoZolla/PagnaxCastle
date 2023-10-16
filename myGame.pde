@@ -6,11 +6,18 @@ PImage player;
 int screen_state;
 static final int MENU_SCREEN = 0;
 static final int GAME_SCREEN = 1;
+static final int STORY_SCREEN = 2;
 
 Button startButton;
+Button optionButton;
 Button exitButton;
 
 String gameTitle = "dungeon game";
+String storyText;
+int letterIndex = 0; // Indice della lettera corrente
+boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
+int typingSpeed = 2; // Velocità di scrittura (puoi regolarla)
+
 PFont myFont;
 
 // Variabili per la posizione della camera
@@ -25,18 +32,20 @@ int cellY;
 void setup() {
   // dimensioni schermo
   size(1280, 720);
-  
+
   // load font
   myFont = createFont("data/font/Minecraft.ttf", 20);
   textFont(myFont);
 
+  storyText = "La principessa Chela è in pericolo. È stata rapita da un cattivone.\n" +
+    "Vai al castello del cattivone ma vieni subito scoperto e mandato nelle cantine del castello.\n" +
+    "Devi risalire il castello fino alle sale reali per sconfiggere il cattivone di turno.\n";
+
   screen_state = MENU_SCREEN;
 
-  // setup game
-  // setupGame();
-
   startButton = new Button(width / 2 - 100, height / 2, 200, 80, "Start");
-  exitButton = new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Exit");
+  optionButton = new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Option");
+  exitButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Exit");
 }
 
 void draw() {
@@ -44,6 +53,9 @@ void draw() {
   if (screen_state == MENU_SCREEN) {
     // show menu
     drawMenu();
+  } else if (screen_state == STORY_SCREEN) {
+    // show story
+    drawStory();
   } else if (screen_state == GAME_SCREEN) {
     // show game screen
     drawGame();
@@ -56,16 +68,22 @@ void drawMenu() {
   textSize(80);
   textAlign(CENTER, CENTER);
   text(gameTitle, width / 2, height / 2 - 100);
-  
+
   // show buttons
   startButton.display();
+  optionButton.display();
   exitButton.display();
 
   if (startButton.isPressed()) {
     // the game is initialized when the start button is clicked
     setupGame();
-    screen_state = GAME_SCREEN;
-  } else if (exitButton.isPressed()) {
+    screen_state = STORY_SCREEN;
+  } 
+  
+  else if (optionButton.isPressed()) {
+  } 
+  
+  else if (exitButton.isPressed()) {
     System.exit(0);
   }
 }
@@ -76,19 +94,8 @@ void setupGame() {
 
   player = loadImage("data/tile_0088.png");
 
-  System.out.println(map.getStartRoom());
-  System.out.println(map.getCols());
-  System.out.println(map.getRows());
-  System.out.println(map.getTileSize());
-
   p1 = new Player(1, 50, player);
-
   p1.setPosition(map.getStartRoom());
-
-  p1.setPosition(map.getStartRoom());
-
-
-  System.out.println(p1.getPosition());
 }
 
 void drawGame() {
@@ -138,4 +145,32 @@ void drawGame() {
 
   float fps = frameRate;
   System.out.println(fps);
+}
+
+void drawStory() {
+  // Mostra il testo narrativo con l'effetto macchina da scrivere
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  text(storyText.substring(0, letterIndex), width / 2, height / 2);
+
+  if (isTyping) {
+    // Continua a scrivere il testo
+    if (frameCount % typingSpeed == 0) {
+      if (letterIndex < storyText.length()) {
+        letterIndex++;
+      } else {
+        isTyping = false;
+      }
+    }
+  } else {
+    textSize(16);
+    text("\nPremi un tasto per continuare", width / 2, height - 50);
+  }
+}
+
+void keyPressed() {
+  if (screen_state == STORY_SCREEN && !isTyping) {
+    screen_state = GAME_SCREEN;
+  }
 }
