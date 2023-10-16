@@ -1,4 +1,4 @@
-public class Enemy extends Sprite{
+public class Enemy extends Sprite {
   private int enemyHP;
   private String name;
   

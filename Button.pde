@@ -20,8 +20,6 @@ class Button {
   void display() {
     // Verifica se il mouse è sopra il pulsante
     hover = isMouseOver();
-    
-    System.out.println("pressed: " + pressed);
 
     // Imposta il colore del pulsante in base allo stato (normale, hover, premuto)
     if (pressed) {

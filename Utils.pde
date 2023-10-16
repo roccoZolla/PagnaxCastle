@@ -2,7 +2,7 @@
 float spriteSpeed = 0.15;
 
 // gestione comandi
-void handlePlayerMovement() {
+void handlePlayerMovement(Level currentLevel) {
   if (keyPressed) {
     float newX = p1.getPosition().x;
     float newY = p1.getPosition().y;
@@ -32,11 +32,11 @@ void handlePlayerMovement() {
     int roundedY = round(newY);
 
     // check delle collisioni
-    if (roundedX >= 0 && roundedX < map.getCols() && roundedY >= 0 && roundedY < map.getRows() &&
-        map.getMap()[roundedX][roundedY] != 0 && 
-        map.getMap()[roundedX][roundedY] != 4 &&
-        map.getMap()[roundedX][roundedY] != 6 &&
-        map.getMap()[roundedX][roundedY] != 7) {
+    if (roundedX >= 0 && roundedX < currentLevel.getCols() && roundedY >= 0 && roundedY < currentLevel.getRows() &&
+        currentLevel.getMap()[roundedX][roundedY] != 0 && 
+        currentLevel.getMap()[roundedX][roundedY] != 4 &&
+        currentLevel.getMap()[roundedX][roundedY] != 6 &&
+        currentLevel.getMap()[roundedX][roundedY] != 7) {
       p1.getPosition().x = newX;
       p1.getPosition().y = newY;
     }
