@@ -1,5 +1,10 @@
 // velocita sprite
-float spriteSpeed = 0.15;
+float spriteSpeed = 1;
+
+// 
+int letterIndex = 0; // Indice della lettera corrente
+boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
+int typingSpeed = 2; // Velocità di scrittura (puoi regolarla)
 
 // gestione comandi
 void handlePlayerMovement(Level currentLevel) {
@@ -44,17 +49,48 @@ void handlePlayerMovement(Level currentLevel) {
 }
 
 // disegna i bordi delle celle su cui si trova il mouse
-void drawCellBorders(float x, float y) {
-  float leftX = x * map.getTileSize();
-  float topY = y * map.getTileSize();
-  float rightX = leftX + map.getTileSize();
-  float bottomY = topY + map.getTileSize();
+void drawCellBorders(float x, float y, Level currentLevel) {
+  float leftX = x * currentLevel.getTileSize();
+  float topY = y * currentLevel.getTileSize();
+  float rightX = leftX + currentLevel.getTileSize();
+  float bottomY = topY + currentLevel.getTileSize();
   
   noFill();
-  if (map.getMap()[(int) x][(int) y] == 0) {
+  if (currentLevel.getMap()[(int) x][(int) y] == 0) {
     stroke(255, 0, 0); // Rosso
   } else {
     stroke(255); // Bianco
   }
   rect(leftX, topY, rightX - leftX, bottomY - topY);
+}
+
+void drawStory(String storyText) {
+  // cancella lo schermo
+  background(0);
+  
+  // Mostra il testo narrativo con l'effetto macchina da scrivere
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  text(storyText.substring(0, letterIndex), width / 2, height / 2);
+
+  if (isTyping) {
+    // Continua a scrivere il testo
+    if (frameCount % typingSpeed == 0) {
+      if (letterIndex < storyText.length()) {
+        letterIndex++;
+      } else {
+        isTyping = false;
+      }
+    }
+  } else {
+    textSize(16);
+    text("\nPremi un tasto per continuare", width / 2, height - 50);
+  }
+}
+
+void keyPressed() {
+  if (screen_state == STORY_SCREEN && !isTyping) {
+    screen_state = GAME_SCREEN;
+  }
 }

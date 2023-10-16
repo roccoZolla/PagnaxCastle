@@ -1,7 +1,4 @@
 Player p1;
-Map map;
-
-PImage player;
 
 int screen_state;
 static final int MENU_SCREEN = 0;
@@ -11,8 +8,8 @@ static final int STORY_SCREEN = 2;
 World castle;
 Macroarea currentArea;
 Level currentLevel;
-float proximityThreshold = 1.0; // Soglia di prossimità consentita
 
+float proximityThreshold = 1.0; // Soglia di prossimità consentita
 String actualLevel;
 
 Button startButton;
@@ -20,10 +17,6 @@ Button optionButton;
 Button exitButton;
 
 String gameTitle = "dungeon game";
-String storyText;
-int letterIndex = 0; // Indice della lettera corrente
-boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
-int typingSpeed = 2; // Velocità di scrittura (puoi regolarla)
 
 PFont myFont;
 
@@ -43,6 +36,7 @@ void setup() {
   // create world
   castle = new World();
   currentArea = castle.getCurrentMacroarea();
+  currentArea.initLevels();
   currentLevel = currentArea.getCurrentLevel();
 
   System.out.println(currentArea.getName());
@@ -52,15 +46,14 @@ void setup() {
   myFont = createFont("data/font/Minecraft.ttf", 20);
   textFont(myFont);
 
-  storyText = "La principessa Chela è in pericolo. È stata rapita da un cattivone.\n" +
-    "Vai al castello del cattivone ma vieni subito scoperto e mandato nelle cantine del castello.\n" +
-    "Devi risalire il castello fino alle sale reali per sconfiggere il cattivone di turno.\n";
-
   screen_state = MENU_SCREEN;
 
   startButton = new Button(width / 2 - 100, height / 2, 200, 80, "Start");
   optionButton = new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Option");
   exitButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Exit");
+
+  p1 = new Player(1, 50, "data/player.png");
+  p1.setPosition(currentLevel.getStartRoom());
 }
 
 void draw() {
@@ -70,7 +63,7 @@ void draw() {
     drawMenu();
   } else if (screen_state == STORY_SCREEN) {
     // show story
-    drawStory();
+    drawStory(currentArea.getStory());
   } else if (screen_state == GAME_SCREEN) {
     // show game screen
     drawGame();
@@ -90,20 +83,11 @@ void drawMenu() {
   exitButton.display();
 
   if (startButton.isPressed()) {
-    // the game is initialized when the start button is clicked
-    setupGame();
     screen_state = STORY_SCREEN;
   } else if (optionButton.isPressed()) {
   } else if (exitButton.isPressed()) {
     System.exit(0);
   }
-}
-
-void setupGame() {
-  player = loadImage("data/tile_0088.png");
-
-  p1 = new Player(1, 50, player);
-  p1.setPosition(currentLevel.getStartRoom());
 }
 
 void drawGame() {
@@ -128,7 +112,7 @@ void drawGame() {
   textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
   textSize(24); // Imposta la dimensione del testo
   text(actualLevel, 20, 20); // Disegna il testo a una posizione desiderata (es. 20, 20)
-    
+
   // Gestione del movimento del giocatore
   handlePlayerMovement(currentLevel);
 
@@ -136,60 +120,51 @@ void drawGame() {
   p1.displayPlayer(currentLevel.getTileSize());
 
   if (dist(p1.getPosition().x, p1.getPosition().y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
-    // Il giocatore è abbastanza vicino al punto di accesso, quindi passa al livello successivo
-    currentLevel = currentArea.getLevels().get(currentLevel.getLevelIndex() + 1);
-    actualLevel = currentArea.getName() + " - " + currentLevel.getName();
-    p1.setPosition(currentLevel.getStartRoom());
+    // se il livello dell'area è l'ultimo passa alla prossima area
+    if (currentLevel.getLevelIndex() == currentArea.getNumbLevels()-1) {
+      // controlla se è l'area finale
+      if (currentArea.isFinal()) {
+        // winGame()
+      } else {
+        currentArea = castle.getMacroareas().get(currentArea.getAreaIndex() + 1);
+        System.out.println(currentArea.getStory());
+        
+        //screen_state = STORY_SCREEN;
+        //drawStory(currentArea.getStory());
+        
+        currentArea.initLevels();
+        currentLevel = currentArea.getCurrentLevel();
+        actualLevel = currentArea.getName() + " - " + currentLevel.getName();
+        p1.setPosition(currentLevel.getStartRoom());
+      }
+    } else {
+      // Il giocatore è abbastanza vicino al punto di accesso, quindi passa al livello successivo
+      currentLevel = currentArea.getLevels().get(currentLevel.getLevelIndex() + 1);
+      actualLevel = currentArea.getName() + " - " + currentLevel.getName();
+      p1.setPosition(currentLevel.getStartRoom());
+    }
   }
 
   // da fixare
   // Rileva la posizione del mouse rispetto alle celle
-  //cellX = floor(mouseX / (map.getTileSize() * zoom));
-  //cellY = floor(mouseY / (map.getTileSize() * zoom));
-  //System.out.println("Mouse cell coordinates: (" + cellX + "," + cellY);
+  cellX = floor(mouseX / (currentLevel.getTileSize() * zoom));
+  cellY = floor(mouseY / (currentLevel.getTileSize() * zoom));
+  System.out.println("Mouse cell coordinates: (" + cellX + "," + cellY);
 
-  //// Verifica se il mouse è sopra una casella valida
-  //if (cellX >= 0 && cellX < map.getCols() && cellY >= 0 && cellY < map.getRows()) {
-  //  // Disegna i bordi della casella in bianco
-  //  drawCellBorders(cellX, cellY);
-  //}
+  // Verifica se il mouse è sopra una casella valida
+  if (cellX >= 0 && cellX < currentLevel.getCols() && cellY >= 0 && cellY < currentLevel.getRows()) {
+    // Disegna i bordi della casella in bianco
+    drawCellBorders(cellX, cellY, currentLevel);
+  }
 
-  //String  objectAtMouse = map.getObjectAtCell(cellX, cellY);
-  //if (objectAtMouse != null) {
-  //  fill(255); // Colore del testo (bianco)
-  //  textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-  //  textSize(24); // Imposta la dimensione del testo
-  //  text(objectAtMouse, 20, 20); // Disegna il testo a una posizione desiderata (es. 20, 20)
-  //}
+  String  objectAtMouse = currentLevel.getObjectAtCell(cellX, cellY);
+  if (objectAtMouse != null) {
+    fill(255); // Colore del testo (bianco)
+    textAlign(LEFT, LEFT); // Allinea il testo a sinistra e in alto
+    textSize(24); // Imposta la dimensione del testo
+    text(objectAtMouse, 20, 20); // Disegna il testo a una posizione desiderata (es. 20, 20)
+  }
 
   //float fps = frameRate;
   //System.out.println(fps);
-}
-
-void drawStory() {
-  // Mostra il testo narrativo con l'effetto macchina da scrivere
-  fill(255);
-  textAlign(CENTER, CENTER);
-  textSize(24);
-  text(storyText.substring(0, letterIndex), width / 2, height / 2);
-
-  if (isTyping) {
-    // Continua a scrivere il testo
-    if (frameCount % typingSpeed == 0) {
-      if (letterIndex < storyText.length()) {
-        letterIndex++;
-      } else {
-        isTyping = false;
-      }
-    }
-  } else {
-    textSize(16);
-    text("\nPremi un tasto per continuare", width / 2, height - 50);
-  }
-}
-
-void keyPressed() {
-  if (screen_state == STORY_SCREEN && !isTyping) {
-    screen_state = GAME_SCREEN;
-  }
 }

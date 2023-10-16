@@ -2,11 +2,10 @@ public class Player extends Sprite{
   private int playerHP;
   // attributo per l'arma del giocatore
   
-  
-  Player(int id, int playerHP, PImage player){
+  Player(int id, int playerHP, String dataPath){
     this.id = id;
     this.playerHP = playerHP;
-    this.img = player;
+    this.img = loadImage(dataPath);
   }
   
   int getPlayerHP(){

@@ -2,11 +2,11 @@ public class Enemy extends Sprite {
   private int enemyHP;
   private String name;
   
-  Enemy(int id, int enemyHP, String name, PImage enemy){
+  Enemy(int id, int enemyHP, String name, String dataPath){
     this.id = id;
     this.enemyHP = enemyHP;
     this.name = name;
-    this.img = enemy;
+    this.img = loadImage(dataPath);
   }
   
   int getEnemyHP(){

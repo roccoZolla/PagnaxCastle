@@ -1,7 +1,8 @@
 class Level {
-  String levelName;
-  int levelIndex;
-  boolean completed;
+  private String levelName;
+  private int levelIndex;
+  private String dataPath;
+  private boolean completed = false;
 
   // attributi
   private PImage floorImage; // Immagine per il pavimento
@@ -9,7 +10,6 @@ class Level {
   private PImage roomOutlineImage; // immagine per i contorni delle stanze
   private PImage hallwayImage;      // immagine per i corridoi
 
-  private PImage treasureImage;
   private int spawnLevel = 3; // Livello di spawn (puoi impostarlo come desideri)
   private ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
@@ -19,7 +19,7 @@ class Level {
   private int cols, rows;
   private int[][] map;
   private ArrayList<PVector> rooms; // Memorizza le posizioni delle stanze
-  
+
   PVector finalRoomPosition;
   PVector nextLevelStartRoomPosition;
 
@@ -28,41 +28,14 @@ class Level {
 
   private int startRoomIndex;
   private int endRoomIndex;
-  
-  int getTileSize() {
-    return tileSize;
-  }
-  
-  int getCols() {
-    return cols;
-  }  
-  
-  int getRows() {
-    return rows;
-  }
-  
-  int[][] getMap() {
-    return map;
-  }
 
-  Level(String levelName, int levelIndex) {
+  Level(String levelName, int levelIndex, String dataPath) {
     this.levelName = levelName;
     this.completed = false;
     this.levelIndex = levelIndex;
+    this.dataPath = dataPath;
     //finalRoomPosition = new PVector(int(random(width)), int(random(height)));
     //nextLevelStartRoomPosition = new PVector(int(random(width)), int(random(height)));
-  }
-  
-  PVector getNextLevelStartRoomPosition() {
-    return nextLevelStartRoomPosition;
-  }
-  
-  int getLevelIndex() {
-    return levelIndex;
-  }
-  
-  String getName() {
-    return levelName;
   }
 
   void init() {
@@ -73,35 +46,62 @@ class Level {
     rooms = new ArrayList<PVector>();
     treasures = new ArrayList<Chest>(); // Inizializza l'arraylist qui
 
-    floorImage = loadImage("data/environment/tile_0042.png");
-    wallImage = loadImage("data/environment/tile_0014.png");
-    roomOutlineImage = loadImage("data/environment/tile_0005.png");
-    hallwayImage = loadImage("data/environment/tile_0049.png");
-    finalFloorImage = loadImage("data/environment/tile_0024.png");
-    treasureImage = loadImage("data/object/tile_0089.png");
-
+    floorImage = loadImage(dataPath + "floorTile.png");
+    wallImage = loadImage(dataPath + "wallTile.png");
+    roomOutlineImage = loadImage(dataPath + "roomOutlineTile.png");
+    hallwayImage = loadImage(dataPath + "hallwayTile.png");
+    finalFloorImage = loadImage(dataPath + "finalFloorTile.png");
+    
     // Genera stanze
     generateRooms();
 
     // Collega le stanze con corridoi
     connectRooms();
 
-    // aggiungi i nemici
-    generateEnemies();
-
     // da rimuovere
     map[int(rooms.get(startRoomIndex).x)][int(rooms.get(startRoomIndex).y)] = 2; // Stanza iniziale
     map[int(rooms.get(endRoomIndex).x)][int(rooms.get(endRoomIndex).y)] = 3; // Stanza finale
+
+     // aggiungi i nemici
+    generateEnemies();
 
     // genera i loot
     // generateTreasures();
     generateRandomChests();
   }
-  
+
+  int getTileSize() {
+    return tileSize;
+  }
+
+  int getCols() {
+    return cols;
+  }
+
+  int getRows() {
+    return rows;
+  }
+
+  int[][] getMap() {
+    return map;
+  }
+
+  PVector getNextLevelStartRoomPosition() {
+    return nextLevelStartRoomPosition;
+  }
+
+  int getLevelIndex() {
+    return levelIndex;
+  }
+
+  String getName() {
+    return levelName;
+  }
+
   PVector getStartRoom() {
     return rooms.get(startRoomIndex);
   }
-  
+
   PVector getEndRoomPosition() {
     return rooms.get(endRoomIndex);
   }
@@ -202,7 +202,7 @@ class Level {
       } while (positionOccupied);
 
       // Crea una nuova cassa e imposta le sue proprietà
-      Chest chest = new Chest();
+      Chest chest = new Chest("data/object/tile_0089.png");
       chest.setName("cassa di merda");
       chest.setIsOpen(random(1) < 0.5); // Casualemente aperta o chiusa
       chest.setOpenWith(new Item("key")); // Imposta un oggetto necessario per aprirla
@@ -231,9 +231,8 @@ class Level {
 
       // Crea un nemico con valori casuali di HP e un'immagine casuale
       int enemyHP = 30;
-      PImage enemyImage = loadImage("data/npc/tile_0109.png");
 
-      Enemy enemy = new Enemy(i, enemyHP, "nemico", enemyImage);
+      Enemy enemy = new Enemy(i, enemyHP, "nemico", "data/npc/tile_0109.png");
       enemy.setPosition(new PVector(x, y));
 
       if (map[x][y] == 1) map[x][y] = 7;
@@ -302,7 +301,9 @@ class Level {
 
         case 6:
           // tesori
-          image(treasureImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          for(Chest chest : treasures) {
+            image(chest.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
+          }
           break;
 
         case 7:
