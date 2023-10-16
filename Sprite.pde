@@ -2,18 +2,8 @@ public abstract class Sprite {
   private PVector spritePosition;
   int id;
   PImage img;
-  
-  //Sprite(String id, String imagePath) {
-  //  this.id=id;
-  //  img=loadImage(imagePath);
-  //}
-  
-  //Sprite(String id, String imagePath, PVector spritePosition) {
-  //  this.id=id;
-  //  img = loadImage(imagePath);
-  //  this.spritePosition = spritePosition;
-  //}
-  
+
+
   // metodi 
   public void incX() {
     spritePosition.x++;

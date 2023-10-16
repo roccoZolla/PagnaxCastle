@@ -1,5 +1,5 @@
 // velocita sprite
-float spriteSpeed = 0.1;
+float spriteSpeed = 0.15;
 
 // gestione comandi
 void handlePlayerMovement() {
