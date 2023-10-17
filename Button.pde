@@ -1,13 +1,14 @@
 class Button {
   // aggiungi immagine
-  PVector pos = new PVector(0, 0);
-  float w;    // width
-  float h;    // height
-  String label;
-  color buttonColor;
-  boolean hover = false;
-  boolean pressed = false;
-  PImage buttonImage;
+  private PVector pos = new PVector(0, 0);
+  private float w;    // width
+  private float h;    // height
+  private String label;
+  private color buttonColor;
+  private boolean hover = false;
+  private boolean pressed = false;
+  private boolean enabled = false;  // di base un bottone è disattivato
+  private PImage buttonImage;
 
   Button(int x, int y, float w, float h, String label, String dataPath) {
     // Calcola la posizione x e y per centrare il bottone
@@ -17,7 +18,15 @@ class Button {
     this.h = h;
     this.label = label;
     buttonColor = color(0, 0, 255); // Colore predefinito del pulsante
-    buttonImage = loadImage(dataPath);
+    if(!dataPath.isEmpty()) buttonImage = loadImage(dataPath);
+  }
+  
+  void setEnabled(boolean stateButton){
+    this.enabled = stateButton;
+  }
+  
+  boolean isEnabled() {
+    return enabled;
   }
 
   void display() {

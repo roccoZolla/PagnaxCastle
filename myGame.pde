@@ -9,6 +9,7 @@ int heartWidth = 20; // Larghezza di un cuore
 int heartHeight = 20; // Altezza di un cuore
 
 static int screen_state;
+static int previous_state;  // salva lo stato precedente
 static final int MENU_SCREEN = 0;
 static final int GAME_SCREEN = 1;
 static final int STORY_SCREEN = 2;
@@ -31,6 +32,8 @@ Button pauseButton;
 Button resumeButton;
 Button backMenuButton;
 
+Button backOptionButton;
+
 String gameTitle = "dungeon game";
 
 PFont myFont;
@@ -43,6 +46,12 @@ float easing = 0.1;
 
 int cellX;
 int cellY;
+
+// layers
+PGraphics gameLayer;
+PGraphics hudLayer;
+
+float angle = 0;
 
 void setup() {
   // dimensioni schermo
@@ -61,8 +70,11 @@ void setup() {
   myFont = createFont("data/font/Minecraft.ttf", 20);
   textFont(myFont);
 
+  // schermata iniziale
   screen_state = MENU_SCREEN;
+  previous_state = screen_state;
 
+  // setup dei bottoni
   startButton = new Button(width / 2 - 100, height / 2, 200, 80, "Start", "");
   optionButton = new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Option", "");
   exitButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Exit", "");
@@ -70,10 +82,12 @@ void setup() {
   pauseButton = new Button(width - 50, 20, 40, 40, "", "data/ui/Pause.png");
   resumeButton = new Button(width / 2 - 100, height / 2, 200, 80, "Resume", "");
   backMenuButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Back to menu", "");
+  
+  backOptionButton = new Button(width - 250, height - 150, 200, 80, "Back to menu", "");
 
   p1 = new Player(1, 30, "data/player.png");
   p1.setPosition(currentLevel.getStartRoom());
-  weapon = new Item(1, "sword", "data//little_sword.png");
+  weapon = new Item(1, "sword", "data/little_sword.png");
 
   p1.setPlayerWeapon(weapon);
 
@@ -83,10 +97,13 @@ void setup() {
 }
 
 void draw() {
-  System.out.println("screen state: " + screen_state);
   switch(screen_state) {
   case MENU_SCREEN:
-    System.out.println("case MENUSCREEN");
+    // attiva i bottoni
+    startButton.setEnabled(true);
+    optionButton.setEnabled(true);
+    exitButton.setEnabled(true);
+    
     // show menu
     drawMenu();
     break;
@@ -97,6 +114,9 @@ void draw() {
     break;
 
   case GAME_SCREEN:
+    // attiva il bottone di pausa
+    pauseButton.setEnabled(true);
+    
     // show game screen
     drawGame();
     break;
@@ -107,11 +127,22 @@ void draw() {
     break;
 
   case PAUSE_SCREEN:
+    // disabilita il bottone di pausa
+    pauseButton.setEnabled(false);
+    
+    // attivo i bottoni relativi al menu di pausa
+    resumeButton.setEnabled(true);
+    optionButton.setEnabled(true);
+    backMenuButton.setEnabled(true);
+    
     // show pause screen
     drawPause();
     break;
 
   case OPTION_SCREEN:
+    // attiva i bottoni relativi
+    backOptionButton.setEnabled(true);
+    
     // show option screen
     drawOption();
     break;
@@ -122,7 +153,8 @@ void draw() {
 }
 
 void drawMenu() {
-  System.out.println("drawMenu screen state" + screen_state);
+  System.out.println("drawMenu screen state: " + screen_state);
+  System.out.println("exitButton: " + exitButton.isEnabled());
   background(0); // Cancella lo schermo
 
   // draw title
@@ -136,17 +168,35 @@ void drawMenu() {
   optionButton.display();
   exitButton.display();
 
-  if (startButton.isPressed()) {
+  if (startButton.isPressed() && startButton.isEnabled()) {
+    // salva lo stato
+    previous_state = screen_state;
+    
     // far partire di qua la creazione dei livelli
     screen_state = STORY_SCREEN;
-  } else if (optionButton.isPressed()) {
+    
+    // disabilita i bottoni
+    startButton.setEnabled(false);
+    optionButton.setEnabled(false);
+    exitButton.setEnabled(false); 
+  } else if (optionButton.isPressed() && optionButton.isEnabled()) {
+    // salva lo stato
+    previous_state = screen_state;
+    
+    // cambia lo stato
     screen_state = OPTION_SCREEN;
-  } else if (exitButton.isPressed()) {
+    
+    // disabilita i bottoni
+    startButton.setEnabled(false);
+    optionButton.setEnabled(false);
+    exitButton.setEnabled(false);
+  } else if (exitButton.isPressed() && exitButton.isEnabled()) {
+    System.out.println("exit button is pressed");
     System.exit(0);
   }
 }
 
-void drawGame() {
+void updateCamera() {
   float targetCameraX = p1.getPosition().x * currentLevel.getTileSize() * zoom - width / 2;
   float targetCameraY = p1.getPosition().y * currentLevel.getTileSize() * zoom - height / 2;
 
@@ -157,6 +207,11 @@ void drawGame() {
   // Interpolazione per rendere il movimento della camera più fluido
   cameraX += (targetCameraX - cameraX) * easing;
   cameraY += (targetCameraY - cameraY) * easing;
+}
+
+void drawGame() {
+  // aggiorna la camera
+  updateCamera();
 
   // Imposta la telecamera alla nuova posizione e applica il fattore di scala
   translate(-cameraX, -cameraY);
@@ -165,8 +220,8 @@ void drawGame() {
   // Disegna la mappa del livello corrente
   currentLevel.display();
 
-  drawUI(); 
-  
+  drawUI();
+
   // Gestione del movimento del giocatore
   // da migliorare
   handlePlayerMovement(currentLevel);
@@ -238,37 +293,79 @@ void drawPause() {
   textAlign(CENTER, CENTER);
   text("PAUSA", width / 2, height / 2 - 100);
 
+  // shows buttons
   resumeButton.display();
   optionButton.display();
   backMenuButton.display();
 
-  if (resumeButton.isPressed()) {
+  if (resumeButton.isPressed() && resumeButton.isEnabled()) {
+    // prima di cambiare stato salvalo
+    previous_state = screen_state;
+    
     // torna al gioco
     screen_state = GAME_SCREEN;
-  } else if (optionButton.isPressed()) {
+    
+    // disablita i bottoni
+    resumeButton.setEnabled(false);
+    optionButton.setEnabled(false);
+    backMenuButton.setEnabled(false);
+  } else if (optionButton.isPressed() && optionButton.isEnabled()) {
+    // salva lo stato
+    previous_state = screen_state;
+    
     // opzioni di gioco
     screen_state = OPTION_SCREEN;
-  } else if (backMenuButton.isPressed()) {
+    
+    // disabilita i bottoni
+    resumeButton.setEnabled(false);
+    optionButton.setEnabled(false);
+    backMenuButton.setEnabled(false);
+  } else if (backMenuButton.isPressed() && backMenuButton.isEnabled()) {
+    // salva lo stato
+    previous_state = screen_state;
+    
     // torna al menu
     screen_state = MENU_SCREEN;
+    
+    resumeButton.setEnabled(false);
+    optionButton.setEnabled(false);
+    backMenuButton.setEnabled(false);
     // resetGame();
   }
 }
 
 void drawOption() {
-  //
+  // cancella lo schermo
   background(0);
 
   // disegna la scritta pausa
   fill(255);
   textSize(36);
   textAlign(CENTER, CENTER);
-  text("OPTIONS", width / 2, height / 2 - 100);
+  text("OPTIONS", 100, 50);
 
-  backMenuButton.display();
+  backOptionButton.display();
+  
+  System.out.println("exit button: " + exitButton.isEnabled());
 
-  if (backMenuButton.isPressed()) {
-    screen_state = MENU_SCREEN;
+  if (backOptionButton.isPressed() && backOptionButton.isEnabled()) {
+    if(previous_state == MENU_SCREEN){
+      // salva lo stato
+      previous_state = screen_state;
+      
+      // torna al menu
+      screen_state = MENU_SCREEN;
+    } 
+    else if(previous_state == PAUSE_SCREEN) {
+      // salva lo stato
+      previous_state = screen_state;
+      
+      // torna alla schermata di pausa
+      screen_state = PAUSE_SCREEN;
+    }
+    
+    
+    backOptionButton.setEnabled(false);
   }
 }
 
@@ -282,7 +379,7 @@ void drawUI() {
   // pause button
   pauseButton.display();
 
-  if (pauseButton.isPressed()) {
+  if (pauseButton.isPressed() && pauseButton.isEnabled()) {
     // il gioco viene messo in pausa
     screen_state = PAUSE_SCREEN;
   }
@@ -296,7 +393,7 @@ void drawUI() {
 
   // Disegna i cuori pieni
   for (int i = 0; i < heartsToDisplay; i++) {
-    image(heartFull, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
+    image(heartFull, 20 + i * (heartWidth + 5), heartY * zoom, heartWidth, heartHeight);
   }
 
   // Disegna il cuore a metà se necessario
