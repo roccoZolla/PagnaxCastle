@@ -1,4 +1,3 @@
-
 public class Item extends Sprite{
     private int id;
     private String name;
