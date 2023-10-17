@@ -1,10 +1,20 @@
 Player p1;
+Item weapon;
 
-int screen_state;
+PImage heartFull; // Immagine del cuore pieno
+PImage halfHeart; // Immagine del cuore meta
+PImage emptyHeart; // Immagine del cuore vuoto
+int maxHearts;
+int heartWidth = 20; // Larghezza di un cuore
+int heartHeight = 20; // Altezza di un cuore
+
+static int screen_state;
 static final int MENU_SCREEN = 0;
 static final int GAME_SCREEN = 1;
 static final int STORY_SCREEN = 2;
 static final int WIN_SCREEN = 3;
+static final int PAUSE_SCREEN = 4;
+static final int OPTION_SCREEN = 5;
 
 World castle;
 Macroarea currentArea;
@@ -16,6 +26,10 @@ String actualLevel;
 Button startButton;
 Button optionButton;
 Button exitButton;
+
+Button pauseButton;
+Button resumeButton;
+Button backMenuButton;
 
 String gameTitle = "dungeon game";
 
@@ -49,19 +63,30 @@ void setup() {
 
   screen_state = MENU_SCREEN;
 
-  startButton = new Button(width / 2 - 100, height / 2, 200, 80, "Start");
-  optionButton = new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Option");
-  exitButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Exit");
+  startButton = new Button(width / 2 - 100, height / 2, 200, 80, "Start", "");
+  optionButton = new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Option", "");
+  exitButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Exit", "");
 
-  p1 = new Player(1, 50, "data/player.png");
+  pauseButton = new Button(width - 50, 20, 40, 40, "", "data/ui/Pause.png");
+  resumeButton = new Button(width / 2 - 100, height / 2, 200, 80, "Resume", "");
+  backMenuButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Back to menu", "");
+
+  p1 = new Player(1, 30, "data/player.png");
   p1.setPosition(currentLevel.getStartRoom());
+  weapon = new Item(1, "sword", "data//little_sword.png");
+
+  p1.setPlayerWeapon(weapon);
+
+  heartFull = loadImage("data/heartFull.png");
+  halfHeart = loadImage("data/halfHeart.png");
+  emptyHeart = loadImage("data/emptyHeart.png");
 }
 
 void draw() {
-  background(0); // Cancella lo schermo
-
+  System.out.println("screen state: " + screen_state);
   switch(screen_state) {
   case MENU_SCREEN:
+    System.out.println("case MENUSCREEN");
     // show menu
     drawMenu();
     break;
@@ -77,12 +102,29 @@ void draw() {
     break;
 
   case WIN_SCREEN:
+    // show win screen
     drawWin();
     break;
+
+  case PAUSE_SCREEN:
+    // show pause screen
+    drawPause();
+    break;
+
+  case OPTION_SCREEN:
+    // show option screen
+    drawOption();
+    break;
+
+  default:
+    System.out.println("errore");
   }
 }
 
 void drawMenu() {
+  System.out.println("drawMenu screen state" + screen_state);
+  background(0); // Cancella lo schermo
+
   // draw title
   fill(255);
   textSize(80);
@@ -95,8 +137,10 @@ void drawMenu() {
   exitButton.display();
 
   if (startButton.isPressed()) {
+    // far partire di qua la creazione dei livelli
     screen_state = STORY_SCREEN;
   } else if (optionButton.isPressed()) {
+    screen_state = OPTION_SCREEN;
   } else if (exitButton.isPressed()) {
     System.exit(0);
   }
@@ -120,13 +164,9 @@ void drawGame() {
 
   // Disegna la mappa del livello corrente
   currentLevel.display();
-  
-  // nome del livello
-  fill(255); 
-  textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-  textSize(24); 
-  text(actualLevel, 20, 20); 
 
+  drawUI(); 
+  
   // Gestione del movimento del giocatore
   // da migliorare
   handlePlayerMovement(currentLevel);
@@ -146,7 +186,6 @@ void drawGame() {
         resetGame();
       } else {
         currentArea = castle.getMacroareas().get(currentArea.getAreaIndex() + 1);
-        System.out.println(currentArea.getStory());
         currentArea.initLevels();
         currentLevel = currentArea.getCurrentLevel();
         actualLevel = currentArea.getName() + " - " + currentLevel.getName();
@@ -166,7 +205,6 @@ void drawGame() {
   // Rileva la posizione del mouse rispetto alle celle
   cellX = floor(mouseX / (currentLevel.getTileSize() * zoom));
   cellY = floor(mouseY / (currentLevel.getTileSize() * zoom));
-  System.out.println("Mouse cell coordinates: (" + cellX + "," + cellY);
 
   // Verifica se il mouse è sopra una casella valida
   if (cellX >= 0 && cellX < currentLevel.getCols() && cellY >= 0 && cellY < currentLevel.getRows()) {
@@ -179,7 +217,7 @@ void drawGame() {
     fill(255); // Colore del testo (bianco)
     textAlign(LEFT, LEFT); // Allinea il testo a sinistra e in alto
     textSize(24); // Imposta la dimensione del testo
-    text(objectAtMouse, 20, 20); // Disegna il testo a una posizione desiderata (es. 20, 20)
+    text(objectAtMouse, width / 2, 40); // Disegna il testo a una posizione desiderata (es. 20, 20)
   }
 
   //float fps = frameRate;
@@ -188,6 +226,106 @@ void drawGame() {
 
 void drawWin() {
   screen_state = MENU_SCREEN;
+}
+
+void drawPause() {
+  // trovare modo per opacizzare lo sfondo
+  background(0);
+
+  // disegna la scritta pausa
+  fill(255);
+  textSize(36);
+  textAlign(CENTER, CENTER);
+  text("PAUSA", width / 2, height / 2 - 100);
+
+  resumeButton.display();
+  optionButton.display();
+  backMenuButton.display();
+
+  if (resumeButton.isPressed()) {
+    // torna al gioco
+    screen_state = GAME_SCREEN;
+  } else if (optionButton.isPressed()) {
+    // opzioni di gioco
+    screen_state = OPTION_SCREEN;
+  } else if (backMenuButton.isPressed()) {
+    // torna al menu
+    screen_state = MENU_SCREEN;
+    // resetGame();
+  }
+}
+
+void drawOption() {
+  //
+  background(0);
+
+  // disegna la scritta pausa
+  fill(255);
+  textSize(36);
+  textAlign(CENTER, CENTER);
+  text("OPTIONS", width / 2, height / 2 - 100);
+
+  backMenuButton.display();
+
+  if (backMenuButton.isPressed()) {
+    screen_state = MENU_SCREEN;
+  }
+}
+
+void drawUI() {
+  // nome del livello
+  fill(255);
+  textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+  textSize(24);
+  text(actualLevel, 20, 20);
+
+  // pause button
+  pauseButton.display();
+
+  if (pauseButton.isPressed()) {
+    // il gioco viene messo in pausa
+    screen_state = PAUSE_SCREEN;
+  }
+
+  // cuori
+  // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
+  int heartsToDisplay = p1.getPlayerHP() / 10; // Supponiamo che ogni cuore rappresenti 10 HP
+  int heartY = 50;
+  maxHearts = p1.getPlayerHP() / 10;
+  boolean isHalfHeart = p1.getPlayerHP() % 10 >= 5; // Controlla se c'è un cuore a metà
+
+  // Disegna i cuori pieni
+  for (int i = 0; i < heartsToDisplay; i++) {
+    image(heartFull, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
+  }
+
+  // Disegna il cuore a metà se necessario
+  if (isHalfHeart) {
+    image(halfHeart, 20 + heartsToDisplay * (heartWidth + 5), heartY, heartWidth, heartHeight / 2);
+  }
+
+  // Disegna i cuori vuoti per completare il numero massimo di cuori
+  for (int i = heartsToDisplay + (isHalfHeart ? 1 : 0); i < maxHearts; i++) {
+    image(emptyHeart, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
+  }
+
+  // all'interno del riquadro verra inserita l'arma corrente
+  noFill(); // Nessun riempimento
+  stroke(255); // Colore del bordo bianco
+  rect(width - 75, height - 100, 50, 50);
+
+  float scaleFactor = 3.0;
+
+  if (p1.getPlayerWeapon().getSprite() != null) {
+
+    float imgWidth = p1.getPlayerWeapon().getSprite().width * scaleFactor;
+    float imgHeight = p1.getPlayerWeapon().getSprite().height * scaleFactor;
+
+    float imgX = width - 75 + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
+    float imgY = height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
+
+    image(p1.getPlayerWeapon().getSprite(), imgX, imgY, imgWidth, imgHeight);
+  }
 }
 
 void resetGame() {

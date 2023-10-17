@@ -4,7 +4,7 @@ float spriteSpeed = 1;
 // 
 int letterIndex = 0; // Indice della lettera corrente
 boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
-int typingSpeed = 2; // Velocità di scrittura 
+int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 
 // gestione comandi
 void handlePlayerMovement(Level currentLevel) {
@@ -67,10 +67,6 @@ void drawCellBorders(float x, float y, Level currentLevel) {
 void drawStory(String storyText) {
   // cancella lo schermo
   background(0);
-  
-  System.out.println("istyping: " + isTyping);
-  System.out.println("letter index: " + letterIndex);
-  System.out.println(storyText.substring(0, letterIndex));
   
   // Mostra il testo narrativo con l'effetto macchina da scrivere
   fill(255);
