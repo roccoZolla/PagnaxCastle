@@ -9,17 +9,19 @@ class World {
     cellar.setStory("La principessa Chela è in pericolo. È stata rapita da un cattivone.\n" +
     "Vai al castello del cattivone ma vieni subito scoperto e mandato nelle cantine del castello.\n" +
     "Devi risalire il castello fino alle sale reali per sconfiggere il cattivone di turno.\n");
+    
+    Macroarea piano_base = new Macroarea(1, "piano_base", 1, "data/zone_2/");
+    piano_base.setStory("Sei arrivato al piano base daje roma daje!\n");   
+    
     macroareas.add(cellar);
+    macroareas.add(piano_base);
+    
     currentMacroarea = cellar;
     
-    Macroarea piano_base = new Macroarea(1, "piano_base", 3, "data/zone_2/");
-    macroareas.add(piano_base);    
-    
-    piano_base.setStory("Sei arrivato al piano base daje roma daje!\n");
-    
-    Macroarea finalArea = new Macroarea(1, "Royal halls", 1, "data/zone_3/");
-    finalArea.setFinalArea(true);
-    macroareas.add(finalArea);
+    //Macroarea finalArea = new Macroarea(2, "Royal halls", 1, "data/zone_3/");
+    //finalArea.setStory("Area finale yuppi yeah!");
+    //finalArea.setFinalArea(true);
+    //macroareas.add(finalArea);
   }
   
   Macroarea getCurrentMacroarea() {

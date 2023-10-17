@@ -4,6 +4,7 @@ int screen_state;
 static final int MENU_SCREEN = 0;
 static final int GAME_SCREEN = 1;
 static final int STORY_SCREEN = 2;
+static final int WIN_SCREEN = 3;
 
 World castle;
 Macroarea currentArea;
@@ -58,15 +59,26 @@ void setup() {
 
 void draw() {
   background(0); // Cancella lo schermo
-  if (screen_state == MENU_SCREEN) {
+
+  switch(screen_state) {
+  case MENU_SCREEN:
     // show menu
     drawMenu();
-  } else if (screen_state == STORY_SCREEN) {
+    break;
+
+  case STORY_SCREEN:
     // show story
     drawStory(currentArea.getStory());
-  } else if (screen_state == GAME_SCREEN) {
+    break;
+
+  case GAME_SCREEN:
     // show game screen
     drawGame();
+    break;
+
+  case WIN_SCREEN:
+    drawWin();
+    break;
   }
 }
 
@@ -108,12 +120,15 @@ void drawGame() {
 
   // Disegna la mappa del livello corrente
   currentLevel.display();
-  fill(255); // Colore del testo (bianco)
+  
+  // nome del livello
+  fill(255); 
   textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-  textSize(24); // Imposta la dimensione del testo
-  text(actualLevel, 20, 20); // Disegna il testo a una posizione desiderata (es. 20, 20)
+  textSize(24); 
+  text(actualLevel, 20, 20); 
 
   // Gestione del movimento del giocatore
+  // da migliorare
   handlePlayerMovement(currentLevel);
 
   // mostra il player
@@ -125,17 +140,19 @@ void drawGame() {
       // controlla se è l'area finale
       if (currentArea.isFinal()) {
         // winGame()
+        screen_state = WIN_SCREEN;
+      } else if (currentArea.getAreaIndex() == castle.getMacroareas().size() - 1) {
+        screen_state = MENU_SCREEN;
+        resetGame();
       } else {
         currentArea = castle.getMacroareas().get(currentArea.getAreaIndex() + 1);
         System.out.println(currentArea.getStory());
-        
-        //screen_state = STORY_SCREEN;
-        //drawStory(currentArea.getStory());
-        
         currentArea.initLevels();
         currentLevel = currentArea.getCurrentLevel();
         actualLevel = currentArea.getName() + " - " + currentLevel.getName();
         p1.setPosition(currentLevel.getStartRoom());
+
+        screen_state = STORY_SCREEN;
       }
     } else {
       // Il giocatore è abbastanza vicino al punto di accesso, quindi passa al livello successivo
@@ -167,4 +184,18 @@ void drawGame() {
 
   //float fps = frameRate;
   //System.out.println(fps);
+}
+
+void drawWin() {
+  screen_state = MENU_SCREEN;
+}
+
+void resetGame() {
+  // resetta mondo e variabili
+  // reimpostare currentArea e richiamare la initLevels
+  // reimposta la posizione del giocatore e tutti i suoi parametri
+  currentArea = castle.getMacroareas().get(0);
+  currentArea.initLevels();
+  currentLevel = currentArea.getCurrentLevel();
+  p1.setPosition(currentLevel.getStartRoom());
 }
