@@ -42,7 +42,7 @@ PFont myFont;
 // Variabili per la posizione della camera
 float cameraX = 0;
 float cameraY = 0;
-float zoom = 1.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
+float zoom = 5.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
 float easing = 0.1;
 
 PGraphics gameScene;
@@ -54,6 +54,9 @@ int cellY;
 void setup() {
   // dimensioni schermo
   size(1280, 720);
+  
+  gameScene = createGraphics(width, height);
+  uiLayer = createGraphics(width, height);
 
   // load font
   myFont = createFont("data/font/Minecraft.ttf", 20);
@@ -123,6 +126,9 @@ void draw() {
 
     // show game screen
     gameScreen();
+    
+    image(gameScene, 0, 0);
+    image(uiLayer, 0, 0);
     break;
 
   case WIN_SCREEN:
@@ -211,12 +217,12 @@ void menuScreen() {
 }
 
 void updateCamera() {
-  float targetCameraX = p1.getPosition().x * currentLevel.getTileSize() * zoom - width / 2;
-  float targetCameraY = p1.getPosition().y * currentLevel.getTileSize() * zoom - height / 2;
+  float targetCameraX = p1.getPosition().x * currentLevel.getTileSize() * zoom - gameScene.width / 2;
+  float targetCameraY = p1.getPosition().y * currentLevel.getTileSize() * zoom - gameScene.height / 2;
 
   // Limita la telecamera in modo che non esca dalla mappa
-  targetCameraX = constrain(targetCameraX, 0, currentLevel.getCols() * currentLevel.getTileSize() * zoom - width);
-  targetCameraY = constrain(targetCameraY, 0, currentLevel.getRows() * currentLevel.getTileSize() * zoom - height);
+  targetCameraX = constrain(targetCameraX, 0, currentLevel.getCols() * currentLevel.getTileSize() * zoom - gameScene.width);
+  targetCameraY = constrain(targetCameraY, 0, currentLevel.getRows() * currentLevel.getTileSize() * zoom - gameScene.height);
 
   // Interpolazione per rendere il movimento della camera più fluido
   cameraX += (targetCameraX - cameraX) * easing;
@@ -224,15 +230,16 @@ void updateCamera() {
 }
 
 void gameScreen() {
+  gameScene.beginDraw();
   // cancella lo schermo
-  background(0);
+  gameScene.background(0);
 
   // aggiorna la camera
   updateCamera();
 
   // Imposta la telecamera alla nuova posizione e applica il fattore di scala
-  translate(-cameraX, -cameraY);
-  scale(zoom);
+  gameScene.translate(-cameraX, -cameraY);
+  gameScene.scale(zoom);
 
   // Disegna la mappa del livello corrente
   currentLevel.display();
@@ -293,6 +300,8 @@ void gameScreen() {
     textSize(24); // Imposta la dimensione del testo
     text(objectAtMouse, width / 2, 40); // Disegna il testo a una posizione desiderata (es. 20, 20)
   }
+  
+  gameScene.endDraw();
 
   // cambia il titolo della finestra e mostra il framerate
   surface.setTitle(String.format("%.1f", frameRate));
@@ -398,6 +407,7 @@ void optionScreen() {
 }
 
 void drawUI() {
+  uiLayer.beginDraw();
   // nome del livello
   fill(255);
   textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
@@ -451,6 +461,7 @@ void drawUI() {
 
     image(p1.getPlayerWeapon().getSprite(), imgX, imgY, imgWidth, imgHeight);
   }
+  uiLayer.endDraw();
 }
 
 
