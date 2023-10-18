@@ -42,7 +42,7 @@ PFont myFont;
 // Variabili per la posizione della camera
 float cameraX = 0;
 float cameraY = 0;
-float zoom = 5.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
+float zoom = 1.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
 float easing = 0.1;
 
 PGraphics gameScene;
@@ -61,7 +61,7 @@ void setup() {
   // load font
   myFont = createFont("data/font/Minecraft.ttf", 20);
   textFont(myFont);
-
+  
   // schermata iniziale
   screen_state = MENU_SCREEN;
   previous_state = screen_state;
@@ -126,6 +126,7 @@ void draw() {
 
     // show game screen
     gameScreen();
+    drawUI();
     
     image(gameScene, 0, 0);
     image(uiLayer, 0, 0);
@@ -240,11 +241,12 @@ void gameScreen() {
   // Imposta la telecamera alla nuova posizione e applica il fattore di scala
   gameScene.translate(-cameraX, -cameraY);
   gameScene.scale(zoom);
+  gameScene.fill(0, 134, 0);
+  gameScene.stroke(0,0,255);
+  gameScene.rect(p1.getPosition().x, p1.getPosition().y, 40, 40);
 
   // Disegna la mappa del livello corrente
   currentLevel.display();
-
-  drawUI();
 
   // Gestione del movimento del giocatore
   // da migliorare
@@ -284,22 +286,22 @@ void gameScreen() {
 
   // da fixare
   // Rileva la posizione del mouse rispetto alle celle
-  cellX = floor(mouseX / (currentLevel.getTileSize() * zoom));
-  cellY = floor(mouseY / (currentLevel.getTileSize() * zoom));
+  //cellX = floor(mouseX / (currentLevel.getTileSize() * zoom));
+  //cellY = floor(mouseY / (currentLevel.getTileSize() * zoom));
 
-  // Verifica se il mouse è sopra una casella valida
-  if (cellX >= 0 && cellX < currentLevel.getCols() && cellY >= 0 && cellY < currentLevel.getRows()) {
-    // Disegna i bordi della casella in bianco
-    drawCellBorders(cellX, cellY, currentLevel);
-  }
+  //// Verifica se il mouse è sopra una casella valida
+  //if (cellX >= 0 && cellX < currentLevel.getCols() && cellY >= 0 && cellY < currentLevel.getRows()) {
+  //  // Disegna i bordi della casella in bianco
+  //  drawCellBorders(cellX, cellY, currentLevel);
+  //}
 
-  String  objectAtMouse = currentLevel.getObjectAtCell(cellX, cellY);
-  if (objectAtMouse != null) {
-    fill(255); // Colore del testo (bianco)
-    textAlign(LEFT, LEFT); // Allinea il testo a sinistra e in alto
-    textSize(24); // Imposta la dimensione del testo
-    text(objectAtMouse, width / 2, 40); // Disegna il testo a una posizione desiderata (es. 20, 20)
-  }
+  //String  objectAtMouse = currentLevel.getObjectAtCell(cellX, cellY);
+  //if (objectAtMouse != null) {
+  //  fill(255); // Colore del testo (bianco)
+  //  textAlign(LEFT, LEFT); // Allinea il testo a sinistra e in alto
+  //  textSize(24); // Imposta la dimensione del testo
+  //  text(objectAtMouse, width / 2, 40); // Disegna il testo a una posizione desiderata (es. 20, 20)
+  //}
   
   gameScene.endDraw();
 
@@ -409,10 +411,11 @@ void optionScreen() {
 void drawUI() {
   uiLayer.beginDraw();
   // nome del livello
-  fill(255);
-  textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-  textSize(24);
-  text(actualLevel, 20, 20);
+  uiLayer.textFont(myFont);
+  uiLayer.fill(255);
+  uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+  uiLayer.textSize(24);
+  uiLayer.text(actualLevel, 20, 20);
 
   // pause button
   pauseButton.display();
@@ -431,23 +434,23 @@ void drawUI() {
 
   // Disegna i cuori pieni
   for (int i = 0; i < heartsToDisplay; i++) {
-    image(heartFull, 20 + i * (heartWidth + 5), heartY * zoom, heartWidth, heartHeight);
+    uiLayer.image(heartFull, 20 + i * (heartWidth + 5), heartY * zoom, heartWidth, heartHeight);
   }
 
   // Disegna il cuore a metà se necessario
   if (isHalfHeart) {
-    image(halfHeart, 20 + heartsToDisplay * (heartWidth + 5), heartY, heartWidth, heartHeight / 2);
+    uiLayer.image(halfHeart, 20 + heartsToDisplay * (heartWidth + 5), heartY, heartWidth, heartHeight / 2);
   }
 
   // Disegna i cuori vuoti per completare il numero massimo di cuori
   for (int i = heartsToDisplay + (isHalfHeart ? 1 : 0); i < maxHearts; i++) {
-    image(emptyHeart, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
+    uiLayer.image(emptyHeart, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
   }
 
   // all'interno del riquadro verra inserita l'arma corrente
-  noFill(); // Nessun riempimento
-  stroke(255); // Colore del bordo bianco
-  rect(width - 75, height - 100, 50, 50);
+  uiLayer.noFill(); // Nessun riempimento
+  uiLayer.stroke(255); // Colore del bordo bianco
+  uiLayer.rect(width - 75, height - 100, 50, 50);
 
   float scaleFactor = 3.0;
 
@@ -459,7 +462,7 @@ void drawUI() {
     float imgX = width - 75 + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
     float imgY = height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
 
-    image(p1.getPlayerWeapon().getSprite(), imgX, imgY, imgWidth, imgHeight);
+    uiLayer.image(p1.getPlayerWeapon().getSprite(), imgX, imgY, imgWidth, imgHeight);
   }
   uiLayer.endDraw();
 }

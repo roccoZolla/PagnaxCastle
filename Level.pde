@@ -289,31 +289,31 @@ class Level {
         case 0:
           // sfondo
           // image(wallImage, x * tileSize, y * tileSize, tileSize, tileSize);
-          fill(0); // nero
-          noStroke();
-          rect(x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.fill(0); // nero
+          gameScene.noStroke();
+          gameScene.rect(x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 1:
           // pavimento
-          image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 2:
           // Imposta l'immagine per la stanza iniziale (nero)
-          fill(0); // nero
-          noStroke();
-          rect(x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.fill(0); // nero
+          gameScene.noStroke();
+          gameScene.rect(x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 3:
           // scale per il piano successivo
-          image(stairsNextFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.image(stairsNextFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 4:
           // muri perimetrali
-          image(wallImageNorth, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.image(wallImageNorth, x * tileSize, y * tileSize, tileSize, tileSize);
           //if (needsNorthWall(x, y)) {
           //  image(wallImageNorthTop, x * tileSize, (y - 1) * tileSize, tileSize, tileSize);
           //  image(wallImageNorthBottom, x * tileSize, y * tileSize, tileSize, tileSize);
@@ -331,20 +331,20 @@ class Level {
 
         case 5:
           // corridoio
-          image(hallwayImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.image(hallwayImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 6:
           // tesori
           for (Chest chest : treasures) {
-            image(chest.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
+            gameScene.image(chest.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
           }
           break;
 
         case 7:
           // nemici
           for (Enemy enemy : enemies) {
-            image(enemy.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
+            gameScene.image(enemy.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
           }
           break;
         }
