@@ -1,5 +1,5 @@
 // velocita sprite
-float spriteSpeed = 1;
+float spriteSpeed = 1.0;
 
 // 
 int letterIndex = 0; // Indice della lettera corrente
@@ -20,16 +20,6 @@ void handlePlayerMovement(Level currentLevel) {
       newX -= spriteSpeed;
     } else if (key == 'd' || key == 'D') {
       newX += spriteSpeed;
-    }
-    
-    else if(key == 'z') {
-      if(zoom <= 5.0) zoom += 1.0;
-    }
-
-    else if(key == 'f') {
-      zoom -= 1.0;
-      
-      if(zoom < 1.0) zoom = 1.0;
     }
 
     // Verifica se la nuova posizione è valida
@@ -62,39 +52,4 @@ void drawCellBorders(float x, float y, Level currentLevel) {
     stroke(255); // Bianco
   }
   rect(leftX, topY, rightX - leftX, bottomY - topY);
-}
-
-void drawStory(String storyText) {
-  // cancella lo schermo
-  background(0);
-  
-  // Mostra il testo narrativo con l'effetto macchina da scrivere
-  fill(255);
-  textAlign(CENTER, CENTER);
-  textSize(24);
-  text(storyText.substring(0, letterIndex), width / 2, height / 2);
-
-  if (isTyping) {
-    // Continua a scrivere il testo
-    if (frameCount % typingSpeed == 0) {
-      if (letterIndex < storyText.length()) {
-        letterIndex++;
-      } else {
-        isTyping = false;
-      }
-    }
-  } else {
-    textSize(16);
-    text("\nPremi un tasto per continuare", width / 2, height - 50);
-  }
-}
-
-void keyPressed() {
-  if (screen_state == STORY_SCREEN && !isTyping) {
-    screen_state = GAME_SCREEN;
-    
-    // reimposta le variabili
-    letterIndex = 0;
-    isTyping = true;
-  }
 }

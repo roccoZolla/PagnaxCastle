@@ -35,6 +35,7 @@ class Button {
 
     // Imposta il colore del pulsante in base allo stato (normale, hover, premuto)
     if (pressed) {
+      System.out.println("tasto premuto");
       // Colore quando premuto
       fill(255, 0, 0);
     } else if (hover) {
@@ -61,7 +62,6 @@ class Button {
       textAlign(CENTER, CENTER);
       text(label, pos.x + w / 2, pos.y + h / 2);
     }
-
   }
 
   boolean isMouseOver() {

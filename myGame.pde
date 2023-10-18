@@ -14,8 +14,9 @@ static final int MENU_SCREEN = 0;
 static final int GAME_SCREEN = 1;
 static final int STORY_SCREEN = 2;
 static final int WIN_SCREEN = 3;
-static final int PAUSE_SCREEN = 4;
-static final int OPTION_SCREEN = 5;
+static final int LOSE_SCREEN = 4;
+static final int PAUSE_SCREEN = 5;
+static final int OPTION_SCREEN = 6;
 
 World castle;
 Macroarea currentArea;
@@ -41,30 +42,18 @@ PFont myFont;
 // Variabili per la posizione della camera
 float cameraX = 0;
 float cameraY = 0;
-float zoom = 1.0;    // dimensione ideale
+float zoom = 1.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
 float easing = 0.1;
+
+PGraphics gameScene;
+PGraphics uiLayer;    // questo layer si deve trovare sul layer del scena del gioco
 
 int cellX;
 int cellY;
 
-// layers
-PGraphics gameLayer;
-PGraphics hudLayer;
-
-float angle = 0;
-
 void setup() {
   // dimensioni schermo
   size(1280, 720);
-
-  // create world
-  castle = new World();
-  currentArea = castle.getCurrentMacroarea();
-  currentArea.initLevels();
-  currentLevel = currentArea.getCurrentLevel();
-
-  System.out.println(currentArea.getName());
-  actualLevel = currentArea.getName() + " - " + currentLevel.getName();
 
   // load font
   myFont = createFont("data/font/Minecraft.ttf", 20);
@@ -82,69 +71,90 @@ void setup() {
   pauseButton = new Button(width - 50, 20, 40, 40, "", "data/ui/Pause.png");
   resumeButton = new Button(width / 2 - 100, height / 2, 200, 80, "Resume", "");
   backMenuButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Back to menu", "");
-  
+
   backOptionButton = new Button(width - 250, height - 150, 200, 80, "Back to menu", "");
-
-  p1 = new Player(1, 30, "data/player.png");
-  p1.setPosition(currentLevel.getStartRoom());
-  weapon = new Item(1, "sword", "data/little_sword.png");
-
-  p1.setPlayerWeapon(weapon);
 
   heartFull = loadImage("data/heartFull.png");
   halfHeart = loadImage("data/halfHeart.png");
   emptyHeart = loadImage("data/emptyHeart.png");
 }
 
+// inizializza il mondo di gioco
+// una volta premuto il tasto start
+void setupGame() {
+  // create world
+  castle = new World();
+
+  currentArea = castle.getCurrentMacroarea();
+  // currentArea.initLevels();
+  currentLevel = currentArea.getCurrentLevel();
+  currentLevel.init();
+
+  actualLevel = currentArea.getName() + " - " + currentLevel.getName();
+
+  p1 = new Player(1, 100, "data/player.png");
+  p1.setPosition(currentLevel.getStartRoom());
+  weapon = new Item(1, "sword", "data/little_sword.png");
+
+  p1.setPlayerWeapon(weapon);
+}
+
 void draw() {
+  System.out.println("screen_state: " + screen_state);
   switch(screen_state) {
   case MENU_SCREEN:
     // attiva i bottoni
     startButton.setEnabled(true);
     optionButton.setEnabled(true);
     exitButton.setEnabled(true);
-    
+
     // show menu
-    drawMenu();
+    menuScreen();
     break;
 
   case STORY_SCREEN:
     // show story
-    drawStory(currentArea.getStory());
+    storyScreen(currentArea.getStory());
     break;
 
   case GAME_SCREEN:
     // attiva il bottone di pausa
     pauseButton.setEnabled(true);
-    
+
     // show game screen
-    drawGame();
+    gameScreen();
     break;
 
   case WIN_SCREEN:
+    System.out.println("entrato in win screen");
     // show win screen
-    drawWin();
+    winScreen();
+    break;
+
+  case LOSE_SCREEN:
+    // show loose screen
+    loseScreen();
     break;
 
   case PAUSE_SCREEN:
     // disabilita il bottone di pausa
     pauseButton.setEnabled(false);
-    
+
     // attivo i bottoni relativi al menu di pausa
     resumeButton.setEnabled(true);
     optionButton.setEnabled(true);
     backMenuButton.setEnabled(true);
-    
+
     // show pause screen
-    drawPause();
+    pauseScreen();
     break;
 
   case OPTION_SCREEN:
     // attiva i bottoni relativi
     backOptionButton.setEnabled(true);
-    
+
     // show option screen
-    drawOption();
+    optionScreen();
     break;
 
   default:
@@ -152,7 +162,7 @@ void draw() {
   }
 }
 
-void drawMenu() {
+void menuScreen() {
   System.out.println("drawMenu screen state: " + screen_state);
   System.out.println("exitButton: " + exitButton.isEnabled());
   background(0); // Cancella lo schermo
@@ -169,23 +179,27 @@ void drawMenu() {
   exitButton.display();
 
   if (startButton.isPressed() && startButton.isEnabled()) {
+    System.out.println("start button is pressed");
     // salva lo stato
     previous_state = screen_state;
-    
+
+    // inizializza il mondo
+    setupGame();
+
     // far partire di qua la creazione dei livelli
     screen_state = STORY_SCREEN;
-    
+
     // disabilita i bottoni
     startButton.setEnabled(false);
     optionButton.setEnabled(false);
-    exitButton.setEnabled(false); 
+    exitButton.setEnabled(false);
   } else if (optionButton.isPressed() && optionButton.isEnabled()) {
     // salva lo stato
     previous_state = screen_state;
-    
+
     // cambia lo stato
     screen_state = OPTION_SCREEN;
-    
+
     // disabilita i bottoni
     startButton.setEnabled(false);
     optionButton.setEnabled(false);
@@ -209,7 +223,10 @@ void updateCamera() {
   cameraY += (targetCameraY - cameraY) * easing;
 }
 
-void drawGame() {
+void gameScreen() {
+  // cancella lo schermo
+  background(0);
+
   // aggiorna la camera
   updateCamera();
 
@@ -229,20 +246,21 @@ void drawGame() {
   // mostra il player
   p1.displayPlayer(currentLevel.getTileSize());
 
+  // passa al livello successivo
   if (dist(p1.getPosition().x, p1.getPosition().y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
     // se il livello dell'area è l'ultimo passa alla prossima area
     if (currentLevel.getLevelIndex() == currentArea.getNumbLevels()-1) {
       // controlla se è l'area finale
       if (currentArea.isFinal()) {
-        // winGame()
         screen_state = WIN_SCREEN;
-      } else if (currentArea.getAreaIndex() == castle.getMacroareas().size() - 1) {
-        screen_state = MENU_SCREEN;
-        resetGame();
-      } else {
+      } /* else if (currentArea.getAreaIndex() == castle.getMacroareas().size() - 1) {
+       //  screen_state = MENU_SCREEN;
+       //} */
+      else {
         currentArea = castle.getMacroareas().get(currentArea.getAreaIndex() + 1);
-        currentArea.initLevels();
+        // currentArea.initLevels();
         currentLevel = currentArea.getCurrentLevel();
+        currentLevel.init();
         actualLevel = currentArea.getName() + " - " + currentLevel.getName();
         p1.setPosition(currentLevel.getStartRoom());
 
@@ -251,6 +269,7 @@ void drawGame() {
     } else {
       // Il giocatore è abbastanza vicino al punto di accesso, quindi passa al livello successivo
       currentLevel = currentArea.getLevels().get(currentLevel.getLevelIndex() + 1);
+      currentLevel.init();
       actualLevel = currentArea.getName() + " - " + currentLevel.getName();
       p1.setPosition(currentLevel.getStartRoom());
     }
@@ -275,15 +294,27 @@ void drawGame() {
     text(objectAtMouse, width / 2, 40); // Disegna il testo a una posizione desiderata (es. 20, 20)
   }
 
-  //float fps = frameRate;
-  //System.out.println(fps);
+  // cambia il titolo della finestra e mostra il framerate
+  surface.setTitle(String.format("%.1f", frameRate));
 }
 
-void drawWin() {
-  screen_state = MENU_SCREEN;
+void winScreen() {
+  // salva lo stato precedente
+  previous_state = screen_state;
+  
+  // chiama la funzione
+  writer("hai vinto!");
 }
 
-void drawPause() {
+void loseScreen() {
+  // salva lo stato precedente
+  previous_state = screen_state;
+  
+  // chiama la funzione
+  writer("hai perso!");
+}
+
+void pauseScreen() {
   // trovare modo per opacizzare lo sfondo
   background(0);
 
@@ -301,10 +332,10 @@ void drawPause() {
   if (resumeButton.isPressed() && resumeButton.isEnabled()) {
     // prima di cambiare stato salvalo
     previous_state = screen_state;
-    
+
     // torna al gioco
     screen_state = GAME_SCREEN;
-    
+
     // disablita i bottoni
     resumeButton.setEnabled(false);
     optionButton.setEnabled(false);
@@ -312,10 +343,10 @@ void drawPause() {
   } else if (optionButton.isPressed() && optionButton.isEnabled()) {
     // salva lo stato
     previous_state = screen_state;
-    
+
     // opzioni di gioco
     screen_state = OPTION_SCREEN;
-    
+
     // disabilita i bottoni
     resumeButton.setEnabled(false);
     optionButton.setEnabled(false);
@@ -323,18 +354,17 @@ void drawPause() {
   } else if (backMenuButton.isPressed() && backMenuButton.isEnabled()) {
     // salva lo stato
     previous_state = screen_state;
-    
+
     // torna al menu
     screen_state = MENU_SCREEN;
-    
+
     resumeButton.setEnabled(false);
     optionButton.setEnabled(false);
     backMenuButton.setEnabled(false);
-    // resetGame();
   }
 }
 
-void drawOption() {
+void optionScreen() {
   // cancella lo schermo
   background(0);
 
@@ -345,26 +375,24 @@ void drawOption() {
   text("OPTIONS", 100, 50);
 
   backOptionButton.display();
-  
+
   System.out.println("exit button: " + exitButton.isEnabled());
 
   if (backOptionButton.isPressed() && backOptionButton.isEnabled()) {
-    if(previous_state == MENU_SCREEN){
+    if (previous_state == MENU_SCREEN) {
       // salva lo stato
       previous_state = screen_state;
-      
+
       // torna al menu
       screen_state = MENU_SCREEN;
-    } 
-    else if(previous_state == PAUSE_SCREEN) {
+    } else if (previous_state == PAUSE_SCREEN) {
       // salva lo stato
       previous_state = screen_state;
-      
+
       // torna alla schermata di pausa
       screen_state = PAUSE_SCREEN;
     }
-    
-    
+
     backOptionButton.setEnabled(false);
   }
 }
@@ -422,6 +450,68 @@ void drawUI() {
     float imgY = height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
 
     image(p1.getPlayerWeapon().getSprite(), imgX, imgY, imgWidth, imgHeight);
+  }
+}
+
+
+void storyScreen(String storyText) {
+  // salva lo stato precedente
+  previous_state = screen_state;
+
+  // chiama il writer
+  writer(storyText);
+}
+
+void writer(String txt) {
+  // cancella lo schermo
+  background(0);
+
+  // Mostra il testo narrativo con l'effetto macchina da scrivere
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  text(txt.substring(0, letterIndex), width / 2, height / 2);
+
+  if (isTyping) {
+    // Continua a scrivere il testo
+    if (frameCount % typingSpeed == 0) {
+      if (letterIndex < txt.length()) {
+        letterIndex++;
+      } else {
+        isTyping = false;
+      }
+    }
+  } else {
+    textSize(16);
+    text("\nPremi un tasto per continuare", width / 2, height - 50);
+  }
+}
+
+void keyPressed() {
+  System.out.println("chiamata a keypressed");
+  if (!isTyping) {
+
+    switch(previous_state) {
+    case STORY_SCREEN:
+      screen_state = GAME_SCREEN;
+      break;
+
+    case GAME_SCREEN:
+      screen_state = GAME_SCREEN;
+      break;
+
+    case WIN_SCREEN:
+      screen_state = MENU_SCREEN;
+      break;
+
+    case LOSE_SCREEN:
+      screen_state = MENU_SCREEN;
+      break;
+    }
+
+    // reimposta le variabili
+    letterIndex = 0;
+    isTyping = true;
   }
 }
 
