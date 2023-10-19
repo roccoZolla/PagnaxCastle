@@ -1,8 +1,13 @@
 // velocita sprite
-float spriteSpeed = 0.1;
+float spriteSpeed = 1.0;
+
+// 
+int letterIndex = 0; // Indice della lettera corrente
+boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
+int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 
 // gestione comandi
-void handlePlayerMovement() {
+void handlePlayerMovement(Level currentLevel) {
   if (keyPressed) {
     float newX = p1.getPosition().x;
     float newY = p1.getPosition().y;
@@ -16,27 +21,17 @@ void handlePlayerMovement() {
     } else if (key == 'd' || key == 'D') {
       newX += spriteSpeed;
     }
-    
-    else if(key == 'z') {
-      if(zoom <= 5.0) zoom += 1.0;
-    }
-
-    else if(key == 'f') {
-      zoom -= 1.0;
-      
-      if(zoom < 1.0) zoom = 1.0;
-    }
 
     // Verifica se la nuova posizione è valida
     int roundedX = round(newX);
     int roundedY = round(newY);
 
     // check delle collisioni
-    if (roundedX >= 0 && roundedX < map.getCols() && roundedY >= 0 && roundedY < map.getRows() &&
-        map.getMap()[roundedX][roundedY] != 0 && 
-        map.getMap()[roundedX][roundedY] != 4 &&
-        map.getMap()[roundedX][roundedY] != 6 &&
-        map.getMap()[roundedX][roundedY] != 7) {
+    if (roundedX >= 0 && roundedX < currentLevel.getCols() && roundedY >= 0 && roundedY < currentLevel.getRows() &&
+        currentLevel.getMap()[roundedX][roundedY] != 0 && 
+        currentLevel.getMap()[roundedX][roundedY] != 4 &&
+        currentLevel.getMap()[roundedX][roundedY] != 6 &&
+        currentLevel.getMap()[roundedX][roundedY] != 7) {
       p1.getPosition().x = newX;
       p1.getPosition().y = newY;
     }
@@ -44,14 +39,14 @@ void handlePlayerMovement() {
 }
 
 // disegna i bordi delle celle su cui si trova il mouse
-void drawCellBorders(float x, float y) {
-  float leftX = x * map.getTileSize();
-  float topY = y * map.getTileSize();
-  float rightX = leftX + map.getTileSize();
-  float bottomY = topY + map.getTileSize();
+void drawCellBorders(float x, float y, Level currentLevel) {
+  float leftX = x * currentLevel.getTileSize();
+  float topY = y * currentLevel.getTileSize();
+  float rightX = leftX + currentLevel.getTileSize();
+  float bottomY = topY + currentLevel.getTileSize();
   
   noFill();
-  if (map.getMap()[(int) x][(int) y] == 0) {
+  if (currentLevel.getMap()[(int) x][(int) y] == 0) {
     stroke(255, 0, 0); // Rosso
   } else {
     stroke(255); // Bianco
