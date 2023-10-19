@@ -63,6 +63,41 @@ class Button {
       text(label, pos.x + w / 2, pos.y + h / 2);
     }
   }
+  
+   void display(PGraphics layer) {
+    // Verifica se il mouse è sopra il pulsante
+    hover = isMouseOver();
+
+    // Imposta il colore del pulsante in base allo stato (normale, hover, premuto)
+    if (pressed) {
+      System.out.println("tasto premuto");
+      // Colore quando premuto
+      fill(255, 0, 0);
+    } else if (hover) {
+      // Colore quando il mouse è sopra
+      layer.fill(0, 255, 0);
+    } else {
+      layer.fill(buttonColor);
+    }
+
+    layer.rect(pos.x, pos.y, w, h);
+    
+    // Disegna l'immagine al centro del pulsante
+    // da sistemare 
+    if (buttonImage != null) {
+      float imgX = pos.x + (w - buttonImage.width) / 2;  // Calcola la posizione X dell'immagine al centro
+      float imgY = pos.y + (h - buttonImage.height) / 2; // Calcola la posizione Y dell'immagine al centro
+      layer.image(buttonImage, imgX, imgY, buttonImage.width, buttonImage.height);
+    }
+
+    // draw label
+    if (!label.isEmpty()) {
+      layer.fill(255);
+      layer.textSize(20);
+      layer.textAlign(CENTER, CENTER);
+      layer.text(label, pos.x + w / 2, pos.y + h / 2);
+    }
+  }
 
   boolean isMouseOver() {
     return mouseX >= pos.x && mouseX <= pos.x + w && mouseY >= pos.y && mouseY <= pos.y + h;

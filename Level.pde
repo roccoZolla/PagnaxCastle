@@ -280,7 +280,7 @@ class Level {
     return null; // Non c'è nessun oggetto nella cella
   }
 
-  void display() {
+  void display(PGraphics gameScene) {
     for (int x = 0; x < cols; x++) {
       for (int y = 0; y < rows; y++) {
         int tileType = map[x][y];

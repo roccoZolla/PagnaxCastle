@@ -42,11 +42,12 @@ PFont myFont;
 // Variabili per la posizione della camera
 float cameraX = 0;
 float cameraY = 0;
-float zoom = 1.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
-float easing = 0.1;
+float zoom = 5.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
+float easing = 0.7;
 
 PGraphics gameScene;
 PGraphics uiLayer;    // questo layer si deve trovare sul layer del scena del gioco
+PGraphics pauseLayer; // layer della schermata di pausa -> evitiamo conflitti tra bottoni che si trovano nella stessa posizione
 
 int cellX;
 int cellY;
@@ -57,6 +58,7 @@ void setup() {
   
   gameScene = createGraphics(width, height);
   uiLayer = createGraphics(width, height);
+  pauseLayer = createGraphics(width, height);
 
   // load font
   myFont = createFont("data/font/Minecraft.ttf", 20);
@@ -67,11 +69,15 @@ void setup() {
   previous_state = screen_state;
 
   // setup dei bottoni
+  // menu
   startButton = new Button(width / 2 - 100, height / 2, 200, 80, "Start", "");
   optionButton = new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Option", "");
   exitButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Exit", "");
 
+  // uiLayer
   pauseButton = new Button(width - 50, 20, 40, 40, "", "data/ui/Pause.png");
+  
+  // pause scene
   resumeButton = new Button(width / 2 - 100, height / 2, 200, 80, "Resume", "");
   backMenuButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Back to menu", "");
 
@@ -154,6 +160,7 @@ void draw() {
 
     // show pause screen
     pauseScreen();
+    image(pauseLayer, 0, 0);
     break;
 
   case OPTION_SCREEN:
@@ -241,19 +248,16 @@ void gameScreen() {
   // Imposta la telecamera alla nuova posizione e applica il fattore di scala
   gameScene.translate(-cameraX, -cameraY);
   gameScene.scale(zoom);
-  gameScene.fill(0, 134, 0);
-  gameScene.stroke(0,0,255);
-  gameScene.rect(p1.getPosition().x, p1.getPosition().y, 40, 40);
 
   // Disegna la mappa del livello corrente
-  currentLevel.display();
+  currentLevel.display(gameScene);
 
   // Gestione del movimento del giocatore
   // da migliorare
   handlePlayerMovement(currentLevel);
 
   // mostra il player
-  p1.displayPlayer(currentLevel.getTileSize());
+  p1.display(gameScene, currentLevel.getTileSize());
 
   // passa al livello successivo
   if (dist(p1.getPosition().x, p1.getPosition().y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
@@ -326,19 +330,21 @@ void loseScreen() {
 }
 
 void pauseScreen() {
+  pauseLayer.beginDraw();
   // trovare modo per opacizzare lo sfondo
-  background(0);
+  pauseLayer.background(0);
 
   // disegna la scritta pausa
-  fill(255);
-  textSize(36);
-  textAlign(CENTER, CENTER);
-  text("PAUSA", width / 2, height / 2 - 100);
+  pauseLayer.textFont(myFont);
+  pauseLayer.fill(255);
+  pauseLayer.textSize(36);
+  pauseLayer.textAlign(CENTER, CENTER);
+  pauseLayer.text("PAUSA", width / 2, height / 2 - 100);
 
   // shows buttons
-  resumeButton.display();
-  optionButton.display();
-  backMenuButton.display();
+  resumeButton.display(pauseLayer);
+  optionButton.display(pauseLayer);
+  backMenuButton.display(pauseLayer);
 
   if (resumeButton.isPressed() && resumeButton.isEnabled()) {
     // prima di cambiare stato salvalo
@@ -373,6 +379,7 @@ void pauseScreen() {
     optionButton.setEnabled(false);
     backMenuButton.setEnabled(false);
   }
+  pauseLayer.endDraw();
 }
 
 void optionScreen() {
@@ -410,6 +417,7 @@ void optionScreen() {
 
 void drawUI() {
   uiLayer.beginDraw();
+  uiLayer.background(255, 0);
   // nome del livello
   uiLayer.textFont(myFont);
   uiLayer.fill(255);
@@ -418,7 +426,7 @@ void drawUI() {
   uiLayer.text(actualLevel, 20, 20);
 
   // pause button
-  pauseButton.display();
+  pauseButton.display(uiLayer);
 
   if (pauseButton.isPressed() && pauseButton.isEnabled()) {
     // il gioco viene messo in pausa
@@ -434,7 +442,7 @@ void drawUI() {
 
   // Disegna i cuori pieni
   for (int i = 0; i < heartsToDisplay; i++) {
-    uiLayer.image(heartFull, 20 + i * (heartWidth + 5), heartY * zoom, heartWidth, heartHeight);
+    uiLayer.image(heartFull, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
   }
 
   // Disegna il cuore a metà se necessario
@@ -450,7 +458,7 @@ void drawUI() {
   // all'interno del riquadro verra inserita l'arma corrente
   uiLayer.noFill(); // Nessun riempimento
   uiLayer.stroke(255); // Colore del bordo bianco
-  uiLayer.rect(width - 75, height - 100, 50, 50);
+  uiLayer.rect(width / 2, height - 100, 50, 50);
 
   float scaleFactor = 3.0;
 
@@ -459,8 +467,8 @@ void drawUI() {
     float imgWidth = p1.getPlayerWeapon().getSprite().width * scaleFactor;
     float imgHeight = p1.getPlayerWeapon().getSprite().height * scaleFactor;
 
-    float imgX = width - 75 + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
-    float imgY = height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
+    float imgX = uiLayer.width / 2 + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
+    float imgY = uiLayer.height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
 
     uiLayer.image(p1.getPlayerWeapon().getSprite(), imgX, imgY, imgWidth, imgHeight);
   }

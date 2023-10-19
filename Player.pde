@@ -27,5 +27,5 @@ public class Player extends Sprite{
   
   void displayPlayer(int tileSize){
     display(tileSize);
-  }
+  }  
 }
