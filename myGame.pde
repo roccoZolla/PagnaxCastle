@@ -79,7 +79,7 @@ void setup() {
   
   // pause scene
   resumeButton = new Button(width / 2 - 100, height / 2, 200, 80, "Resume", "");
-  backMenuButton = new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Back to menu", "");
+  backMenuButton = new Button(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80, "Back to menu", "");
 
   backOptionButton = new Button(width - 250, height - 150, 200, 80, "Back to menu", "");
 

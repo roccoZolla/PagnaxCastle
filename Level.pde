@@ -11,6 +11,7 @@ class Level {
   private ArrayList<PVector> rooms; // Memorizza le posizioni delle stanze
 
   // attributi
+  private PImage startFloorImage;
   private PImage floorImage; // Immagine per il pavimento
   private PImage wallImage;  // Immagine per sfondo
   // pareti delle stanze
@@ -34,8 +35,6 @@ class Level {
   PVector finalRoomPosition;
   PVector nextLevelStartRoomPosition;
 
-
-
   private int startRoomIndex;
   private int endRoomIndex;
 
@@ -58,6 +57,7 @@ class Level {
     rooms = new ArrayList<PVector>();
     treasures = new ArrayList<Chest>(); // Inizializza l'arraylist qui
     
+    startFloorImage = loadImage(dataPath + "startTile.png");
     floorImage = loadImage(dataPath + "floorTile.png");
     wallImage = loadImage(dataPath + "wallTile.png");
 
@@ -79,15 +79,14 @@ class Level {
     connectRooms();
 
     // da rimuovere
-    map[int(rooms.get(startRoomIndex).x)][int(rooms.get(startRoomIndex).y)] = 1; // Stanza iniziale
+    map[int(rooms.get(startRoomIndex).x)][int(rooms.get(startRoomIndex).y)] = 2; // Stanza iniziale
     map[int(rooms.get(endRoomIndex).x)][int(rooms.get(endRoomIndex).y)] = 3; // Stanza finale
 
     // aggiungi i nemici
-    // generateEnemies();
+    generateEnemies();
 
     // genera i loot
-    // generateTreasures();
-    // generateRandomChests();
+    generateRandomChests();
   }
 
   int getTileSize() {
@@ -301,9 +300,7 @@ class Level {
 
         case 2:
           // Imposta l'immagine per la stanza iniziale (nero)
-          gameScene.fill(0); // nero
-          gameScene.noStroke();
-          gameScene.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.image(startFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 3:
