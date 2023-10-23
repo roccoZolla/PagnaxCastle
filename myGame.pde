@@ -260,16 +260,11 @@ void gameScreen() {
   gameScene.scale(zoom);
 
   // Disegna la mappa del livello corrente
-  // currentLevel.display(gameScene);
-  // currentLevel.display(gameScene, cameraX, cameraY);
   currentLevel.display(gameScene); // renderizza il 4,6 % della mappa 
 
   // Gestione del movimento del giocatore
   // da migliorare
   handlePlayerMovement(currentLevel);
-  
-  //coordinate del giocatore 
-  System.out.println("player coordinates: " + p1.getPosition());
 
   // mostra il player
   p1.display(gameScene, currentLevel.getTileSize());

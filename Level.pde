@@ -53,7 +53,7 @@ class Level {
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
     rows = height / tileSize;
-    
+
     map = new int[cols][rows];
     rooms = new ArrayList<PVector>();
     treasures = new ArrayList<Chest>(); // Inizializza l'arraylist qui
@@ -77,7 +77,7 @@ class Level {
     generateRooms();
 
     // Collega le stanze con corridoi
-    connectRooms();
+    // connectRooms();
 
     // da rimuovere
     map[int(rooms.get(startRoomIndex).x)][int(rooms.get(startRoomIndex).y)] = 2; // Stanza iniziale
@@ -124,6 +124,10 @@ class Level {
 
   PVector getEndRoomPosition() {
     return rooms.get(endRoomIndex);
+  }
+
+  ArrayList<Enemy> getEnemies() {
+    return enemies;
   }
 
   // metodi per la generazione delle stanze
@@ -279,7 +283,7 @@ class Level {
     }
     return null; // Non c'è nessun oggetto nella cella
   }
-  
+
   // disegna solo cio che vede il giocatore
   void display(PGraphics gameScene) {
     // Calcola i limiti dello schermo visibile in termini di celle di mappa
@@ -358,6 +362,7 @@ class Level {
 
         case 7:
           // nemici
+          // è inutile disegnare tutti i nemici presenti 
           for (Enemy enemy : enemies) {
             gameScene.image(enemy.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
           }
@@ -366,8 +371,6 @@ class Level {
       }
     }
   }
-
-
 
   boolean needsNorthWall(int x, int y) {
     // Controlla se una parete nord è necessaria in questa posizione

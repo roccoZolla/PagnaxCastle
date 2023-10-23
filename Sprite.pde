@@ -1,5 +1,5 @@
 public abstract class Sprite {
-  private PVector spritePosition;
+  PVector spritePosition;
   int id;
   String dataPath;
   PImage img;
