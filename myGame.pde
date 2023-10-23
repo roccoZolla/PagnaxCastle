@@ -42,10 +42,11 @@ PFont myFont;
 // Variabili per la posizione della camera
 float cameraX = 0;
 float cameraY = 0;
-float zoom = 3.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
+float zoom = 1.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
 float easing = 0.7;
 
 PGraphics gameScene;
+PGraphics maskLayer;
 PGraphics uiLayer;    // questo layer si deve trovare sul layer del scena del gioco
 PGraphics spritesLayer;
 PGraphics pauseLayer; // layer della schermata di pausa -> evitiamo conflitti tra bottoni che si trovano nella stessa posizione
@@ -64,6 +65,11 @@ void setup() {
   spritesLayer = createGraphics(width, height);
   uiLayer = createGraphics(width, height);
   pauseLayer = createGraphics(width, height);
+  maskLayer = createGraphics(width, height);
+
+  maskLayer.beginDraw();
+  maskLayer.background(0);  // Inizia con uno sfondo nero
+  maskLayer.endDraw();
 
   // load font
   myFont = createFont("data/font/Minecraft.ttf", 20);
@@ -252,6 +258,11 @@ void gameScreen() {
   // cancella lo schermo
   gameScene.background(0);
 
+  updateMaskLayer();
+
+  // Applica la maschera solo al buffer gameScene
+  gameScene.mask(maskLayer);
+
   // aggiorna la camera
   updateCamera();
 
@@ -337,6 +348,17 @@ void gameScreen() {
   gameScene.endDraw();
 }
 
+void updateMaskLayer() {
+  float radius = 100;
+  maskLayer.beginDraw();
+  maskLayer.clear(); // Cancella il buffer
+  maskLayer.noStroke();
+  maskLayer.fill(0); // Imposta il colore di riempimento a nero
+  maskLayer.ellipse(p1.getPosition().x, p1.getPosition().y, radius * 2, radius * 2); // Disegna l'ellisse attorno al giocatore
+  maskLayer.endDraw();
+}
+
+
 void winScreen() {
   // salva lo stato precedente
   previous_state = screen_state;
@@ -410,11 +432,23 @@ void optionScreen() {
   // cancella lo schermo
   background(0);
 
-  // disegna la scritta pausa
+  // disegna la scritta opzioni
   fill(255);
   textSize(36);
   textAlign(CENTER, CENTER);
   text("OPTIONS", 100, 50);
+
+  // scritta audio
+  fill(255);
+  textSize(36);
+  textAlign(LEFT, CENTER);
+  text("Audio: ", 100, 100);
+
+  // scritta difficolta
+  fill(255);
+  textSize(36);
+  textAlign(LEFT, CENTER);
+  text("Difficolta: ", 100, 150);
 
   backOptionButton.display();
 
@@ -507,12 +541,22 @@ void drawUI() {
       }
     }
   }
-  
+
   float playerMiniMapX = map(p1.getPosition().x, 0, currentLevel.getCols(), miniMapX, miniMapX + miniMapSize);
   float playerMiniMapY = map(p1.getPosition().y, 0, currentLevel.getRows(), miniMapY, miniMapY + miniMapSize);
   uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
   uiLayer.noStroke();
-  uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5); 
+  uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5);
+
+  // Disegna i nemici sulla minimappa come pallini gialli
+  uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
+  uiLayer.noStroke();
+
+  for (Enemy enemy : currentLevel.getEnemies()) {
+    float enemyMiniMapX = map(enemy.getPosition().x, 0, currentLevel.getCols(), miniMapX, miniMapX + miniMapSize);
+    float enemyMiniMapY = map(enemy.getPosition().y, 0, currentLevel.getRows(), miniMapY, miniMapY + miniMapSize);
+    uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
+  }
 
   // ------ ARMA GIOCATORE -----
   uiLayer.noFill(); // Nessun riempimento
