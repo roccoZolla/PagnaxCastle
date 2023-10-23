@@ -18,7 +18,7 @@ int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 
 // gestione comandi
 void keyPressed() {
-  if(key == 'z') {
+  if (key == 'z') {
     zoom = 5.0;
   }
   if (screen_state == GAME_SCREEN) {
@@ -93,7 +93,6 @@ void handlePlayerMovement(Level currentLevel) {
       newX += spriteSpeed;
     }
 
-
     // Verifica se la nuova posizione è valida
     int roundedX = round(newX);
     int roundedY = round(newY);
@@ -110,21 +109,39 @@ void handlePlayerMovement(Level currentLevel) {
   }
 }
 
+boolean checkEnemyMove(float newX, float newY, Level currentLevel) {
+  // Verifica se la nuova posizione è valida
+  PVector playerPosition = p1.getPosition();
+  int roundedX = round(newX);
+  int roundedY = round(newY);
+
+  if (roundedX == round(playerPosition.x) && roundedY == round(playerPosition.y)) {
+    return false; // Il nemico non può andare nella stessa posizione del giocatore
+  }
+
+  if (roundedX >= 0 && roundedX < currentLevel.getCols() && roundedY >= 0 && roundedY < currentLevel.getRows() &&
+    currentLevel.getMap()[roundedX][roundedY] != 0 &&
+    currentLevel.getMap()[roundedX][roundedY] != 4 &&
+    currentLevel.getMap()[roundedX][roundedY] != 6 &&
+    currentLevel.getMap()[roundedX][roundedY] != 3) {
+    return true;
+  }
+
+  return false;
+}
+
 void drawPlayerWeapon() {
-  System.out.println("draw playerweapon");
-  
-  float weaponPosition = 0;
-  if(moveRIGHT) weaponPosition = 10;
-  else if(moveLEFT) weaponPosition = -10;
-  
+  float weaponPosition = 10;
+  if (moveRIGHT) weaponPosition = 10;
+  else if (moveLEFT) weaponPosition = -10;
+
   PImage weaponImage = p1.getPlayerWeapon().getSprite();
   float imageX = (p1.getPosition().x * tilesize) + weaponPosition;
   float imageY = p1.getPosition().y * tilesize;
   float imageWidth = p1.getPlayerWeapon().getSprite().width;
   float imageHeight = p1.getPlayerWeapon().getSprite().height;
-  
-  
-  gameScene.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
+
+  spritesLayer.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
 }
 
 // disegna i bordi delle celle su cui si trova il mouse

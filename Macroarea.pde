@@ -14,7 +14,7 @@ class Macroarea {
   private ArrayList<Level> levels = new ArrayList<>();
   private Level currentLevel;
   
-  Macroarea(int areaIndex, String areaName, int numLevels, String dataPath) {
+  Macroarea(int areaIndex, String areaName, int numLevels, String dataPath, int numberOfRooms) {
     this.areaIndex = areaIndex;
     this.areaName = areaName;
     this.numLevels = numLevels;
@@ -22,7 +22,7 @@ class Macroarea {
     
     // chiama metodo per la creazione dei livelli (usa numLevels)
     for(int i = 0; i < numLevels; i++){
-      Level level = new Level("Livello " + i, i, dataPath);
+      Level level = new Level("Livello " + i, i, dataPath, numberOfRooms);
       levels.add(level);
     }
     

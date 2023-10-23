@@ -5,7 +5,7 @@ class World {
   
   World() {
    System.out.println("Creazione del mondo...");
-    Macroarea cellar = new Macroarea(0, "Cellar", 2, "data/zone_1/");
+    Macroarea cellar = new Macroarea(0, "Cellar", 2, "data/zone_1/", 8);
     cellar.setStory("La principessa Chela è in pericolo. È stata rapita da un cattivone.\n" +
     "Vai al castello del cattivone ma vieni subito scoperto e mandato nelle cantine del castello.\n" +
     "Devi risalire il castello fino alle sale reali per sconfiggere il cattivone di turno.\n");

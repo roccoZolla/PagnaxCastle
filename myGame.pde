@@ -22,7 +22,7 @@ World castle;
 Macroarea currentArea;
 Level currentLevel;
 
-float proximityThreshold = 0.5; // Soglia di prossimità consentita
+float proximityThreshold = 0.5; // Soglia di prossimità consentita per le scale
 String actualLevel;
 
 Button startButton;
@@ -42,18 +42,16 @@ PFont myFont;
 // Variabili per la posizione della camera
 float cameraX = 0;
 float cameraY = 0;
-float zoom = 5.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
+float zoom = 3.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
 float easing = 0.7;
 
 PGraphics gameScene;
 PGraphics uiLayer;    // questo layer si deve trovare sul layer del scena del gioco
+PGraphics spritesLayer;
 PGraphics pauseLayer; // layer della schermata di pausa -> evitiamo conflitti tra bottoni che si trovano nella stessa posizione
 
 float oldPlayerX, oldPlayerY;
 boolean firstDraw;
-
-int celleDisegnateTotali;
-int celleRenderizzate;
 
 int cellX;
 int cellY;
@@ -61,15 +59,16 @@ int cellY;
 void setup() {
   // dimensioni schermo
   size(1280, 720);
-  
+
   gameScene = createGraphics(width, height);
+  spritesLayer = createGraphics(width, height);
   uiLayer = createGraphics(width, height);
   pauseLayer = createGraphics(width, height);
 
   // load font
   myFont = createFont("data/font/Minecraft.ttf", 20);
   textFont(myFont);
-  
+
   // schermata iniziale
   screen_state = MENU_SCREEN;
   previous_state = screen_state;
@@ -82,7 +81,7 @@ void setup() {
 
   // uiLayer
   pauseButton = new Button(width - 50, 20, 40, 40, "", "data/ui/Pause.png");
-  
+
   // pause scene
   resumeButton = new Button(width / 2 - 100, height / 2, 200, 80, "Resume", "");
   backMenuButton = new Button(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80, "Back to menu", "");
@@ -116,9 +115,9 @@ void setupGame() {
 
 void draw() {
   System.out.println("screen_state: " + screen_state);
-   // cambia il titolo della finestra e mostra il framerate
+  // cambia il titolo della finestra e mostra il framerate
   surface.setTitle(String.format("%.1f", frameRate));
-  
+
   switch(screen_state) {
   case MENU_SCREEN:
     // attiva i bottoni
@@ -140,11 +139,12 @@ void draw() {
     pauseButton.setEnabled(true);
 
     // show game screen
-    
+
     gameScreen();
     drawUI();
-    
+
     image(gameScene, 0, 0);
+    image(spritesLayer, 0, 0);
     image(uiLayer, 0, 0);
     break;
 
@@ -247,7 +247,7 @@ void updateCamera() {
   cameraY += (targetCameraY - cameraY) * easing;
 }
 
-void gameScreen() {  
+void gameScreen() {
   gameScene.beginDraw();
   // cancella lo schermo
   gameScene.background(0);
@@ -260,19 +260,33 @@ void gameScreen() {
   gameScene.scale(zoom);
 
   // Disegna la mappa del livello corrente
-  currentLevel.display(gameScene); // renderizza il 4,6 % della mappa 
+  currentLevel.display(); // renderizza il 4,6 % della mappa
+
+  spritesLayer.beginDraw();
+  spritesLayer.background(255, 0);
+  spritesLayer.translate(-cameraX, -cameraY);
+  spritesLayer.scale(zoom);
+  for (Enemy enemy : currentLevel.getEnemies()) {
+    enemy.display(spritesLayer, currentLevel.getTileSize());
+    enemy.move(currentLevel);
+  }
+
+  for (Chest chest : currentLevel.getChests()) {
+    chest.display(spritesLayer, currentLevel.getTileSize());
+  }
 
   // Gestione del movimento del giocatore
   // da migliorare
   handlePlayerMovement(currentLevel);
 
   // mostra il player
-  p1.display(gameScene, currentLevel.getTileSize());
-  // da sistemare pero almeno abbiamo attaccato
-  if(moveATCK) {
-      drawPlayerWeapon();
+  p1.display(spritesLayer, currentLevel.getTileSize());
+  if (moveATCK) {
+    drawPlayerWeapon();
   }
-  
+  spritesLayer.endDraw();
+
+
   // passa al livello successivo
   if (dist(p1.getPosition().x, p1.getPosition().y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
     // se il livello dell'area è l'ultimo passa alla prossima area
@@ -326,7 +340,7 @@ void gameScreen() {
 void winScreen() {
   // salva lo stato precedente
   previous_state = screen_state;
-  
+
   // chiama la funzione
   writer("hai vinto!");
 }
@@ -334,7 +348,7 @@ void winScreen() {
 void loseScreen() {
   // salva lo stato precedente
   previous_state = screen_state;
-  
+
   // chiama la funzione
   writer("hai perso!");
 }
@@ -443,7 +457,7 @@ void drawUI() {
     screen_state = PAUSE_SCREEN;
   }
 
-  // cuori
+  // ------ CUORI GIOCATORE ------
   // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
   int heartsToDisplay = p1.getPlayerHP() / 10; // Supponiamo che ogni cuore rappresenti 10 HP
   int heartY = 50;
@@ -465,7 +479,42 @@ void drawUI() {
     uiLayer.image(emptyHeart, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
   }
 
-  // all'interno del riquadro verra inserita l'arma corrente
+  // ------- MINIMAPPA ------
+  float miniMapSize = 300; // Imposta la dimensione desiderata per la minimappa
+  float miniMapX = 20; // Posizione X desiderata nell'angolo in basso a sinistra
+  float miniMapY = uiLayer.height - miniMapSize - 10; // Posizione Y desiderata nell'angolo in basso a sinistra
+
+  // Disegna la minimappa nell'angolo in basso a sinistra
+  uiLayer.noFill(); // Nessun riempimento
+  uiLayer.stroke(255); // Colore del bordo bianco
+  // uiLayer.rect(miniMapX, miniMapY, miniMapSize, miniMapSize);
+
+  // Disegna i bordi delle stanze sulla minimappa come una linea continua
+  uiLayer.stroke(255); // Colore del bordo bianco
+
+  for (int x = 0; x < currentLevel.getCols(); x++) {
+    for (int y = 0; y < currentLevel.getRows(); y++) {
+      int tileType = currentLevel.getMap()[x][y];
+
+      // Controlla se il tile è una parete o un corridoio (bordo della stanza)
+      if (tileType == 4 || tileType == 5) {
+        // Mappa i tile della minimappa nel rettangolo
+        float miniMapTileX = map(x, 0, currentLevel.getCols(), miniMapX, miniMapX + miniMapSize);
+        float miniMapTileY = map(y, 0, currentLevel.getRows(), miniMapY, miniMapY + miniMapSize);
+
+        // Disegna il bordo della stanza sulla minimappa
+        uiLayer.point(miniMapTileX, miniMapTileY);
+      }
+    }
+  }
+  
+  float playerMiniMapX = map(p1.getPosition().x, 0, currentLevel.getCols(), miniMapX, miniMapX + miniMapSize);
+  float playerMiniMapY = map(p1.getPosition().y, 0, currentLevel.getRows(), miniMapY, miniMapY + miniMapSize);
+  uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
+  uiLayer.noStroke();
+  uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5); 
+
+  // ------ ARMA GIOCATORE -----
   uiLayer.noFill(); // Nessun riempimento
   uiLayer.stroke(255); // Colore del bordo bianco
   uiLayer.rect(width / 2, height - 100, 50, 50);
