@@ -1,5 +1,5 @@
 public abstract class Sprite {
-  private PVector spritePosition;
+  PVector spritePosition;
   int id;
   String dataPath;
   PImage img;
@@ -11,6 +11,10 @@ public abstract class Sprite {
   
   void display(int tileSize) {
     image(img, spritePosition.x * tileSize, spritePosition.y * tileSize, img.width, img.height);
+  }
+  
+  void display(PGraphics layer, int tileSize) {
+    layer.image(img, spritePosition.x * tileSize, spritePosition.y * tileSize, img.width, img.height);
   }
   
   // imposta la posizione dello sprite nella mappa

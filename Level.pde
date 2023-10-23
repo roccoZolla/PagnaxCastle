@@ -4,27 +4,36 @@ class Level {
   private String dataPath;
   private boolean completed = false;
 
-  // attributi
-  private PImage floorImage; // Immagine per il pavimento
-  private PImage wallImage;  // Immagine per le pareti
-  private PImage roomOutlineImage; // immagine per i contorni delle stanze
-  private PImage hallwayImage;      // immagine per i corridoi
-
-  private int spawnLevel = 3; // Livello di spawn (puoi impostarlo come desideri)
-  private ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
-
-  private PImage finalFloorImage;
-
+  // rooms
   private int tileSize = 16;
   private int cols, rows;
   private int[][] map;
   private ArrayList<PVector> rooms; // Memorizza le posizioni delle stanze
 
-  PVector finalRoomPosition;
-  PVector nextLevelStartRoomPosition;
+  // attributi
+  private PImage startFloorImage;
+  private PImage floorImage; // Immagine per il pavimento
+  private PImage wallImage;  // Immagine per sfondo
+  // pareti delle stanze
+  private PImage wallImageNorth;
+  private PImage wallImageNorthTop;
+  private PImage wallImageNorthBottom;
+  private PImage wallImageSouth;
+  private PImage wallImageEast;
+  private PImage wallImageWest;
+  private PImage hallwayImage;      // immagine per i corridoi
+  private PImage stairsNextFloorImage;
 
+  // chest che puoi trovare nel livello
+  private int spawnLevel = 3; // Livello di spawn
+  private ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
+
+  // nemici che puoi trovare nel livello
   private int numberOfEnemies = 20;  // livello di spawn dei nemici
   private ArrayList<Enemy> enemies; // Lista dei nemici
+
+  PVector finalRoomPosition;
+  PVector nextLevelStartRoomPosition;
 
   private int startRoomIndex;
   private int endRoomIndex;
@@ -39,34 +48,45 @@ class Level {
   }
 
   void init() {
+    // inizializzo il livello
+    System.out.println("inizializzo il livello");
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
     rows = height / tileSize;
+
     map = new int[cols][rows];
     rooms = new ArrayList<PVector>();
     treasures = new ArrayList<Chest>(); // Inizializza l'arraylist qui
 
+    startFloorImage = loadImage(dataPath + "startTile.png");
     floorImage = loadImage(dataPath + "floorTile.png");
     wallImage = loadImage(dataPath + "wallTile.png");
-    roomOutlineImage = loadImage(dataPath + "roomOutlineTile.png");
+
+    wallImageNorth = loadImage(dataPath + "northWallTop.png");
+    //wallImageNorthTop = loadImage(dataPath + "northWallTop.png");
+    //wallImageNorthBottom = loadImage(dataPath + "northWallBottom.png");
+
+    //wallImageSouth = loadImage(dataPath + "southWall.png");
+    //wallImageEast = loadImage(dataPath + "eastWall.png");
+    //wallImageWest = loadImage(dataPath + "westWall.png");
+
     hallwayImage = loadImage(dataPath + "hallwayTile.png");
-    finalFloorImage = loadImage(dataPath + "finalFloorTile.png");
-    
+    stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
+
     // Genera stanze
     generateRooms();
 
     // Collega le stanze con corridoi
-    connectRooms();
+    // connectRooms();
 
     // da rimuovere
     map[int(rooms.get(startRoomIndex).x)][int(rooms.get(startRoomIndex).y)] = 2; // Stanza iniziale
     map[int(rooms.get(endRoomIndex).x)][int(rooms.get(endRoomIndex).y)] = 3; // Stanza finale
 
-     // aggiungi i nemici
+    // aggiungi i nemici
     generateEnemies();
 
     // genera i loot
-    // generateTreasures();
     generateRandomChests();
   }
 
@@ -106,6 +126,10 @@ class Level {
     return rooms.get(endRoomIndex);
   }
 
+  ArrayList<Enemy> getEnemies() {
+    return enemies;
+  }
+
   // metodi per la generazione delle stanze
   private void generateRooms() {
     for (int i = 0; i < 8; i++) {
@@ -122,8 +146,8 @@ class Level {
   }
 
   private void generateRandomRoom() {
-    int roomWidth = int(random(5, 20));
-    int roomHeight = int(random(5, 20));
+    int roomWidth = int(random(8, 20));
+    int roomHeight = int(random(8, 20));
     int roomX, roomY;
 
     boolean roomOverlap;
@@ -149,19 +173,17 @@ class Level {
     rooms.add(new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2));
   }
 
-
   private boolean checkRoomOverlap(int x, int y, int width, int height) {
     for (int i = x - 1; i < x + width + 1; i++) {
       for (int j = y - 1; j < y + height + 1; j++) {
         // Verifica se il tile è già occupato (1 rappresenta il pavimento)
-        if (map[i][j] == 1) {
+        if (map[i][j] == 1 || map[i][j] == 4) {
           return true;
         }
       }
     }
     return false;
   }
-
 
   private void connectRooms() {
     for (int i = 0; i < rooms.size() - 1; i++) {
@@ -186,6 +208,7 @@ class Level {
       }
     }
   }
+
 
   private void generateRandomChests() {
     for (int i = 0; i < spawnLevel; i++) {
@@ -261,59 +284,123 @@ class Level {
     return null; // Non c'è nessun oggetto nella cella
   }
 
-  void display() {
-    for (int x = 0; x < cols; x++) {
-      for (int y = 0; y < rows; y++) {
+  // disegna solo cio che vede il giocatore
+  void display(PGraphics gameScene) {
+    // Calcola i limiti dello schermo visibile in termini di celle di mappa
+    int startX = floor((cameraX / (tileSize * zoom)));
+    int startY = floor((cameraY / (tileSize * zoom)));
+    int endX = ceil((cameraX + gameScene.width) / (tileSize * zoom));
+    int endY = ceil((cameraY + gameScene.height) / (tileSize * zoom));
+
+    // Assicurati che i limiti siano all'interno dei limiti della mappa
+    startX = constrain(startX, 0, cols - 1);
+    startY = constrain(startY, 0, rows - 1);
+    endX = constrain(endX, 0, cols);
+    endY = constrain(endY, 0, rows);
+
+    for (int x = startX; x < endX; x++) {
+      for (int y = startY; y < endY; y++) {
         int tileType = map[x][y];
 
+        // Disegna solo i tile visibili
+        // ...
+        // Includi il codice per disegnare i vari tipi di tile qui
+        // ...
         switch(tileType) {
         case 0:
           // sfondo
-          image(wallImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          // image(wallImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.fill(0); // nero
+          gameScene.noStroke();
+          gameScene.rect(x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 1:
           // pavimento
-          image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 2:
           // Imposta l'immagine per la stanza iniziale (nero)
-          fill(0); // nero
-          noStroke();
-          rect(x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.image(startFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 3:
-          // pavimento stanza finale
-          image(finalFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          // scale per il piano successivo
+          gameScene.image(stairsNextFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 4:
           // muri perimetrali
-          image(roomOutlineImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.image(wallImageNorth, x * tileSize, y * tileSize, tileSize, tileSize);
+          //if (needsNorthWall(x, y)) {
+          //  image(wallImageNorthTop, x * tileSize, (y - 1) * tileSize, tileSize, tileSize);
+          //  image(wallImageNorthBottom, x * tileSize, y * tileSize, tileSize, tileSize);
+          //}
+          //if (needsSouthWall(x, y)) {
+          //  image(wallImageSouth, x * tileSize, y * tileSize, tileSize, tileSize);
+          //}
+          //if (needsEastWall(x, y)) {
+          //  image(wallImageEast, x * tileSize, y * tileSize, tileSize, tileSize);
+          //}
+          //if (needsWestWall(x, y)) {
+          //  image(wallImageWest, x * tileSize, y * tileSize, tileSize, tileSize);
+          //}
           break;
 
         case 5:
           // corridoio
-          image(hallwayImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.image(hallwayImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
         case 6:
           // tesori
-          for(Chest chest : treasures) {
-            image(chest.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
+          for (Chest chest : treasures) {
+            gameScene.image(chest.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
           }
           break;
 
         case 7:
           // nemici
+          // è inutile disegnare tutti i nemici presenti 
           for (Enemy enemy : enemies) {
-            image(enemy.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
+            gameScene.image(enemy.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
           }
           break;
         }
       }
     }
+  }
+
+  boolean needsNorthWall(int x, int y) {
+    // Controlla se una parete nord è necessaria in questa posizione
+    if (y > 0 && map[x][y + 1] == 1) {
+      return true; // Una parete nord è necessaria
+    }
+    return false; // Nessuna parete nord è necessaria
+  }
+
+  boolean needsSouthWall(int x, int y) {
+    // Controlla se una parete sud è necessaria in questa posizione
+    if (y < rows - 1 && map[x][y - 1] == 1) {
+      return true; // Una parete sud è necessaria
+    }
+    return false; // Nessuna parete sud è necessaria
+  }
+
+  boolean needsEastWall(int x, int y) {
+    // Controlla se una parete est è necessaria in questa posizione
+    if (x < cols - 1 && map[x + 1][y] == 1) {
+      return true; // Una parete est è necessaria
+    }
+    return false; // Nessuna parete est è necessaria
+  }
+
+  boolean needsWestWall(int x, int y) {
+    // Controlla se una parete ovest è necessaria in questa posizione
+    if (x > 0 && map[x - 1][y] == 1) {
+      return true; // Una parete ovest è necessaria
+    }
+    return false; // Nessuna parete ovest è necessaria
   }
 }
