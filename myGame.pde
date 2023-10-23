@@ -22,7 +22,7 @@ World castle;
 Macroarea currentArea;
 Level currentLevel;
 
-float proximityThreshold = 1.0; // Soglia di prossimità consentita
+float proximityThreshold = 0.5; // Soglia di prossimità consentita
 String actualLevel;
 
 Button startButton;
@@ -48,6 +48,12 @@ float easing = 0.7;
 PGraphics gameScene;
 PGraphics uiLayer;    // questo layer si deve trovare sul layer del scena del gioco
 PGraphics pauseLayer; // layer della schermata di pausa -> evitiamo conflitti tra bottoni che si trovano nella stessa posizione
+
+float oldPlayerX, oldPlayerY;
+boolean firstDraw;
+
+int celleDisegnateTotali;
+int celleRenderizzate;
 
 int cellX;
 int cellY;
@@ -110,6 +116,9 @@ void setupGame() {
 
 void draw() {
   System.out.println("screen_state: " + screen_state);
+   // cambia il titolo della finestra e mostra il framerate
+  surface.setTitle(String.format("%.1f", frameRate));
+  
   switch(screen_state) {
   case MENU_SCREEN:
     // attiva i bottoni
@@ -131,6 +140,7 @@ void draw() {
     pauseButton.setEnabled(true);
 
     // show game screen
+    
     gameScreen();
     drawUI();
     
@@ -237,7 +247,7 @@ void updateCamera() {
   cameraY += (targetCameraY - cameraY) * easing;
 }
 
-void gameScreen() {
+void gameScreen() {  
   gameScene.beginDraw();
   // cancella lo schermo
   gameScene.background(0);
@@ -250,15 +260,24 @@ void gameScreen() {
   gameScene.scale(zoom);
 
   // Disegna la mappa del livello corrente
-  currentLevel.display(gameScene);
+  // currentLevel.display(gameScene);
+  // currentLevel.display(gameScene, cameraX, cameraY);
+  currentLevel.display(gameScene); // renderizza il 4,6 % della mappa 
 
   // Gestione del movimento del giocatore
   // da migliorare
   handlePlayerMovement(currentLevel);
+  
+  //coordinate del giocatore 
+  System.out.println("player coordinates: " + p1.getPosition());
 
   // mostra il player
   p1.display(gameScene, currentLevel.getTileSize());
-
+  // da sistemare pero almeno abbiamo attaccato
+  if(moveATCK) {
+      drawPlayerWeapon();
+  }
+  
   // passa al livello successivo
   if (dist(p1.getPosition().x, p1.getPosition().y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
     // se il livello dell'area è l'ultimo passa alla prossima area
@@ -306,11 +325,7 @@ void gameScreen() {
   //  textSize(24); // Imposta la dimensione del testo
   //  text(objectAtMouse, width / 2, 40); // Disegna il testo a una posizione desiderata (es. 20, 20)
   //}
-  
   gameScene.endDraw();
-
-  // cambia il titolo della finestra e mostra il framerate
-  surface.setTitle(String.format("%.1f", frameRate));
 }
 
 void winScreen() {
@@ -506,34 +521,6 @@ void writer(String txt) {
   } else {
     textSize(16);
     text("\nPremi un tasto per continuare", width / 2, height - 50);
-  }
-}
-
-void keyPressed() {
-  System.out.println("chiamata a keypressed");
-  if (!isTyping) {
-
-    switch(previous_state) {
-    case STORY_SCREEN:
-      screen_state = GAME_SCREEN;
-      break;
-
-    case GAME_SCREEN:
-      screen_state = GAME_SCREEN;
-      break;
-
-    case WIN_SCREEN:
-      screen_state = MENU_SCREEN;
-      break;
-
-    case LOSE_SCREEN:
-      screen_state = MENU_SCREEN;
-      break;
-    }
-
-    // reimposta le variabili
-    letterIndex = 0;
-    isTyping = true;
   }
 }
 

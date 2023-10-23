@@ -3,7 +3,7 @@ class Level {
   private int levelIndex;
   private String dataPath;
   private boolean completed = false;
-  
+
   // rooms
   private int tileSize = 16;
   private int cols, rows;
@@ -25,9 +25,9 @@ class Level {
   private PImage stairsNextFloorImage;
 
   // chest che puoi trovare nel livello
-  private int spawnLevel = 3; // Livello di spawn 
+  private int spawnLevel = 3; // Livello di spawn
   private ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
-  
+
   // nemici che puoi trovare nel livello
   private int numberOfEnemies = 20;  // livello di spawn dei nemici
   private ArrayList<Enemy> enemies; // Lista dei nemici
@@ -53,10 +53,11 @@ class Level {
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
     rows = height / tileSize;
+    
     map = new int[cols][rows];
     rooms = new ArrayList<PVector>();
     treasures = new ArrayList<Chest>(); // Inizializza l'arraylist qui
-    
+
     startFloorImage = loadImage(dataPath + "startTile.png");
     floorImage = loadImage(dataPath + "floorTile.png");
     wallImage = loadImage(dataPath + "wallTile.png");
@@ -278,12 +279,29 @@ class Level {
     }
     return null; // Non c'è nessun oggetto nella cella
   }
-
+  
+  // disegna solo cio che vede il giocatore
   void display(PGraphics gameScene) {
-    for (int x = 0; x < cols; x++) {
-      for (int y = 0; y < rows; y++) {
+    // Calcola i limiti dello schermo visibile in termini di celle di mappa
+    int startX = floor((cameraX / (tileSize * zoom)));
+    int startY = floor((cameraY / (tileSize * zoom)));
+    int endX = ceil((cameraX + gameScene.width) / (tileSize * zoom));
+    int endY = ceil((cameraY + gameScene.height) / (tileSize * zoom));
+
+    // Assicurati che i limiti siano all'interno dei limiti della mappa
+    startX = constrain(startX, 0, cols - 1);
+    startY = constrain(startY, 0, rows - 1);
+    endX = constrain(endX, 0, cols);
+    endY = constrain(endY, 0, rows);
+
+    for (int x = startX; x < endX; x++) {
+      for (int y = startY; y < endY; y++) {
         int tileType = map[x][y];
 
+        // Disegna solo i tile visibili
+        // ...
+        // Includi il codice per disegnare i vari tipi di tile qui
+        // ...
         switch(tileType) {
         case 0:
           // sfondo
@@ -323,7 +341,7 @@ class Level {
           //}
           //if (needsWestWall(x, y)) {
           //  image(wallImageWest, x * tileSize, y * tileSize, tileSize, tileSize);
-          //} 
+          //}
           break;
 
         case 5:
@@ -348,6 +366,7 @@ class Level {
       }
     }
   }
+
 
 
   boolean needsNorthWall(int x, int y) {
