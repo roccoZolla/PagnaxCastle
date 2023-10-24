@@ -34,4 +34,8 @@ public abstract class Sprite {
   void setSprite(PImage img) {
     this.img = img;
   }
+  
+  void setSprite(String dataPath) {
+    this.img = loadImage(dataPath);
+  }
 }

@@ -233,10 +233,12 @@ class Level {
       } while (positionOccupied);
 
       // Crea una nuova cassa e imposta le sue proprietà
-      Chest chest = new Chest("data/object/tile_0089.png");
+      Chest chest = new Chest("data/object/chest_close.png");
+      chest.setId(i);
       chest.setName("cassa di merda");
-      chest.setIsOpen(random(1) < 0.5); // Casualemente aperta o chiusa
-      chest.setOpenWith(new Item("key")); // Imposta un oggetto necessario per aprirla
+      chest.setInteractable(true);
+      chest.setIsOpen(false);               // cassa chiusa di base
+      chest.setOpenWith(keys); // serve l'oggetto chiave
 
       // Aggiungi la cassa alla lista delle casse
       // E imposta la posizione sulla mappa
@@ -314,12 +316,6 @@ class Level {
     startY = constrain(startY, 0, rows - 1);
     endX = constrain(endX, 0, cols);
     endY = constrain(endY, 0, rows);
-
-    println("cols: " + cols + ", rows: " + rows);
-    println("start X: " + startX + "start Y" + startY);
-    println("end X: " + endX + "end Y" + endY);
-
-
 
     for (int x = startX; x < endX; x++) {
       for (int y = startY; y < endY; y++) {

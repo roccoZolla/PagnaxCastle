@@ -7,7 +7,8 @@ boolean moveDOWN;
 boolean moveRIGHT;
 boolean moveLEFT;
 
-boolean moveATCK;
+boolean moveATCK;    // attacco
+boolean moveINTR;    // interazione
 
 int tilesize = 16;
 
@@ -32,6 +33,8 @@ void keyPressed() {
       moveRIGHT = true;
     } else if (key == 'j' || key == 'J') {
       moveATCK = true;
+    } else if (key == 'k' || key == 'K') {
+      moveINTR = true;
     }
   } else {
     // premi qualsiasi tasto
@@ -72,6 +75,8 @@ void keyReleased() {
     moveRIGHT = false;
   } else if (key == 'j' || key == 'J') {
     moveATCK = false;
+  } else if (key == 'k' || key == 'K') {
+    moveINTR = false;
   }
 }
 

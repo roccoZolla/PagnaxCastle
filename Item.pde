@@ -3,6 +3,7 @@ public class Item extends Sprite {
   private String name;
   private boolean takeable = false;   // indica se un oggetto di puo raccogliere
   private boolean useable = false;    // indica se un oggetto si puo usare
+  private boolean interactable = false;
   private String description;
 
   // constructors
@@ -51,6 +52,10 @@ public class Item extends Sprite {
   public boolean isUseable() {
     return useable;
   }
+  
+  public boolean isInteractable() {
+    return interactable;
+  }
 
   public String getDescription() {
     return description;
@@ -74,6 +79,10 @@ public class Item extends Sprite {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+  
+  public void setInteractable(boolean interactable) {
+    this.interactable = interactable;
   }
 
   void displayItem(int tileSize) {

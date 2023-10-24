@@ -11,7 +11,7 @@ public class Chest extends Item{
         return chest;
     }
     
-    public Item getKey() {
+    public Item getOpenWith() {
         return openWith;
     }
 

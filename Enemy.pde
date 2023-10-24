@@ -83,18 +83,11 @@ public class Enemy extends Sprite {
     // Ottieni la posizione del giocatore
     PVector playerPosition = p1.getPosition();
 
-    println("prima");
-    println("id: " + this.id);
-    println("posizione nemico: " + this.spritePosition);
-
     // Calcola la distanza tra il nemico e il giocatore
     float distance = dist(this.spritePosition.x, this.spritePosition.y, playerPosition.x, playerPosition.y);
 
     // Imposta la soglia (ad esempio, 3 celle di distanza)
     float threshold = 4;
-
-    println("distance: " + distance);
-    println("threshold: " + threshold);
 
     // Verifica se il giocatore è abbastanza vicino
     if (distance <= threshold) {
@@ -139,24 +132,5 @@ public class Enemy extends Sprite {
         this.spritePosition.y = newY;
       }
     }
-
-    println("dopo");
-    println("posizione nemico: " + this.spritePosition);
   }
-
-
-
-  //void move(PVector playerPosition) {
-  //  println("Nemico: " + this.id);
-  //  println("posizione: " + this.spritePosition);
-  //  // Calcola il vettore direzione dal nemico al giocatore
-  //  PVector direction = PVector.sub(playerPosition, this.spritePosition);
-  //  direction.normalize(); // Normalizza il vettore per ottenere una direzione
-
-  //  // Imposta la velocità del movimento
-  //  float speed = 1.0;
-
-  //  // Muovi il nemico nella direzione calcolata
-  //  this.spritePosition.add(PVector.mult(direction, speed));
-  // }
 }

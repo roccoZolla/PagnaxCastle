@@ -1,5 +1,7 @@
 Player p1;
 Item weapon;
+Item keys;
+Chest selectedChest;
 
 PImage heartFull; // Immagine del cuore pieno
 PImage halfHeart; // Immagine del cuore meta
@@ -46,7 +48,7 @@ float zoom = 1.0;    // zoom ideale 5, in realta la camera deve seguire il gioca
 float easing = 0.7;
 
 PGraphics gameScene;
-PGraphics maskLayer;
+// PGraphics maskLayer;
 PGraphics uiLayer;    // questo layer si deve trovare sul layer del scena del gioco
 PGraphics spritesLayer;
 PGraphics pauseLayer; // layer della schermata di pausa -> evitiamo conflitti tra bottoni che si trovano nella stessa posizione
@@ -65,11 +67,6 @@ void setup() {
   spritesLayer = createGraphics(width, height);
   uiLayer = createGraphics(width, height);
   pauseLayer = createGraphics(width, height);
-  maskLayer = createGraphics(width, height);
-
-  maskLayer.beginDraw();
-  maskLayer.background(0);  // Inizia con uno sfondo nero
-  maskLayer.endDraw();
 
   // load font
   myFont = createFont("data/font/Minecraft.ttf", 20);
@@ -107,16 +104,19 @@ void setupGame() {
 
   currentArea = castle.getCurrentMacroarea();
   // currentArea.initLevels();
+  keys = new Item(2, "keys", "data/keys.png");
   currentLevel = currentArea.getCurrentLevel();
   currentLevel.init();
 
   actualLevel = currentArea.getName() + " - " + currentLevel.getName();
 
-  p1 = new Player(1, 100, "data/player.png");
+  p1 = new Player(1, 100, "data/player.png", 1);
   p1.setPosition(currentLevel.getStartRoom());
   weapon = new Item(1, "sword", "data/little_sword.png");
-
   p1.setPlayerWeapon(weapon);
+  p1.setKeys(keys);
+
+  selectedChest = null;
 }
 
 void draw() {
@@ -193,8 +193,6 @@ void draw() {
 }
 
 void menuScreen() {
-  System.out.println("drawMenu screen state: " + screen_state);
-  System.out.println("exitButton: " + exitButton.isEnabled());
   background(0); // Cancella lo schermo
 
   // draw title
@@ -209,7 +207,6 @@ void menuScreen() {
   exitButton.display();
 
   if (startButton.isPressed() && startButton.isEnabled()) {
-    System.out.println("start button is pressed");
     // salva lo stato
     previous_state = screen_state;
 
@@ -235,7 +232,6 @@ void menuScreen() {
     optionButton.setEnabled(false);
     exitButton.setEnabled(false);
   } else if (exitButton.isPressed() && exitButton.isEnabled()) {
-    System.out.println("exit button is pressed");
     System.exit(0);
   }
 }
@@ -258,11 +254,6 @@ void gameScreen() {
   // cancella lo schermo
   gameScene.background(0);
 
-  updateMaskLayer();
-
-  // Applica la maschera solo al buffer gameScene
-  gameScene.mask(maskLayer);
-
   // aggiorna la camera
   updateCamera();
 
@@ -284,6 +275,46 @@ void gameScreen() {
 
   for (Chest chest : currentLevel.getChests()) {
     chest.display(spritesLayer, currentLevel.getTileSize());
+    println("chest: " + chest.getId());
+    println("position: " + chest.getPosition());
+
+    // Calcola la distanza tra il giocatore e la cassa
+    float distanceToChest = dist(p1.getPosition().x, p1.getPosition().y, chest.getPosition().x, chest.getPosition().y);
+    println("distance to chest: " + distanceToChest);
+
+    // Imposta una soglia per la distanza in cui il giocatore può interagire con la cassa
+    float interactionThreshold = 1.5; // Puoi regolare questa soglia a tuo piacimento
+
+    if (distanceToChest < interactionThreshold) {
+      // Il giocatore è abbastanza vicino alla cassa per interagire
+      println("vicino alla cassa");
+      selectedChest = chest;
+    } else {
+      selectedChest = null;
+    }
+  }
+
+  if (selectedChest != null) {
+    // Calcola le coordinate x e y per il testo in modo che sia centrato sopra la cassa
+    float textX = (selectedChest.getPosition().x * currentLevel.getTileSize()) + 10;
+    float textY = (selectedChest.getPosition().y * currentLevel.getTileSize()) - 10; // Regola l'offset verticale a tuo piacimento
+    // da fixare, deve essere disegnato nel ui layer
+    gameScene.textFont(myFont);
+    gameScene.fill(255); // Colore del testo (bianco)
+    gameScene.textAlign(CENTER, CENTER); // Allinea il testo al centro
+    gameScene.textSize(15); // Imposta la dimensione del testo
+    gameScene.text("K", textX, textY);
+    
+    if(moveINTR && !selectedChest.isOpen && p1.getNumberOfKeys() > 0) {
+      println("interaction");
+      if(selectedChest.getOpenWith().equals(p1.getKey())) {
+        println("cassa aperta");
+        // imposta la cassa come aperta
+        selectedChest.setIsOpen(false);
+        selectedChest.setSprite("data/object/chest_open.png");
+        p1.setNumberOfKeys(p1.getNumberOfKeys() - 1);
+      }
+    }
   }
 
   // Gestione del movimento del giocatore
@@ -347,17 +378,6 @@ void gameScreen() {
   //}
   gameScene.endDraw();
 }
-
-void updateMaskLayer() {
-  float radius = 100;
-  maskLayer.beginDraw();
-  maskLayer.clear(); // Cancella il buffer
-  maskLayer.noStroke();
-  maskLayer.fill(0); // Imposta il colore di riempimento a nero
-  maskLayer.ellipse(p1.getPosition().x, p1.getPosition().y, radius * 2, radius * 2); // Disegna l'ellisse attorno al giocatore
-  maskLayer.endDraw();
-}
-
 
 void winScreen() {
   // salva lo stato precedente
@@ -512,6 +532,13 @@ void drawUI() {
   for (int i = heartsToDisplay + (isHalfHeart ? 1 : 0); i < maxHearts; i++) {
     uiLayer.image(emptyHeart, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
   }
+  
+  // ------ CHIAVI GIOCATORE ------
+  uiLayer.fill(255);
+  uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+  uiLayer.textSize(18);
+  uiLayer.text(p1.getNumberOfKeys(), 50, 80);
+  uiLayer.image(keys.getSprite(), 20, 80, 20, 20);
 
   // ------- MINIMAPPA ------
   float miniMapSize = 300; // Imposta la dimensione desiderata per la minimappa
