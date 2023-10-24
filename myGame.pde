@@ -1,16 +1,21 @@
 Player p1;
 Item weapon;
-Item keys;
+Item silver_key;
+Item golden_key;
 Item redPotion;
 Chest selectedChest;
 
+// ui
 PImage heartFull; // Immagine del cuore pieno
 PImage halfHeart; // Immagine del cuore meta
 PImage emptyHeart; // Immagine del cuore vuoto
 int maxHearts;
 int heartWidth = 20; // Larghezza di un cuore
 int heartHeight = 20; // Altezza di un cuore
+PImage letter_k;
+PImage coins;
 
+// stato dello schermo
 static int screen_state;
 static int previous_state;  // salva lo stato precedente
 static final int MENU_SCREEN = 0;
@@ -28,6 +33,7 @@ Level currentLevel;
 float proximityThreshold = 0.5; // Soglia di prossimità consentita per le scale
 String actualLevel;
 
+// bottoni
 Button startButton;
 Button optionButton;
 Button exitButton;
@@ -38,9 +44,9 @@ Button backMenuButton;
 
 Button backOptionButton;
 
+// titolo del gioco
 String gameTitle = "dungeon game";
-
-PFont myFont;
+PFont myFont;  // font del gioco
 
 // Variabili per la posizione della camera
 float cameraX = 0;
@@ -49,13 +55,9 @@ float zoom = 5.0;    // zoom ideale 5, in realta la camera deve seguire il gioca
 float easing = 0.7;
 
 PGraphics gameScene;
-// PGraphics maskLayer;
 PGraphics uiLayer;    // questo layer si deve trovare sul layer del scena del gioco
 PGraphics spritesLayer;
 PGraphics pauseLayer; // layer della schermata di pausa -> evitiamo conflitti tra bottoni che si trovano nella stessa posizione
-
-float oldPlayerX, oldPlayerY;
-boolean firstDraw;
 
 void setup() {
   // dimensioni schermo
@@ -92,6 +94,14 @@ void setup() {
   heartFull = loadImage("data/heartFull.png");
   halfHeart = loadImage("data/halfHeart.png");
   emptyHeart = loadImage("data/emptyHeart.png");
+  letter_k = loadImage("data/letter_k.png");
+  coins = loadImage("data/coin.png");
+
+
+  golden_key = new Item(2, "golden_key", "data/golden_key.png");
+  silver_key = new Item(4, "silver_key", "data/silver_key.png");
+  weapon = new Item(1, "sword", "data/little_sword.png");
+  redPotion = new Item(3, "Red Potion", "data/object/red_potion.png");
 }
 
 // inizializza il mondo di gioco
@@ -102,30 +112,27 @@ void setupGame() {
 
   currentArea = castle.getCurrentMacroarea();
   // currentArea.initLevels();
-  keys = new Item(2, "keys", "data/keys.png");
   currentLevel = currentArea.getCurrentLevel();
   currentLevel.init();
 
   actualLevel = currentArea.getName() + " - " + currentLevel.getName();
 
-  p1 = new Player(1, 80, 100, "data/player.png", 1);
+  p1 = new Player(1, 80, 100, "data/player.png", 5, 5, 5);
   p1.setPosition(currentLevel.getStartRoom());
-  weapon = new Item(1, "sword", "data/little_sword.png");
-  redPotion = new Item(3, "Red Potion", "data/object/red_potion.png");
   redPotion.setTakeable(true);    // si puo prendere
-  redPotion.setUseable(true);    // si puo usare  
+  redPotion.setUseable(true);    // si puo usare
   redPotion.setHealerable(true);  // restitusce vita
   redPotion.setBonusHP(20);
-  
+
   p1.setHealer(redPotion);
   p1.setPlayerWeapon(weapon);
-  p1.setKeys(keys);
+  p1.setGoldenKeys(golden_key);
+  p1.setSilverKey(silver_key);
 
   selectedChest = null;
 }
 
 void draw() {
-  System.out.println("screen_state: " + screen_state);
   // cambia il titolo della finestra e mostra il framerate
   surface.setTitle(String.format("%.1f", frameRate));
 
@@ -150,7 +157,6 @@ void draw() {
     pauseButton.setEnabled(true);
 
     // show game screen
-
     gameScreen();
     drawUI();
 
@@ -160,7 +166,6 @@ void draw() {
     break;
 
   case WIN_SCREEN:
-    System.out.println("entrato in win screen");
     // show win screen
     winScreen();
     break;
@@ -279,45 +284,70 @@ void gameScreen() {
   }
 
   for (Chest chest : currentLevel.getChests()) {
+    println("chest open with: " + chest.getOpenWith().getName());
     chest.display(spritesLayer, currentLevel.getTileSize());
-    println("chest: " + chest.getId());
-    println("position: " + chest.getPosition());
 
     // Calcola la distanza tra il giocatore e la cassa
     float distanceToChest = dist(p1.getPosition().x, p1.getPosition().y, chest.getPosition().x, chest.getPosition().y);
-    println("distance to chest: " + distanceToChest);
 
     // Imposta una soglia per la distanza in cui il giocatore può interagire con la cassa
     float interactionThreshold = 1.5; // Puoi regolare questa soglia a tuo piacimento
 
     if (distanceToChest < interactionThreshold) {
       // Il giocatore è abbastanza vicino alla cassa per interagire
-      println("vicino alla cassa");
       selectedChest = chest;
+      println("chest selezionata");
     } else {
       selectedChest = null;
     }
   }
 
   if (selectedChest != null) {
+    println("chest not null");
+    println("id chest: " + selectedChest.getId());
     // Calcola le coordinate x e y per il testo in modo che sia centrato sopra la cassa
-    float textX = (selectedChest.getPosition().x * currentLevel.getTileSize()) + 10;
-    float textY = (selectedChest.getPosition().y * currentLevel.getTileSize()) - 10; // Regola l'offset verticale a tuo piacimento
-    // da fixare, deve essere disegnato nel ui layer
-    gameScene.textFont(myFont);
-    gameScene.fill(255); // Colore del testo (bianco)
-    gameScene.textAlign(CENTER, CENTER); // Allinea il testo al centro
-    gameScene.textSize(15); // Imposta la dimensione del testo
-    gameScene.text("K", textX, textY);
-    
-    if(moveINTR && !selectedChest.isOpen && p1.getNumberOfKeys() > 0) {
-      println("interaction");
-      if(selectedChest.getOpenWith().equals(p1.getKey())) {
-        println("cassa aperta");
-        // imposta la cassa come aperta
-        selectedChest.setIsOpen(false);
-        selectedChest.setSprite("data/object/chest_open.png");
-        p1.setNumberOfKeys(p1.getNumberOfKeys() - 1);
+    float letterImageX = (selectedChest.getPosition().x * currentLevel.getTileSize());
+    float letterImageY = (selectedChest.getPosition().y * currentLevel.getTileSize()) - 20; // Regola l'offset verticale a tuo piacimento
+
+    // da fixare deve apparire nel ui layer
+    spritesLayer.image(letter_k, letterImageX, letterImageY);
+
+    if (moveINTR && !selectedChest.isOpen) {
+      if (selectedChest.isRare()) {    // se la cassa è rara
+        if (p1.getNumberOfGoldenKeys() > 0) {
+          if (selectedChest.getOpenWith().equals(p1.getGoldenKey())) {
+            // imposta la cassa come aperta
+            selectedChest.setIsOpen(true);
+            selectedChest.setSprite("data/object/special_chest_open.png");
+
+            p1.setNumberOfGoldenKeys(p1.getNumberOfGoldenKeys() - 1);
+
+            // aggiorna lo score del player
+            p1.setScore(p1.getScore() + 50);
+          }
+        } else {
+          spritesLayer.textFont(myFont);
+          spritesLayer.fill(255);
+          spritesLayer.textSize(15);
+          spritesLayer.text("Non hai piu chiavi!", (p1.getPosition().x * currentLevel.getTileSize()) - 50, (p1.getPosition().y * currentLevel.getTileSize()) - 10);
+        }
+      } else {  // se la cassa è normale
+        if (p1.getNumberOfSilverKeys() > 0) {
+          if (selectedChest.getOpenWith().equals(p1.getSilverKey())) {
+            // imposta la cassa come aperta
+            selectedChest.setIsOpen(true);
+            selectedChest.setSprite("data/object/chest_open.png");
+            p1.setNumberOfGoldenKeys(p1.getNumberOfGoldenKeys() - 1);
+
+            // aggiorna lo score del player
+            p1.setScore(p1.getScore() + 50);
+          }
+        } else {
+          spritesLayer.textFont(myFont);
+          spritesLayer.fill(255);
+          spritesLayer.textSize(15);
+          spritesLayer.text("Non hai piu chiavi!", (p1.getPosition().x * currentLevel.getTileSize()) - 50, (p1.getPosition().y * currentLevel.getTileSize()) - 10);
+        }
       }
     }
   }
@@ -331,11 +361,20 @@ void gameScreen() {
   if (moveATCK) {
     drawPlayerWeapon();
   }
-  
-  if (moveUSE) {
-    p1.setPlayerHP(p1.getPlayerHP() + redPotion.getBonusHP());
-    
-    if(p1.getPlayerHP() > p1.getMaxHP()) p1.setPlayerHP(p1.getMaxHP());
+
+  if (moveUSE && p1.getNumberOfPotion() > 0) {
+    if (p1.getPlayerHP() < p1.getMaxHP()) {
+      p1.setPlayerHP(p1.getPlayerHP() + redPotion.getBonusHP());
+
+      if (p1.getPlayerHP() > p1.getMaxHP()) p1.setPlayerHP(p1.getMaxHP());
+
+      p1.setNumberOfPotion(p1.getNumberOfPotion() - 1);
+    } else {
+      spritesLayer.textFont(myFont);
+      spritesLayer.fill(255);
+      spritesLayer.textSize(10);
+      spritesLayer.text("Cuori al massimo!", (p1.getPosition().x * currentLevel.getTileSize()) - 30, (p1.getPosition().y * currentLevel.getTileSize()) - 5);
+    }
   }
   spritesLayer.endDraw();
 
@@ -347,10 +386,8 @@ void gameScreen() {
       // controlla se è l'area finale
       if (currentArea.isFinal()) {
         screen_state = WIN_SCREEN;
-      } /* else if (currentArea.getAreaIndex() == castle.getMacroareas().size() - 1) {
-       //  screen_state = MENU_SCREEN;
-       //} */
-      else {
+      } else {
+        // passa alla prossima macroarea
         currentArea = castle.getMacroareas().get(currentArea.getAreaIndex() + 1);
         // currentArea.initLevels();
         currentLevel = currentArea.getCurrentLevel();
@@ -358,14 +395,21 @@ void gameScreen() {
         actualLevel = currentArea.getName() + " - " + currentLevel.getName();
         p1.setPosition(currentLevel.getStartRoom());
 
+        // aggiorna lo score del player
+        p1.setScore(p1.getScore() + 200);
+
         screen_state = STORY_SCREEN;
       }
     } else {
+      // passa al livello successivo - stessa macro area
       // Il giocatore è abbastanza vicino al punto di accesso, quindi passa al livello successivo
       currentLevel = currentArea.getLevels().get(currentLevel.getLevelIndex() + 1);
       currentLevel.init();
       actualLevel = currentArea.getName() + " - " + currentLevel.getName();
       p1.setPosition(currentLevel.getStartRoom());
+
+      // aggiorna lo score del player
+      p1.setScore(p1.getScore() + 100);
     }
   }
 
@@ -463,6 +507,12 @@ void optionScreen() {
   textAlign(LEFT, CENTER);
   text("Difficolta: ", 100, 150);
 
+  // scritta lingua
+  fill(255);
+  textSize(36);
+  textAlign(LEFT, CENTER);
+  text("Lingua: ", 100, 200);
+
   backOptionButton.display();
 
   System.out.println("exit button: " + exitButton.isEnabled());
@@ -506,9 +556,9 @@ void drawUI() {
 
   // ------ CUORI GIOCATORE ------
   // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
-  int heartsToDisplay = p1.getMaxHP() / 10; // Supponiamo che ogni cuore rappresenti 10 HP
+  int heartsToDisplay = p1.getPlayerHP() / 10; // Supponiamo che ogni cuore rappresenti 10 HP
   int heartY = 50;
-  maxHearts = 10;
+  maxHearts = p1.getMaxHP() / 10;
   boolean isHalfHeart = p1.getPlayerHP() % 10 >= 5; // Controlla se c'è un cuore a metà
 
   // Disegna i cuori pieni
@@ -525,20 +575,39 @@ void drawUI() {
   for (int i = heartsToDisplay + (isHalfHeart ? 1 : 0); i < maxHearts; i++) {
     uiLayer.image(emptyHeart, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
   }
-  
-  // ------ CHIAVI GIOCATORE ------
+
+  // ------ SCORE GIOCATORE ------
+  uiLayer.fill(255);
+  uiLayer.textSize(24);
+  uiLayer.text("Score: " + p1.getScore(), uiLayer.width - 200, 20);
+
+  // ------ CHIAVI ARGENTO GIOCATORE ------
   uiLayer.fill(255);
   uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
   uiLayer.textSize(18);
-  uiLayer.text(p1.getNumberOfKeys(), 50, 80);
-  uiLayer.image(keys.getSprite(), 20, 80, 20, 20);
-  
+  uiLayer.text(p1.getNumberOfSilverKeys(), 50, 80);
+  uiLayer.image(silver_key.getSprite(), 20, 80, 20, 20);
+
+  // ------ CHIAVI ORO GIOCATORE ------
+  uiLayer.fill(255);
+  uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+  uiLayer.textSize(18);
+  uiLayer.text(p1.getNumberOfGoldenKeys(), 100, 80);
+  uiLayer.image(golden_key.getSprite(), 70, 80, 20, 20);
+
+  // ------ MONETE GIOCATORE ------
+  uiLayer.fill(255);
+  uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+  uiLayer.textSize(18);
+  uiLayer.text(p1.getCoins(), 50, 110);
+  uiLayer.image(coins, 20, 110, 20, 20);
+
   // ------ POZIONE GIOCATORE ------
   uiLayer.fill(255);
   uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
   uiLayer.textSize(18);
-  //uiLayer.text(p1.getNumberOfKeys(), 50, 80);
-  uiLayer.image(redPotion.getSprite(), 20, 110, 20, 20);
+  uiLayer.text(p1.getNumberOfPotion(), 50, 140);
+  uiLayer.image(redPotion.getSprite(), 20, 140, 20, 20);
 
   // ------- MINIMAPPA ------
   float miniMapSize = 300; // Imposta la dimensione desiderata per la minimappa
@@ -548,7 +617,6 @@ void drawUI() {
   // Disegna la minimappa nell'angolo in basso a sinistra
   uiLayer.noFill(); // Nessun riempimento
   uiLayer.stroke(255); // Colore del bordo bianco
-  // uiLayer.rect(miniMapX, miniMapY, miniMapSize, miniMapSize);
 
   // Disegna i bordi delle stanze sulla minimappa come una linea continua
   uiLayer.stroke(255); // Colore del bordo bianco

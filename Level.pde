@@ -9,7 +9,7 @@ class Level {
   private int tileSize = 16;
   private int cols, rows;
   private int[][] map;
-  private ArrayList<PVector> roomS; // Memorizza le posizioni delle stanze
+  // private ArrayList<PVector> roomS; // Memorizza le posizioni delle stanze
   private ArrayList<Room> rooms;
 
   // attributi
@@ -18,20 +18,20 @@ class Level {
   // private PImage wallImage;  // Immagine per sfondo
   // pareti delle stanze
   private PImage wallImageNorth;
-  private PImage wallImageNorthTop;
-  private PImage wallImageNorthBottom;
-  private PImage wallImageSouth;
-  private PImage wallImageEast;
-  private PImage wallImageWest;
+  // private PImage wallImageNorthTop;
+  //private PImage wallImageNorthBottom;
+  //private PImage wallImageSouth;
+  //private PImage wallImageEast;
+  //private PImage wallImageWest;
   private PImage hallwayImage;         // immagine per i corridoi
   private PImage stairsNextFloorImage; // scale per accedere al livello successivo
 
   // chest che puoi trovare nel livello
-  private int spawnLevel = 3; // Livello di spawn
+  private int spawnLevel = 5; // Livello di spawn
   private ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
   // nemici che puoi trovare nel livello
-  private int numberOfEnemies = 5;  // livello di spawn dei nemici
+  // private int numberOfEnemies = 5;  // livello di spawn dei nemici
   private ArrayList<Enemy> enemies; // Lista dei nemici
 
   PVector finalRoomPosition;
@@ -59,7 +59,6 @@ class Level {
 
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
-    treasures = new ArrayList<Chest>(); // Inizializza l'arraylist qui
 
     startFloorImage = loadImage(dataPath + "startTile.png");
     floorImage = loadImage(dataPath + "floorTile.png");
@@ -217,37 +216,57 @@ class Level {
     }
   }
 
-
+  // da sistemare ma decente
   private void generateRandomChests() {
+    treasures = new ArrayList<Chest>();
+    boolean positionOccupied;
+    Chest chest;
+    float commonChestSpawnRate = 0.90; // Tasso di spawn per le casse comuni (70%)
+    // float rareChestSpawnRate = 0.10;   // Tasso di spawn per le casse rare (30%)
+
+
     for (int i = 0; i < spawnLevel; i++) {
       int x, y;
-      boolean positionOccupied;
+
+      // Genera un numero casuale tra 0 e 1 per determinare il tipo di cassa
+      float chestType = random(1);
+
+      if (chestType < commonChestSpawnRate) {
+        // Genera una cassa comune
+        chest = new Chest("data/object/chest_close.png");
+        chest.setId(i);
+        chest.setName("Cassa Comune " + i);
+        chest.setOpenWith(silver_key);              // Specifica l'oggetto chiave necessario
+        chest.setIsRare(false);
+        // Imposta altri attributi della cassa comune
+      } else {
+        // Genera una cassa rara
+        chest = new Chest("data/object/special_chest_close.png");
+        chest.setId(i);
+        chest.setName("Cassa Rara " + i);
+        chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
+        chest.setIsRare(true);
+      }
+
+      chest.setInteractable(true);
+      chest.setIsOpen(false);               // Imposta la cassa come chiusa di base
 
       do {
         // Scegli una posizione casuale sulla mappa
-        x = int(random(cols));
-        y = int(random(rows));
+        x = (int) random(cols);
+        y = (int) random(rows);
 
-        // Verifica se la posizione è già occupata da un muro o parete
-        positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5;
+        // Verifica se la posizione è già occupata da un muro, una parete o un'altra cassa
+        positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6);
       } while (positionOccupied);
 
-      // Crea una nuova cassa e imposta le sue proprietà
-      Chest chest = new Chest("data/object/chest_close.png");
-      chest.setId(i);
-      chest.setName("cassa di merda");
-      chest.setInteractable(true);
-      chest.setIsOpen(false);               // cassa chiusa di base
-      chest.setOpenWith(keys); // serve l'oggetto chiave
-
       // Aggiungi la cassa alla lista delle casse
-      // E imposta la posizione sulla mappa
       chest.setPosition(new PVector(x, y));
-      map[(int) chest.getPosition().x][(int) chest.getPosition().y] = 6;
+      map[x][y] = 6; // Imposta il tipo di tile corrispondente a una cassa
+
       treasures.add(chest);
     }
   }
-
 
   // spawner aggiornato
   // genera nemici in ogni stanza in maniera casuale
@@ -261,13 +280,14 @@ class Level {
       int roomHeight = room.getHeight();
 
       // Genera un numero casuale di nemici in ogni stanza
+      // AGGIUNGI LOGICA DI DIFFICOLTA
       int numEnemiesInRoom = floor(random(1, 4)); // Puoi regolare i valori a tuo piacimento
 
       for (int i = 0; i < numEnemiesInRoom; i++) {
         int x, y;
 
+        // spawn causale dei nemici all'interno della mappa
         do {
-          // Scegli una posizione casuale all'interno della stanza
           x = int(random(roomPosition.x - roomWidth / 2, roomPosition.x + roomWidth / 2));
           y = int(random(roomPosition.y - roomHeight / 2, roomPosition.y + roomHeight / 2));
 
@@ -275,38 +295,15 @@ class Level {
           positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 3 || map[x][y] == 2;
         } while (positionOccupied);
 
-        // Crea un nemico con valori casuali di HP e un'immagine casuale
-        int enemyHP = 30; // Puoi regolare questo valore
-
-        Enemy enemy = new Enemy(i, enemyHP, "nemico", "data/npc/cyclo_enemy.png");
+        // creazione dell'entita nemico
+        int enemyHP = 30;
+        Enemy enemy = new Enemy(i, enemyHP, "nemico", "data/npc/rat_enemy.png");
         enemy.setPosition(new PVector(x, y));
-
-        if (map[x][y] == 1) map[x][y] = 7;
 
         // Aggiungi il nemico alla lista
         enemies.add(enemy);
       }
     }
-  }
-
-
-  public String getObjectAtCell(int x, int y) {
-    int tileType = map[x][y];
-    if (tileType == 6) {
-      for (Chest treasure : treasures) {
-        if (treasure.getPosition().x == x && treasure.getPosition().y == y) {
-          return treasure.getName();
-        }
-      }
-    } else if (tileType == 7) {
-      // La cella contiene un nemico, restituisci l'oggetto Nemico
-      for (Enemy enemy : enemies) {
-        if (enemy.getPosition().x == x && enemy.getPosition().y == y) {
-          return enemy.getName();
-        }
-      }
-    }
-    return null; // Non c'è nessun oggetto nella cella
   }
 
   // disegna solo cio che vede il giocatore
@@ -363,36 +360,12 @@ class Level {
           break;
 
         case 6:
+          // ci sta tenerlo sono statiche le casse
           // tesori
-          //for (Chest chest : treasures) {
-          //  gameScene.image(chest.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
-          //}
-          gameScene.image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
-          break;
-
-        case 7:
-          // nemici
-          // è inutile disegnare tutti i nemici presenti
           gameScene.image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
         }
       }
     }
-
-    //for (Room room : rooms) {
-    //  int roomX = floor(room.getPosition().x);
-    //  int roomY = floor(room.getPosition().y);
-
-    //  // Calcola le coordinate del rettangolo intorno alla stanza
-    //  int rectX = roomX * tileSize;
-    //  int rectY = roomY * tileSize;
-    //  int rectWidth = room.getWidth() * (int) zoom;
-    //  int rectHeight = room.getHeight() * (int)zoom;
-
-    //  // Disegna il rettangolo bianco intorno alla stanza
-    //  gameScene.noFill(); // Bianco
-    //  gameScene.stroke(255);
-    //  gameScene.rect(rectX, rectY, rectWidth, rectHeight);
-    //}
   }
 }

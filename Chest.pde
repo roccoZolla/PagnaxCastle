@@ -2,6 +2,7 @@ public class Chest extends Item{
     private ArrayList<Item> chest = new ArrayList<>();
     private boolean isOpen;            // true aperta - false chiusa
     private Item openWith;              // oggetto che serve per aprire la chest
+    private boolean isRare;
     
     Chest(String dataPath) {
       this.img = loadImage(dataPath);
@@ -29,5 +30,13 @@ public class Chest extends Item{
 
     public boolean getIsOpen() {
         return isOpen;
+    }
+    
+    public boolean isRare() {
+      return isRare;
+    }
+    
+    public void setIsRare(boolean isRare) {
+      this.isRare = isRare;
     }
 }
