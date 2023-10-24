@@ -9,6 +9,7 @@ boolean moveLEFT;
 
 boolean moveATCK;    // attacco
 boolean moveINTR;    // interazione
+boolean moveUSE;     // utilizza
 
 int tilesize = 16;
 
@@ -35,6 +36,8 @@ void keyPressed() {
       moveATCK = true;
     } else if (key == 'k' || key == 'K') {
       moveINTR = true;
+    } else if (key == 'l' || key == 'L') {
+      moveUSE = true;
     }
   } else {
     // premi qualsiasi tasto
@@ -77,6 +80,8 @@ void keyReleased() {
     moveATCK = false;
   } else if (key == 'k' || key == 'K') {
     moveINTR = false;
+  } else if (key == 'l' || key == 'L') {
+    moveUSE = false;
   }
 }
 
@@ -147,20 +152,4 @@ void drawPlayerWeapon() {
   float imageHeight = p1.getPlayerWeapon().getSprite().height;
 
   spritesLayer.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
-}
-
-// disegna i bordi delle celle su cui si trova il mouse
-void drawCellBorders(float x, float y, Level currentLevel) {
-  float leftX = x * currentLevel.getTileSize();
-  float topY = y * currentLevel.getTileSize();
-  float rightX = leftX + currentLevel.getTileSize();
-  float bottomY = topY + currentLevel.getTileSize();
-
-  noFill();
-  if (currentLevel.getMap()[(int) x][(int) y] == 0) {
-    stroke(255, 0, 0); // Rosso
-  } else {
-    stroke(255); // Bianco
-  }
-  rect(leftX, topY, rightX - leftX, bottomY - topY);
 }

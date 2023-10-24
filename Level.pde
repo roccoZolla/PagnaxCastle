@@ -249,39 +249,46 @@ class Level {
   }
 
 
-  // spawner basilare di nemici
+  // spawner aggiornato
+  // genera nemici in ogni stanza in maniera casuale
   private void generateEnemies() {
     enemies = new ArrayList<Enemy>();
     boolean positionOccupied;
 
-    int x = 0, y = 0;
+    for (Room room : rooms) {
+      PVector roomPosition = room.getPosition();
+      int roomWidth = room.getWidth();
+      int roomHeight = room.getHeight();
 
-    for (int i = 0; i < numberOfEnemies; i++) {
-      // Scegli una stanza casuale
-      int roomIndex = int(random(rooms.size()));
-      PVector roomPosition = rooms.get(roomIndex).getPosition();
+      // Genera un numero casuale di nemici in ogni stanza
+      int numEnemiesInRoom = floor(random(1, 4)); // Puoi regolare i valori a tuo piacimento
 
-      do {
-        // Scegli una posizione casuale sulla mappa
-        x = int(random(roomPosition.x));
-        y = int(random(roomPosition.y));
+      for (int i = 0; i < numEnemiesInRoom; i++) {
+        int x, y;
 
-        // Verifica se la posizione è già occupata da un muro o parete
-        positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 3 || map[x][y] == 2;
-      } while (positionOccupied);
+        do {
+          // Scegli una posizione casuale all'interno della stanza
+          x = int(random(roomPosition.x - roomWidth / 2, roomPosition.x + roomWidth / 2));
+          y = int(random(roomPosition.y - roomHeight / 2, roomPosition.y + roomHeight / 2));
 
-      // Crea un nemico con valori casuali di HP e un'immagine casuale
-      int enemyHP = 30;
+          // Verifica se la posizione è già occupata da un muro o un altro oggetto
+          positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 3 || map[x][y] == 2;
+        } while (positionOccupied);
 
-      Enemy enemy = new Enemy(i, enemyHP, "nemico", "data/npc/tile_0109.png");
-      enemy.setPosition(new PVector(x, y));
+        // Crea un nemico con valori casuali di HP e un'immagine casuale
+        int enemyHP = 30; // Puoi regolare questo valore
 
-      if (map[x][y] == 1) map[x][y] = 7;
+        Enemy enemy = new Enemy(i, enemyHP, "nemico", "data/npc/cyclo_enemy.png");
+        enemy.setPosition(new PVector(x, y));
 
-      // Aggiungi il nemico alla lista
-      enemies.add(enemy);
+        if (map[x][y] == 1) map[x][y] = 7;
+
+        // Aggiungi il nemico alla lista
+        enemies.add(enemy);
+      }
     }
   }
+
 
   public String getObjectAtCell(int x, int y) {
     int tileType = map[x][y];
@@ -348,19 +355,6 @@ class Level {
         case 4:
           // muri perimetrali
           gameScene.image(wallImageNorth, x * tileSize, y * tileSize, tileSize, tileSize);
-          //if (needsNorthWall(x, y)) {
-          //  image(wallImageNorthTop, x * tileSize, (y - 1) * tileSize, tileSize, tileSize);
-          //  image(wallImageNorthBottom, x * tileSize, y * tileSize, tileSize, tileSize);
-          //}
-          //if (needsSouthWall(x, y)) {
-          //  image(wallImageSouth, x * tileSize, y * tileSize, tileSize, tileSize);
-          //}
-          //if (needsEastWall(x, y)) {
-          //  image(wallImageEast, x * tileSize, y * tileSize, tileSize, tileSize);
-          //}
-          //if (needsWestWall(x, y)) {
-          //  image(wallImageWest, x * tileSize, y * tileSize, tileSize, tileSize);
-          //}
           break;
 
         case 5:
@@ -401,36 +395,4 @@ class Level {
     //  gameScene.rect(rectX, rectY, rectWidth, rectHeight);
     //}
   }
-
-  //boolean needsNorthWall(int x, int y) {
-  //  // Controlla se una parete nord è necessaria in questa posizione
-  //  if (y > 0 && map[x][y + 1] == 1) {
-  //    return true; // Una parete nord è necessaria
-  //  }
-  //  return false; // Nessuna parete nord è necessaria
-  //}
-
-  //boolean needsSouthWall(int x, int y) {
-  //  // Controlla se una parete sud è necessaria in questa posizione
-  //  if (y < rows - 1 && map[x][y - 1] == 1) {
-  //    return true; // Una parete sud è necessaria
-  //  }
-  //  return false; // Nessuna parete sud è necessaria
-  //}
-
-  //boolean needsEastWall(int x, int y) {
-  //  // Controlla se una parete est è necessaria in questa posizione
-  //  if (x < cols - 1 && map[x + 1][y] == 1) {
-  //    return true; // Una parete est è necessaria
-  //  }
-  //  return false; // Nessuna parete est è necessaria
-  //}
-
-  //boolean needsWestWall(int x, int y) {
-  //  // Controlla se una parete ovest è necessaria in questa posizione
-  //  if (x > 0 && map[x - 1][y] == 1) {
-  //    return true; // Una parete ovest è necessaria
-  //  }
-  //  return false; // Nessuna parete ovest è necessaria
-  //}
 }

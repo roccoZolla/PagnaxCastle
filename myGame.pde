@@ -1,6 +1,7 @@
 Player p1;
 Item weapon;
 Item keys;
+Item redPotion;
 Chest selectedChest;
 
 PImage heartFull; // Immagine del cuore pieno
@@ -44,7 +45,7 @@ PFont myFont;
 // Variabili per la posizione della camera
 float cameraX = 0;
 float cameraY = 0;
-float zoom = 1.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
+float zoom = 5.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
 float easing = 0.7;
 
 PGraphics gameScene;
@@ -55,9 +56,6 @@ PGraphics pauseLayer; // layer della schermata di pausa -> evitiamo conflitti tr
 
 float oldPlayerX, oldPlayerY;
 boolean firstDraw;
-
-int cellX;
-int cellY;
 
 void setup() {
   // dimensioni schermo
@@ -110,9 +108,16 @@ void setupGame() {
 
   actualLevel = currentArea.getName() + " - " + currentLevel.getName();
 
-  p1 = new Player(1, 100, "data/player.png", 1);
+  p1 = new Player(1, 80, 100, "data/player.png", 1);
   p1.setPosition(currentLevel.getStartRoom());
   weapon = new Item(1, "sword", "data/little_sword.png");
+  redPotion = new Item(3, "Red Potion", "data/object/red_potion.png");
+  redPotion.setTakeable(true);    // si puo prendere
+  redPotion.setUseable(true);    // si puo usare  
+  redPotion.setHealerable(true);  // restitusce vita
+  redPotion.setBonusHP(20);
+  
+  p1.setHealer(redPotion);
   p1.setPlayerWeapon(weapon);
   p1.setKeys(keys);
 
@@ -326,6 +331,12 @@ void gameScreen() {
   if (moveATCK) {
     drawPlayerWeapon();
   }
+  
+  if (moveUSE) {
+    p1.setPlayerHP(p1.getPlayerHP() + redPotion.getBonusHP());
+    
+    if(p1.getPlayerHP() > p1.getMaxHP()) p1.setPlayerHP(p1.getMaxHP());
+  }
   spritesLayer.endDraw();
 
 
@@ -358,24 +369,6 @@ void gameScreen() {
     }
   }
 
-  // da fixare
-  // Rileva la posizione del mouse rispetto alle celle
-  //cellX = floor(mouseX / (currentLevel.getTileSize() * zoom));
-  //cellY = floor(mouseY / (currentLevel.getTileSize() * zoom));
-
-  //// Verifica se il mouse è sopra una casella valida
-  //if (cellX >= 0 && cellX < currentLevel.getCols() && cellY >= 0 && cellY < currentLevel.getRows()) {
-  //  // Disegna i bordi della casella in bianco
-  //  drawCellBorders(cellX, cellY, currentLevel);
-  //}
-
-  //String  objectAtMouse = currentLevel.getObjectAtCell(cellX, cellY);
-  //if (objectAtMouse != null) {
-  //  fill(255); // Colore del testo (bianco)
-  //  textAlign(LEFT, LEFT); // Allinea il testo a sinistra e in alto
-  //  textSize(24); // Imposta la dimensione del testo
-  //  text(objectAtMouse, width / 2, 40); // Disegna il testo a una posizione desiderata (es. 20, 20)
-  //}
   gameScene.endDraw();
 }
 
@@ -513,9 +506,9 @@ void drawUI() {
 
   // ------ CUORI GIOCATORE ------
   // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
-  int heartsToDisplay = p1.getPlayerHP() / 10; // Supponiamo che ogni cuore rappresenti 10 HP
+  int heartsToDisplay = p1.getMaxHP() / 10; // Supponiamo che ogni cuore rappresenti 10 HP
   int heartY = 50;
-  maxHearts = p1.getPlayerHP() / 10;
+  maxHearts = 10;
   boolean isHalfHeart = p1.getPlayerHP() % 10 >= 5; // Controlla se c'è un cuore a metà
 
   // Disegna i cuori pieni
@@ -539,6 +532,13 @@ void drawUI() {
   uiLayer.textSize(18);
   uiLayer.text(p1.getNumberOfKeys(), 50, 80);
   uiLayer.image(keys.getSprite(), 20, 80, 20, 20);
+  
+  // ------ POZIONE GIOCATORE ------
+  uiLayer.fill(255);
+  uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+  uiLayer.textSize(18);
+  //uiLayer.text(p1.getNumberOfKeys(), 50, 80);
+  uiLayer.image(redPotion.getSprite(), 20, 110, 20, 20);
 
   // ------- MINIMAPPA ------
   float miniMapSize = 300; // Imposta la dimensione desiderata per la minimappa

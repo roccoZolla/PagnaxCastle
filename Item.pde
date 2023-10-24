@@ -4,6 +4,8 @@ public class Item extends Sprite {
   private boolean takeable = false;   // indica se un oggetto di puo raccogliere
   private boolean useable = false;    // indica se un oggetto si puo usare
   private boolean interactable = false;
+  private boolean healerable = false;    // indica se l'oggetto restituisce la vita
+  private int bonusHP = 0;              // se è hearable assegna un valore
   private String description;
 
   // constructors
@@ -34,8 +36,6 @@ public class Item extends Sprite {
     this.name = name;
   }
 
-
-
   // methods
   public int getId() {
     return id;
@@ -55,6 +55,14 @@ public class Item extends Sprite {
   
   public boolean isInteractable() {
     return interactable;
+  }
+  
+  public boolean isHealerable() {
+    return healerable;
+  }
+  
+  public int getBonusHP() {
+    return this.bonusHP;
   }
 
   public String getDescription() {
@@ -83,6 +91,14 @@ public class Item extends Sprite {
   
   public void setInteractable(boolean interactable) {
     this.interactable = interactable;
+  }  
+  
+  public void setHealerable(boolean healerable) {
+    this.healerable = healerable;
+  }
+  
+  public void setBonusHP(int bonusHP) {
+    this.bonusHP = bonusHP;
   }
 
   void displayItem(int tileSize) {
