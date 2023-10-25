@@ -162,6 +162,5 @@ void updateEffectsVolume(float volumeEffectsLevel) {
 }
 
 void updateMusicVolume(float volumeMusicLevel) {
-  // aggiorna volume musica di sottofondo
   soundtrack.amp(volumeMusicLevel);
 }
