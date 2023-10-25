@@ -2,7 +2,7 @@ class Level {
   private String levelName;
   private int levelIndex;
   private String dataPath;
-  private boolean completed = false;
+  private boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
   private int numberOfRooms;
 
   // rooms
@@ -25,6 +25,8 @@ class Level {
   //private PImage wallImageWest;
   private PImage hallwayImage;         // immagine per i corridoi
   private PImage stairsNextFloorImage; // scale per accedere al livello successivo
+  
+  private ArrayList<Coin> coins;      // contiene le monete presenti nel livello
 
   // chest che puoi trovare nel livello
   private int spawnLevel = 5; // Livello di spawn
@@ -91,6 +93,9 @@ class Level {
 
     // genera i loot
     generateRandomChests();
+    
+    // genera le monete
+    generateRandomCoins();
   }
 
   int getTileSize() {
@@ -135,6 +140,10 @@ class Level {
 
   ArrayList<Chest> getChests() {
     return treasures;
+  }
+  
+  ArrayList<Coin> getCoins() {
+    return coins;
   }
 
   // metodi per la generazione delle stanze
@@ -213,6 +222,34 @@ class Level {
           y1 += (y1 < y2) ? 1 : ((y1 > y2) ? -1 : 0);
         }
       }
+    }
+  }
+
+  // generatore di monete casuale
+  private void generateRandomCoins() {
+    coins = new ArrayList<>();
+    boolean positionOccupied;
+    int totalCoins = 20; // Modifica il numero di monete da generare come preferisci
+
+    for (int i = 0; i < totalCoins; i++) {
+      int x, y;
+
+      do {
+        // Scegli una posizione casuale sulla mappa
+        x = (int) random(cols);
+        y = (int) random(rows);
+
+        // Verifica se la posizione è già occupata da un muro, una parete, una cassa o un'altra moneta
+        positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6 /*|| isCoinOccupied(x, y)*/);
+      } while (positionOccupied);
+
+      // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
+      int coinValue = (int) random(1, 10); // Esempio: valore casuale tra 1 e 10
+      Coin coin = new Coin(coinValue, "data/coin.png");
+      coin.setPosition(new PVector(x, y));
+
+      // Aggiungi la moneta alla lista delle monete
+      coins.add(coin);
     }
   }
 

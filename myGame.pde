@@ -1,3 +1,5 @@
+import processing.sound.*;
+
 Player p1;
 Item weapon;
 Item silver_key;
@@ -15,6 +17,11 @@ int heartHeight = 20; // Altezza di un cuore
 PImage letter_k;
 PImage coins;
 
+SoundFile pickupCoin;
+SoundFile normalChestOpen;
+SoundFile specialChestOpen;
+SoundFile drinkPotion;
+
 // stato dello schermo
 static int screen_state;
 static int previous_state;  // salva lo stato precedente
@@ -31,6 +38,7 @@ Macroarea currentArea;
 Level currentLevel;
 
 float proximityThreshold = 0.5; // Soglia di prossimità consentita per le scale
+float coinCollectionThreshold = 0.5; // soglia di prossimita per il raccoglimento delle monete
 String actualLevel;
 
 // bottoni
@@ -96,6 +104,11 @@ void setup() {
   emptyHeart = loadImage("data/emptyHeart.png");
   letter_k = loadImage("data/letter_k.png");
   coins = loadImage("data/coin.png");
+  
+  pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
+  normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
+  specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
+  drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
 
 
   golden_key = new Item(2, "golden_key", "data/golden_key.png");
@@ -278,11 +291,15 @@ void gameScreen() {
   spritesLayer.background(255, 0);
   spritesLayer.translate(-cameraX, -cameraY);
   spritesLayer.scale(zoom);
+  
+  // ----- ENEMY -----
   for (Enemy enemy : currentLevel.getEnemies()) {
     enemy.display(spritesLayer, currentLevel.getTileSize());
     enemy.move(currentLevel);
   }
-
+  
+  
+  // ----- CHEST -----
   for (Chest chest : currentLevel.getChests()) {
     println("chest open with: " + chest.getOpenWith().getName());
     chest.display(spritesLayer, currentLevel.getTileSize());
@@ -318,6 +335,7 @@ void gameScreen() {
           if (selectedChest.getOpenWith().equals(p1.getGoldenKey())) {
             // imposta la cassa come aperta
             selectedChest.setIsOpen(true);
+            specialChestOpen.play();
             selectedChest.setSprite("data/object/special_chest_open.png");
 
             p1.setNumberOfGoldenKeys(p1.getNumberOfGoldenKeys() - 1);
@@ -336,8 +354,10 @@ void gameScreen() {
           if (selectedChest.getOpenWith().equals(p1.getSilverKey())) {
             // imposta la cassa come aperta
             selectedChest.setIsOpen(true);
+            normalChestOpen.play();
             selectedChest.setSprite("data/object/chest_open.png");
-            p1.setNumberOfGoldenKeys(p1.getNumberOfGoldenKeys() - 1);
+            
+            p1.setNumberOfSilverKeys(p1.getNumberOfSilverKeys() - 1);
 
             // aggiorna lo score del player
             p1.setScore(p1.getScore() + 50);
@@ -348,6 +368,20 @@ void gameScreen() {
           spritesLayer.textSize(15);
           spritesLayer.text("Non hai piu chiavi!", (p1.getPosition().x * currentLevel.getTileSize()) - 50, (p1.getPosition().y * currentLevel.getTileSize()) - 10);
         }
+      }
+    }
+  }
+  
+  // ----- COIN -----
+  for (Coin coin : currentLevel.getCoins()) {
+    if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
+      if (PVector.dist(p1.getPosition(), coin.getPosition()) < coinCollectionThreshold) {
+        coin.collect();  // raccogli la moneta
+        p1.collectCoin();
+        pickupCoin.play();
+        p1.setScore(p1.getScore() + coin.getScoreValue());
+      } else {
+        coin.display(spritesLayer, currentLevel.getTileSize());
       }
     }
   }
@@ -364,6 +398,7 @@ void gameScreen() {
 
   if (moveUSE && p1.getNumberOfPotion() > 0) {
     if (p1.getPlayerHP() < p1.getMaxHP()) {
+      drinkPotion.play();
       p1.setPlayerHP(p1.getPlayerHP() + redPotion.getBonusHP());
 
       if (p1.getPlayerHP() > p1.getMaxHP()) p1.setPlayerHP(p1.getMaxHP());

@@ -103,8 +103,8 @@ public class Player extends Sprite {
     return numberOfPotion;
   }
   
-  public void setCoins(int coins) {
-    this.coins = coins;
+  public void collectCoin() {
+    this.coins++;
   }
   
   public int getCoins() {
