@@ -20,9 +20,6 @@ int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 
 // gestione comandi
 void keyPressed() {
-  if (key == 'z') {
-    zoom = 5.0;
-  }
   if (screen_state == GAME_SCREEN) {
     if (key == 'w' || key == 'W') {
       moveUP = true;
@@ -87,8 +84,8 @@ void keyReleased() {
 
 void handlePlayerMovement(Level currentLevel) {
   if (keyPressed) {
-    float newX = p1.getPosition().x;
-    float newY = p1.getPosition().y;
+    float newX = p1.spritePosition.x;
+    float newY = p1.spritePosition.y;
 
     if (moveUP) {
       newY -= spriteSpeed;
@@ -108,20 +105,20 @@ void handlePlayerMovement(Level currentLevel) {
     int roundedY = round(newY);
 
     // check delle collisioni
-    if (roundedX >= 0 && roundedX < currentLevel.getCols() && roundedY >= 0 && roundedY < currentLevel.getRows() &&
-      currentLevel.getMap()[roundedX][roundedY] != 0 &&
-      currentLevel.getMap()[roundedX][roundedY] != 4 &&
-      currentLevel.getMap()[roundedX][roundedY] != 6 &&
-      currentLevel.getMap()[roundedX][roundedY] != 7) {
-      p1.getPosition().x = newX;
-      p1.getPosition().y = newY;
+    if (roundedX >= 0 && roundedX < currentLevel.cols && roundedY >= 0 && roundedY < currentLevel.rows &&
+      currentLevel.map[roundedX][roundedY] != 0 &&
+      currentLevel.map[roundedX][roundedY] != 4 &&
+      currentLevel.map[roundedX][roundedY] != 6 &&
+      currentLevel.map[roundedX][roundedY] != 7) {
+      p1.spritePosition.x = newX;
+      p1.spritePosition.y = newY;
     }
   }
 }
 
 boolean checkEnemyMove(float newX, float newY, Level currentLevel) {
   // Verifica se la nuova posizione è valida
-  PVector playerPosition = p1.getPosition();
+  PVector playerPosition = p1.spritePosition;
   int roundedX = round(newX);
   int roundedY = round(newY);
 
@@ -129,11 +126,11 @@ boolean checkEnemyMove(float newX, float newY, Level currentLevel) {
     return false; // Il nemico non può andare nella stessa posizione del giocatore
   }
 
-  if (roundedX >= 0 && roundedX < currentLevel.getCols() && roundedY >= 0 && roundedY < currentLevel.getRows() &&
-    currentLevel.getMap()[roundedX][roundedY] != 0 &&
-    currentLevel.getMap()[roundedX][roundedY] != 4 &&
-    currentLevel.getMap()[roundedX][roundedY] != 6 &&
-    currentLevel.getMap()[roundedX][roundedY] != 3) {
+  if (roundedX >= 0 && roundedX < currentLevel.cols && roundedY >= 0 && roundedY < currentLevel.rows &&
+    currentLevel.map[roundedX][roundedY] != 0 &&
+    currentLevel.map[roundedX][roundedY] != 4 &&
+    currentLevel.map[roundedX][roundedY] != 6 &&
+    currentLevel.map[roundedX][roundedY] != 3) {
     return true;
   }
 
@@ -145,11 +142,11 @@ void drawPlayerWeapon() {
   if (moveRIGHT) weaponPosition = 10;
   else if (moveLEFT) weaponPosition = -10;
 
-  PImage weaponImage = p1.getPlayerWeapon().getSprite();
-  float imageX = (p1.getPosition().x * tilesize) + weaponPosition;
-  float imageY = p1.getPosition().y * tilesize;
-  float imageWidth = p1.getPlayerWeapon().getSprite().width;
-  float imageHeight = p1.getPlayerWeapon().getSprite().height;
+  PImage weaponImage = p1.weapon.sprite;
+  float imageX = (p1.spritePosition.x * tilesize) + weaponPosition;
+  float imageY = p1.spritePosition.y * tilesize;
+  float imageWidth = p1.weapon.sprite.width;
+  float imageHeight = p1.weapon.sprite.height;
 
   spritesLayer.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
 }

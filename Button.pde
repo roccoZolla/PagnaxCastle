@@ -68,7 +68,6 @@ class Button {
 
     // Imposta il colore del pulsante in base allo stato (normale, hover, premuto)
     if (clicked) {
-      System.out.println("tasto cliccato");
       // Colore quando premuto
       fill(255, 0, 0);
     } else if (hover) {

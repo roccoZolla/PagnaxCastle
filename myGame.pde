@@ -56,7 +56,6 @@ Button exitButton;
 Button pauseButton;
 Button resumeButton;
 Button backMenuButton;
-boolean isPressed;
 
 Button effectsPlusButton;
 Button effectsMinusButton;
@@ -68,11 +67,7 @@ Button backOptionButton;
 String gameTitle = "dungeon game";
 PFont myFont;  // font del gioco
 
-// Variabili per la posizione della camera
-float cameraX = 0;
-float cameraY = 0;
-float zoom = 5.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
-float easing = 0.7;
+Camera camera;
 
 PGraphics gameScene;
 PGraphics uiLayer;    // questo layer si deve trovare sul layer del scena del gioco
@@ -108,10 +103,17 @@ void setup() {
   setupSounds();
 
   // setup items (PROVVISORIO)
-  golden_key = new Item(2, "golden_key", "data/golden_key.png");
-  silver_key = new Item(4, "silver_key", "data/silver_key.png");
-  weapon = new Item(1, "sword", "data/little_sword.png");
-  redPotion = new Item(3, "Red Potion", "data/object/red_potion.png");
+  golden_key = new Item(2, "golden_key");
+  silver_key = new Item(4, "silver_key");
+  weapon = new Item(1, "sword");
+  redPotion = new Item(3, "Red Potion");
+  
+  golden_key.sprite = loadImage("data/golden_key.png");
+  silver_key.sprite = loadImage("data/silver_key.png");
+  weapon.sprite = loadImage("data/little_sword.png");
+  redPotion.sprite = loadImage("data/object/red_potion.png");
+
+  camera = new Camera();
 
   selectedChest = null;
 }
@@ -128,7 +130,6 @@ void setupButtons() {
   // pause scene
   resumeButton = new Button(width / 2 - 100, height / 2, 200, 80, "Resume", "");
   backMenuButton = new Button(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80, "Back to menu", "");
-  isPressed = false;
 
   // options screen
   effectsPlusButton = new Button(width - 100, 120, 50, 50, "+", "");
@@ -175,23 +176,23 @@ void setupGame() {
   castle = new World();
 
   currentArea = castle.getCurrentMacroarea();
-  // currentArea.initLevels();
   currentLevel = currentArea.getCurrentLevel();
   currentLevel.init();
 
-  actualLevel = currentArea.getName() + " - " + currentLevel.getName();
+  actualLevel = currentArea.areaName + " - " + currentLevel.levelName;
 
-  p1 = new Player(1, 80, 100, "data/player.png", 5, 5, 5);
-  p1.setPosition(currentLevel.getStartRoom());
   redPotion.setTakeable(true);    // si puo prendere
   redPotion.setUseable(true);    // si puo usare
   redPotion.setHealerable(true);  // restitusce vita
   redPotion.setBonusHP(20);
 
-  p1.setHealer(redPotion);
-  p1.setPlayerWeapon(weapon);
-  p1.setGoldenKeys(golden_key);
-  p1.setSilverKey(silver_key);
+  p1 = new Player(80, 100, 5, 5, 5);
+  p1.spritePosition = currentLevel.getStartRoom();
+  p1.sprite = loadImage("data/player.png");
+  p1.healer = redPotion;
+  p1.weapon = weapon;
+  p1.golden_keys = golden_key;
+  p1.silver_keys = silver_key;
 }
 
 void draw() {
@@ -330,52 +331,39 @@ void menuScreen() {
   exitButton.display();
 }
 
-void updateCamera() {
-  float targetCameraX = p1.getPosition().x * currentLevel.getTileSize() * zoom - gameScene.width / 2;
-  float targetCameraY = p1.getPosition().y * currentLevel.getTileSize() * zoom - gameScene.height / 2;
-
-  // Limita la telecamera in modo che non esca dalla mappa
-  targetCameraX = constrain(targetCameraX, 0, currentLevel.getCols() * currentLevel.getTileSize() * zoom - gameScene.width);
-  targetCameraY = constrain(targetCameraY, 0, currentLevel.getRows() * currentLevel.getTileSize() * zoom - gameScene.height);
-
-  // Interpolazione per rendere il movimento della camera più fluido
-  cameraX += (targetCameraX - cameraX) * easing;
-  cameraY += (targetCameraY - cameraY) * easing;
-}
-
 void gameScreen() {
   gameScene.beginDraw();
   // cancella lo schermo
   gameScene.background(0);
 
   // aggiorna la camera
-  updateCamera();
+  camera.update();
 
   // Imposta la telecamera alla nuova posizione e applica il fattore di scala
-  gameScene.translate(-cameraX, -cameraY);
-  gameScene.scale(zoom);
+  gameScene.translate(-camera.x, -camera.y);
+  gameScene.scale(camera.zoom);
 
   // Disegna la mappa del livello corrente
   currentLevel.display(); // renderizza il 4,6 % della mappa
 
   spritesLayer.beginDraw();
   spritesLayer.background(255, 0);
-  spritesLayer.translate(-cameraX, -cameraY);
-  spritesLayer.scale(zoom);
+  spritesLayer.translate(-camera.x, -camera.y);
+  spritesLayer.scale(camera.zoom);
 
   // ----- ENEMY -----
-  for (Enemy enemy : currentLevel.getEnemies()) {
-    enemy.display(spritesLayer, currentLevel.getTileSize());
+  for (Enemy enemy : currentLevel.enemies) {
+    enemy.display(spritesLayer);
     enemy.move(currentLevel);
   }
 
 
   // ----- CHEST -----
-  for (Chest chest : currentLevel.getChests()) {
-    chest.display(spritesLayer, currentLevel.getTileSize());
+  for (Chest chest : currentLevel.treasures) {
+    chest.display(spritesLayer);
 
     // Calcola la distanza tra il giocatore e la cassa
-    float distanceToChest = dist(p1.getPosition().x, p1.getPosition().y, chest.getPosition().x, chest.getPosition().y);
+    float distanceToChest = dist(p1.spritePosition.x, p1.spritePosition.y, chest.spritePosition.x, chest.spritePosition.y);
 
     // Imposta una soglia per la distanza in cui il giocatore può interagire con la cassa
     float interactionThreshold = 1.5; // Puoi regolare questa soglia a tuo piacimento
@@ -391,50 +379,46 @@ void gameScreen() {
 
   if (selectedChest != null) {
     // Calcola le coordinate x e y per il testo in modo che sia centrato sopra la cassa
-    float letterImageX = (selectedChest.getPosition().x * currentLevel.getTileSize());
-    float letterImageY = (selectedChest.getPosition().y * currentLevel.getTileSize()) - 20; // Regola l'offset verticale a tuo piacimento
+    float letterImageX = (selectedChest.spritePosition.x * currentLevel.tileSize);
+    float letterImageY = (selectedChest.spritePosition.y * currentLevel.tileSize) - 20; // Regola l'offset verticale a tuo piacimento
 
     // da fixare deve apparire nel ui layer
     spritesLayer.image(letter_k, letterImageX, letterImageY);
 
     if (moveINTR && !selectedChest.isOpen()) {
       if (selectedChest.isRare()) {    // se la cassa è rara
-        if (p1.getNumberOfGoldenKeys() > 0) {
-          if (selectedChest.getOpenWith().equals(p1.getGoldenKey())) {
+        if (p1.numberOfGoldenKeys > 0) {
+          if (selectedChest.getOpenWith().equals(p1.golden_keys)) {
             // imposta la cassa come aperta
             selectedChest.setIsOpen(true);
             specialChestOpen.play();
-            selectedChest.setSprite("data/object/special_chest_open.png");
+            selectedChest.sprite = loadImage("data/object/special_chest_open.png");
 
-            p1.setNumberOfGoldenKeys(p1.getNumberOfGoldenKeys() - 1);
-
-            // aggiorna lo score del player
-            p1.setScore(p1.getScore() + 50);
+            p1.numberOfGoldenKeys -= 1;
+            p1.playerScore += 50;
           }
         } else {
           spritesLayer.textFont(myFont);
           spritesLayer.fill(255);
           spritesLayer.textSize(15);
-          spritesLayer.text("Non hai piu chiavi!", (p1.getPosition().x * currentLevel.getTileSize()) - 50, (p1.getPosition().y * currentLevel.getTileSize()) - 10);
+          spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
         }
       } else {  // se la cassa è normale
-        if (p1.getNumberOfSilverKeys() > 0) {
-          if (selectedChest.getOpenWith().equals(p1.getSilverKey())) {
+        if (p1.numberOfSilverKeys > 0) {
+          if (selectedChest.getOpenWith().equals(p1.silver_keys)) {
             // imposta la cassa come aperta
             selectedChest.setIsOpen(true);
             normalChestOpen.play();
-            selectedChest.setSprite("data/object/chest_open.png");
+            selectedChest.sprite = loadImage("data/object/chest_open.png");
 
-            p1.setNumberOfSilverKeys(p1.getNumberOfSilverKeys() - 1);
-
-            // aggiorna lo score del player
-            p1.setScore(p1.getScore() + 50);
+            p1.numberOfSilverKeys -= 1;
+            p1.playerScore += 30;
           }
         } else {
           spritesLayer.textFont(myFont);
           spritesLayer.fill(255);
           spritesLayer.textSize(15);
-          spritesLayer.text("Non hai piu chiavi!", (p1.getPosition().x * currentLevel.getTileSize()) - 50, (p1.getPosition().y * currentLevel.getTileSize()) - 10);
+          spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
         }
       }
     }
@@ -443,15 +427,15 @@ void gameScreen() {
   }
 
   // ----- COIN -----
-  for (Coin coin : currentLevel.getCoins()) {
+  for (Coin coin : currentLevel.coins) {
     if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
-      if (PVector.dist(p1.getPosition(), coin.getPosition()) < coinCollectionThreshold) {
+      if (PVector.dist(p1.spritePosition, coin.spritePosition) < coinCollectionThreshold) {
         coin.collect();  // raccogli la moneta
         p1.collectCoin();
         pickupCoin.play();
-        p1.setScore(p1.getScore() + coin.getScoreValue());
+        p1.playerScore = coin.scoreValue;
       } else {
-        coin.display(spritesLayer, currentLevel.getTileSize());
+        coin.display(spritesLayer);
       }
     }
   }
@@ -461,33 +445,34 @@ void gameScreen() {
   handlePlayerMovement(currentLevel);
 
   // mostra il player
-  p1.display(spritesLayer, currentLevel.getTileSize());
+  p1.display(spritesLayer);
   if (moveATCK) {
     drawPlayerWeapon();
   }
 
-  if (moveUSE && p1.getNumberOfPotion() > 0) {
-    if (p1.getPlayerHP() < p1.getMaxHP()) {
+  // usa le pozioni
+  if (moveUSE && p1.numberOfPotion > 0) {
+    if (p1.playerHP < p1.playerMaxHP) {
       drinkPotion.play();
-      p1.setPlayerHP(p1.getPlayerHP() + redPotion.getBonusHP());
+      p1.playerHP += redPotion.bonusHP;
 
-      if (p1.getPlayerHP() > p1.getMaxHP()) p1.setPlayerHP(p1.getMaxHP());
+      if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
 
-      p1.setNumberOfPotion(p1.getNumberOfPotion() - 1);
+      p1.numberOfPotion -= 1;
     } else {
       spritesLayer.textFont(myFont);
       spritesLayer.fill(255);
       spritesLayer.textSize(10);
-      spritesLayer.text("Cuori al massimo!", (p1.getPosition().x * currentLevel.getTileSize()) - 30, (p1.getPosition().y * currentLevel.getTileSize()) - 5);
+      spritesLayer.text("Cuori al massimo!", (p1.spritePosition.x * currentLevel.tileSize) - 30, (p1.spritePosition.y * currentLevel.tileSize) - 5);
     }
   }
   spritesLayer.endDraw();
 
 
   // passa al livello successivo
-  if (dist(p1.getPosition().x, p1.getPosition().y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
+  if (dist(p1.spritePosition.x, p1.spritePosition.y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
     // se il livello dell'area è l'ultimo passa alla prossima area
-    if (currentLevel.getLevelIndex() == currentArea.getNumbLevels()-1) {
+    if (currentLevel.levelIndex == currentArea.numLevels - 1) {
       // controlla se è l'area finale
       if (currentArea.isFinal()) {
         screen_state = WIN_SCREEN;
@@ -495,26 +480,25 @@ void gameScreen() {
         // passa alla prossima macroarea
         currentArea = castle.getMacroareas().get(currentArea.getAreaIndex() + 1);
         // currentArea.initLevels();
-        currentLevel = currentArea.getCurrentLevel();
+        currentLevel = currentArea.currentLevel;
         currentLevel.init();
-        actualLevel = currentArea.getName() + " - " + currentLevel.getName();
-        p1.setPosition(currentLevel.getStartRoom());
+        actualLevel = currentArea.areaName + " - " + currentLevel.levelName;
+        p1.spritePosition = currentLevel.getStartRoom();
 
         // aggiorna lo score del player
-        p1.setScore(p1.getScore() + 200);
-
+        p1.playerScore +=  200;
         screen_state = STORY_SCREEN;
       }
     } else {
       // passa al livello successivo - stessa macro area
       // Il giocatore è abbastanza vicino al punto di accesso, quindi passa al livello successivo
-      currentLevel = currentArea.getLevels().get(currentLevel.getLevelIndex() + 1);
+      currentLevel = currentArea.getLevels().get(currentLevel.levelIndex + 1);
       currentLevel.init();
-      actualLevel = currentArea.getName() + " - " + currentLevel.getName();
-      p1.setPosition(currentLevel.getStartRoom());
+      actualLevel = currentArea.areaName + " - " + currentLevel.levelName;
+      p1.spritePosition = currentLevel.getStartRoom();
 
       // aggiorna lo score del player
-      p1.setScore(p1.getScore() + 100);
+      p1.playerScore += 100;
     }
   }
 
@@ -556,6 +540,8 @@ void pauseScreen() {
     // torna al gioco
     screen_state = GAME_SCREEN;
 
+    soundtrack.play();
+
     // disablita i bottoni
     resumeButton.setEnabled(false);
     optionButton.setEnabled(false);
@@ -581,6 +567,8 @@ void pauseScreen() {
 
     // torna al menu
     screen_state = MENU_SCREEN;
+
+    soundtrack.stop();
 
     resumeButton.setEnabled(false);
     optionButton.setEnabled(false);
@@ -684,15 +672,15 @@ void optionScreen() {
     volumeEffectsLevel += 0.1;
 
     if (volumeEffectsLevel > 1.0) volumeEffectsLevel = 1.0;
-    
+
     updateEffectsVolume(volumeEffectsLevel);
-  } 
-  
+  }
+
   if (effectsMinusButton.isClicked() && effectsMinusButton.isEnabled()) {
     volumeEffectsLevel -= 0.1;
 
     if (volumeEffectsLevel < 0.0) volumeEffectsLevel = 0.0;
-    
+
     updateEffectsVolume(volumeEffectsLevel);
   }
 
@@ -701,10 +689,10 @@ void optionScreen() {
     volumeMusicLevel += 0.1;
 
     if (volumeMusicLevel > 1.0) volumeMusicLevel = 1.0;
-    
+
     updateMusicVolume(volumeMusicLevel);
-  } 
-  
+  }
+
   if (musicMinusButton.isClicked() && musicMinusButton.isEnabled()) {
     volumeMusicLevel -= 0.1;
 
@@ -744,20 +732,21 @@ void drawUI() {
   if (pauseButton.isClicked() && pauseButton.isEnabled()) {
     // il gioco viene messo in pausa
     screen_state = PAUSE_SCREEN;
+    soundtrack.pause();
   }
-  
+
   // update button
   pauseButton.update();
-  
+
   // show button
   pauseButton.display(uiLayer);
 
   // ------ CUORI GIOCATORE ------
   // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
-  int heartsToDisplay = p1.getPlayerHP() / 10; // Supponiamo che ogni cuore rappresenti 10 HP
+  int heartsToDisplay = p1.playerHP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
   int heartY = 50;
-  maxHearts = p1.getMaxHP() / 10;
-  boolean isHalfHeart = p1.getPlayerHP() % 10 >= 5; // Controlla se c'è un cuore a metà
+  maxHearts = p1.playerMaxHP / 10;
+  boolean isHalfHeart = p1.playerHP % 10 >= 5; // Controlla se c'è un cuore a metà
 
   // Disegna i cuori pieni
   for (int i = 0; i < heartsToDisplay; i++) {
@@ -777,35 +766,35 @@ void drawUI() {
   // ------ SCORE GIOCATORE ------
   uiLayer.fill(255);
   uiLayer.textSize(24);
-  uiLayer.text("Score: " + p1.getScore(), uiLayer.width - 200, 20);
+  uiLayer.text("Score: " + p1.playerScore, uiLayer.width - 200, 20);
 
   // ------ CHIAVI ARGENTO GIOCATORE ------
   uiLayer.fill(255);
   uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
   uiLayer.textSize(18);
-  uiLayer.text(p1.getNumberOfSilverKeys(), 50, 80);
-  uiLayer.image(silver_key.getSprite(), 20, 80, 20, 20);
+  uiLayer.text(p1.numberOfSilverKeys, 50, 80);
+  uiLayer.image(silver_key.sprite, 20, 80, 20, 20);
 
   // ------ CHIAVI ORO GIOCATORE ------
   uiLayer.fill(255);
   uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
   uiLayer.textSize(18);
-  uiLayer.text(p1.getNumberOfGoldenKeys(), 100, 80);
-  uiLayer.image(golden_key.getSprite(), 70, 80, 20, 20);
+  uiLayer.text(p1.numberOfGoldenKeys, 100, 80);
+  uiLayer.image(golden_key.sprite, 70, 80, 20, 20);
 
   // ------ MONETE GIOCATORE ------
   uiLayer.fill(255);
   uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
   uiLayer.textSize(18);
-  uiLayer.text(p1.getCoins(), 50, 110);
+  uiLayer.text(p1.coins, 50, 110);
   uiLayer.image(coins, 20, 110, 20, 20);
 
   // ------ POZIONE GIOCATORE ------
   uiLayer.fill(255);
   uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
   uiLayer.textSize(18);
-  uiLayer.text(p1.getNumberOfPotion(), 50, 140);
-  uiLayer.image(redPotion.getSprite(), 20, 140, 20, 20);
+  uiLayer.text(p1.numberOfPotion, 50, 140);
+  uiLayer.image(redPotion.sprite, 20, 140, 20, 20);
 
   // ------- MINIMAPPA ------
   float miniMapSize = 300; // Imposta la dimensione desiderata per la minimappa
@@ -819,15 +808,15 @@ void drawUI() {
   // Disegna i bordi delle stanze sulla minimappa come una linea continua
   uiLayer.stroke(255); // Colore del bordo bianco
 
-  for (int x = 0; x < currentLevel.getCols(); x++) {
-    for (int y = 0; y < currentLevel.getRows(); y++) {
-      int tileType = currentLevel.getMap()[x][y];
+  for (int x = 0; x < currentLevel.cols; x++) {
+    for (int y = 0; y < currentLevel.rows; y++) {
+      int tileType = currentLevel.map[x][y];
 
       // Controlla se il tile è una parete o un corridoio (bordo della stanza)
       if (tileType == 4 || tileType == 5) {
         // Mappa i tile della minimappa nel rettangolo
-        float miniMapTileX = map(x, 0, currentLevel.getCols(), miniMapX, miniMapX + miniMapSize);
-        float miniMapTileY = map(y, 0, currentLevel.getRows(), miniMapY, miniMapY + miniMapSize);
+        float miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
+        float miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
 
         // Disegna il bordo della stanza sulla minimappa
         uiLayer.point(miniMapTileX, miniMapTileY);
@@ -835,8 +824,9 @@ void drawUI() {
     }
   }
 
-  float playerMiniMapX = map(p1.getPosition().x, 0, currentLevel.getCols(), miniMapX, miniMapX + miniMapSize);
-  float playerMiniMapY = map(p1.getPosition().y, 0, currentLevel.getRows(), miniMapY, miniMapY + miniMapSize);
+  float playerMiniMapX = map(p1.spritePosition.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
+  float playerMiniMapY = map(p1.spritePosition.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+
   uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
   uiLayer.noStroke();
   uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5);
@@ -845,9 +835,9 @@ void drawUI() {
   uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
   uiLayer.noStroke();
 
-  for (Enemy enemy : currentLevel.getEnemies()) {
-    float enemyMiniMapX = map(enemy.getPosition().x, 0, currentLevel.getCols(), miniMapX, miniMapX + miniMapSize);
-    float enemyMiniMapY = map(enemy.getPosition().y, 0, currentLevel.getRows(), miniMapY, miniMapY + miniMapSize);
+  for (Enemy enemy : currentLevel.enemies) {
+    float enemyMiniMapX = map(enemy.spritePosition.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
+    float enemyMiniMapY = map(enemy.spritePosition.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
     uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
   }
 
@@ -858,15 +848,15 @@ void drawUI() {
 
   float scaleFactor = 3.0;
 
-  if (p1.getPlayerWeapon().getSprite() != null) {
+  if (p1.weapon.sprite != null) {
 
-    float imgWidth = p1.getPlayerWeapon().getSprite().width * scaleFactor;
-    float imgHeight = p1.getPlayerWeapon().getSprite().height * scaleFactor;
+    float imgWidth = p1.weapon.sprite.width * scaleFactor;
+    float imgHeight = p1.weapon.sprite.height * scaleFactor;
 
     float imgX = uiLayer.width / 2 + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
     float imgY = uiLayer.height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
 
-    uiLayer.image(p1.getPlayerWeapon().getSprite(), imgX, imgY, imgWidth, imgHeight);
+    uiLayer.image(p1.weapon.sprite, imgX, imgY, imgWidth, imgHeight);
   }
   uiLayer.endDraw();
 }
@@ -905,12 +895,12 @@ void writer(String txt) {
   }
 }
 
-void resetGame() {
-  // resetta mondo e variabili
-  // reimpostare currentArea e richiamare la initLevels
-  // reimposta la posizione del giocatore e tutti i suoi parametri
-  currentArea = castle.getMacroareas().get(0);
-  currentArea.initLevels();
-  currentLevel = currentArea.getCurrentLevel();
-  p1.setPosition(currentLevel.getStartRoom());
-}
+//void resetGame() {
+//  // resetta mondo e variabili
+//  // reimpostare currentArea e richiamare la initLevels
+//  // reimposta la posizione del giocatore e tutti i suoi parametri
+//  currentArea = castle.getMacroareas().get(0);
+//  currentArea.initLevels();
+//  currentLevel = currentArea.getCurrentLevel();
+//  p1.setPosition(currentLevel.getStartRoom());
+//}

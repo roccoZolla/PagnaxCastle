@@ -1,37 +1,22 @@
-public class Enemy extends Sprite {
-  private int enemyHP;
-  private String name;
+public class Enemy {
+  PVector spritePosition;
+  PImage sprite;
+  
+  int enemyHP;
+  String name;
 
-  Enemy(int id, int enemyHP, String name, String dataPath) {
-    this.id = id;
+  Enemy(int enemyHP, String name) {
     this.enemyHP = enemyHP;
     this.name = name;
-    this.img = loadImage(dataPath);
   }
 
-  int getEnemyHP() {
-    return enemyHP;
+  void display(PGraphics layer) {
+    layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
   }
-
-  String getName() {
-    return name;
-  }
-
-  void setEnemyHP(int enemyHP) {
-    this.enemyHP = enemyHP;
-  }
-
-  void setName(String name) {
-    this.name = name;
-  }
-
-  void displayEnemy(int tileSize) {
-    display(tileSize);
-  }
-
+  
   void move(Level currentLevel) {
     // Ottieni la posizione del giocatore
-    PVector playerPosition = p1.getPosition();
+    PVector playerPosition = p1.spritePosition;
 
     // Calcola la distanza tra il nemico e il giocatore
     float distance = dist(this.spritePosition.x, this.spritePosition.y, playerPosition.x, playerPosition.y);

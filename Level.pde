@@ -1,46 +1,46 @@
 class Level {
-  private String levelName;
-  private int levelIndex;
-  private String dataPath;
-  private boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
-  private int numberOfRooms;
+  String levelName;
+  int levelIndex;
+  String dataPath;
+  boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
+  int numberOfRooms;
 
   // rooms
-  private int tileSize = 16;
-  private int cols, rows;
-  private int[][] map;
+  int tileSize = 16;
+  int cols, rows;
+  int[][] map;
   // private ArrayList<PVector> roomS; // Memorizza le posizioni delle stanze
-  private ArrayList<Room> rooms;
+  ArrayList<Room> rooms;
 
   // attributi
-  private PImage startFloorImage;
-  private PImage floorImage; // Immagine per il pavimento
+  PImage startFloorImage;
+  PImage floorImage; // Immagine per il pavimento
   // private PImage wallImage;  // Immagine per sfondo
   // pareti delle stanze
-  private PImage wallImageNorth;
+  PImage wallImageNorth;
   // private PImage wallImageNorthTop;
   //private PImage wallImageNorthBottom;
   //private PImage wallImageSouth;
   //private PImage wallImageEast;
   //private PImage wallImageWest;
-  private PImage hallwayImage;         // immagine per i corridoi
-  private PImage stairsNextFloorImage; // scale per accedere al livello successivo
-  
-  private ArrayList<Coin> coins;      // contiene le monete presenti nel livello
+  PImage hallwayImage;         // immagine per i corridoi
+  PImage stairsNextFloorImage; // scale per accedere al livello successivo
+
+  ArrayList<Coin> coins;      // contiene le monete presenti nel livello
 
   // chest che puoi trovare nel livello
-  private int spawnLevel = 5; // Livello di spawn
-  private ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
+  int spawnLevel = 5; // Livello di spawn
+  ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
   // nemici che puoi trovare nel livello
   // private int numberOfEnemies = 5;  // livello di spawn dei nemici
-  private ArrayList<Enemy> enemies; // Lista dei nemici
+  ArrayList<Enemy> enemies; // Lista dei nemici
 
   PVector finalRoomPosition;
   PVector nextLevelStartRoomPosition;
 
-  private int startRoomIndex;
-  private int endRoomIndex;
+  int startRoomIndex;
+  int endRoomIndex;
 
   Level(String levelName, int levelIndex, String dataPath, int numberOfRooms) {
     this.levelName = levelName;
@@ -93,57 +93,17 @@ class Level {
 
     // genera i loot
     generateRandomChests();
-    
+
     // genera le monete
     generateRandomCoins();
   }
 
-  int getTileSize() {
-    return tileSize;
-  }
-
-  int getCols() {
-    return cols;
-  }
-
-  int getRows() {
-    return rows;
-  }
-
-  int[][] getMap() {
-    return map;
-  }
-
-  PVector getNextLevelStartRoomPosition() {
-    return nextLevelStartRoomPosition;
-  }
-
-  int getLevelIndex() {
-    return levelIndex;
-  }
-
-  String getName() {
-    return levelName;
-  }
-
   PVector getStartRoom() {
-    return rooms.get(startRoomIndex).getPosition();
+    return rooms.get(startRoomIndex).position;
   }
 
   PVector getEndRoomPosition() {
-    return rooms.get(endRoomIndex).getPosition();
-  }
-
-  ArrayList<Enemy> getEnemies() {
-    return enemies;
-  }
-
-  ArrayList<Chest> getChests() {
-    return treasures;
-  }
-  
-  ArrayList<Coin> getCoins() {
-    return coins;
+    return rooms.get(endRoomIndex).position;
   }
 
   // metodi per la generazione delle stanze
@@ -245,8 +205,9 @@ class Level {
 
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
       int coinValue = (int) random(1, 10); // Esempio: valore casuale tra 1 e 10
-      Coin coin = new Coin(coinValue, "data/coin.png");
-      coin.setPosition(new PVector(x, y));
+      Coin coin = new Coin(coinValue);
+      coin.sprite = loadImage("data/coin.png");
+      coin.spritePosition = new PVector(x, y);
 
       // Aggiungi la moneta alla lista delle monete
       coins.add(coin);
@@ -270,7 +231,8 @@ class Level {
 
       if (chestType < commonChestSpawnRate) {
         // Genera una cassa comune
-        chest = new Chest("data/object/chest_close.png");
+        chest = new Chest();
+        chest.sprite = loadImage("data/object/chest_close.png");
         chest.setId(i);
         chest.setName("Cassa Comune " + i);
         chest.setOpenWith(silver_key);              // Specifica l'oggetto chiave necessario
@@ -278,7 +240,8 @@ class Level {
         // Imposta altri attributi della cassa comune
       } else {
         // Genera una cassa rara
-        chest = new Chest("data/object/special_chest_close.png");
+        chest = new Chest();
+        chest.sprite = loadImage("data/object/special_chest_close.png");
         chest.setId(i);
         chest.setName("Cassa Rara " + i);
         chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
@@ -298,19 +261,10 @@ class Level {
       } while (positionOccupied);
 
       // Aggiungi la cassa alla lista delle casse
-      chest.setPosition(new PVector(x, y));
+      chest.spritePosition = new PVector(x, y);
       map[x][y] = 6; // Imposta il tipo di tile corrispondente a una cassa
 
       treasures.add(chest);
-    }
-    
-    for(Chest chezz : treasures) {
-      println("chest id: " + chezz.getId());
-      println("chest Name: " + chezz.getName());
-      println("chaive: " + chezz.getOpenWith().getName());
-      println("rarita: " + chezz.isRare());
-      println("interagibile: " + chezz.isInteractable());
-      println("aperta: " + chezz.isOpen());
     }
   }
 
@@ -321,9 +275,9 @@ class Level {
     boolean positionOccupied;
 
     for (Room room : rooms) {
-      PVector roomPosition = room.getPosition();
-      int roomWidth = room.getWidth();
-      int roomHeight = room.getHeight();
+      PVector roomPosition = room.position;
+      int roomWidth = room.roomWidth;
+      int roomHeight = room.roomHeight;
 
       // Genera un numero casuale di nemici in ogni stanza
       // AGGIUNGI LOGICA DI DIFFICOLTA
@@ -343,8 +297,9 @@ class Level {
 
         // creazione dell'entita nemico
         int enemyHP = 30;
-        Enemy enemy = new Enemy(i, enemyHP, "nemico", "data/npc/rat_enemy.png");
-        enemy.setPosition(new PVector(x, y));
+        Enemy enemy = new Enemy(enemyHP, "nemico");
+        enemy.sprite = loadImage("data/npc/rat_enemy.png");
+        enemy.spritePosition = new PVector(x, y);
 
         // Aggiungi il nemico alla lista
         enemies.add(enemy);
@@ -354,12 +309,11 @@ class Level {
 
   // disegna solo cio che vede il giocatore
   void display() {
-
     // Calcola i limiti dello schermo visibile in termini di celle di mappa
-    int startX = floor((cameraX / (tileSize * zoom)));
-    int startY = floor((cameraY / (tileSize * zoom)));
-    int endX = ceil((cameraX + gameScene.width) / (tileSize * zoom));
-    int endY = ceil((cameraY + gameScene.height) / (tileSize * zoom));
+    int startX = floor((camera.x / (tileSize * camera.zoom)));
+    int startY = floor((camera.y / (tileSize * camera.zoom)));
+    int endX = ceil((camera.x + gameScene.width) / (tileSize * camera.zoom));
+    int endY = ceil((camera.y + gameScene.height) / (tileSize * camera.zoom));
 
     // Assicurati che i limiti siano all'interno dei limiti della mappa
     startX = constrain(startX, 0, cols - 1);

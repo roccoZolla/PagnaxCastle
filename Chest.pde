@@ -4,9 +4,8 @@ public class Chest extends Item{
     private Item openWith;              // oggetto che serve per aprire la chest
     private boolean isRare;
     
-    Chest(String dataPath) {
+    Chest() {
       items = new ArrayList(){};
-      this.img = loadImage(dataPath);
     }
     
     public ArrayList<Item> getList() {
