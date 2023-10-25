@@ -153,3 +153,15 @@ void drawPlayerWeapon() {
 
   spritesLayer.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
 }
+
+void updateEffectsVolume(float volumeEffectsLevel) {
+  pickupCoin.amp(volumeEffectsLevel);
+  normalChestOpen.amp(volumeEffectsLevel);
+  specialChestOpen.amp(volumeEffectsLevel);
+  drinkPotion.amp(volumeEffectsLevel);
+}
+
+void updateMusicVolume(float volumeMusicLevel) {
+  // aggiorna volume musica di sottofondo
+  soundtrack.amp(volumeMusicLevel);
+}

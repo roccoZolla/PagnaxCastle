@@ -17,10 +17,17 @@ int heartHeight = 20; // Altezza di un cuore
 PImage letter_k;
 PImage coins;
 
+// sound effect
+float volumeMusicLevel;
+float volumeEffectsLevel;    // oscilla tra 0.0 e 1.0
+
 SoundFile pickupCoin;
 SoundFile normalChestOpen;
 SoundFile specialChestOpen;
 SoundFile drinkPotion;
+
+SoundFile soundtrack;
+boolean isSoundtrackPlaying;
 
 // stato dello schermo
 static int screen_state;
@@ -50,6 +57,10 @@ Button pauseButton;
 Button resumeButton;
 Button backMenuButton;
 
+Button effectsPlusButton;
+Button effectsMinusButton;
+Button musicPlusButton;
+Button musicMinusButton;
 Button backOptionButton;
 
 // titolo del gioco
@@ -97,19 +108,42 @@ void setup() {
   resumeButton = new Button(width / 2 - 100, height / 2, 200, 80, "Resume", "");
   backMenuButton = new Button(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80, "Back to menu", "");
 
+  // options screen
+  effectsPlusButton = new Button(width - 100, 120, 50, 50, "+", "");
+  effectsMinusButton = new Button(width - 250, 120, 50, 50, "-", "");
+
+  musicPlusButton = new Button(width - 100, 200, 50, 50, "+", "");
+  musicMinusButton = new Button(width - 250, 200, 50, 50, "-", "");
+
   backOptionButton = new Button(width - 250, height - 150, 200, 80, "Back to menu", "");
 
+  // setup image
   heartFull = loadImage("data/heartFull.png");
   halfHeart = loadImage("data/halfHeart.png");
   emptyHeart = loadImage("data/emptyHeart.png");
   letter_k = loadImage("data/letter_k.png");
   coins = loadImage("data/coin.png");
 
+  // setup sound
+  volumeMusicLevel = 0.3;
+  volumeEffectsLevel = 0.5;
+
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
   specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
   drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
+  
+  soundtrack = new SoundFile(this, "data/sound/dungeon_soundtrack.wav");
+  isSoundtrackPlaying = false;
 
+  pickupCoin.amp(volumeEffectsLevel);
+  normalChestOpen.amp(volumeEffectsLevel);
+  specialChestOpen.amp(volumeEffectsLevel);
+  drinkPotion.amp(volumeEffectsLevel);
+  
+  soundtrack.amp(volumeMusicLevel);
+
+  // setup items (PROVVISORIO)
   golden_key = new Item(2, "golden_key", "data/golden_key.png");
   silver_key = new Item(4, "silver_key", "data/silver_key.png");
   weapon = new Item(1, "sword", "data/little_sword.png");
@@ -167,6 +201,11 @@ void draw() {
   case GAME_SCREEN:
     // attiva il bottone di pausa
     pauseButton.setEnabled(true);
+    
+    if(!isSoundtrackPlaying) {
+      soundtrack.play();
+      isSoundtrackPlaying = true;
+    }
 
     // show game screen
     gameScreen();
@@ -204,6 +243,12 @@ void draw() {
   case OPTION_SCREEN:
     // attiva i bottoni relativi
     backOptionButton.setEnabled(true);
+
+    effectsPlusButton.setEnabled(true);
+    effectsMinusButton.setEnabled(true);
+
+    musicPlusButton.setEnabled(true);
+    musicMinusButton.setEnabled(true);
 
     // show option screen
     optionScreen();
@@ -528,25 +573,59 @@ void optionScreen() {
   textAlign(CENTER, CENTER);
   text("OPTIONS", 100, 50);
 
-  // scritta audio
+  stroke(255);
+  line(200, 50, width - 50, 50);
+
+  // ----- AUDIO -----
   fill(255);
   textSize(36);
   textAlign(LEFT, CENTER);
   text("Audio: ", 100, 100);
 
+  // ----- EFFETTI SONORI -----
+  fill(255);
+  textSize(36);
+  textAlign(LEFT, CENTER);
+  text("Effetti sonori: ", 200, 150);
+
+  fill(255);
+  textSize(36);
+  textAlign(LEFT, CENTER);
+  text(volumeEffectsLevel, width - 200, 150);
+
+  // ----- MUSICA -----
+  fill(255);
+  textSize(36);
+  textAlign(LEFT, CENTER);
+  text("Musica: ", 200, 200);
+
+  fill(255);
+  textSize(36);
+  textAlign(LEFT, CENTER);
+  text(volumeMusicLevel, width - 200, 225);
+
   // scritta difficolta
   fill(255);
   textSize(36);
   textAlign(LEFT, CENTER);
-  text("Difficolta: ", 100, 150);
+  text("Difficolta: ", 100, 250);
 
   // scritta lingua
   fill(255);
   textSize(36);
   textAlign(LEFT, CENTER);
-  text("Lingua: ", 100, 200);
+  text("Lingua: ", 100, 300);
 
+  // ----- BACK BUTTON -----
   backOptionButton.display();
+  effectsPlusButton.display();
+  effectsMinusButton.display();
+  musicPlusButton.display();
+  musicMinusButton.display();
+
+  stroke(255);
+  line(50, height - 100, width - 270, height - 100);
+
 
   System.out.println("exit button: " + exitButton.isEnabled());
 
@@ -566,6 +645,32 @@ void optionScreen() {
     }
 
     backOptionButton.setEnabled(false);
+  }
+
+  // effects sound button
+  if (effectsPlusButton.isPressed() && effectsPlusButton.isEnabled()) {
+    volumeEffectsLevel += 0.1;
+
+    if (volumeEffectsLevel > 1.0) volumeEffectsLevel = 1.0;
+    updateEffectsVolume(volumeEffectsLevel);
+  } else if (effectsMinusButton.isPressed() && effectsMinusButton.isEnabled()) {
+    volumeEffectsLevel -= 0.1;
+
+    if (volumeEffectsLevel < 0.0) volumeEffectsLevel = 0.0;
+    updateEffectsVolume(volumeEffectsLevel);
+  }
+  
+  // music button
+  if (musicPlusButton.isPressed() && musicPlusButton.isEnabled()) {
+    volumeMusicLevel += 0.1;
+
+    if (volumeMusicLevel > 1.0) volumeMusicLevel = 1.0;
+      updateEffectsVolume(volumeEffectsLevel);
+  } else if (musicMinusButton.isPressed() && musicMinusButton.isEnabled()) {
+    volumeMusicLevel -= 0.1;
+
+    if (volumeMusicLevel < 0.0) volumeMusicLevel = 0.0;
+      updateEffectsVolume(volumeEffectsLevel);
   }
 }
 
