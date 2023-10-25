@@ -56,6 +56,7 @@ Button exitButton;
 Button pauseButton;
 Button resumeButton;
 Button backMenuButton;
+boolean isPressed;
 
 Button effectsPlusButton;
 Button effectsMinusButton;
@@ -77,6 +78,7 @@ PGraphics gameScene;
 PGraphics uiLayer;    // questo layer si deve trovare sul layer del scena del gioco
 PGraphics spritesLayer;
 PGraphics pauseLayer; // layer della schermata di pausa -> evitiamo conflitti tra bottoni che si trovano nella stessa posizione
+PGraphics optionScene;
 
 void setup() {
   // dimensioni schermo
@@ -86,6 +88,7 @@ void setup() {
   spritesLayer = createGraphics(width, height);
   uiLayer = createGraphics(width, height);
   pauseLayer = createGraphics(width, height);
+  optionScene = createGraphics(width, height);
 
   // load font
   myFont = createFont("data/font/Minecraft.ttf", 20);
@@ -96,6 +99,24 @@ void setup() {
   previous_state = screen_state;
 
   // setup dei bottoni
+  setupButtons();
+
+  // setup image
+  setupImages();
+
+  // setup sound
+  setupSounds();
+
+  // setup items (PROVVISORIO)
+  golden_key = new Item(2, "golden_key", "data/golden_key.png");
+  silver_key = new Item(4, "silver_key", "data/silver_key.png");
+  weapon = new Item(1, "sword", "data/little_sword.png");
+  redPotion = new Item(3, "Red Potion", "data/object/red_potion.png");
+
+  selectedChest = null;
+}
+
+void setupButtons() {
   // menu
   startButton = new Button(width / 2 - 100, height / 2, 200, 80, "Start", "");
   optionButton = new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Option", "");
@@ -107,6 +128,7 @@ void setup() {
   // pause scene
   resumeButton = new Button(width / 2 - 100, height / 2, 200, 80, "Resume", "");
   backMenuButton = new Button(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80, "Back to menu", "");
+  isPressed = false;
 
   // options screen
   effectsPlusButton = new Button(width - 100, 120, 50, 50, "+", "");
@@ -116,23 +138,25 @@ void setup() {
   musicMinusButton = new Button(width - 250, 200, 50, 50, "-", "");
 
   backOptionButton = new Button(width - 250, height - 150, 200, 80, "Back to menu", "");
+}
 
-  // setup image
+void setupImages() {
   heartFull = loadImage("data/heartFull.png");
   halfHeart = loadImage("data/halfHeart.png");
   emptyHeart = loadImage("data/emptyHeart.png");
   letter_k = loadImage("data/letter_k.png");
   coins = loadImage("data/coin.png");
+}
 
-  // setup sound
-  volumeMusicLevel = 0.3;
-  volumeEffectsLevel = 0.5;
+void setupSounds() {
+  volumeMusicLevel = 0.1;
+  volumeEffectsLevel = 0.1;
 
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
   specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
   drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
-  
+
   soundtrack = new SoundFile(this, "data/sound/dungeon_soundtrack.wav");
   isSoundtrackPlaying = false;
 
@@ -140,16 +164,8 @@ void setup() {
   normalChestOpen.amp(volumeEffectsLevel);
   specialChestOpen.amp(volumeEffectsLevel);
   drinkPotion.amp(volumeEffectsLevel);
-  
+
   soundtrack.amp(volumeMusicLevel);
-
-  // setup items (PROVVISORIO)
-  golden_key = new Item(2, "golden_key", "data/golden_key.png");
-  silver_key = new Item(4, "silver_key", "data/silver_key.png");
-  weapon = new Item(1, "sword", "data/little_sword.png");
-  redPotion = new Item(3, "Red Potion", "data/object/red_potion.png");
-
-  selectedChest = null;
 }
 
 // inizializza il mondo di gioco
@@ -201,8 +217,8 @@ void draw() {
   case GAME_SCREEN:
     // attiva il bottone di pausa
     pauseButton.setEnabled(true);
-    
-    if(!isSoundtrackPlaying) {
+
+    if (!isSoundtrackPlaying) {
       soundtrack.play();
       isSoundtrackPlaying = true;
     }
@@ -252,6 +268,8 @@ void draw() {
 
     // show option screen
     optionScreen();
+
+    image(optionScene, 0, 0);
     break;
 
   default:
@@ -268,12 +286,7 @@ void menuScreen() {
   textAlign(CENTER, CENTER);
   text(gameTitle, width / 2, height / 2 - 100);
 
-  // show buttons
-  startButton.display();
-  optionButton.display();
-  exitButton.display();
-
-  if (startButton.isPressed() && startButton.isEnabled()) {
+  if (startButton.isClicked() && startButton.isEnabled()) {
     // salva lo stato
     previous_state = screen_state;
 
@@ -287,7 +300,9 @@ void menuScreen() {
     startButton.setEnabled(false);
     optionButton.setEnabled(false);
     exitButton.setEnabled(false);
-  } else if (optionButton.isPressed() && optionButton.isEnabled()) {
+  }
+
+  if (optionButton.isClicked() && optionButton.isEnabled()) {
     // salva lo stato
     previous_state = screen_state;
 
@@ -298,9 +313,21 @@ void menuScreen() {
     startButton.setEnabled(false);
     optionButton.setEnabled(false);
     exitButton.setEnabled(false);
-  } else if (exitButton.isPressed() && exitButton.isEnabled()) {
+  }
+
+  if (exitButton.isClicked() && exitButton.isEnabled()) {
     System.exit(0);
   }
+
+  // update buttons
+  startButton.update();
+  optionButton.update();
+  exitButton.update();
+
+  // show buttons
+  startButton.display();
+  optionButton.display();
+  exitButton.display();
 }
 
 void updateCamera() {
@@ -522,12 +549,7 @@ void pauseScreen() {
   pauseLayer.textAlign(CENTER, CENTER);
   pauseLayer.text("PAUSA", width / 2, height / 2 - 100);
 
-  // shows buttons
-  resumeButton.display(pauseLayer);
-  optionButton.display(pauseLayer);
-  backMenuButton.display(pauseLayer);
-
-  if (resumeButton.isPressed() && resumeButton.isEnabled()) {
+  if (resumeButton.isClicked() && resumeButton.isEnabled()) {
     // prima di cambiare stato salvalo
     previous_state = screen_state;
 
@@ -538,7 +560,9 @@ void pauseScreen() {
     resumeButton.setEnabled(false);
     optionButton.setEnabled(false);
     backMenuButton.setEnabled(false);
-  } else if (optionButton.isPressed() && optionButton.isEnabled()) {
+  }
+
+  if (optionButton.isClicked() && optionButton.isEnabled()) {
     // salva lo stato
     previous_state = screen_state;
 
@@ -549,7 +573,9 @@ void pauseScreen() {
     resumeButton.setEnabled(false);
     optionButton.setEnabled(false);
     backMenuButton.setEnabled(false);
-  } else if (backMenuButton.isPressed() && backMenuButton.isEnabled()) {
+  }
+
+  if (backMenuButton.isClicked() && backMenuButton.isEnabled()) {
     // salva lo stato
     previous_state = screen_state;
 
@@ -560,76 +586,78 @@ void pauseScreen() {
     optionButton.setEnabled(false);
     backMenuButton.setEnabled(false);
   }
+
+  // update buttons
+  resumeButton.update();
+  optionButton.update();
+  backMenuButton.update();
+
+  // shows buttons
+  resumeButton.display(pauseLayer);
+  optionButton.display(pauseLayer);
+  backMenuButton.display(pauseLayer);
+
   pauseLayer.endDraw();
 }
 
 void optionScreen() {
+  optionScene.beginDraw();
   // cancella lo schermo
-  background(0);
+  optionScene.background(0);
 
   // disegna la scritta opzioni
-  fill(255);
-  textSize(36);
-  textAlign(CENTER, CENTER);
-  text("OPTIONS", 100, 50);
+  optionScene.textFont(myFont);
+  optionScene.fill(255);
+  optionScene.textSize(36);
+  optionScene.textAlign(CENTER, CENTER);
+  optionScene.text("OPTIONS", 100, 50);
 
-  stroke(255);
-  line(200, 50, width - 50, 50);
+  optionScene.stroke(255);
+  optionScene.line(200, 50, width - 50, 50);
 
   // ----- AUDIO -----
-  fill(255);
-  textSize(36);
-  textAlign(LEFT, CENTER);
-  text("Audio: ", 100, 100);
+  optionScene.fill(255);
+  optionScene.textSize(30);
+  optionScene.textAlign(LEFT, CENTER);
+  optionScene.text("Audio: ", 100, 100);
 
   // ----- EFFETTI SONORI -----
-  fill(255);
-  textSize(36);
-  textAlign(LEFT, CENTER);
-  text("Effetti sonori: ", 200, 150);
-
-  fill(255);
-  textSize(36);
-  textAlign(LEFT, CENTER);
-  text(volumeEffectsLevel, width - 200, 150);
+  optionScene.fill(255);
+  optionScene.textSize(30);
+  optionScene.textAlign(LEFT, CENTER);
+  optionScene.text("Effetti sonori: ", 200, 150);
+  optionScene.fill(255);
+  optionScene.textSize(30);
+  optionScene.textAlign(LEFT, CENTER);
+  optionScene.text(volumeEffectsLevel, width - 200, 150);
 
   // ----- MUSICA -----
-  fill(255);
-  textSize(36);
-  textAlign(LEFT, CENTER);
-  text("Musica: ", 200, 200);
+  optionScene.fill(255);
+  optionScene.textSize(30);
+  optionScene.textAlign(LEFT, CENTER);
+  optionScene.text("Musica: ", 200, 200);
 
-  fill(255);
-  textSize(36);
-  textAlign(LEFT, CENTER);
-  text(volumeMusicLevel, width - 200, 225);
+  optionScene.fill(255);
+  optionScene.textSize(30);
+  optionScene.textAlign(LEFT, CENTER);
+  optionScene.text(volumeMusicLevel, width - 200, 225);
 
   // scritta difficolta
-  fill(255);
-  textSize(36);
-  textAlign(LEFT, CENTER);
-  text("Difficolta: ", 100, 250);
+  optionScene.fill(255);
+  optionScene.textSize(30);
+  optionScene.textAlign(LEFT, CENTER);
+  optionScene.text("Difficolta: ", 100, 250);
 
   // scritta lingua
-  fill(255);
-  textSize(36);
-  textAlign(LEFT, CENTER);
-  text("Lingua: ", 100, 300);
+  optionScene.fill(255);
+  optionScene.textSize(30);
+  optionScene.textAlign(LEFT, CENTER);
+  optionScene.text("Lingua: ", 100, 300);
 
-  // ----- BACK BUTTON -----
-  backOptionButton.display();
-  effectsPlusButton.display();
-  effectsMinusButton.display();
-  musicPlusButton.display();
-  musicMinusButton.display();
+  optionScene.stroke(255);
+  optionScene.line(50, height - 100, width - 270, height - 100);
 
-  stroke(255);
-  line(50, height - 100, width - 270, height - 100);
-
-
-  System.out.println("exit button: " + exitButton.isEnabled());
-
-  if (backOptionButton.isPressed() && backOptionButton.isEnabled()) {
+  if (backOptionButton.isClicked() && backOptionButton.isEnabled()) {
     if (previous_state == MENU_SCREEN) {
       // salva lo stato
       previous_state = screen_state;
@@ -645,33 +673,61 @@ void optionScreen() {
     }
 
     backOptionButton.setEnabled(false);
+    effectsPlusButton.setEnabled(false);
+    effectsMinusButton.setEnabled(false);
+    musicPlusButton.setEnabled(false);
+    musicMinusButton.setEnabled(false);
   }
 
   // effects sound button
-  if (effectsPlusButton.isPressed() && effectsPlusButton.isEnabled()) {
+  if (effectsPlusButton.isClicked() && effectsPlusButton.isEnabled()) {
     volumeEffectsLevel += 0.1;
 
     if (volumeEffectsLevel > 1.0) volumeEffectsLevel = 1.0;
+    
     updateEffectsVolume(volumeEffectsLevel);
-  } else if (effectsMinusButton.isPressed() && effectsMinusButton.isEnabled()) {
+  } 
+  
+  if (effectsMinusButton.isClicked() && effectsMinusButton.isEnabled()) {
     volumeEffectsLevel -= 0.1;
 
     if (volumeEffectsLevel < 0.0) volumeEffectsLevel = 0.0;
+    
     updateEffectsVolume(volumeEffectsLevel);
   }
-  
+
   // music button
-  if (musicPlusButton.isPressed() && musicPlusButton.isEnabled()) {
+  if (musicPlusButton.isClicked() && musicPlusButton.isEnabled()) {
     volumeMusicLevel += 0.1;
 
     if (volumeMusicLevel > 1.0) volumeMusicLevel = 1.0;
-      updateEffectsVolume(volumeEffectsLevel);
-  } else if (musicMinusButton.isPressed() && musicMinusButton.isEnabled()) {
+    
+    updateMusicVolume(volumeMusicLevel);
+  } 
+  
+  if (musicMinusButton.isClicked() && musicMinusButton.isEnabled()) {
     volumeMusicLevel -= 0.1;
 
     if (volumeMusicLevel < 0.0) volumeMusicLevel = 0.0;
-      updateEffectsVolume(volumeEffectsLevel);
+    updateMusicVolume(volumeMusicLevel);
   }
+
+  // ----- BACK BUTTON -----
+  // update buttons
+  backOptionButton.update();
+  effectsPlusButton.update();
+  effectsMinusButton.update();
+  musicPlusButton.update();
+  musicMinusButton.update();
+
+  // show buttons
+  backOptionButton.display(optionScene);
+  effectsPlusButton.display(optionScene);
+  effectsMinusButton.display(optionScene);
+  musicPlusButton.display(optionScene);
+  musicMinusButton.display(optionScene);
+
+  optionScene.endDraw();
 }
 
 void drawUI() {
@@ -685,12 +741,16 @@ void drawUI() {
   uiLayer.text(actualLevel, 20, 20);
 
   // pause button
-  pauseButton.display(uiLayer);
-
-  if (pauseButton.isPressed() && pauseButton.isEnabled()) {
+  if (pauseButton.isClicked() && pauseButton.isEnabled()) {
     // il gioco viene messo in pausa
     screen_state = PAUSE_SCREEN;
   }
+  
+  // update button
+  pauseButton.update();
+  
+  // show button
+  pauseButton.display(uiLayer);
 
   // ------ CUORI GIOCATORE ------
   // Calcola quanti cuori pieni mostrare in base alla vita del giocatore

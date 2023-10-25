@@ -29,56 +29,6 @@ public class Enemy extends Sprite {
     display(tileSize);
   }
 
-  // metodo che valuta se attaccare il player
-  //void update(Player player) {
-  //  // Calcola la distanza tra il nemico e il giocatore
-  //  float distance = dist(this.x, this.y, player.x, player.y);
-
-  //  // Se il giocatore è abbastanza vicino, attacca
-  //  //  if (distance < raggio_dazione) {
-  //  //  attacca(player);
-  //  //}
-  //}
-
-  // muove in maniera randomica i nemici all'interno della mappa
-  //void move(Level currentLevel) {
-  //  println("Prima:");
-  //  println("Nemico: " + this.id);
-  //  println("posizione: " + this.spritePosition);
-  //  // Genera una direzione casuale
-  //  int randomDirection = int(random(4)); // 0: su, 1: giù, 2: sinistra, 3: destra
-  //  println("direzione: " + randomDirection);
-
-  //  // Imposta la velocità del movimento
-  //  float speed = 1.0; // Ogni passo è di una cella
-
-  //  // Calcola il movimento in base alla direzione casuale
-  //  float newX = this.spritePosition.x;
-  //  float newY = this.spritePosition.y;
-
-  //  if (randomDirection == 0) {
-  //    newY = -speed; // Sposta il nemico di una cella verso l'alto
-  //  } else if (randomDirection == 1) {
-  //    newY = +speed; // Sposta il nemico di una cella verso il basso
-  //  } else if (randomDirection == 2) {
-  //    newX = -speed; // Sposta il nemico di una cella a sinistra
-  //  } else if (randomDirection == 3) {
-  //    newX = +speed; // Sposta il nemico di una cella a destra
-  //  }
-
-  //  println("Checkmove_: " + checkEnemyMove(newX, newY, currentLevel));
-
-  //  if (checkEnemyMove(newX, newY, currentLevel)) {
-  //    // Aggiorna la posizione del nemico in base alla direzione casuale
-  //    this.spritePosition.x = newX;
-  //    this.spritePosition.y = newY;
-  //  }
-
-  //  println("Dopo");
-  //  println("Nemico: " + this.id);
-  //  println("posizione: " + this.spritePosition);
-  //}
-
   void move(Level currentLevel) {
     // Ottieni la posizione del giocatore
     PVector playerPosition = p1.getPosition();
