@@ -104,17 +104,18 @@ void setup() {
   emptyHeart = loadImage("data/emptyHeart.png");
   letter_k = loadImage("data/letter_k.png");
   coins = loadImage("data/coin.png");
-  
+
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
   specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
   drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
 
-
   golden_key = new Item(2, "golden_key", "data/golden_key.png");
   silver_key = new Item(4, "silver_key", "data/silver_key.png");
   weapon = new Item(1, "sword", "data/little_sword.png");
   redPotion = new Item(3, "Red Potion", "data/object/red_potion.png");
+
+  selectedChest = null;
 }
 
 // inizializza il mondo di gioco
@@ -141,8 +142,6 @@ void setupGame() {
   p1.setPlayerWeapon(weapon);
   p1.setGoldenKeys(golden_key);
   p1.setSilverKey(silver_key);
-
-  selectedChest = null;
 }
 
 void draw() {
@@ -291,17 +290,16 @@ void gameScreen() {
   spritesLayer.background(255, 0);
   spritesLayer.translate(-cameraX, -cameraY);
   spritesLayer.scale(zoom);
-  
+
   // ----- ENEMY -----
   for (Enemy enemy : currentLevel.getEnemies()) {
     enemy.display(spritesLayer, currentLevel.getTileSize());
     enemy.move(currentLevel);
   }
-  
-  
+
+
   // ----- CHEST -----
   for (Chest chest : currentLevel.getChests()) {
-    println("chest open with: " + chest.getOpenWith().getName());
     chest.display(spritesLayer, currentLevel.getTileSize());
 
     // Calcola la distanza tra il giocatore e la cassa
@@ -320,8 +318,6 @@ void gameScreen() {
   }
 
   if (selectedChest != null) {
-    println("chest not null");
-    println("id chest: " + selectedChest.getId());
     // Calcola le coordinate x e y per il testo in modo che sia centrato sopra la cassa
     float letterImageX = (selectedChest.getPosition().x * currentLevel.getTileSize());
     float letterImageY = (selectedChest.getPosition().y * currentLevel.getTileSize()) - 20; // Regola l'offset verticale a tuo piacimento
@@ -329,7 +325,7 @@ void gameScreen() {
     // da fixare deve apparire nel ui layer
     spritesLayer.image(letter_k, letterImageX, letterImageY);
 
-    if (moveINTR && !selectedChest.isOpen) {
+    if (moveINTR && !selectedChest.isOpen()) {
       if (selectedChest.isRare()) {    // se la cassa è rara
         if (p1.getNumberOfGoldenKeys() > 0) {
           if (selectedChest.getOpenWith().equals(p1.getGoldenKey())) {
@@ -356,7 +352,7 @@ void gameScreen() {
             selectedChest.setIsOpen(true);
             normalChestOpen.play();
             selectedChest.setSprite("data/object/chest_open.png");
-            
+
             p1.setNumberOfSilverKeys(p1.getNumberOfSilverKeys() - 1);
 
             // aggiorna lo score del player
@@ -370,8 +366,10 @@ void gameScreen() {
         }
       }
     }
+  } else {
+    println("chest null");
   }
-  
+
   // ----- COIN -----
   for (Coin coin : currentLevel.getCoins()) {
     if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala

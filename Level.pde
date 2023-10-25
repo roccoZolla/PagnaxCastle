@@ -303,6 +303,15 @@ class Level {
 
       treasures.add(chest);
     }
+    
+    for(Chest chezz : treasures) {
+      println("chest id: " + chezz.getId());
+      println("chest Name: " + chezz.getName());
+      println("chaive: " + chezz.getOpenWith().getName());
+      println("rarita: " + chezz.isRare());
+      println("interagibile: " + chezz.isInteractable());
+      println("aperta: " + chezz.isOpen());
+    }
   }
 
   // spawner aggiornato
