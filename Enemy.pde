@@ -1,5 +1,6 @@
 public class Enemy {
   PVector spritePosition;
+  float spriteSpeed = 0.1;
   PImage sprite;
   
   int enemyHP;
@@ -30,12 +31,9 @@ public class Enemy {
       PVector direction = PVector.sub(playerPosition, this.spritePosition);
       direction.normalize();
 
-      // Imposta la velocità del movimento
-      float speed = 0.1; // Ogni passo è di una cella
-
       // Calcola il movimento in base alla direzione
-      float newX = this.spritePosition.x + direction.x * speed;
-      float newY = this.spritePosition.y + direction.y * speed;
+      float newX = this.spritePosition.x + direction.x * spriteSpeed;
+      float newY = this.spritePosition.y + direction.y * spriteSpeed;
 
       if (checkEnemyMove(newX, newY, currentLevel)) {
         // Aggiorna la posizione del nemico
@@ -45,20 +43,18 @@ public class Enemy {
     } else {
       // Il giocatore non è nelle vicinanze, quindi il nemico si muove casualmente
       float randomDirection = int(random(4)); // 0: su, 1: giù, 2: sinistra, 3: destra
-
-      float speed = 0.1; // Ogni passo è di una cella
-
+      
       float newX = this.spritePosition.x;
       float newY = this.spritePosition.y;
 
       if (randomDirection == 0) {
-        newY -= speed;
+        newY -= spriteSpeed;
       } else if (randomDirection == 1) {
-        newY += speed;
+        newY += spriteSpeed;
       } else if (randomDirection == 2) {
-        newX -= speed;
+        newX -= spriteSpeed;
       } else if (randomDirection == 3) {
-        newX += speed;
+        newX += spriteSpeed;
       }
 
       if(checkEnemyMove(newX, newY, currentLevel)) {

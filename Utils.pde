@@ -1,6 +1,3 @@
-// velocita sprite
-float spriteSpeed = 1.0;
-
 // movements
 boolean moveUP;
 boolean moveDOWN;
@@ -10,8 +7,6 @@ boolean moveLEFT;
 boolean moveATCK;    // attacco
 boolean moveINTR;    // interazione
 boolean moveUSE;     // utilizza
-
-int tilesize = 16;
 
 //
 int letterIndex = 0; // Indice della lettera corrente
@@ -82,40 +77,6 @@ void keyReleased() {
   }
 }
 
-void handlePlayerMovement(Level currentLevel) {
-  if (keyPressed) {
-    float newX = p1.spritePosition.x;
-    float newY = p1.spritePosition.y;
-
-    if (moveUP) {
-      newY -= spriteSpeed;
-    }
-    if (moveDOWN) {
-      newY += spriteSpeed;
-    }
-    if (moveLEFT) {
-      newX -= spriteSpeed;
-    }
-    if (moveRIGHT) {
-      newX += spriteSpeed;
-    }
-
-    // Verifica se la nuova posizione è valida
-    int roundedX = round(newX);
-    int roundedY = round(newY);
-
-    // check delle collisioni
-    if (roundedX >= 0 && roundedX < currentLevel.cols && roundedY >= 0 && roundedY < currentLevel.rows &&
-      currentLevel.map[roundedX][roundedY] != 0 &&
-      currentLevel.map[roundedX][roundedY] != 4 &&
-      currentLevel.map[roundedX][roundedY] != 6 &&
-      currentLevel.map[roundedX][roundedY] != 7) {
-      p1.spritePosition.x = newX;
-      p1.spritePosition.y = newY;
-    }
-  }
-}
-
 boolean checkEnemyMove(float newX, float newY, Level currentLevel) {
   // Verifica se la nuova posizione è valida
   PVector playerPosition = p1.spritePosition;
@@ -143,8 +104,8 @@ void drawPlayerWeapon() {
   else if (moveLEFT) weaponPosition = -10;
 
   PImage weaponImage = p1.weapon.sprite;
-  float imageX = (p1.spritePosition.x * tilesize) + weaponPosition;
-  float imageY = p1.spritePosition.y * tilesize;
+  float imageX = (p1.spritePosition.x * currentLevel.tileSize) + weaponPosition;
+  float imageY = p1.spritePosition.y * currentLevel.tileSize;
   float imageWidth = p1.weapon.sprite.width;
   float imageHeight = p1.weapon.sprite.height;
 

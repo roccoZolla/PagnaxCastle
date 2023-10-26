@@ -28,10 +28,6 @@ class Coin {
     return collected;
   }
 
-  int getScoreValue() {
-    return scoreValue;
-  }
-
   void display(PGraphics layer) {
     layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
   }

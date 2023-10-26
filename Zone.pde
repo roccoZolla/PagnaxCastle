@@ -1,8 +1,8 @@
-class Macroarea {
+class Zone {
   String storyText;
 
-  int areaIndex;
-  String areaName;
+  int zoneIndex;
+  String zoneName;
   String filesPath; // indica il percorso in cui sono presenti i file delle texture
   boolean finalArea;
 
@@ -14,11 +14,11 @@ class Macroarea {
   ArrayList<Level> levels = new ArrayList<>();
   Level currentLevel;
 
-  Macroarea(int areaIndex, String areaName, int numLevels, String filesPath, int numberOfRooms) {
+  Zone(int zoneIndex, String zoneName, int numLevels, String filesPath, int numberOfRooms) {
     this.storyText = "";
 
-    this.areaIndex = areaIndex;
-    this.areaName = areaName;
+    this.zoneIndex = zoneIndex;
+    this.zoneName = zoneName;
     this.numLevels = numLevels;
     this.filesPath = filesPath;
     this.finalArea = false;
@@ -37,33 +37,5 @@ class Macroarea {
 
   boolean isFinal() {
     return finalArea;
-  }
-
-  int getAreaIndex() {
-    return areaIndex;
-  }
-
-  String getName() {
-    return areaName;
-  }
-
-  Level getCurrentLevel() {
-    return currentLevel;
-  }
-
-  ArrayList<Level> getLevels() {
-    return levels;
-  }
-
-  int getNumbLevels() {
-    return numLevels;
-  }
-
-  String getStory() {
-    return this.storyText;
-  }
-
-  void setStory(String storyText) {
-    this.storyText = storyText;
   }
 }
