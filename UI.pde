@@ -35,12 +35,12 @@ class UI {
     halfHeart = loadImage("data/halfHeart.png");
     emptyHeart = loadImage("data/emptyHeart.png");
 
-    miniMapSize = 300;
+    miniMapSize = 200;
     miniMapX = 20;
     miniMapY = uiLayer.height - miniMapSize - 10;
 
     buttons = new ArrayList();
-    
+
     buttons.add(new Button(width - 50, 20, 40, 40, "", "data/ui/Pause.png"));
   }
 
@@ -58,11 +58,11 @@ class UI {
     uiLayer.text(actualLevel, 20, 20);
 
     // pause button
-    if(buttons.get(0).isClicked()) {
+    if (buttons.get(0).isClicked()) {
       screen_state = PAUSE_SCREEN;
       soundtrack.pause();
     }
-    
+
     buttons.get(0).update();
     buttons.get(0).display(uiLayer);
 
@@ -122,45 +122,7 @@ class UI {
     uiLayer.image(redPotion.sprite, 20, 140, 20, 20);
 
     // ------- MINIMAPPA ------
-    // Disegna la minimappa nell'angolo in basso a sinistra
-    uiLayer.noFill(); // Nessun riempimento
-    uiLayer.stroke(255); // Colore del bordo bianco
-
-    // Disegna i bordi delle stanze sulla minimappa come una linea continua
-    uiLayer.stroke(255); // Colore del bordo bianco
-
-    for (int x = 0; x < currentLevel.cols; x++) {
-      for (int y = 0; y < currentLevel.rows; y++) {
-        int tileType = currentLevel.map[x][y];
-
-        // Controlla se il tile è una parete o un corridoio (bordo della stanza)
-        if (tileType == 4 || tileType == 5) {
-          // Mappa i tile della minimappa nel rettangolo
-          miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
-          miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
-
-          // Disegna il bordo della stanza sulla minimappa
-          uiLayer.point(miniMapTileX, miniMapTileY);
-        }
-      }
-    }
-
-    playerMiniMapX = map(p1.spritePosition.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
-    playerMiniMapY = map(p1.spritePosition.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
-
-    uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
-    uiLayer.noStroke();
-    uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5);
-
-    // Disegna i nemici sulla minimappa come pallini gialli
-    uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
-    uiLayer.noStroke();
-
-    for (Enemy enemy : currentLevel.enemies) {
-      enemyMiniMapX = map(enemy.spritePosition.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
-      enemyMiniMapY = map(enemy.spritePosition.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
-      uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
-    }
+    displayMinimap();
 
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento
@@ -179,8 +141,57 @@ class UI {
 
       uiLayer.image(p1.weapon.sprite, imgX, imgY, imgWidth, imgHeight);
     }
-    
+
     uiLayer.endDraw();
     image(uiLayer, 0, 0);
+  }
+
+  void displayMinimap() {
+    // ------- MINIMAPPA ------
+    // Disegna la minimappa nell'angolo in basso a sinistra
+    uiLayer.noFill(); // Nessun riempimento
+
+    for (int x = 0; x < currentLevel.cols; x++) {
+      for (int y = 0; y < currentLevel.rows; y++) {
+        int tileType = currentLevel.map[x][y];
+
+        // Controlla se il tile è una parete o un corridoio (bordo della stanza)
+        if (tileType == 4 || tileType == 5) {
+          // Mappa i tile della minimappa nel rettangolo
+          miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
+          miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+
+          // Disegna il bordo della stanza sulla minimappa
+          uiLayer.stroke(255); // Colore del bordo bianco
+          uiLayer.point(miniMapTileX, miniMapTileY);
+        } else if (tileType == 3) {
+          // ----- SCALE QUADRATO AZZURO -----
+          miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
+          miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+
+          uiLayer.noFill(); 
+          uiLayer.stroke(0, 0, 255);
+          uiLayer.rect(miniMapTileX, miniMapTileY, miniMapSize / currentLevel.cols, miniMapSize / currentLevel.rows);
+        }
+      }
+    }
+
+    // ----- PLAYER PALLINO ROSSO -----
+    playerMiniMapX = map(p1.spritePosition.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
+    playerMiniMapY = map(p1.spritePosition.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+
+    uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
+    uiLayer.noStroke();
+    uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5);
+
+    // ----- NEMICI PALLINI GIALLI -----
+    uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
+    uiLayer.noStroke();
+
+    for (Enemy enemy : currentLevel.enemies) {
+      enemyMiniMapX = map(enemy.spritePosition.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
+      enemyMiniMapY = map(enemy.spritePosition.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+      uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
+    }
   }
 }

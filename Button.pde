@@ -55,7 +55,6 @@ class Button {
   }
 
   void display() {
-    // Verifica se il mouse è sopra il pulsante
     hover = isMouseOver();
 
     // Imposta il colore del pulsante in base allo stato (normale, hover, premuto)

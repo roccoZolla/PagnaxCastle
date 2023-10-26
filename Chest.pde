@@ -1,42 +1,43 @@
-public class Chest extends Item{
-    private ArrayList<Item> items;
-    private boolean isOpen;            // true aperta - false chiusa
-    private Item openWith;              // oggetto che serve per aprire la chest
-    private boolean isRare;
-    
-    Chest() {
-      items = new ArrayList(){};
-    }
-    
-    public ArrayList<Item> getList() {
-        return items;
-    }
-    
-    public Item getOpenWith() {
-        return openWith;
-    }
+class Chest extends Item {
+  ArrayList<Item> items;
+  boolean isOpen;            // true aperta - false chiusa
+  Item openWith;              // oggetto che serve per aprire la chest
+  boolean isRare;
 
-    public void setChest(ArrayList<Item> items) {
-        this.items = items;
-    }
-    
-    public void setIsOpen(boolean isOpen) {
-        this.isOpen = isOpen;
-    }
-    
-    public void setOpenWith(Item key) {
-        this.openWith = key;
-    }
+  Chest() {
+    items = new ArrayList() {
+    };
+  }
 
-    public boolean isOpen() {
-        return isOpen;
-    }
-    
-    public boolean isRare() {
-      return isRare;
-    }
-    
-    public void setIsRare(boolean isRare) {
-      this.isRare = isRare;
-    }
+  ArrayList<Item> getList() {
+    return items;
+  }
+
+  Item getOpenWith() {
+    return openWith;
+  }
+
+  void setChest(ArrayList<Item> items) {
+    this.items = items;
+  }
+
+  void setIsOpen(boolean isOpen) {
+    this.isOpen = isOpen;
+  }
+
+  void setOpenWith(Item key) {
+    this.openWith = key;
+  }
+
+  boolean isOpen() {
+    return isOpen;
+  }
+
+  boolean isRare() {
+    return isRare;
+  }
+
+  void setIsRare(boolean isRare) {
+    this.isRare = isRare;
+  }
 }

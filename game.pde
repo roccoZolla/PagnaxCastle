@@ -30,15 +30,15 @@ SoundFile soundtrack;
 boolean isSoundtrackPlaying;
 
 // stato dello schermo
-static int screen_state;
-static int previous_state;  // salva lo stato precedente
-static final int MENU_SCREEN = 0;
-static final int GAME_SCREEN = 1;
-static final int STORY_SCREEN = 2;
-static final int WIN_SCREEN = 3;
-static final int LOSE_SCREEN = 4;
-static final int PAUSE_SCREEN = 5;
-static final int OPTION_SCREEN = 6;
+int screen_state;
+int previous_state;  // salva lo stato precedente
+final int MENU_SCREEN = 0;
+final int GAME_SCREEN = 1;
+final int STORY_SCREEN = 2;
+final int WIN_SCREEN = 3;
+final int LOSE_SCREEN = 4;
+final int PAUSE_SCREEN = 5;
+final int OPTION_SCREEN = 6;
 
 World castle;
 Zone currentZone;
@@ -59,7 +59,7 @@ PGraphics spritesLayer;
 
 void setup() {
   // dimensioni schermo
-  // frameRate(60);
+  frameRate(60);
   size(1280, 720);
 
   gameScene = createGraphics(width, height);
@@ -104,8 +104,8 @@ void setupImages() {
 }
 
 void setupSounds() {
-  volumeMusicLevel = 0.0;
-  volumeEffectsLevel = 0.0;
+  volumeMusicLevel = 0.5;
+  volumeEffectsLevel = 0.5;
 
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
@@ -426,13 +426,3 @@ void writer(String txt) {
     text("\nPremi un tasto per continuare", width / 2, height - 50);
   }
 }
-
-//void resetGame() {
-//  // resetta mondo e variabili
-//  // reimpostare currentArea e richiamare la initLevels
-//  // reimposta la posizione del giocatore e tutti i suoi parametri
-//  currentArea = castle.getMacroareas().get(0);
-//  currentArea.initLevels();
-//  currentLevel = currentArea.getCurrentLevel();
-//  p1.setPosition(currentLevel.getStartRoom());
-//}
