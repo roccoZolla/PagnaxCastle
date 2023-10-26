@@ -1,8 +1,8 @@
 class Camera {
   float x = 0;
   float y = 0;
-  float zoom = 5.0;    // zoom ideale 5, in realta la camera deve seguire il giocatore
-  float easing = 0.7;
+  float zoom;    // zoom ideale 5, in realta la camera deve seguire il giocatore
+  float easing;
 
   void update() {
     float targetCameraX = p1.spritePosition.x * currentLevel.tileSize * zoom - gameScene.width / 2;

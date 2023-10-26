@@ -104,8 +104,8 @@ void setupImages() {
 }
 
 void setupSounds() {
-  volumeMusicLevel = 0.5;
-  volumeEffectsLevel = 0.5;
+  volumeMusicLevel = 0.0;
+  volumeEffectsLevel = 0.0;
 
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
@@ -224,31 +224,39 @@ void gameScreen() {
   spritesLayer.scale(camera.zoom);
 
   // ----- ENEMY -----
+  // disegna solo i nemici visibili
   for (Enemy enemy : currentLevel.enemies) {
-    enemy.display(spritesLayer);
-    enemy.move(currentLevel);
+    if (isInVisibleArea(enemy.spritePosition)) {
+      enemy.display(spritesLayer);
+      enemy.move(currentLevel);
+    }
   }
 
 
   // ----- CHEST -----
+  // disegna solo le chest visibili
   for (Chest chest : currentLevel.treasures) {
-    chest.display(spritesLayer);
+    if (isInVisibleArea(chest.spritePosition)) {
+      chest.display(spritesLayer);
 
-    // Calcola la distanza tra il giocatore e la cassa
-    float distanceToChest = dist(p1.spritePosition.x, p1.spritePosition.y, chest.spritePosition.x, chest.spritePosition.y);
+      // Calcola la distanza tra il giocatore e la cassa
+      float distanceToChest = dist(p1.spritePosition.x, p1.spritePosition.y, chest.spritePosition.x, chest.spritePosition.y);
 
-    // Imposta una soglia per la distanza in cui il giocatore può interagire con la cassa
-    float interactionThreshold = 1.5; // Puoi regolare questa soglia a tuo piacimento
+      // Imposta una soglia per la distanza in cui il giocatore può interagire con la cassa
+      float interactionThreshold = 1.5; // Puoi regolare questa soglia a tuo piacimento
 
-    if (distanceToChest < interactionThreshold) {
-      // Il giocatore è abbastanza vicino alla cassa per interagire
-      selectedChest = chest;
-      println("chest selezionata");
-    } else {
-      selectedChest = null;
+      if (distanceToChest < interactionThreshold) {
+        // Il giocatore è abbastanza vicino alla cassa per interagire
+        selectedChest = chest;
+        println("chest selezionata");
+      } else {
+        selectedChest = null;
+      }
     }
   }
 
+  // da sistemare
+  // funziona parzialemente
   if (selectedChest != null) {
     // Calcola le coordinate x e y per il testo in modo che sia centrato sopra la cassa
     float letterImageX = (selectedChest.spritePosition.x * currentLevel.tileSize);
@@ -300,14 +308,16 @@ void gameScreen() {
 
   // ----- COIN -----
   for (Coin coin : currentLevel.coins) {
-    if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
-      if (PVector.dist(p1.spritePosition, coin.spritePosition) < coinCollectionThreshold) {
-        coin.collect();  // raccogli la moneta
-        p1.collectCoin();
-        pickupCoin.play();
-        p1.playerScore = coin.scoreValue;
-      } else {
-        coin.display(spritesLayer);
+    if (isInVisibleArea(coin.spritePosition)) {
+      if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
+        if (PVector.dist(p1.spritePosition, coin.spritePosition) < coinCollectionThreshold) {
+          coin.collect();  // raccogli la moneta
+          p1.collectCoin();
+          pickupCoin.play();
+          p1.playerScore += coin.scoreValue;
+        } else {
+          coin.display(spritesLayer);
+        }
       }
     }
   }

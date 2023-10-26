@@ -98,6 +98,19 @@ boolean checkEnemyMove(float newX, float newY, Level currentLevel) {
   return false;
 }
 
+boolean isInVisibleArea(PVector spritePosition) {
+  // Calcola il rettangolo visibile
+  int tileSize = currentLevel.tileSize;
+
+  int startX = floor((camera.x / (tileSize * camera.zoom)));
+  int startY = floor((camera.y / (tileSize * camera.zoom)));
+  int endX = ceil((camera.x + gameScene.width) / (tileSize * camera.zoom));
+  int endY = ceil((camera.y + gameScene.height) / (tileSize * camera.zoom));
+
+
+  return (spritePosition.x >= startX && spritePosition.x <= endX && spritePosition.y >= startY && spritePosition.y <= endY);
+}
+
 void drawPlayerWeapon() {
   float weaponPosition = 10;
   if (moveRIGHT) weaponPosition = 10;

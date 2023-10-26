@@ -315,7 +315,7 @@ class Level {
     int endX = ceil((camera.x + gameScene.width) / (tileSize * camera.zoom));
     int endY = ceil((camera.y + gameScene.height) / (tileSize * camera.zoom));
 
-    // Assicurati che i limiti siano all'interno dei limiti della mappa
+    //// Assicurati che i limiti siano all'interno dei limiti della mappa
     startX = constrain(startX, 0, cols - 1);
     startY = constrain(startY, 0, rows - 1);
     endX = constrain(endX, 0, cols);
