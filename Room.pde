@@ -1,7 +1,7 @@
 class Room {
-  private int roomWidth;
-  private int roomHeight;
-  private PVector position;
+  int roomWidth;
+  int roomHeight;
+  PVector position;
   
   Room(int roomWidth, int roomHeight, PVector position) {
     this.roomWidth = roomWidth;

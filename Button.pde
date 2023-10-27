@@ -1,19 +1,19 @@
 class Button {
   // posizione e dimensione del pulsante
-  private PVector pos;
-  private float w;    // width
-  private float h;    // height
+  PVector pos;
+  float w;    // width
+  float h;    // height
 
   // variabili di stato del pulsante
-  private boolean hover;
-  private boolean pressed;
-  private boolean enabled;  // di base un bottone è disattivato
-  private boolean clicked;  // pulsante premuto e rilasciato
+  boolean hover;
+  boolean pressed;
+  boolean enabled;  // di base un bottone è disattivato
+  boolean clicked;  // pulsante premuto e rilasciato
 
   // estetica del bottone
-  private String label;
-  private color buttonColor;
-  private PImage buttonImage;
+  String label;
+  color buttonColor;
+  PImage buttonImage;
 
   Button(int x, int y, float w, float h, String label, String dataPath) {
     // Calcola la posizione x e y per centrare il bottone
@@ -33,15 +33,7 @@ class Button {
     buttonColor = color(0, 0, 255); // Colore predefinito del pulsante (provvisorio)
     if (!dataPath.isEmpty()) buttonImage = loadImage(dataPath);
   }
-
-  void setEnabled(boolean stateButton) {
-    this.enabled = stateButton;
-  }
-
-  boolean isEnabled() {
-    return enabled;
-  }
-
+  
   void update() {
     if (mousePressed == true && mouseButton == LEFT && pressed == false) {
       pressed = true;
@@ -63,12 +55,10 @@ class Button {
   }
 
   void display() {
-    // Verifica se il mouse è sopra il pulsante
     hover = isMouseOver();
 
     // Imposta il colore del pulsante in base allo stato (normale, hover, premuto)
     if (clicked) {
-      System.out.println("tasto cliccato");
       // Colore quando premuto
       fill(255, 0, 0);
     } else if (hover) {

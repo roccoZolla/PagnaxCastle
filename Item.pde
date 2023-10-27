@@ -1,21 +1,27 @@
-public class Item extends Sprite {
-  private int id;
-  private String name;
-  private boolean takeable = false;   // indica se un oggetto di puo raccogliere
-  private boolean useable = false;    // indica se un oggetto si puo usare
-  private boolean interactable = false;
-  private boolean healerable = false;    // indica se l'oggetto restituisce la vita
-  private int bonusHP = 0;              // se è hearable assegna un valore
-  private String description;
+class Item {
+  PVector spritePosition;
+  PImage sprite;
+
+  int id;
+  String name;
+  boolean takeable = false;   // indica se un oggetto di puo raccogliere
+  boolean useable = false;    // indica se un oggetto si puo usare
+  boolean interactable = false;
+  boolean healerable = false;    // indica se l'oggetto restituisce la vita
+  int bonusHP = 0;              // se è hearable assegna un valore
+  String description;
 
   // constructors
-  Item(int id, String name, String dataPath) {
+  Item(int id, String name) {
     this.id = id;
     this.name = name;
-    this.img = loadImage(dataPath);
   }
 
-  public Item() {
+  void display(PGraphics layer) {
+    layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
+  }
+
+  Item() {
     this.id = 0;
     this.name = "";
     this.takeable = false;
@@ -23,85 +29,76 @@ public class Item extends Sprite {
     this.description = "";
   }
 
-  public Item(int id) {
+  Item(int id) {
     this.id = id;
   }
 
-  public Item(int id, String name) {
-    this.id = id;
-    this.name = name;
-  }
-
-  public Item(String name) {
+  Item(String name) {
     this.name = name;
   }
 
   // methods
-  public int getId() {
+  int getId() {
     return id;
   }
 
-  public String getName() {
+  String getName() {
     return name;
   }
 
-  public boolean isTakeable() {
+  boolean isTakeable() {
     return takeable;
   }
 
-  public boolean isUseable() {
+  boolean isUseable() {
     return useable;
   }
-  
-  public boolean isInteractable() {
+
+  boolean isInteractable() {
     return interactable;
   }
-  
-  public boolean isHealerable() {
+
+  boolean isHealerable() {
     return healerable;
   }
-  
-  public int getBonusHP() {
+
+  int getBonusHP() {
     return this.bonusHP;
   }
 
-  public String getDescription() {
+  String getDescription() {
     return description;
   }
 
-  public void setId(int id) {
+  void setId(int id) {
     this.id = id;
   }
 
-  public void setName(String name) {
+  void setName(String name) {
     this.name = name;
   }
 
-  public void setTakeable(boolean takeable) {
+  void setTakeable(boolean takeable) {
     this.takeable = takeable;
   }
 
-  public void setUseable(boolean useable) {
+  void setUseable(boolean useable) {
     this.useable = useable;
   }
 
-  public void setDescription(String description) {
+  void setDescription(String description) {
     this.description = description;
   }
-  
-  public void setInteractable(boolean interactable) {
+
+  void setInteractable(boolean interactable) {
     this.interactable = interactable;
-  }  
-  
-  public void setHealerable(boolean healerable) {
-    this.healerable = healerable;
-  }
-  
-  public void setBonusHP(int bonusHP) {
-    this.bonusHP = bonusHP;
   }
 
-  void displayItem(int tileSize) {
-    display(tileSize);
+  void setHealerable(boolean healerable) {
+    this.healerable = healerable;
+  }
+
+  void setBonusHP(int bonusHP) {
+    this.bonusHP = bonusHP;
   }
 }
