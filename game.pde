@@ -60,7 +60,10 @@ PGraphics spritesLayer;
 void setup() {
   // dimensioni schermo
   frameRate(60);
-  size(1280, 720);
+  size(1280, 720, P2D);
+
+  ((PGraphicsOpenGL)g).textureSampling(2);
+  noSmooth();
 
   gameScene = createGraphics(width, height);
   spritesLayer = createGraphics(width, height);
