@@ -2,7 +2,7 @@ class Player {
   PVector spritePosition;
   float spriteSpeed = 1.0;
   PImage sprite;
-  
+
   int playerMaxHP;
   int playerHP;
   int playerScore;
@@ -29,7 +29,7 @@ class Player {
     this.coins++;
   }
 
- void move() {
+  void move() {
     if (keyPressed) {
       float newX = p1.spritePosition.x;
       float newY = p1.spritePosition.y;
