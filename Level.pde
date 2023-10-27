@@ -93,12 +93,12 @@ class Level {
     map[int(rooms.get(startRoomIndex).getPosition().x)][int(rooms.get(startRoomIndex).getPosition().y)] = 2; // Stanza iniziale
     map[int(rooms.get(endRoomIndex).getPosition().x)][int(rooms.get(endRoomIndex).getPosition().y)] = 3; // Stanza finale
 
+    // genera i loot
+    generateRandomChests();
+    
     // aggiungi i nemici
     // da chiamare quando il giocatore entra nella stanza
     generateEnemies();
-
-    // genera i loot
-    generateRandomChests();
 
     // genera le monete
     generateRandomCoins();
@@ -298,7 +298,7 @@ class Level {
           y = int(random(roomPosition.y - roomHeight / 2, roomPosition.y + roomHeight / 2));
 
           // Verifica se la posizione è già occupata da un muro o un altro oggetto
-          positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 3 || map[x][y] == 2;
+          positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 3 || map[x][y] == 2 || map[x][y] == 6;
         } while (positionOccupied);
 
         // creazione dell'entita nemico
