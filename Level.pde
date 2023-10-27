@@ -64,18 +64,24 @@ class Level {
 
     startFloorImage = loadImage(dataPath + "startTile.png");
     floorImage = loadImage(dataPath + "floorTile.png");
-    // wallImage = loadImage(dataPath + "wallTile.png");
-
     wallImageNorth = loadImage(dataPath + "northWallTop.png");
-    //wallImageNorthTop = loadImage(dataPath + "northWallTop.png");
-    //wallImageNorthBottom = loadImage(dataPath + "northWallBottom.png");
-
-    //wallImageSouth = loadImage(dataPath + "southWall.png");
-    //wallImageEast = loadImage(dataPath + "eastWall.png");
-    //wallImageWest = loadImage(dataPath + "westWall.png");
-
     hallwayImage = loadImage(dataPath + "hallwayTile.png");
     stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
+
+    //startFloorImage = loadImage(dataPath + "startTile.png");
+    //floorImage = loadImage(dataPath + "floorTile.png");
+    //// wallImage = loadImage(dataPath + "wallTile.png");
+
+    //wallImageNorth = loadImage(dataPath + "northWallTop.png");
+    ////wallImageNorthTop = loadImage(dataPath + "northWallTop.png");
+    ////wallImageNorthBottom = loadImage(dataPath + "northWallBottom.png");
+
+    ////wallImageSouth = loadImage(dataPath + "southWall.png");
+    ////wallImageEast = loadImage(dataPath + "eastWall.png");
+    ////wallImageWest = loadImage(dataPath + "westWall.png");
+
+    //hallwayImage = loadImage(dataPath + "hallwayTile.png");
+    //stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
 
     // Genera stanze
     generateRooms();
