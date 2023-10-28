@@ -50,6 +50,7 @@ class UI {
   void display() {
     uiLayer.beginDraw();
     uiLayer.background(255, 0);
+    
     // nome del livello
     uiLayer.textFont(myFont);
     uiLayer.fill(255);

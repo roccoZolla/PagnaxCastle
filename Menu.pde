@@ -42,7 +42,7 @@ class Menu {
           break;
 
         case "Exit":
-          System.exit(0);
+          exit();
           break;
         }
       }
