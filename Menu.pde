@@ -27,7 +27,7 @@ class Menu {
           previous_state = screen_state;
 
           // inizializza il mondo
-          setupGame();
+          game.init();
 
           // far partire di qua la creazione dei livelli
           screen_state = STORY_SCREEN;
