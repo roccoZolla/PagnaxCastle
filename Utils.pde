@@ -77,27 +77,8 @@ void keyReleased() {
   }
 }
 
-boolean checkEnemyMove(float newX, float newY, Level currentLevel) {
-  // Verifica se la nuova posizione è valida
-  PVector playerPosition = p1.spritePosition;
-  int roundedX = round(newX);
-  int roundedY = round(newY);
-
-  if (roundedX == round(playerPosition.x) && roundedY == round(playerPosition.y)) {
-    return false; // Il nemico non può andare nella stessa posizione del giocatore
-  }
-
-  if (roundedX >= 0 && roundedX < currentLevel.cols && roundedY >= 0 && roundedY < currentLevel.rows &&
-    currentLevel.map[roundedX][roundedY] != 0 &&
-    currentLevel.map[roundedX][roundedY] != 4 &&
-    currentLevel.map[roundedX][roundedY] != 6 &&
-    currentLevel.map[roundedX][roundedY] != 3) {
-    return true;
-  }
-
-  return false;
-}
-
+// calcola la posizione di uno sprite all'interno della scena di gioco
+// se lo sprite si trova al di fuori della scena lo sprite non viene renderizzato
 boolean isInVisibleArea(PVector spritePosition) {
   // Calcola il rettangolo visibile
   int tileSize = currentLevel.tileSize;

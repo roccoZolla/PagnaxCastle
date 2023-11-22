@@ -21,6 +21,8 @@ class Game {
     p1.weapon = weapon;
     p1.golden_keys = golden_key;
     p1.silver_keys = silver_key;
+    
+    p1.setPlayerBox();
 
     camera = new Camera();
   }
@@ -62,6 +64,7 @@ class Game {
         chest.display(spritesLayer);
 
         // Calcola la distanza tra il giocatore e la cassa
+        // AGGIORNA CON LA COLLISION DETECTION
         float distanceToChest = dist(p1.spritePosition.x, p1.spritePosition.y, chest.spritePosition.x, chest.spritePosition.y);
 
         // Imposta una soglia per la distanza in cui il giocatore può interagire con la cassa
@@ -132,6 +135,8 @@ class Game {
     for (Coin coin : currentLevel.coins) {
       if (isInVisibleArea(coin.spritePosition)) {
         if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
+        
+        // AGGIORNA CON LA COLLISION DETECTION
           if (PVector.dist(p1.spritePosition, coin.spritePosition) < coinCollectionThreshold) {
             coin.collect();  // raccogli la moneta
             p1.collectCoin();
@@ -173,7 +178,6 @@ class Game {
     p1.display(spritesLayer);
     spritesLayer.endDraw();
 
-
     // passa al livello successivo
     if (dist(p1.spritePosition.x, p1.spritePosition.y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
       // se il livello dell'area è l'ultimo passa alla prossima area
@@ -211,5 +215,9 @@ class Game {
 
     image(gameScene, 0, 0);
     image(spritesLayer, 0, 0);
+  }
+  
+  void updateScene() {
+
   }
 }
