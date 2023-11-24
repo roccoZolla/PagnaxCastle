@@ -2,6 +2,7 @@ class Item {
   PVector spritePosition;
   PImage sprite;
 
+  // acratteristiche
   int id;
   String name;
   boolean takeable = false;   // indica se un oggetto di puo raccogliere

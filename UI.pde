@@ -123,7 +123,7 @@ class UI {
     uiLayer.image(redPotion.sprite, 20, 140, 20, 20);
 
     // ------- MINIMAPPA ------
-    displayMinimap();
+    // displayMinimap();
 
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento

@@ -9,7 +9,6 @@ class Level {
   int tileSize = 16;
   int cols, rows;
   int[][] map;
-  // private ArrayList<PVector> roomS; // Memorizza le posizioni delle stanze
   ArrayList<Room> rooms;
 
   // attributi
@@ -270,7 +269,7 @@ class Level {
       // Aggiungi la cassa alla lista delle casse
       chest.spritePosition = new PVector(x, y);
       map[x][y] = 6; // Imposta il tipo di tile corrispondente a una cassa
-
+      
       treasures.add(chest);
     }
   }
@@ -304,7 +303,7 @@ class Level {
 
         // creazione dell'entita nemico
         int enemyHP = 30;
-        Enemy enemy = new Enemy(enemyHP, "nemico");
+        Enemy enemy = new Enemy(enemyHP, "rat", 5);
         enemy.sprite = loadImage("data/npc/rat_enemy.png");
         enemy.spritePosition = new PVector(x, y);
 

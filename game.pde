@@ -21,8 +21,6 @@ class Game {
     p1.weapon = weapon;
     p1.golden_keys = golden_key;
     p1.silver_keys = silver_key;
-    
-    p1.setPlayerBox();
 
     camera = new Camera();
   }
@@ -52,7 +50,16 @@ class Game {
     for (Enemy enemy : currentLevel.enemies) {
       if (isInVisibleArea(enemy.spritePosition)) {
         enemy.display(spritesLayer);
-        enemy.move(currentLevel);
+        
+        // rilevi collisione attacca
+        if(enemy.playerCollide(p1)) {
+          // attacca il player
+          // aggiungere cool down es: attacca ogni 3 sec
+          enemy.attack();
+        } else {
+          // altrimenti muovi il nemico
+          enemy.move(currentLevel);
+        }
       }
     }
 
@@ -62,103 +69,75 @@ class Game {
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.spritePosition)) {
         chest.display(spritesLayer);
-
-        // Calcola la distanza tra il giocatore e la cassa
-        // AGGIORNA CON LA COLLISION DETECTION
-        float distanceToChest = dist(p1.spritePosition.x, p1.spritePosition.y, chest.spritePosition.x, chest.spritePosition.y);
-
-        // Imposta una soglia per la distanza in cui il giocatore può interagire con la cassa
-        float interactionThreshold = 1.5; // Puoi regolare questa soglia a tuo piacimento
-
-        if (distanceToChest < interactionThreshold) {
-          // Il giocatore è abbastanza vicino alla cassa per interagire
-          selectedChest = chest;
-          println("chest selezionata");
-        } else {
-          selectedChest = null;
-        }
-      }
-    }
-
-    // da sistemare
-    // funziona parzialemente
-    if (selectedChest != null) {
-      // Calcola le coordinate x e y per il testo in modo che sia centrato sopra la cassa
-      float letterImageX = (selectedChest.spritePosition.x * currentLevel.tileSize);
-      float letterImageY = (selectedChest.spritePosition.y * currentLevel.tileSize) - 20; // Regola l'offset verticale a tuo piacimento
-
-      // da fixare deve apparire nel ui layer
-      spritesLayer.image(letter_k, letterImageX, letterImageY);
-
-      if (moveINTR && !selectedChest.isOpen()) {
-        if (selectedChest.isRare()) {    // se la cassa è rara
-          if (p1.numberOfGoldenKeys > 0) {
-            if (selectedChest.getOpenWith().equals(p1.golden_keys)) {
-              // imposta la cassa come aperta
-              selectedChest.setIsOpen(true);
-              specialChestOpen.play();
-              selectedChest.sprite = loadImage("data/object/special_chest_open.png");
-
-              p1.numberOfGoldenKeys -= 1;
-              p1.playerScore += 50;
+        if(chest.playerCollide(p1)) {
+          float letterImageX = (chest.spritePosition.x * currentLevel.tileSize);
+          float letterImageY = (chest.spritePosition.y * currentLevel.tileSize) - 20; // Regola l'offset verticale a tuo piacimento
+          spritesLayer.image(letter_k, letterImageX, letterImageY);
+          
+          // se il giocatore preme il tasto interazione e la cassa non è stata aperta
+          if (p1.moveINTR && !chest.isOpen()) {
+            if (chest.isRare()) {    // se la cassa è rara
+              if (p1.numberOfGoldenKeys > 0) {
+                if (chest.getOpenWith().equals(p1.golden_keys)) {
+                  // imposta la cassa come aperta
+                  chest.setIsOpen(true);
+                  specialChestOpen.play();
+                  chest.sprite = loadImage("data/object/special_chest_open.png");
+    
+                  p1.numberOfGoldenKeys -= 1;
+                  p1.playerScore += 50;
+                }
+              } else {
+                spritesLayer.textFont(myFont);
+                spritesLayer.fill(255);
+                spritesLayer.textSize(15);
+                spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
+              }
+            } else {  // se la cassa è normale
+              if (p1.numberOfSilverKeys > 0) {
+                if (chest.getOpenWith().equals(p1.silver_keys)) {
+                  // imposta la cassa come aperta
+                  chest.setIsOpen(true);
+                  normalChestOpen.play();
+                  chest.sprite = loadImage("data/object/chest_open.png");
+    
+                  p1.numberOfSilverKeys -= 1;
+                  p1.playerScore += 30;
+                }
+              } else {
+                spritesLayer.textFont(myFont);
+                spritesLayer.fill(255);
+                spritesLayer.textSize(15);
+                spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
+              }
             }
-          } else {
-            spritesLayer.textFont(myFont);
-            spritesLayer.fill(255);
-            spritesLayer.textSize(15);
-            spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
-          }
-        } else {  // se la cassa è normale
-          if (p1.numberOfSilverKeys > 0) {
-            if (selectedChest.getOpenWith().equals(p1.silver_keys)) {
-              // imposta la cassa come aperta
-              selectedChest.setIsOpen(true);
-              normalChestOpen.play();
-              selectedChest.sprite = loadImage("data/object/chest_open.png");
-
-              p1.numberOfSilverKeys -= 1;
-              p1.playerScore += 30;
-            }
-          } else {
-            spritesLayer.textFont(myFont);
-            spritesLayer.fill(255);
-            spritesLayer.textSize(15);
-            spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
           }
         }
       }
-    } else {
-      println("chest null");
     }
 
     // ----- COIN -----
     for (Coin coin : currentLevel.coins) {
-      if (isInVisibleArea(coin.spritePosition)) {
+      if (isInVisibleArea(coin.spritePosition)) {   
         if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
-        
-        // AGGIORNA CON LA COLLISION DETECTION
-          if (PVector.dist(p1.spritePosition, coin.spritePosition) < coinCollectionThreshold) {
-            coin.collect();  // raccogli la moneta
-            p1.collectCoin();
-            pickupCoin.play();
-            p1.playerScore += coin.scoreValue;
-          } else {
-            coin.display(spritesLayer);
-          }
+          coin.display(spritesLayer);
+          coin.playerCollide(p1);
         }
       }
     }
 
     // Gestione del movimento del giocatore
     // da migliorare
+    // mostra il player
+    p1.display(spritesLayer);
     p1.move();
 
-    if (moveATCK) {
+    if (p1.moveATCK) {
       drawPlayerWeapon();
     }
 
     // usa le pozioni
-    if (moveUSE && p1.numberOfPotion > 0) {
+    if (p1.moveUSE && p1.numberOfPotion > 0) {
       if (p1.playerHP < p1.playerMaxHP) {
         drinkPotion.play();
         p1.playerHP += redPotion.bonusHP;
@@ -174,8 +153,6 @@ class Game {
       }
     }
 
-    // mostra il player
-    p1.display(spritesLayer);
     spritesLayer.endDraw();
 
     // passa al livello successivo

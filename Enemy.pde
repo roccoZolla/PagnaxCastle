@@ -4,14 +4,21 @@ public class Enemy {
   PImage sprite;
   
   int enemyHP;
+  int damage;
   String name;
 
-  Enemy(int enemyHP, String name) {
+  Enemy(int enemyHP, String name, int damage) {
     this.enemyHP = enemyHP;
     this.name = name;
+    this.damage = damage;
   }
 
   void display(PGraphics layer) {
+    // hitbox nemico
+    layer.noFill(); // Nessun riempimento
+    layer.stroke(255, 0, 240); // Colore del bordo bianco
+    layer.rect(spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
+    
     layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
   }
   
@@ -83,6 +90,34 @@ public class Enemy {
       return true;
     }
   
+    return false;
+  }
+  
+  // attacca il giocatore
+  void attack() {
+    println("attacco subito");
+    p1.playerHP -= damage;
+    
+    if(p1.playerHP < 0) {
+      p1.playerHP = 0;
+    }
+  }
+  
+  // verifica collisione
+  // stesso metodo della chest 
+  // si ferma ai bordi della hitbox
+  boolean playerCollide(Player aPlayer) {
+    if( aPlayer.spritePosition.x * currentLevel.tileSize <= (spritePosition.x * currentLevel.tileSize) + sprite.width  &&
+        (aPlayer.spritePosition.x * currentLevel.tileSize) + aPlayer.sprite.width >= spritePosition.x * currentLevel.tileSize && 
+        aPlayer.spritePosition.y * currentLevel.tileSize <= (spritePosition.y * currentLevel.tileSize) + sprite.height && 
+        (aPlayer.spritePosition.y * currentLevel.tileSize) + aPlayer.sprite.height >= spritePosition.y * currentLevel.tileSize) {
+            spritesLayer.textFont(myFont);
+            spritesLayer.fill(255);
+            spritesLayer.textSize(15);
+            spritesLayer.text("rat", (spritePosition.x * currentLevel.tileSize) - 50, (spritePosition.y * currentLevel.tileSize) - 10);
+            return true;
+    }
+    
     return false;
   }
 }

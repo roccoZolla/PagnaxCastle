@@ -1,9 +1,19 @@
 class Player {
   PVector spritePosition;
   float spriteSpeed = 0.5;
-  Rectangle playerBox;
   PImage sprite;
+  
+  // movements
+  boolean moveUP;
+  boolean moveDOWN;
+  boolean moveRIGHT;
+  boolean moveLEFT;
+  
+  boolean moveATCK;    // attacco
+  boolean moveINTR;    // interazione
+  boolean moveUSE;     // utilizza
 
+  // caratteristiche del player
   int playerMaxHP;
   int playerHP;
   int playerScore;
@@ -24,132 +34,84 @@ class Player {
     this.numberOfSilverKeys = numberOfSilverKeys;
     this.numberOfGoldenKeys = numberOfGoldenKeys;
     this.numberOfPotion = numberOfPotion;
-    this.playerBox = new Rectangle(0, 0, 0, 0);
-  }
-  
-  void setPlayerBox() {
-    playerBox.x = spritePosition.x;
-    playerBox.y = spritePosition.y;
-    playerBox.width = sprite.width;
-    playerBox.height = sprite.height;
   }
 
   public void collectCoin() {
     this.coins++;
   }
-
-  //void move() {
-  //  if (keyPressed) {
-  //    float newX = p1.spritePosition.x;
-  //    float newY = p1.spritePosition.y;
-
-  //    if (moveUP) {
-  //      newY -= spriteSpeed;
-  //    }
-  //    if (moveDOWN) {
-  //      newY += spriteSpeed;
-  //    }
-  //    if (moveLEFT) {
-  //      newX -= spriteSpeed;
-  //    }
-  //    if (moveRIGHT) {
-  //      newX += spriteSpeed;
-  //    }
-
-  //    // Verifica se la nuova posizione è valida
-  //    int roundedX = round(newX);
-  //    int roundedY = round(newY);
-
-  //    // check delle collisioni
-  //    if (roundedX >= 0 && roundedX < currentLevel.cols && roundedY >= 0 && roundedY < currentLevel.rows &&
-  //      currentLevel.map[roundedX][roundedY] != 0 && 
-  //      currentLevel.map[roundedX][roundedY] != 4 &&
-  //      currentLevel.map[roundedX][roundedY] != 6 &&
-  //      currentLevel.map[roundedX][roundedY] != 7) {
-  //      p1.spritePosition.x = newX;
-  //      p1.spritePosition.y = newY;
-  //    }
-  //  }
-  //}
-  
+ 
   void move() {
-    if (keyPressed) {    
-      float newX = p1.spritePosition.x;
-      float newY = p1.spritePosition.y;
-      float spriteWidth = p1.sprite.width;  // Larghezza dello sprite
-      float spriteHeight = p1.sprite.height;  // Altezza dello sprite
-  
-      if (moveUP) {
-        newY -= spriteSpeed;
-      }
-      if (moveDOWN) {
-        newY += spriteSpeed;
-      }
-      if (moveLEFT) {
-        newX -= spriteSpeed;
-      }
-      if (moveRIGHT) {
-        newX += spriteSpeed;
-      }
-  
-      // Verifica se la nuova posizione è valida
-      int roundedX = round(newX);
-      int roundedY = round(newY);
-      
-      println("roundedX: " + roundedX);
-      println("roundedY: " + roundedY);
-      
-      // Calcola il rettangolo di collisione intorno allo sprite
-      playerBox.x = roundedX;
-      playerBox.y = roundedY;
-      
-      spritesLayer.noFill(); // Nessun riempimento
-      spritesLayer.stroke(255); // Colore del bordo bianco
-      spritesLayer.rect(roundedX, roundedY, spriteWidth, spriteHeight);
+    float newX = spritePosition.x;
+    float newY = spritePosition.y;
+    float spriteWidth = sprite.width;  // Larghezza dello sprite
+    float spriteHeight = sprite.height;  // Altezza dello sprite
     
-      if (isValidMove(playerBox, roundedX, roundedY)) {
-        p1.spritePosition.x = newX;
-        p1.spritePosition.y = newY;
-      }
+    int roundedX = 0, roundedY = 0;
+
+    if (moveUP) {
+      newY -= spriteSpeed;
+    }
+    if (moveDOWN) {
+      newY += spriteSpeed;
+    }
+    if (moveLEFT) {
+      newX -= spriteSpeed;
+    }
+    if (moveRIGHT) {
+      newX += spriteSpeed;
+    }
+
+    // Verifica se la nuova posizione è valida
+    roundedX = round(newX);
+    roundedY = round(newY);
+    
+    println("newX: " + newX);
+    println("newY: " + newY);
+    
+    println("roundedX: " + roundedX);
+    println("roundedY: " + roundedY);
+  
+    if (isValidMove(roundedX, roundedY)) {
+      spritePosition.x = newX;
+      spritePosition.y = newY;
     }
   }
 
 
   // collision detection
-  boolean isValidMove(Rectangle collisionRect, int roundedX, int roundedY) {
-     int startX = floor((camera.x / (camera.zoom)));
-     int startY = floor((camera.y / (camera.zoom)));
-     int endX = ceil((camera.x + gameScene.width) / (camera.zoom));
-     int endY = ceil((camera.y + gameScene.height) / (camera.zoom));
-     
-      spritesLayer.noFill(); // Nessun riempimento
-      spritesLayer.stroke(255, 0 ,0); // Colore del bordo bianco
-      spritesLayer.ellipse(startX, startY, 30, 30);
-      
-      spritesLayer.noFill(); // Nessun riempimento
-      spritesLayer.stroke(255, 0 ,0); // Colore del bordo bianco
-      spritesLayer.ellipse(endX, endY, 30, 30);
-      
-      println(collisionRect.intersectsTile(roundedX, roundedY));
-      
-     if (collisionRect.intersectsTile(roundedX, roundedY) &&
-        (currentLevel.map[roundedX][roundedY] == 0 || 
-        currentLevel.map[roundedX][roundedY] == 4 ||
-        currentLevel.map[roundedX][roundedY] == 6 ||
-        currentLevel.map[roundedX][roundedY] == 7)) {
-        return false;
-      }
-  
-    return true;
+  boolean isValidMove(int roundedX, int roundedY) {
+    println("chiamata a valid move");
+    println("isWithinMapBounds: " + isWithinMapBounds(roundedX, roundedY));
+    // println("collisionRect: " + collisionRect.intersectsTile(roundedX, roundedY));
+    println("isCollisionTile: " + isCollisionTile(roundedX, roundedY));
+    
+    if(isWithinMapBounds(roundedX, roundedY) && !isCollisionTile(roundedX, roundedY)) {
+      return true;
+    }
+    
+    return false;
+    
+    //// il giocatore si trova entro i confini della mappa
+    //if(isWithinMapBounds(roundedX, roundedY)) {
+    //  // se il giocatore collide con un tile
+    //  if(collisionRect.intersectsTile(roundedX, roundedY)) {
+    //    // se il tile non è di collisione 
+    //    if(isCollisionTile(roundedX, roundedY)) {
+    //      // la mossa non è valida
+    //      flag = false;
+    //    }
+    //  }
+    //}
+    
+    //return flag;
   }
 
   void display(PGraphics layer) {
+    // hitbox giocatore
     layer.noFill(); // Nessun riempimento
     layer.stroke(255); // Colore del bordo bianco
     layer.rect(spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
-    layer.noFill();
-    layer.stroke(255, 0, 0);
-    layer.point(spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize);
+    
     layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
   }
 }
