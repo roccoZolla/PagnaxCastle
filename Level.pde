@@ -287,7 +287,7 @@ class Level {
 
       // Genera un numero casuale di nemici in ogni stanza
       // AGGIUNGI LOGICA DI DIFFICOLTA
-      int numEnemiesInRoom = floor(random(1, 4)); // Puoi regolare i valori a tuo piacimento
+      int numEnemiesInRoom = floor(random(1, 2)); // Puoi regolare i valori a tuo piacimento
 
       for (int i = 0; i < numEnemiesInRoom; i++) {
         int x, y;
@@ -373,5 +373,19 @@ class Level {
         }
       }
     }
+  }
+  
+  // collide con le scale
+  // da migliorare
+  // deve essere generico
+  boolean playerCollide(Player aPlayer) {
+        if( aPlayer.spritePosition.x * currentLevel.tileSize < (rooms.get(endRoomIndex).position.x * currentLevel.tileSize) + stairsNextFloorImage.width  &&
+        (aPlayer.spritePosition.x * currentLevel.tileSize) + aPlayer.sprite.width > rooms.get(endRoomIndex).position.x * currentLevel.tileSize && 
+        aPlayer.spritePosition.y * currentLevel.tileSize < (rooms.get(endRoomIndex).position.y * currentLevel.tileSize) + stairsNextFloorImage.height && 
+        (aPlayer.spritePosition.y * currentLevel.tileSize) + aPlayer.sprite.height > rooms.get(endRoomIndex).position.y * currentLevel.tileSize) {
+          return true;
+    }
+    
+    return false;
   }
 }

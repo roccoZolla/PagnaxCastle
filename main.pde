@@ -11,11 +11,19 @@ Chest selectedChest;
 Menu menu;
 Pause pauseMenu;
 Option optionMenu;
+Tutorial tutorial;
 UI ui;
 Game game;
 
 // ui
+PImage letter_w;
+PImage letter_a;
+PImage letter_s;
+PImage letter_d;
+PImage letter_j;
 PImage letter_k;
+PImage letter_l;
+
 PImage coins;
 
 // sound effect
@@ -40,13 +48,13 @@ final int WIN_SCREEN = 3;
 final int LOSE_SCREEN = 4;
 final int PAUSE_SCREEN = 5;
 final int OPTION_SCREEN = 6;
+final int TUTORIAL_SCREEN = 7;
 
 World castle;
 Zone currentZone;
 Level currentLevel;
 
 float proximityThreshold = 0.5; // Soglia di prossimità consentita per le scale
-float coinCollectionThreshold = 0.5; // soglia di prossimita per il raccoglimento delle monete
 String actualLevel;
 
 // titolo del gioco
@@ -80,6 +88,7 @@ void setup() {
   menu = new Menu();
   pauseMenu = new Pause();
   optionMenu = new Option();
+  tutorial = new Tutorial();
   ui = new UI();
   game = new Game();
 
@@ -104,7 +113,21 @@ void setup() {
 }
 
 void setupImages() {
+  // movimento
+  letter_w = loadImage("data/letter_w.png");
+  letter_a = loadImage("data/letter_a.png");
+  letter_s = loadImage("data/letter_s.png");
+  letter_d = loadImage("data/letter_d.png");
+  
+  // interazione oggetti
   letter_k = loadImage("data/letter_k.png");
+  
+  // attcca
+  letter_j = loadImage("data/letter_j.png");
+  
+  // utilizza oggetti
+  letter_l = loadImage("data/letter_l.png");
+  
   coins = loadImage("data/coin.png");
 }
 
@@ -141,6 +164,11 @@ void draw() {
   case STORY_SCREEN:
     // show story
     storyScreen(currentZone.storyText);
+    break;
+    
+    case TUTORIAL_SCREEN:
+    // show tutorial
+    tutorial.display();
     break;
 
   case GAME_SCREEN:

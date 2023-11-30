@@ -43,8 +43,6 @@ class Player {
   void move() {
     float newX = spritePosition.x;
     float newY = spritePosition.y;
-    float spriteWidth = sprite.width;  // Larghezza dello sprite
-    float spriteHeight = sprite.height;  // Altezza dello sprite
     
     int roundedX = 0, roundedY = 0;
 
@@ -76,34 +74,21 @@ class Player {
       spritePosition.y = newY;
     }
   }
-
+  
+  // attacca il nemico
+  // in base all'arma equipaggiata 
+  // calcola il danno
+  void attack() {
+    
+  }
 
   // collision detection
   boolean isValidMove(int roundedX, int roundedY) {
-    println("chiamata a valid move");
-    println("isWithinMapBounds: " + isWithinMapBounds(roundedX, roundedY));
-    // println("collisionRect: " + collisionRect.intersectsTile(roundedX, roundedY));
-    println("isCollisionTile: " + isCollisionTile(roundedX, roundedY));
-    
     if(isWithinMapBounds(roundedX, roundedY) && !isCollisionTile(roundedX, roundedY)) {
       return true;
     }
     
     return false;
-    
-    //// il giocatore si trova entro i confini della mappa
-    //if(isWithinMapBounds(roundedX, roundedY)) {
-    //  // se il giocatore collide con un tile
-    //  if(collisionRect.intersectsTile(roundedX, roundedY)) {
-    //    // se il tile non è di collisione 
-    //    if(isCollisionTile(roundedX, roundedY)) {
-    //      // la mossa non è valida
-    //      flag = false;
-    //    }
-    //  }
-    //}
-    
-    //return flag;
   }
 
   void display(PGraphics layer) {

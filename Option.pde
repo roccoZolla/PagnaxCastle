@@ -10,7 +10,8 @@ class Option {
     buttons.add(new Button(width - 250, 120, 50, 50, "e-", ""));
     buttons.add(new Button(width - 100, 200, 50, 50, "m+", ""));
     buttons.add(new Button(width - 250, 200, 50, 50, "m-", ""));
-    buttons.add(new Button(width - 250, height - 150, 200, 80, "Back to menu", ""));
+    buttons.add(new Button(100, 400, 200, 80, "Comandi", ""));
+    buttons.add(new Button(width - 250, height - 150, 200, 80, "Back", ""));
   }
 
   void display() {
@@ -103,8 +104,13 @@ class Option {
           if (volumeMusicLevel < 0.0) volumeMusicLevel = 0.0;
           updateMusicVolume(volumeMusicLevel);
           break;
+          
+        case "Comandi":
+          // previous_state = screen_state;
+          screen_state = TUTORIAL_SCREEN;
+          break;
 
-        case "Back to menu":
+        case "Back":
           if (previous_state == MENU_SCREEN) {
             // salva lo stato
             previous_state = screen_state;

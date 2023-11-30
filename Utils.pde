@@ -91,7 +91,11 @@ void drawPlayerWeapon() {
   float imageY = p1.spritePosition.y * currentLevel.tileSize;
   float imageWidth = p1.weapon.sprite.width;
   float imageHeight = p1.weapon.sprite.height;
-
+  
+  spritesLayer.noFill(); // Nessun riempimento
+  spritesLayer.stroke(255, 146, 240); // Colore del bordo bianco
+  spritesLayer.rect(imageX, imageY, imageWidth, imageHeight);
+  
   spritesLayer.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
 }
 

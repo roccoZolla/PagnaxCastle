@@ -3,6 +3,9 @@ public class Enemy {
   float spriteSpeed = 0.1;
   PImage sprite;
   
+  private static final long ATTACK_COOLDOWN = 3000; // Tempo di cooldown in millisecondi (3 secondi)
+  private long lastAttackTime = 0;
+  
   int enemyHP;
   int damage;
   String name;
@@ -94,13 +97,23 @@ public class Enemy {
   }
   
   // attacca il giocatore
+  // da migliorare
   void attack() {
     println("attacco subito");
-    p1.playerHP -= damage;
-    
-    if(p1.playerHP < 0) {
-      p1.playerHP = 0;
-    }
+    long currentTime = System.currentTimeMillis();
+
+        // Verifica se è passato abbastanza tempo dall'ultimo attacco
+      if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
+          // Esegui l'attacco
+            p1.playerHP -= damage;
+  
+            if(p1.playerHP < 0) {
+              p1.playerHP = 0;
+            }
+
+          // Aggiorna il tempo dell'ultimo attacco
+          lastAttackTime = currentTime;
+      }
   }
   
   // verifica collisione

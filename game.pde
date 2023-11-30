@@ -156,7 +156,8 @@ class Game {
     spritesLayer.endDraw();
 
     // passa al livello successivo
-    if (dist(p1.spritePosition.x, p1.spritePosition.y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
+    // aggiungere collider
+    if (currentLevel.playerCollide(p1)) {
       // se il livello dell'area è l'ultimo passa alla prossima area
       if (currentLevel.levelIndex == currentZone.numLevels - 1) {
         // controlla se è l'area finale
