@@ -208,6 +208,12 @@ void draw() {
 void winScreen() {
   // salva lo stato precedente
   previous_state = screen_state;
+  
+  // stoppa la soundtrack
+  if (isSoundtrackPlaying) {
+    soundtrack.stop();
+    isSoundtrackPlaying = false;
+  }
 
   // chiama la funzione
   writer("hai vinto!");
@@ -216,6 +222,12 @@ void winScreen() {
 void loseScreen() {
   // salva lo stato precedente
   previous_state = screen_state;
+  
+  // stoppa la soundtrack
+  if (isSoundtrackPlaying) {
+    soundtrack.stop();
+    isSoundtrackPlaying = false;
+  }
 
   // chiama la funzione
   writer("hai perso!");

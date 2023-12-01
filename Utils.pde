@@ -2,6 +2,8 @@ int letterIndex = 0; // Indice della lettera corrente
 boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
 int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 
+boolean isUsingPotion = false;
+
 // gestione comandi
 void keyPressed() {
   if (screen_state == GAME_SCREEN) {
@@ -14,7 +16,7 @@ void keyPressed() {
     } else if (key == 'd' || key == 'D') {
       p1.moveRIGHT = true;
     } else if (key == 'j' || key == 'J') {
-      p1.moveATCK = true;
+      p1.moveATCK = true; 
     } else if (key == 'k' || key == 'K') {
       p1.moveINTR = true;
     } else if (key == 'l' || key == 'L') {
@@ -63,6 +65,7 @@ void keyReleased() {
     p1.moveINTR = false;
   } else if (key == 'l' || key == 'L') {
     p1.moveUSE = false;
+    isUsingPotion = false;
   }
 }
 
@@ -106,12 +109,10 @@ boolean isWithinMapBounds(int x, int y) {
 
 // verifica se è un tile di collisione
 boolean isCollisionTile(int x, int y) {
-    int[] collisionValues = {0, 4, 6};
+    int[] collisionValues = {0, 4, 6, 3};
     
     for (int value : collisionValues) {
-      println("collision value: " + value);
         if (currentLevel.map[x][y] == value) {
-          println("tile di collisione");
             return true;
         }
     }

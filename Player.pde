@@ -9,9 +9,9 @@ class Player {
   boolean moveRIGHT;
   boolean moveLEFT;
   
-  boolean moveATCK;    // attacco
-  boolean moveINTR;    // interazione
-  boolean moveUSE;     // utilizza
+  boolean moveATCK;    // attacco j
+  boolean moveINTR;    // interazione k 
+  boolean moveUSE;     // utilizza l
 
   // caratteristiche del player
   int playerMaxHP;
@@ -79,7 +79,7 @@ class Player {
   // in base all'arma equipaggiata 
   // calcola il danno
   void attack() {
-    
+    // se l'arma collide con un nemico sottrai danno alla vita nemico
   }
 
   // collision detection

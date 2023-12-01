@@ -8,6 +8,7 @@ public class Enemy {
   
   int enemyHP;
   int damage;
+  Item dropItem;    // oggetto droppato dal nemico che puo essere un cuore, meta cuore o altro
   String name;
 
   Enemy(int enemyHP, String name, int damage) {
@@ -128,6 +129,7 @@ public class Enemy {
             spritesLayer.fill(255);
             spritesLayer.textSize(15);
             spritesLayer.text("rat", (spritePosition.x * currentLevel.tileSize) - 50, (spritePosition.y * currentLevel.tileSize) - 10);
+            
             return true;
     }
     

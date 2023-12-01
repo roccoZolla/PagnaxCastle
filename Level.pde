@@ -206,7 +206,7 @@ class Level {
         y = (int) random(rows);
 
         // Verifica se la posizione è già occupata da un muro, una parete, una cassa o un'altra moneta
-        positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6 /*|| isCoinOccupied(x, y)*/);
+        positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6 || map[x][y] == 3);
       } while (positionOccupied);
 
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
@@ -334,7 +334,6 @@ class Level {
         switch(tileType) {
         case 0:
           // sfondo
-          // image(wallImage, x * tileSize, y * tileSize, tileSize, tileSize);
           gameScene.fill(0); // nero
           gameScene.noStroke();
           gameScene.rect(x * tileSize, y * tileSize, tileSize, tileSize);
@@ -378,6 +377,7 @@ class Level {
   // collide con le scale
   // da migliorare
   // deve essere generico
+  // se collide con un tile di collisione ritorna true
   boolean playerCollide(Player aPlayer) {
         if( aPlayer.spritePosition.x * currentLevel.tileSize < (rooms.get(endRoomIndex).position.x * currentLevel.tileSize) + stairsNextFloorImage.width  &&
         (aPlayer.spritePosition.x * currentLevel.tileSize) + aPlayer.sprite.width > rooms.get(endRoomIndex).position.x * currentLevel.tileSize && 

@@ -14,7 +14,7 @@ class Game {
     redPotion.setHealerable(true);  // restitusce vita
     redPotion.setBonusHP(20);
 
-    p1 = new Player(80, 100, 5, 5, 5);
+    p1 = new Player(50, 100, 5, 5, 5);
     p1.spritePosition = currentLevel.getStartRoom();
     p1.sprite = loadImage("data/player.png");
     p1.healer = redPotion;
@@ -69,13 +69,13 @@ class Game {
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.spritePosition)) {
         chest.display(spritesLayer);
-        if(chest.playerCollide(p1)) {
+        if(chest.playerCollide(p1) && !chest.isOpen()) {
           float letterImageX = (chest.spritePosition.x * currentLevel.tileSize);
           float letterImageY = (chest.spritePosition.y * currentLevel.tileSize) - 20; // Regola l'offset verticale a tuo piacimento
           spritesLayer.image(letter_k, letterImageX, letterImageY);
           
           // se il giocatore preme il tasto interazione e la cassa non è stata aperta
-          if (p1.moveINTR && !chest.isOpen()) {
+          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK) ) {
             if (chest.isRare()) {    // se la cassa è rara
               if (p1.numberOfGoldenKeys > 0) {
                 if (chest.getOpenWith().equals(p1.golden_keys)) {
@@ -132,12 +132,15 @@ class Game {
     p1.display(spritesLayer);
     p1.move();
 
-    if (p1.moveATCK) {
+    if (p1.moveATCK && (!p1.moveUSE && !p1.moveINTR)) {
       drawPlayerWeapon();
+      p1.attack();
     }
 
     // usa le pozioni
-    if (p1.moveUSE && p1.numberOfPotion > 0) {
+    if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR) && p1.numberOfPotion > 0 && !isUsingPotion) {
+       isUsingPotion = true;
+      
       if (p1.playerHP < p1.playerMaxHP) {
         drinkPotion.play();
         p1.playerHP += redPotion.bonusHP;
