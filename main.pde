@@ -1,6 +1,8 @@
 import processing.sound.*;
 
 Player p1;
+PImage spriteRight;
+PImage spriteLeft;
 Item weapon;
 Item silver_key;
 Item golden_key;
@@ -113,6 +115,10 @@ void setup() {
 }
 
 void setupImages() {
+  // sprites player
+  spriteRight = loadImage("data/playerRIGHT.png");
+  spriteLeft = loadImage("data/playerLEFT.png");
+  
   // movimento
   letter_w = loadImage("data/letter_w.png");
   letter_a = loadImage("data/letter_a.png");

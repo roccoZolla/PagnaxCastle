@@ -41,22 +41,25 @@ class Player {
   }
  
   void move() {
+    float scale = 0.5;    // fattore di scala per la velocita
     float newX = spritePosition.x;
     float newY = spritePosition.y;
     
     int roundedX = 0, roundedY = 0;
 
     if (moveUP) {
-      newY -= spriteSpeed;
+      newY -= spriteSpeed * scale;
     }
     if (moveDOWN) {
-      newY += spriteSpeed;
+      newY += spriteSpeed * scale;
     }
     if (moveLEFT) {
-      newX -= spriteSpeed;
+      p1.sprite = spriteLeft;
+      newX -= spriteSpeed * scale;
     }
     if (moveRIGHT) {
-      newX += spriteSpeed;
+      p1.sprite = spriteRight;
+      newX += spriteSpeed * scale;
     }
 
     // Verifica se la nuova posizione è valida
@@ -89,6 +92,25 @@ class Player {
     }
     
     return false;
+  }
+  
+  // metodo che si occupa di disegnare l'arma del giocatore
+  void drawPlayerWeapon() {
+    float weaponPosition = 10;
+    if (p1.moveRIGHT) weaponPosition = 10;
+    else if (p1.moveLEFT) weaponPosition = -10;
+  
+    PImage weaponImage = p1.weapon.sprite;
+    float imageX = (p1.spritePosition.x * currentLevel.tileSize) + weaponPosition;
+    float imageY = p1.spritePosition.y * currentLevel.tileSize;
+    float imageWidth = p1.weapon.sprite.width;
+    float imageHeight = p1.weapon.sprite.height;
+    
+    spritesLayer.noFill(); // Nessun riempimento
+    spritesLayer.stroke(255, 146, 240); // Colore del bordo bianco
+    spritesLayer.rect(imageX, imageY, imageWidth, imageHeight);
+    
+    spritesLayer.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
   }
 
   void display(PGraphics layer) {

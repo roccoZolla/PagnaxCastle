@@ -16,7 +16,7 @@ class Game {
 
     p1 = new Player(50, 100, 5, 5, 5);
     p1.spritePosition = currentLevel.getStartRoom();
-    p1.sprite = loadImage("data/player.png");
+    p1.sprite = spriteRight;
     p1.healer = redPotion;
     p1.weapon = weapon;
     p1.golden_keys = golden_key;
@@ -44,25 +44,9 @@ class Game {
     spritesLayer.background(255, 0);
     spritesLayer.translate(-camera.x, -camera.y);
     spritesLayer.scale(camera.zoom);
-
-    // ----- ENEMY -----
-    // disegna solo i nemici visibili
-    for (Enemy enemy : currentLevel.enemies) {
-      if (isInVisibleArea(enemy.spritePosition)) {
-        enemy.display(spritesLayer);
-        
-        // rilevi collisione attacca
-        if(enemy.playerCollide(p1)) {
-          // attacca il player
-          // aggiungere cool down es: attacca ogni 3 sec
-          enemy.attack();
-        } else {
-          // altrimenti muovi il nemico
-          enemy.move(currentLevel);
-        }
-      }
-    }
-
+    
+    // aggiorna lo stato corrente del gioco
+    updateGame();
 
     // ----- CHEST -----
     // disegna solo le chest visibili
@@ -126,36 +110,6 @@ class Game {
       }
     }
 
-    // Gestione del movimento del giocatore
-    // da migliorare
-    // mostra il player
-    p1.display(spritesLayer);
-    p1.move();
-
-    if (p1.moveATCK && (!p1.moveUSE && !p1.moveINTR)) {
-      drawPlayerWeapon();
-      p1.attack();
-    }
-
-    // usa le pozioni
-    if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR) && p1.numberOfPotion > 0 && !isUsingPotion) {
-       isUsingPotion = true;
-      
-      if (p1.playerHP < p1.playerMaxHP) {
-        drinkPotion.play();
-        p1.playerHP += redPotion.bonusHP;
-
-        if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
-
-        p1.numberOfPotion -= 1;
-      } else {
-        spritesLayer.textFont(myFont);
-        spritesLayer.fill(255);
-        spritesLayer.textSize(10);
-        spritesLayer.text("Cuori al massimo!", (p1.spritePosition.x * currentLevel.tileSize) - 30, (p1.spritePosition.y * currentLevel.tileSize) - 5);
-      }
-    }
-
     spritesLayer.endDraw();
 
     // passa al livello successivo
@@ -198,7 +152,60 @@ class Game {
     image(spritesLayer, 0, 0);
   }
   
-  void updateScene() {
+  void updateGame() {
+    handlePlayerMovement();
+    handlePlayerAttack();
+    handlePotionUse();
+    handleEnemyActions();
+  }
+  
+  // gestisce il movimento del player
+  void handlePlayerMovement() {
+    p1.display(spritesLayer);
+    p1.move();
+  }
+  
+  // gestisce l'attacco del giocatore
+  void handlePlayerAttack() {
+    if (p1.moveATCK && (!p1.moveUSE && !p1.moveINTR)) {
+      p1.drawPlayerWeapon();
+      p1.attack();
+    }
+  }
+  
+  // gestisce l'uso delle pozioni 
+  void handlePotionUse() {
+    if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR) && p1.numberOfPotion > 0 && !isUsingPotion) {
+      isUsingPotion = true;
+      if (p1.playerHP < p1.playerMaxHP) {
+        drinkPotion.play();
+        p1.playerHP += redPotion.bonusHP;
 
+        if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
+
+        p1.numberOfPotion -= 1;
+      } else {
+        spritesLayer.textFont(myFont);
+        spritesLayer.fill(255);
+        spritesLayer.textSize(10);
+        spritesLayer.text("Cuori al massimo!", (p1.spritePosition.x * currentLevel.tileSize) - 30, (p1.spritePosition.y * currentLevel.tileSize) - 5);
+      }
+    }
+  }
+  
+  // gestisce le azioni di ogni nemico 
+  void handleEnemyActions() {
+    for (Enemy enemy : currentLevel.enemies) {
+      if (isInVisibleArea(enemy.spritePosition)) {
+        enemy.display(spritesLayer);
+        if (enemy.playerCollide(p1)) {
+          // attacca il giocatore
+          enemy.attack(); 
+        } else {
+          // muovi il nemico
+          enemy.move();
+        }
+      }
+    }
   }
 }

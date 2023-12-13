@@ -1,3 +1,4 @@
+// tutorial screen
 class Tutorial {
   ArrayList<Button> buttons;
 

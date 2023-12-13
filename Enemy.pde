@@ -26,7 +26,7 @@ public class Enemy {
     layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
   }
   
-  void move(Level currentLevel) {
+  void move() {
     // Ottieni la posizione del giocatore
     PVector playerPosition = p1.spritePosition;
 
@@ -45,8 +45,13 @@ public class Enemy {
       // Calcola il movimento in base alla direzione
       float newX = this.spritePosition.x + direction.x * spriteSpeed;
       float newY = this.spritePosition.y + direction.y * spriteSpeed;
+      
+      int roundedX = 0, roundedY = 0;
+      
+      roundedX = round(newX);
+      roundedY = round(newY);
 
-      if (checkEnemyMove(newX, newY, currentLevel)) {
+      if (isValidMove(roundedX, roundedY)) {
         // Aggiorna la posizione del nemico
         this.spritePosition.x = newX;
         this.spritePosition.y = newY;
@@ -57,6 +62,8 @@ public class Enemy {
       
       float newX = this.spritePosition.x;
       float newY = this.spritePosition.y;
+      
+      int roundedX = 0, roundedY = 0;
 
       if (randomDirection == 0) {
         newY -= spriteSpeed;
@@ -67,8 +74,12 @@ public class Enemy {
       } else if (randomDirection == 3) {
         newX += spriteSpeed;
       }
+      
+      // Verifica se la nuova posizione è valida
+      roundedX = round(newX);
+      roundedY = round(newY);
 
-      if(checkEnemyMove(newX, newY, currentLevel)) {
+      if(isValidMove(roundedX, roundedY)) {
         // Aggiorna la posizione del nemico in modo casuale
         this.spritePosition.x = newX;
         this.spritePosition.y = newY;
@@ -76,24 +87,32 @@ public class Enemy {
     }
   }
   
-  boolean checkEnemyMove(float newX, float newY, Level currentLevel) {
-    // Verifica se la nuova posizione è valida
-    PVector playerPosition = p1.spritePosition;
-    int roundedX = round(newX);
-    int roundedY = round(newY);
+  //boolean checkEnemyMove(float newX, float newY, Level currentLevel) {
+  //  // Verifica se la nuova posizione è valida
+  //  PVector playerPosition = p1.spritePosition;
+  //  int roundedX = round(newX);
+  //  int roundedY = round(newY);
   
-    if (roundedX == round(playerPosition.x) && roundedY == round(playerPosition.y)) {
-      return false; // Il nemico non può andare nella stessa posizione del giocatore
-    }
+  //  if (roundedX == round(playerPosition.x) && roundedY == round(playerPosition.y)) {
+  //    return false; // Il nemico non può andare nella stessa posizione del giocatore
+  //  }
   
-    if (roundedX >= 0 && roundedX < currentLevel.cols && roundedY >= 0 && roundedY < currentLevel.rows &&
-      currentLevel.map[roundedX][roundedY] != 0 &&
-      currentLevel.map[roundedX][roundedY] != 4 &&
-      currentLevel.map[roundedX][roundedY] != 6 &&
-      currentLevel.map[roundedX][roundedY] != 3) {
+  //  if (roundedX >= 0 && roundedX < currentLevel.cols && roundedY >= 0 && roundedY < currentLevel.rows &&
+  //    currentLevel.map[roundedX][roundedY] != 0 &&
+  //    currentLevel.map[roundedX][roundedY] != 4 &&
+  //    currentLevel.map[roundedX][roundedY] != 6 &&
+  //    currentLevel.map[roundedX][roundedY] != 3) {
+  //    return true;
+  //  }
+  
+  //  return false;
+  //}
+  
+  boolean isValidMove(int roundedX, int roundedY) {
+    if(isWithinMapBounds(roundedX, roundedY) && !isCollisionTile(roundedX, roundedY)) {
       return true;
     }
-  
+    
     return false;
   }
   
@@ -103,18 +122,18 @@ public class Enemy {
     println("attacco subito");
     long currentTime = System.currentTimeMillis();
 
-        // Verifica se è passato abbastanza tempo dall'ultimo attacco
-      if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
-          // Esegui l'attacco
-            p1.playerHP -= damage;
-  
-            if(p1.playerHP < 0) {
-              p1.playerHP = 0;
-            }
+      // Verifica se è passato abbastanza tempo dall'ultimo attacco
+    if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
+        // Esegui l'attacco
+        p1.playerHP -= damage;
 
-          // Aggiorna il tempo dell'ultimo attacco
-          lastAttackTime = currentTime;
-      }
+        if(p1.playerHP < 0) {
+          p1.playerHP = 0;
+        }
+
+        // Aggiorna il tempo dell'ultimo attacco
+        lastAttackTime = currentTime;
+    }
   }
   
   // verifica collisione

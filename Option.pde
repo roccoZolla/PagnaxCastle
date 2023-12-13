@@ -1,3 +1,4 @@
+// option screen
 class Option {
   ArrayList<Button> buttons;
   PGraphics optionLayer;
@@ -40,6 +41,7 @@ class Option {
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
     optionLayer.text("Effetti sonori: ", 200, 150);
+    
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);

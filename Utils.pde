@@ -84,24 +84,6 @@ boolean isInVisibleArea(PVector spritePosition) {
   return (spritePosition.x >= startX && spritePosition.x <= endX && spritePosition.y >= startY && spritePosition.y <= endY);
 }
 
-void drawPlayerWeapon() {
-  float weaponPosition = 10;
-  if (p1.moveRIGHT) weaponPosition = 10;
-  else if (p1.moveLEFT) weaponPosition = -10;
-
-  PImage weaponImage = p1.weapon.sprite;
-  float imageX = (p1.spritePosition.x * currentLevel.tileSize) + weaponPosition;
-  float imageY = p1.spritePosition.y * currentLevel.tileSize;
-  float imageWidth = p1.weapon.sprite.width;
-  float imageHeight = p1.weapon.sprite.height;
-  
-  spritesLayer.noFill(); // Nessun riempimento
-  spritesLayer.stroke(255, 146, 240); // Colore del bordo bianco
-  spritesLayer.rect(imageX, imageY, imageWidth, imageHeight);
-  
-  spritesLayer.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
-}
-
 // controlla che le coordinate si trovino all'interno della mappa
 boolean isWithinMapBounds(int x, int y) {
     return x >= 0 && x < currentLevel.cols && y >= 0 && y < currentLevel.rows;
