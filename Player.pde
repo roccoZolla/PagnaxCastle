@@ -34,6 +34,11 @@ class Player {
     this.numberOfSilverKeys = numberOfSilverKeys;
     this.numberOfGoldenKeys = numberOfGoldenKeys;
     this.numberOfPotion = numberOfPotion;
+    
+    this.moveUP = false;
+    this.moveDOWN = false;
+    this.moveRIGHT = false;
+    this.moveLEFT = false;
   }
 
   public void collectCoin() {
@@ -41,36 +46,35 @@ class Player {
   }
  
   void move() {
-    float scale = 0.5;    // fattore di scala per la velocita
     float newX = spritePosition.x;
     float newY = spritePosition.y;
     
     int roundedX = 0, roundedY = 0;
 
     if (moveUP) {
-      newY -= spriteSpeed * scale;
+      newY -= spriteSpeed;
     }
     if (moveDOWN) {
-      newY += spriteSpeed * scale;
+      newY += spriteSpeed;
     }
     if (moveLEFT) {
       p1.sprite = spriteLeft;
-      newX -= spriteSpeed * scale;
+      newX -= spriteSpeed;
     }
     if (moveRIGHT) {
       p1.sprite = spriteRight;
-      newX += spriteSpeed * scale;
+      newX += spriteSpeed;
     }
 
     // Verifica se la nuova posizione è valida
     roundedX = round(newX);
     roundedY = round(newY);
     
-    println("newX: " + newX);
-    println("newY: " + newY);
+    //println("newX: " + newX);
+    //println("newY: " + newY);
     
-    println("roundedX: " + roundedX);
-    println("roundedY: " + roundedY);
+    //println("roundedX: " + roundedX);
+    //println("roundedY: " + roundedY);
   
     if (isValidMove(roundedX, roundedY)) {
       spritePosition.x = newX;
@@ -83,14 +87,41 @@ class Player {
   // calcola il danno
   void attack() {
     // se l'arma collide con un nemico sottrai danno alla vita nemico
+    //  boolean weaponCollision(Enemy enemy) {
+    //  float weaponPosition = 10;
+    //  if (p1.moveRIGHT) weaponPosition = 10;
+    //  else if (p1.moveLEFT) weaponPosition = -10;
+      
+    //  if((p1.spritePosition.x * currentLevel.tileSize) + weaponPosition <= (enemy.spritePosition.x * currentLevel.tileSize) + enemy.sprite.width  &&
+    //      (p1.spritePosition.x * currentLevel.tileSize) + weaponPosition + p1.weapon.sprite.width >= enemy.spritePosition.x * currentLevel.tileSize && 
+    //      p1.spritePosition.y * currentLevel.tileSize <= (enemy.spritePosition.y * currentLevel.tileSize) + enemy.sprite.height &&
+    //      p1.spritePosition.y * currentLevel.tileSize + p1.weapon.sprite.height >= (enemy.spritePosition.y * currentLevel.tileSize)) {
+    //      return true;
+    //  }
+      
+    //  return false;
+    //}
   }
 
   // collision detection
   boolean isValidMove(int roundedX, int roundedY) {
-    if(isWithinMapBounds(roundedX, roundedY) && !isCollisionTile(roundedX, roundedY)) {
+    // il player si trova all'interno della mappa di gioco
+    if(isWithinMapBounds(roundedX, roundedY)) {
+      // il player si scontra con un tile di collisione
+      if(isCollisionTile(roundedX, roundedY)) {
+        if(spritePosition.x * currentLevel.tileSize <= (roundedX * currentLevel.tileSize) + currentLevel.tileSize ||
+           (spritePosition.x * currentLevel.tileSize) + sprite.width<= roundedX * currentLevel.tileSize ||
+           spritePosition.y * currentLevel.tileSize >= (roundedY * currentLevel.tileSize) + currentLevel.tileSize ||
+           (spritePosition.y * currentLevel.tileSize) + sprite.height >= roundedY * currentLevel.tileSize) {
+           // ritorna falso se il player cerca di attraversa il tile 
+           return false;
+        }
+      }
+      // ritorna vero se il player si trova all'interno della mappa e non si sta scontrando con un tile di collisione
       return true;
     }
     
+    // falso altrimenti
     return false;
   }
   

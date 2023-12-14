@@ -10,6 +10,14 @@ class Level {
   int cols, rows;
   int[][] map;
   ArrayList<Room> rooms;
+  
+  static final int BACKGROUND_TILE_TYPE = 0;
+  static final int FLOOR_TILE_TYPE = 1;
+  static final int START_ROOM_TILE_TYPE = 2;
+  static final int STAIRS_TILE_TYPE = 3;
+  static final int WALL_PERIMETER_TILE_TYPE = 4;
+  static final int HALLWAY_TILE_TYPE = 5;
+  static final int CHEST_TILE_TYPE = 6;
 
   // attributi
   PImage startFloorImage;
@@ -268,7 +276,7 @@ class Level {
 
       // Aggiungi la cassa alla lista delle casse
       chest.spritePosition = new PVector(x, y);
-      map[x][y] = 6; // Imposta il tipo di tile corrispondente a una cassa
+      map[x][y] = CHEST_TILE_TYPE; // Imposta il tipo di tile corrispondente a una cassa
       
       treasures.add(chest);
     }
@@ -332,39 +340,39 @@ class Level {
         int tileType = map[x][y];
 
         switch(tileType) {
-        case 0:
+        case BACKGROUND_TILE_TYPE:
           // sfondo
           gameScene.fill(0); // nero
           gameScene.noStroke();
           gameScene.rect(x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
-        case 1:
+        case FLOOR_TILE_TYPE:
           // pavimento
           gameScene.image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
-        case 2:
+        case START_ROOM_TILE_TYPE:
           // Imposta l'immagine per la stanza iniziale (nero)
           gameScene.image(startFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
-        case 3:
+        case STAIRS_TILE_TYPE:
           // scale per il piano successivo
           gameScene.image(stairsNextFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
-        case 4:
+        case WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
           gameScene.image(wallImageNorth, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
-        case 5:
+        case HALLWAY_TILE_TYPE:
           // corridoio
           gameScene.image(hallwayImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
-        case 6:
+        case CHEST_TILE_TYPE:
           // ci sta tenerlo sono statiche le casse
           // tesori
           gameScene.image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);

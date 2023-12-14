@@ -197,10 +197,13 @@ class Game {
   void handleEnemyActions() {
     for (Enemy enemy : currentLevel.enemies) {
       if (isInVisibleArea(enemy.spritePosition)) {
-        enemy.display(spritesLayer);
+        if(enemy.enemyHP > 0) {
+          enemy.display(spritesLayer);
+        }
+
         if (enemy.playerCollide(p1)) {
           // attacca il giocatore
-          enemy.attack(); 
+          enemy.attack();
         } else {
           // muovi il nemico
           enemy.move();
