@@ -295,7 +295,7 @@ class Level {
 
       // Genera un numero casuale di nemici in ogni stanza
       // AGGIUNGI LOGICA DI DIFFICOLTA
-      int numEnemiesInRoom = floor(random(1, 2)); // Puoi regolare i valori a tuo piacimento
+      int numEnemiesInRoom = floor(random(3, 5)); // Puoi regolare i valori a tuo piacimento
 
       for (int i = 0; i < numEnemiesInRoom; i++) {
         int x, y;
