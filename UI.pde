@@ -46,7 +46,7 @@ class UI {
 
     buttons = new ArrayList();
 
-    buttons.add(new Button(width - 50, 20, 40, 40, "", "data/ui/Pause.png"));
+    buttons.add(new Button(width - 50, 20, 40, 40, "pause", "", "data/ui/Pause.png"));
     
     isWeaponSelected = true;
     isKeyObjectSelected = false;

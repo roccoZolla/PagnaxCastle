@@ -6,7 +6,7 @@ class Tutorial {
     // menu
     buttons = new ArrayList();
     
-    buttons.add(new Button(width - 250, height - 150, 200, 80, "Back", ""));
+    buttons.add(new Button(width - 250, height - 150, 200, 80, "back", "Back", ""));
   }
   
     void display() {
@@ -60,8 +60,8 @@ class Tutorial {
       
        for (Button button : buttons) {
         if (button.isClicked()) {
-          switch(button.label) {
-            case "Back":
+          switch(button.name) {
+            case "back":
               screen_state = OPTION_SCREEN;
               break;
             }

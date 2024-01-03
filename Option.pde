@@ -7,16 +7,16 @@ class Option {
     optionLayer = createGraphics(width, height);
     buttons = new ArrayList();
 
-    buttons.add(new Button(width - 100, 150, 50, 50, "e+", ""));    // selettore effetti sonori
-    buttons.add(new Button(width - 250, 150, 50, 50, "e-", ""));
-    buttons.add(new Button(width - 100, 210, 50, 50, "m+", ""));   // selettore volume musica
-    buttons.add(new Button(width - 250, 210, 50, 50, "m-", ""));
-    buttons.add(new Button(width - 100, 280, 50, 50, ">", ""));    // selettore difficolta
-    buttons.add(new Button(width - 250, 280, 50, 50, "<", ""));
-    buttons.add(new Button(width - 100, 350, 50, 50, ">", ""));    // selettore lingua
-    buttons.add(new Button(width - 250, 350, 50, 50, "<", ""));
-    buttons.add(new Button(100, 420, 200, 80, "Comandi", ""));
-    buttons.add(new Button(width - 250, height - 150, 200, 80, "Back", ""));
+    buttons.add(new Button(width - 100, 150, 50, 50, "effectsUp", "+", ""));    // selettore effetti sonori
+    buttons.add(new Button(width - 250, 150, 50, 50, "effectsDown", "-", ""));
+    buttons.add(new Button(width - 100, 210, 50, 50, "musicUp", "+", ""));   // selettore volume musica
+    buttons.add(new Button(width - 250, 210, 50, 50, "musicDown", "-", ""));
+    buttons.add(new Button(width - 100, 280, 50, 50, "difficultyRight", ">", ""));    // selettore difficolta
+    buttons.add(new Button(width - 250, 280, 50, 50, "difficultyLeft", "<", ""));
+    buttons.add(new Button(width - 100, 350, 50, 50, "languageRight", ">", ""));    // selettore lingua
+    buttons.add(new Button(width - 250, 350, 50, 50, "languageLeft", "<", ""));
+    buttons.add(new Button(100, 420, 200, 80, "commands", "Comandi", ""));
+    buttons.add(new Button(width - 250, height - 150, 200, 80, "back", "Back", ""));
   }
 
   void display() {
@@ -110,8 +110,8 @@ class Option {
 
     for (Button button : buttons) {
       if (button.isClicked()) {
-        switch(button.label) {
-        case "e+":
+        switch(button.name) {
+        case "effectsUp":
           volumeEffectsLevel += 0.1;
 
           if (volumeEffectsLevel > 1.0) volumeEffectsLevel = 1.0;
@@ -119,7 +119,7 @@ class Option {
           updateEffectsVolume(volumeEffectsLevel);
           break;
 
-        case "e-":
+        case "effectsDown":
           volumeEffectsLevel -= 0.1;
 
           if (volumeEffectsLevel < 0.0) volumeEffectsLevel = 0.0;
@@ -127,7 +127,7 @@ class Option {
           updateEffectsVolume(volumeEffectsLevel);
           break;
 
-        case "m+":
+        case "musicUp":
           volumeMusicLevel += 0.1;
 
           if (volumeMusicLevel > 1.0) volumeMusicLevel = 1.0;
@@ -135,19 +135,35 @@ class Option {
           updateMusicVolume(volumeMusicLevel);
           break;
 
-        case "m-":
+        case "musicDown":
           volumeMusicLevel -= 0.1;
 
           if (volumeMusicLevel < 0.0) volumeMusicLevel = 0.0;
           updateMusicVolume(volumeMusicLevel);
           break;
           
-        case "Comandi":
+        case "difficultyRight":
+          println("difficultyRight");
+          break;
+        
+        case "difficultyLeft":
+          println("difficultyLeft");
+          break;
+          
+        case "languageRight":
+          println("languageRight");
+          break;
+          
+        case "languageLeft":
+          println("languageLeft");
+          break;
+          
+        case "commands":
           // previous_state = screen_state;
           screen_state = TUTORIAL_SCREEN;
           break;
 
-        case "Back":
+        case "back":
           if (previous_state == MENU_SCREEN) {
             // salva lo stato
             previous_state = screen_state;
