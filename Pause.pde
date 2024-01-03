@@ -6,9 +6,9 @@ class Pause {
     pauseLayer = createGraphics(width, height);
     buttons = new ArrayList();
 
-    buttons.add(new Button(width / 2 - 100, height / 2, 200, 80, "Resume", ""));
-    buttons.add(new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Option", ""));
-    buttons.add(new Button(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80, "Back to menu", ""));
+    buttons.add(new Button(width / 2 - 100, height / 2, 200, 80, "resume", "Resume", ""));
+    buttons.add(new Button(width / 2 - 100, height / 2 + 100, 200, 80, "option", "Option", ""));
+    buttons.add(new Button(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80, "back", "Back to menu", ""));
   }
 
   void display() {
@@ -25,8 +25,8 @@ class Pause {
 
     for (Button button : buttons) {
       if (button.isClicked()) {
-        switch(button.label) {
-        case "Resume":
+        switch(button.name) {
+        case "resume":
           // salva lo stato
           previous_state = screen_state;
 
@@ -36,7 +36,7 @@ class Pause {
           soundtrack.play();
           break;
 
-        case "Option":
+        case "option":
           // salva lo stato
           previous_state = screen_state;
 
@@ -44,7 +44,7 @@ class Pause {
           screen_state = OPTION_SCREEN;
           break;
 
-        case "Back to menu":
+        case "back":
           // salva lo stato
           previous_state = screen_state;
 

@@ -11,11 +11,12 @@ class Button {
   boolean clicked;  // pulsante premuto e rilasciato
 
   // estetica del bottone
-  String label;
+  String name;   // nome del bottone
+  String label;  // etichetta
   color buttonColor;
   PImage buttonImage;
 
-  Button(int x, int y, float w, float h, String label, String dataPath) {
+  Button(int x, int y, float w, float h, String name, String label, String dataPath) {
     // Calcola la posizione x e y per centrare il bottone
     pos = new PVector(0, 0);
     pos.x = x;
@@ -23,6 +24,8 @@ class Button {
 
     this.w = w;
     this.h = h;
+    
+    this.name = name;
     this.label = label;
 
     this.hover = false;

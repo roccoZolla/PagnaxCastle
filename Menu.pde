@@ -5,9 +5,9 @@ class Menu {
     // menu
     buttons = new ArrayList();
     
-    buttons.add(new Button(width / 2 - 100, height / 2, 200, 80, "Start", ""));
-    buttons.add(new Button(width / 2 - 100, height / 2 + 100, 200, 80, "Option", ""));
-    buttons.add(new Button(width / 2 - 100, height / 2 + 200, 200, 80, "Exit", ""));
+    buttons.add(new Button(width / 2 - 100, height / 2, 200, 80, "start", "Start", ""));
+    buttons.add(new Button(width / 2 - 100, height / 2 + 100, 200, 80, "option", "Option", ""));
+    buttons.add(new Button(width / 2 - 100, height / 2 + 200, 200, 80, "exit","Exit", ""));
   }
 
   void display() {
@@ -21,8 +21,8 @@ class Menu {
 
     for (Button button : buttons) {
       if (button.isClicked()) {
-        switch(button.label) {
-        case "Start":
+        switch(button.name) {
+        case "start":
           // salva lo stato
           previous_state = screen_state;
 
@@ -34,7 +34,7 @@ class Menu {
           // screen_state = TUTORIAL_SCREEN;
           break;
 
-        case "Option":
+        case "option":
           // salva lo stato
           previous_state = screen_state;
 
@@ -42,7 +42,7 @@ class Menu {
           screen_state = OPTION_SCREEN;
           break;
 
-        case "Exit":
+        case "exit":
           exit();
           break;
         }
