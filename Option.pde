@@ -31,6 +31,7 @@ class Option {
     optionLayer.textAlign(CENTER, CENTER);
     optionLayer.text("OPTIONS", 100, 50);
 
+    // linea che parte dalla scritta opzioni e chiudere la pagina
     optionLayer.stroke(255);
     optionLayer.line(200, 50, width - 50, 50);
 
@@ -50,15 +51,6 @@ class Option {
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
     optionLayer.text(volumeEffectsLevel, width - 200, 175);
-    
-    optionLayer.stroke(255);
-    optionLayer.line(200, 160, width - 100, 160);
-    
-    optionLayer.stroke(255);
-    optionLayer.line(200, 150, width - 200, 150);    
-    
-    optionLayer.stroke(255);
-    optionLayer.line(200, 220, width - 250, 220);
 
     // ----- MUSICA -----
     optionLayer.fill(255);
@@ -70,39 +62,18 @@ class Option {
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
     optionLayer.text(volumeMusicLevel, width - 200, 235);
-    
-    optionLayer.stroke(255);
-    optionLayer.line(200, 210, width - 200, 210);
-    
-    optionLayer.stroke(255);
-    optionLayer.line(200, 210, width - 100, 210);    
-    
-    optionLayer.stroke(255);
-    optionLayer.line(200, 220, width - 100, 220);
 
     // scritta difficolta
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
     optionLayer.text("Difficolta: ", 100, 290);
-    
-    optionLayer.stroke(255);
-    optionLayer.line(100, 280, width - 250, 280);
-    
-    optionLayer.stroke(255);
-    optionLayer.line(100, 330, width - 100, 330);
 
     // scritta lingua
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
     optionLayer.text("Lingua: ", 100, 360);
-    
-    optionLayer.stroke(255);
-    optionLayer.line(100, 350, width - 100, 350);
-    
-    optionLayer.stroke(255);
-    optionLayer.line(100, 400, width - 100, 400);
 
     // linea che parte dal pulsante back a chiudere a la pagina
     optionLayer.stroke(255);
