@@ -140,7 +140,7 @@ void setupSounds() {
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
   specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
   drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
-  // attackHit = new SoundFile(this, "data/sound/hitHurt.wav");
+  // attackHit = new SoundFile(this, "data/sound/sword_hit.wav");
 
   soundtrack = new SoundFile(this, "data/sound/dungeon_soundtrack.wav");
   isSoundtrackPlaying = false;

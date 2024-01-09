@@ -325,8 +325,8 @@ class Level {
     int startY = floor((camera.y / (tileSize * camera.zoom)));
     int endX = ceil((camera.x + gameScene.width) / (tileSize * camera.zoom));
     int endY = ceil((camera.y + gameScene.height) / (tileSize * camera.zoom));
-
-    //// Assicurati che i limiti siano all'interno dei limiti della mappa
+  
+    // Assicurati che i limiti siano all'interno dei limiti della mappa
     startX = constrain(startX, 0, cols - 1);
     startY = constrain(startY, 0, rows - 1);
     endX = constrain(endX, 0, cols);
@@ -335,59 +335,101 @@ class Level {
     for (int x = startX; x < endX; x++) {
       for (int y = startY; y < endY; y++) {
         int tileType = map[x][y];
+        
+        float centerX = x * tileSize + tileSize / 2;
+        float centerY = y * tileSize + tileSize / 2;
 
         switch(tileType) {
         case BACKGROUND_TILE_TYPE:
           // sfondo
+          gameScene.rectMode(CENTER);
           gameScene.fill(0); // nero
           gameScene.noStroke();
-          gameScene.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.rect(centerX, centerY, tileSize, tileSize);
           break;
 
         case FLOOR_TILE_TYPE:
           // pavimento
-          gameScene.image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          // gameScene.rectMode(CENTER); // Imposta il rectMode a center
+          // hitbox pavimento
+          //gameScene.noFill(); // Nessun riempimento
+          //gameScene.stroke(255, 0, 0); // Colore del bordo bianco
+          //gameScene.rect(x * tileSize, y * tileSize, floorImage.width, floorImage.height);
+          
+          //gameScene.stroke(60);
+          //gameScene.point(x * tileSize, y * tileSize);
+          
+          gameScene.rectMode(CENTER);
+          gameScene.noFill(); // Nessun riempimento
+          gameScene.stroke(0, 0, 255); // Colore del bordo bianco
+          gameScene.rect(centerX, centerY, tileSize, tileSize);
+          
+          gameScene.stroke(60);
+          gameScene.point(centerX, centerY);
+          
+          gameScene.imageMode(CENTER);
+          gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case START_ROOM_TILE_TYPE:
           // Imposta l'immagine per la stanza iniziale (nero)
-          gameScene.image(startFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.stroke(60);
+          gameScene.point(centerX, centerY);
+          
+          gameScene.imageMode(CENTER);
+          gameScene.image(startFloorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case STAIRS_TILE_TYPE:
           // scale per il piano successivo
-          gameScene.image(stairsNextFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.imageMode(CENTER);
+          gameScene.image(stairsNextFloorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
-          gameScene.image(wallImageNorth, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.rectMode(CENTER);
+          gameScene.noFill(); // Nessun riempimento
+          gameScene.stroke(100, 34, 50); // Colore del bordo bianco
+          gameScene.rect(centerX, centerY, tileSize, tileSize);
+          
+          gameScene.stroke(60);
+          gameScene.point(centerX, centerY);
+          
+          gameScene.imageMode(CENTER);
+          gameScene.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
           break;
 
         case HALLWAY_TILE_TYPE:
           // corridoio
-          gameScene.image(hallwayImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.stroke(60);
+          gameScene.point(centerX, centerY);
+          
+          gameScene.imageMode(CENTER);
+          gameScene.image(hallwayImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case CHEST_TILE_TYPE:
           // ci sta tenerlo sono statiche le casse
           // tesori
-          gameScene.image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          gameScene.imageMode(CENTER);
+          gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
         }
       }
     }
   }
   
+  // verifica la collisione con le scale
   // collide con le scale
-  // da migliorare
-  // deve essere generico
-  // se collide con un tile di collisione ritorna true
-  boolean playerCollide(Player aPlayer) {
-        if( aPlayer.spritePosition.x * currentLevel.tileSize < (rooms.get(endRoomIndex).position.x * currentLevel.tileSize) + stairsNextFloorImage.width  &&
-        (aPlayer.spritePosition.x * currentLevel.tileSize) + aPlayer.sprite.width > rooms.get(endRoomIndex).position.x * currentLevel.tileSize && 
-        aPlayer.spritePosition.y * currentLevel.tileSize < (rooms.get(endRoomIndex).position.y * currentLevel.tileSize) + stairsNextFloorImage.height && 
-        (aPlayer.spritePosition.y * currentLevel.tileSize) + aPlayer.sprite.height > rooms.get(endRoomIndex).position.y * currentLevel.tileSize) {
+  
+  // metodo per il rilevamento delle collisioni 
+  // da sistemare
+  boolean playerCollide(Player aPlayer) { 
+    if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) > (rooms.get(endRoomIndex).position.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
+        (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) < rooms.get(endRoomIndex).position.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
+        aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) > (rooms.get(endRoomIndex).position.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
+        (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) < rooms.get(endRoomIndex).position.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
           return true;
     }
     

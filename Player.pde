@@ -102,6 +102,7 @@ class Player {
     println("giocatore: " + spritePosition);
     println("arma: " + weapon.spritePosition);
     
+    // forse da sistemare
     if((weapon.spritePosition.x * currentLevel.tileSize) + offset <= (enemy.spritePosition.x * currentLevel.tileSize) + enemy.sprite.width  &&
       ((weapon.spritePosition.x * currentLevel.tileSize) + weapon.sprite.width) + offset >= enemy.spritePosition.x * currentLevel.tileSize && 
       weapon.spritePosition.y * currentLevel.tileSize <= (enemy.spritePosition.y * currentLevel.tileSize) + enemy.sprite.height && 
@@ -113,25 +114,48 @@ class Player {
   }
 
   // collision detection
+  //boolean isValidMove(int roundedX, int roundedY) {
+  //  // il player si trova all'interno della mappa di gioco
+  //  if(isWithinMapBounds(roundedX, roundedY)) {
+  //    // il player si scontra con un tile di collisione
+  //    if(isCollisionTile(roundedX, roundedY)) {
+  //      // da adattare alla rectMode center
+  //      if(spritePosition.x * currentLevel.tileSize <= (roundedX * currentLevel.tileSize) + currentLevel.tileSize ||
+  //         (spritePosition.x * currentLevel.tileSize) + sprite.width<= roundedX * currentLevel.tileSize ||
+  //         spritePosition.y * currentLevel.tileSize >= (roundedY * currentLevel.tileSize) + currentLevel.tileSize ||
+  //         (spritePosition.y * currentLevel.tileSize) + sprite.height >= roundedY * currentLevel.tileSize) {
+  //         // ritorna falso se il player cerca di attraversa il tile 
+  //         return false;
+  //      }
+  //    }
+  //    // ritorna vero se il player si trova all'interno della mappa e non si sta scontrando con un tile di collisione
+  //    return true;
+  //  }
+    
+  //  // falso altrimenti
+  //  return false;
+  //}
+  
   boolean isValidMove(int roundedX, int roundedY) {
     // il player si trova all'interno della mappa di gioco
     if(isWithinMapBounds(roundedX, roundedY)) {
       // il player si scontra con un tile di collisione
       if(isCollisionTile(roundedX, roundedY)) {
-        if(spritePosition.x * currentLevel.tileSize <= (roundedX * currentLevel.tileSize) + currentLevel.tileSize ||
-           (spritePosition.x * currentLevel.tileSize) + sprite.width<= roundedX * currentLevel.tileSize ||
-           spritePosition.y * currentLevel.tileSize >= (roundedY * currentLevel.tileSize) + currentLevel.tileSize ||
-           (spritePosition.y * currentLevel.tileSize) + sprite.height >= roundedY * currentLevel.tileSize) {
+        // da adattare alla rectMode center
+        if(spritePosition.x * currentLevel.tileSize + (sprite.width / 2) >= (roundedX * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+          (spritePosition.x * currentLevel.tileSize) - (sprite.width / 2) <= roundedX * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+          spritePosition.y * currentLevel.tileSize + (sprite.height / 2) >= (roundedY * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+          (spritePosition.y * currentLevel.tileSize) - (sprite.height / 2) <= roundedY * currentLevel.tileSize + (sprite.height / 2)) {
            // ritorna falso se il player cerca di attraversa il tile 
            return false;
         }
       }
       // ritorna vero se il player si trova all'interno della mappa e non si sta scontrando con un tile di collisione
       return true;
+    } else {
+      // falso altrimenti
+      return false;
     }
-    
-    // falso altrimenti
-    return false;
   }
   
   // metodo che si occupa di disegnare l'arma del giocatore
@@ -146,14 +170,19 @@ class Player {
       offset = 16;
     else if (direction == DIRECTION_LEFT) 
       offset = -16;
+      
+    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
     
     // hitbox arma
+    spritesLayer.rectMode(CENTER);
     spritesLayer.noFill(); // Nessun riempimento
     spritesLayer.stroke(255, 146, 240); // Colore del bordo bianco
-    spritesLayer.rect((weapon.spritePosition.x * currentLevel.tileSize) + offset, weapon.spritePosition.y * currentLevel.tileSize, weapon.sprite.width, weapon.sprite.height);
+    spritesLayer.rect(centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
     
     // arma
-    spritesLayer.image(weapon.sprite, (weapon.spritePosition.x * currentLevel.tileSize) + offset,  weapon.spritePosition.y * currentLevel.tileSize, weapon.sprite.width, weapon.sprite.height);
+    spritesLayer.imageMode(CENTER);
+    spritesLayer.image(weapon.sprite, centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
   }
 
   void display(PGraphics layer) {
@@ -166,8 +195,11 @@ class Player {
     
     layer.rectMode(CENTER); // Imposta il rectMode a center
     layer.rect(centerX, centerY, sprite.width, sprite.height);
-  
-    layer.imageMode(CENTER); // Imposta l'imageMode a center
-    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+    
+    layer.stroke(60);
+    layer.point(centerX, centerY);
+    
+    //layer.imageMode(CENTER); // Imposta l'imageMode a center
+    //layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
 }

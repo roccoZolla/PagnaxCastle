@@ -18,16 +18,6 @@ public class Enemy {
     this.damage = damage;
     this.scoreValue = 20;
   }
-
-  void display(PGraphics layer) {
-    // hitbox nemico
-    // layer.rectMode(CENTER);
-    layer.noFill(); // Nessun riempimento
-    layer.stroke(255, 0, 240); // Colore del bordo bianco
-    layer.rect(spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
-    
-    layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
-  }
   
   void move() {
     // Ottieni la posizione del giocatore
@@ -157,15 +147,33 @@ public class Enemy {
     }
   }
   
-  // verifica collisione
-  // stesso metodo della chest 
-  // si ferma ai bordi della hitbox
-  boolean playerCollide(Player aPlayer) {
-    if( aPlayer.spritePosition.x * currentLevel.tileSize <= (spritePosition.x * currentLevel.tileSize) + sprite.width  &&
-        (aPlayer.spritePosition.x * currentLevel.tileSize) + aPlayer.sprite.width >= spritePosition.x * currentLevel.tileSize && 
-        aPlayer.spritePosition.y * currentLevel.tileSize <= (spritePosition.y * currentLevel.tileSize) + sprite.height && 
-        (aPlayer.spritePosition.y * currentLevel.tileSize) + aPlayer.sprite.height >= spritePosition.y * currentLevel.tileSize) {
-            return true;
+  void display(PGraphics layer) {
+    // hitbox giocatore
+    layer.noFill(); // Nessun riempimento
+    layer.stroke(255, 23, 23);
+    
+    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
+    
+    layer.rectMode(CENTER); // Imposta il rectMode a center
+    layer.rect(centerX, centerY, sprite.width, sprite.height);
+    
+    layer.stroke(60);
+    layer.point(centerX, centerY);
+    
+    //layer.imageMode(CENTER); // Imposta l'imageMode a center
+    //layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+    
+    // layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
+  }
+  
+  // metodo per il rilevamento delle collisioni adattato alla rectmode CENTER
+  boolean playerCollide(Player aPlayer) { 
+    if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (spritePosition.x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+        (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= spritePosition.x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+        aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (spritePosition.y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+        (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= spritePosition.y * currentLevel.tileSize + (sprite.height / 2)) {                              // y1 - h1/2 < y2 + h2/2
+          return true;
     }
     
     return false;

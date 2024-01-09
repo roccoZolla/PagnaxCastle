@@ -9,7 +9,7 @@ class Game {
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
-    p1 = new Player(50, 100, 5, 5, 5);
+    p1 = new Player(50, 100, 0, 5, 5);
     p1.spritePosition = currentLevel.getStartPosition();
     p1.sprite = spriteRight;
     p1.redPotion = redPotion;
@@ -52,10 +52,17 @@ class Game {
     // disegna solo le chest visibili
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.spritePosition)) {
+        // mostra le chest nell'area visibile
         chest.display(spritesLayer);
+        
         if(chest.playerCollide(p1) && !chest.isOpen()) {
-          float letterImageX = (chest.spritePosition.x * currentLevel.tileSize);
-          float letterImageY = (chest.spritePosition.y * currentLevel.tileSize) - 20; // Regola l'offset verticale a tuo piacimento
+          println("collsione cassa giocatore");
+          spritesLayer.noFill(); // Nessun riempimento
+          spritesLayer.stroke(255); // Colore del bordo bianco
+          spritesLayer.rect(chest.spritePosition.x * currentLevel.tileSize + (chest.sprite.width/2), chest.spritePosition.y * currentLevel.tileSize + (chest.sprite.height / 2), chest.sprite.width, chest.sprite.height);
+          
+          float letterImageX = (chest.spritePosition.x * currentLevel.tileSize + (chest.sprite.width / 2));
+          float letterImageY = (chest.spritePosition.y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
           spritesLayer.image(letter_k, letterImageX, letterImageY);
           
           // se il giocatore preme il tasto interazione e la cassa non è stata aperta
@@ -75,6 +82,7 @@ class Game {
                 spritesLayer.textFont(myFont);
                 spritesLayer.fill(255);
                 spritesLayer.textSize(15);
+                // da adattare alla rectmode Center
                 spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
               }
             } else {  // se la cassa è normale
@@ -92,6 +100,7 @@ class Game {
                 spritesLayer.textFont(myFont);
                 spritesLayer.fill(255);
                 spritesLayer.textSize(15);
+                // da adattare alla rectmode Center
                 spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
               }
             }
@@ -103,9 +112,17 @@ class Game {
     // ----- COIN -----
     for (Coin coin : currentLevel.coins) {
       if (isInVisibleArea(coin.spritePosition)) {   
+        // mostra le monete nell'area visibile
         if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
           coin.display(spritesLayer);
-          coin.playerCollide(p1);
+          
+          if(coin.playerCollide(p1)) {
+            println("collsione moneta giocatore");
+            coin.collect();  // raccogli la moneta
+            p1.collectCoin();
+            pickupCoin.play();
+            p1.playerScore += coin.scoreValue;
+          }
         }
       }
     }
@@ -209,7 +226,7 @@ class Game {
         if (isAttacking) {
           if (p1.collidesWith(enemy)) {
             // riproduci il suono di hit
-            // attackHit.play();
+            attackHit.play();
             
             // vita meno danno dell'arma
             enemy.enemyHP -= p1.weapon.getDamage();
@@ -230,10 +247,11 @@ class Game {
   
         if (enemy.playerCollide(p1)) {
           // attacca il giocatore
+          println("collsione nemico giocatore");
           enemy.attack();
         } else {
           // muovi il nemico
-          enemy.move();
+          // enemy.move();
         }
       }
     }

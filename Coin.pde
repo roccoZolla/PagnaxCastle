@@ -27,25 +27,51 @@ class Coin {
   boolean isCollected() {
     return collected;
   }
-
-  void display(PGraphics layer) {  
-    // layer.rectMode(CENTER);
-    layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
+  
+  void display(PGraphics layer) {
+    // hitbox moneta
+    layer.noFill(); // Nessun riempimento
+    layer.stroke(23, 255, 23);
+    
+    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
+    
+    layer.rectMode(CENTER); // Imposta il rectMode a center
+    layer.rect(centerX, centerY, sprite.width, sprite.height);
+    
+    layer.stroke(60);
+    layer.point(centerX, centerY);
+    
+    layer.imageMode(CENTER); // Imposta l'imageMode a center
+    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
   
   // verifica collsione
   // metodo differente dal quello di chest ed enemy
-  void playerCollide(Player aPlayer) {
-    if( aPlayer.spritePosition.x * currentLevel.tileSize < (spritePosition.x * currentLevel.tileSize) + sprite.width  &&
-        (aPlayer.spritePosition.x * currentLevel.tileSize) + aPlayer.sprite.width > spritePosition.x * currentLevel.tileSize && 
-        aPlayer.spritePosition.y * currentLevel.tileSize < (spritePosition.y * currentLevel.tileSize) + sprite.height && 
-        (aPlayer.spritePosition.y * currentLevel.tileSize) + aPlayer.sprite.height > spritePosition.y * currentLevel.tileSize) {
+  // da adattare alla rectmode center
+  //void playerCollide(Player aPlayer) {
+  //  if( aPlayer.spritePosition.x * currentLevel.tileSize < (spritePosition.x * currentLevel.tileSize) + sprite.width  &&
+  //      (aPlayer.spritePosition.x * currentLevel.tileSize) + aPlayer.sprite.width > spritePosition.x * currentLevel.tileSize && 
+  //      aPlayer.spritePosition.y * currentLevel.tileSize < (spritePosition.y * currentLevel.tileSize) + sprite.height && 
+  //      (aPlayer.spritePosition.y * currentLevel.tileSize) + aPlayer.sprite.height > spritePosition.y * currentLevel.tileSize) {
         
-          // collisione rilevata
-        collect();  // raccogli la moneta
-        p1.collectCoin();
-        pickupCoin.play();
-        p1.playerScore += scoreValue;
+  //        // collisione rilevata
+  //      collect();  // raccogli la moneta
+  //      p1.collectCoin();
+  //      pickupCoin.play();
+  //      p1.playerScore += scoreValue;
+  //  }
+  //}
+  
+  // metodo per il rilevamento delle collisioni 
+  boolean playerCollide(Player aPlayer) { 
+    if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) > (spritePosition.x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+        (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) < spritePosition.x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+        aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) > (spritePosition.y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+        (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) < spritePosition.y * currentLevel.tileSize + (sprite.height / 2)) {                              // y1 - h1/2 < y2 + h2/2
+          return true;
     }
+    
+    return false;
   }
 }
