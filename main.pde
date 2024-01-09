@@ -9,6 +9,7 @@ Item silver_key;
 Item golden_key;
 Healer redPotion;
 Healer greenPotion;
+Healer heart;
 Chest selectedChest;
 
 //
@@ -162,12 +163,16 @@ void setupItems() {
   sword = new Weapon("sword", 10);
   redPotion = new Healer("red_potion", 20);
   greenPotion = new Healer("green_potion", 100);
+  
+  // drop items
+  heart = new Healer("heart", 10);
 
   golden_key.sprite = loadImage("data/golden_key.png");
   silver_key.sprite = loadImage("data/silver_key.png");
   sword.sprite = loadImage("data/little_sword.png");
   redPotion.sprite = loadImage("data/object/red_potion.png");
   greenPotion.sprite = loadImage("data/object/green_potion.png");
+  heart.sprite = loadImage("data/heartFull.png");
 }
 
 void draw() {

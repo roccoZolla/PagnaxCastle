@@ -40,9 +40,10 @@ class Level {
   ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
   // nemici che puoi trovare nel livello
-  // private int numberOfEnemies = 5;  // livello di spawn dei nemici
   ArrayList<Enemy> enemies; // Lista dei nemici
-
+  
+  ArrayList<Item> dropItems; // lista degli oggetti caduti a terra
+  
   PVector finalRoomPosition;
   PVector nextLevelStartRoomPosition;
 
@@ -100,6 +101,10 @@ class Level {
     map[int(rooms.get(startRoomIndex).getPosition().x)][int(rooms.get(startRoomIndex).getPosition().y)] = 2; // Stanza iniziale
     map[int(rooms.get(endRoomIndex).getPosition().x)][int(rooms.get(endRoomIndex).getPosition().y)] = 3; // Stanza finale
 
+    // inizializza l'array dei drop items 
+    // inizialmente è vuoto
+    dropItems = new ArrayList<>();
+    
     // genera i loot
     generateRandomChests();
     
@@ -292,7 +297,7 @@ class Level {
 
       // Genera un numero casuale di nemici in ogni stanza
       // AGGIUNGI LOGICA DI DIFFICOLTA
-      int numEnemiesInRoom = floor(random(3, 5)); // Puoi regolare i valori a tuo piacimento
+      int numEnemiesInRoom = floor(random(3, 5)); 
 
       for (int i = 0; i < numEnemiesInRoom; i++) {
         int x, y;
@@ -311,6 +316,11 @@ class Level {
         Enemy enemy = new Enemy(enemyHP, "rat", 5);
         enemy.sprite = loadImage("data/npc/rat_enemy.png");
         enemy.spritePosition = new PVector(x, y);
+        
+        // drop del nemico
+        // aggiungere logica secondo cui su una lista di oggetti
+        // il nemico abbia un oggetto in maniera randomico
+        enemy.dropItem = heart;
 
         // Aggiungi il nemico alla lista
         enemies.add(enemy);
