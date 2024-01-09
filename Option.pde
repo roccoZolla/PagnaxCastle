@@ -165,6 +165,7 @@ class Option {
     normalChestOpen.amp(volumeEffectsLevel);
     specialChestOpen.amp(volumeEffectsLevel);
     drinkPotion.amp(volumeEffectsLevel);
+    attackHit.amp(volumeEffectsLevel);
   }
 
   void updateMusicVolume(float volumeMusicLevel) {

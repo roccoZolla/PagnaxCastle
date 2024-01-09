@@ -243,27 +243,24 @@ class Level {
       // Genera un numero casuale tra 0 e 1 per determinare il tipo di cassa
       float chestType = random(1);
 
+      // di base le casse sono chiuse e non sono rare
+      // isOpen è impostato su false nel costruttore
+      // isRare è impostato su false nel costruttore
       if (chestType < commonChestSpawnRate) {
         // Genera una cassa comune
-        chest = new Chest();
+        chest = new Chest("Cassa comune" + i);
         chest.sprite = loadImage("data/object/chest_close.png");
         chest.setId(i);
-        chest.setName("Cassa Comune " + i);
         chest.setOpenWith(silver_key);              // Specifica l'oggetto chiave necessario
-        chest.setIsRare(false);
         // Imposta altri attributi della cassa comune
       } else {
         // Genera una cassa rara
-        chest = new Chest();
+        chest = new Chest("Cassa rara" + i);
         chest.sprite = loadImage("data/object/special_chest_close.png");
         chest.setId(i);
-        chest.setName("Cassa Rara " + i);
         chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
         chest.setIsRare(true);
       }
-
-      chest.setInteractable(true);
-      chest.setIsOpen(false);               // Imposta la cassa come chiusa di base
 
       do {
         // Scegli una posizione casuale sulla mappa

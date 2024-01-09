@@ -3,7 +3,7 @@ public class Enemy {
   float spriteSpeed = 0.1;
   PImage sprite;
   
-  private static final long ATTACK_COOLDOWN = 3000; // Tempo di cooldown in millisecondi (3 secondi)
+  private static final long ATTACK_COOLDOWN = 3500; // Tempo di cooldown in millisecondi (3 secondi)
   private long lastAttackTime = 0;
   
   int enemyHP;
@@ -139,6 +139,12 @@ public class Enemy {
     if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
         // Esegui l'attacco
         p1.playerHP -= damage;
+        
+        // fare in modo che rimanga un po piu di tempo a schermo
+        spritesLayer.textFont(myFont);
+        spritesLayer.fill(255, 0, 0);
+        spritesLayer.textSize(15);
+        spritesLayer.text(damage, (p1.spritePosition.x * currentLevel.tileSize), (p1.spritePosition.y * currentLevel.tileSize) - 10);
 
         if(p1.playerHP < 0) {
           p1.playerHP = 0;

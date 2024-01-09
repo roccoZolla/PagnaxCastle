@@ -9,17 +9,12 @@ class Game {
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
-    redPotion.setTakeable(true);    // si puo prendere
-    redPotion.setUseable(true);    // si puo usare
-    redPotion.setHealerable(true);  // restitusce vita
-    redPotion.setBonusHP(20);
-
     p1 = new Player(50, 100, 5, 5, 5);
     p1.spritePosition = currentLevel.getStartPosition();
     p1.sprite = spriteRight;
     p1.healer = redPotion;
     
-    p1.weapon = weapon;
+    p1.weapon = sword;
     p1.weapon.spritePosition = p1.spritePosition;
     println(p1.weapon.spritePosition);
     
@@ -184,7 +179,7 @@ class Game {
       isUsingPotion = true;
       if (p1.playerHP < p1.playerMaxHP) {
         drinkPotion.play();
-        p1.playerHP += redPotion.bonusHP;
+        p1.playerHP += p1.healer.getBonusHp();
 
         if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
 
@@ -212,15 +207,16 @@ class Game {
   
         if (isAttacking) {
           if (p1.collidesWith(enemy)) {
-            // succede qualcosa
-            // vita meno danno dell'arma
-            enemy.enemyHP -= 10;
+            // riproduci il suono di hit
+            attackHit.play();
             
-            // SOSTITUIRE 10 CON IL DANNO DELL'ARMA
+            // vita meno danno dell'arma
+            enemy.enemyHP -= p1.weapon.getDamage();
+            
             spritesLayer.textFont(myFont);
             spritesLayer.fill(255, 0, 0);
             spritesLayer.textSize(15);
-            spritesLayer.text(10, (enemy.spritePosition.x * currentLevel.tileSize), (enemy.spritePosition.y * currentLevel.tileSize) - 10);
+            spritesLayer.text(p1.weapon.getDamage(), (enemy.spritePosition.x * currentLevel.tileSize), (enemy.spritePosition.y * currentLevel.tileSize) - 10);
   
             // il nemico muore, rimuovilo dalla lista dei nemici del livello
             // aggiungi un certo valore allo score del giocatore 

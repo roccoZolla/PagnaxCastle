@@ -23,8 +23,8 @@ class Player {
   int playerHP;
   int playerScore;
   int coins;      // numero di monete che ha il giocatore
-  Item weapon;
-  Item healer;
+  Weapon weapon;
+  Healer healer;
   Item golden_keys;
   Item silver_keys;
   int numberOfSilverKeys;

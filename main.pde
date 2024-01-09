@@ -4,10 +4,10 @@ import java.util.Iterator;
 Player p1;
 PImage spriteRight;
 PImage spriteLeft;
-Item weapon;
+Weapon sword;
 Item silver_key;
 Item golden_key;
-Item redPotion;
+Healer redPotion;
 Chest selectedChest;
 
 //
@@ -37,6 +37,7 @@ SoundFile pickupCoin;
 SoundFile normalChestOpen;
 SoundFile specialChestOpen;
 SoundFile drinkPotion;
+SoundFile attackHit;
 
 SoundFile soundtrack;
 boolean isSoundtrackPlaying;
@@ -81,7 +82,7 @@ void setup() {
   spritesLayer = createGraphics(width, height);
 
   // load font
-  myFont = createFont("data/font/Minecraft.ttf", 20);
+  myFont = createFont("data/font/dpcomic.ttf", 30);
   textFont(myFont);
 
   // schermata iniziale
@@ -102,15 +103,7 @@ void setup() {
   setupSounds();
 
   // setup items (PROVVISORIO)
-  golden_key = new Item(2, "golden_key");
-  silver_key = new Item(4, "silver_key");
-  weapon = new Item(1, "sword");
-  redPotion = new Item(3, "Red Potion");
-
-  golden_key.sprite = loadImage("data/golden_key.png");
-  silver_key.sprite = loadImage("data/silver_key.png");
-  weapon.sprite = loadImage("data/little_sword.png");
-  redPotion.sprite = loadImage("data/object/red_potion.png");
+  setupItems();
 
   selectedChest = null;
 }
@@ -146,6 +139,7 @@ void setupSounds() {
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
   specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
   drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
+  attackHit = new SoundFile(this, "data/sound/hitHurt.wav");
 
   soundtrack = new SoundFile(this, "data/sound/dungeon_soundtrack.wav");
   isSoundtrackPlaying = false;
@@ -154,8 +148,23 @@ void setupSounds() {
   normalChestOpen.amp(volumeEffectsLevel);
   specialChestOpen.amp(volumeEffectsLevel);
   drinkPotion.amp(volumeEffectsLevel);
+  attackHit.amp(volumeEffectsLevel);
 
   soundtrack.amp(volumeMusicLevel);
+}
+
+void setupItems() {
+  golden_key = new Item(2, "golden_key");
+  silver_key = new Item(4, "silver_key");
+  
+  // oggetiti per il giocatore
+  sword = new Weapon("sword", 10);
+  redPotion = new Healer("red_potion", 10);
+
+  golden_key.sprite = loadImage("data/golden_key.png");
+  silver_key.sprite = loadImage("data/silver_key.png");
+  sword.sprite = loadImage("data/little_sword.png");
+  redPotion.sprite = loadImage("data/object/red_potion.png");
 }
 
 void draw() {

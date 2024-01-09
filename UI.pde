@@ -27,11 +27,6 @@ class UI {
 
   float enemyMiniMapX;
   float enemyMiniMapY;
-  
-  // INVENTARIO GIOCATORE
-  boolean isWeaponSelected;
-  boolean isKeyObjectSelected;
-  boolean isConsumableSelected;
 
   UI() {
     uiLayer = createGraphics(width, height);
@@ -47,10 +42,6 @@ class UI {
     buttons = new ArrayList();
 
     buttons.add(new Button(width - 50, 20, 40, 40, "pause", "", "data/ui/Pause.png"));
-    
-    isWeaponSelected = true;
-    isKeyObjectSelected = false;
-    isConsumableSelected = false;
   }
 
   void update() {
@@ -104,53 +95,40 @@ class UI {
     uiLayer.text("Score: " + p1.playerScore, uiLayer.width - 200, 20);
 
     // ------ CHIAVI ARGENTO GIOCATORE ------
-    //uiLayer.fill(255);
-    //uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    //uiLayer.textSize(18);
-    //uiLayer.text(p1.numberOfSilverKeys, 50, 80);
-    //uiLayer.image(silver_key.sprite, 20, 80, 20, 20);
+    uiLayer.fill(255);
+    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(18);
+    uiLayer.text(p1.numberOfSilverKeys, 50, 80);
+    uiLayer.image(silver_key.sprite, 20, 80, 20, 20);
 
     // ------ CHIAVI ORO GIOCATORE ------
-    //uiLayer.fill(255);
-    //uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    //uiLayer.textSize(18);
-    //uiLayer.text(p1.numberOfGoldenKeys, 100, 80);
-    //uiLayer.image(golden_key.sprite, 70, 80, 20, 20);
+    uiLayer.fill(255);
+    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(18);
+    uiLayer.text(p1.numberOfGoldenKeys, 100, 80);
+    uiLayer.image(golden_key.sprite, 70, 80, 20, 20);
 
     // ------ MONETE GIOCATORE ------
     uiLayer.fill(255);
     uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(18);
-    uiLayer.text(p1.coins, 50, 80);
-    uiLayer.image(coins, 20, 80, 20, 20);
+    uiLayer.text(p1.coins, 50, 110);
+    uiLayer.image(coins, 20, 110, 20, 20);
 
     // ------ POZIONE GIOCATORE ------
-    //uiLayer.fill(255);
-    //uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    //uiLayer.textSize(18);
-    //uiLayer.text(p1.numberOfPotion, 50, 140);
-    //uiLayer.image(redPotion.sprite, 20, 140, 20, 20);
+    uiLayer.fill(255);
+    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(18);
+    uiLayer.text(p1.numberOfPotion, 50, 140);
+    uiLayer.image(redPotion.sprite, 20, 140, 20, 20);
 
     // ------- MINIMAPPA ------
     displayMinimap();
 
     // ------ ARMA GIOCATORE -----
-    // quadrato di selezione
-    if(p1.moveATCK && (!p1.moveUSE && !p1.moveINTR)) {
-      isWeaponSelected = true;
-    } else if (p1.moveUSE || p1.moveINTR) {
-      isWeaponSelected = false;
-    }
-    
-    if(isWeaponSelected) {
-      uiLayer.noFill(); // Nessun riempimento
-      uiLayer.stroke(255); // Colore del bordo bianco
-      uiLayer.rect(width / 2 - 65, height - 105, 60, 60);
-    }
-    
     uiLayer.noFill(); // Nessun riempimento
     uiLayer.stroke(255); // Colore del bordo bianco
-    uiLayer.rect(width / 2 - 60, height - 100, 50, 50);
+    uiLayer.rect(width - 70, height - 100, 50, 50);
 
     float scaleFactor = 3.0;
 
@@ -159,75 +137,10 @@ class UI {
       float imgWidth = p1.weapon.sprite.width * scaleFactor;
       float imgHeight = p1.weapon.sprite.height * scaleFactor;
 
-      float imgX = (uiLayer.width / 2 - 60) + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
+      float imgX = (uiLayer.width - 70) + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
       float imgY = uiLayer.height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
 
       uiLayer.image(p1.weapon.sprite, imgX, imgY, imgWidth, imgHeight);
-    }
-    
-        
-    // ------ OGGETTI CHIAVE -----
-    // quadrato di selezione
-    if(p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
-      isKeyObjectSelected = true;
-    } else if (p1.moveUSE || p1.moveATCK) {
-      isKeyObjectSelected = false;
-    }
-    
-    if(isKeyObjectSelected) {
-      uiLayer.noFill(); // Nessun riempimento
-      uiLayer.stroke(255); // Colore del bordo bianco
-      uiLayer.rect(width / 2 - 5, height - 105, 60, 60);
-    }
-    
-    uiLayer.noFill(); // Nessun riempimento
-    uiLayer.stroke(255); // Colore del bordo bianco
-    uiLayer.rect(width / 2, height - 100, 50, 50);
-
-    if (p1.golden_keys.sprite != null) {
-      float imgWidth = p1.golden_keys.sprite.width * scaleFactor;
-      float imgHeight = p1.golden_keys.sprite.height * scaleFactor;
-
-      float imgX = uiLayer.width / 2 + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
-      float imgY = uiLayer.height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
-      
-      uiLayer.fill(255);
-      uiLayer.textSize(18);
-      uiLayer.text(p1.numberOfGoldenKeys, uiLayer.width / 2 + 40, uiLayer.height - 65);
-
-      uiLayer.image(p1.golden_keys.sprite, imgX, imgY, imgWidth, imgHeight);
-    }
-    
-    // ------ CONSUMABILI ----- (pozioni) 
-    if(p1.moveUSE && (!p1.moveINTR && !p1.moveATCK)) {
-      isConsumableSelected = true;
-    } else if (p1.moveINTR || p1.moveATCK) {
-      isConsumableSelected = false;
-    }
-    
-    if(isConsumableSelected) {
-      uiLayer.noFill(); // Nessun riempimento
-      uiLayer.stroke(255); // Colore del bordo bianco
-      uiLayer.rect(width / 2 + 55, height - 105, 60, 60);
-    }
-    
-    uiLayer.noFill(); // Nessun riempimento
-    uiLayer.stroke(255); // Colore del bordo bianco
-    uiLayer.rect(width / 2 + 60, height - 100, 50, 50);
-
-    if (p1.healer.sprite != null) {
-
-      float imgWidth = p1.healer.sprite.width * scaleFactor;
-      float imgHeight = p1.healer.sprite.height * scaleFactor;
-
-      float imgX = (uiLayer.width / 2 + 60) + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
-      float imgY = uiLayer.height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
-      
-      uiLayer.fill(255);
-      uiLayer.textSize(16);
-      uiLayer.text(p1.numberOfPotion, uiLayer.width / 2 + 100, uiLayer.height - 65);
-
-      uiLayer.image(p1.healer.sprite, imgX, imgY, imgWidth, imgHeight);
     }
 
     uiLayer.endDraw();
