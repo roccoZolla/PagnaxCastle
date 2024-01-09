@@ -19,6 +19,7 @@ public class Enemy {
 
   void display(PGraphics layer) {
     // hitbox nemico
+    // layer.rectMode(CENTER);
     layer.noFill(); // Nessun riempimento
     layer.stroke(255, 0, 240); // Colore del bordo bianco
     layer.rect(spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
@@ -30,10 +31,10 @@ public class Enemy {
     // Ottieni la posizione del giocatore
     PVector playerPosition = p1.spritePosition;
 
-    // Calcola la distanza tra il nemico e il giocatore
+    // distanza tra il nemico e il giocatore
     float distance = dist(this.spritePosition.x, this.spritePosition.y, playerPosition.x, playerPosition.y);
 
-    // Imposta la soglia (ad esempio, 3 celle di distanza)
+    // distanza minima 
     float threshold = 4;
 
     // Verifica se il giocatore è abbastanza vicino
@@ -87,39 +88,51 @@ public class Enemy {
     }
   }
   
-  //boolean checkEnemyMove(float newX, float newY, Level currentLevel) {
-  //  // Verifica se la nuova posizione è valida
-  //  PVector playerPosition = p1.spritePosition;
-  //  int roundedX = round(newX);
-  //  int roundedY = round(newY);
-  
-  //  if (roundedX == round(playerPosition.x) && roundedY == round(playerPosition.y)) {
-  //    return false; // Il nemico non può andare nella stessa posizione del giocatore
+  //boolean isValidMove(int roundedX, int roundedY) {
+  //  if(!isWithinMapBounds(roundedX, roundedY) && isCollisionTile(roundedX, roundedY)) {
+  //    return false;
   //  }
-  
-  //  if (roundedX >= 0 && roundedX < currentLevel.cols && roundedY >= 0 && roundedY < currentLevel.rows &&
-  //    currentLevel.map[roundedX][roundedY] != 0 &&
-  //    currentLevel.map[roundedX][roundedY] != 4 &&
-  //    currentLevel.map[roundedX][roundedY] != 6 &&
-  //    currentLevel.map[roundedX][roundedY] != 3) {
-  //    return true;
+    
+  //  // verifica che due nemici non si sovrappongano
+  //  for (Enemy otherEnemy : currentLevel.enemies) {
+  //    if (otherEnemy != this) {
+  //      if (roundedX < otherEnemy.spritePosition.x + otherEnemy.sprite.width &&
+  //          roundedX + sprite.width > otherEnemy.spritePosition.x &&
+  //          roundedY < otherEnemy.spritePosition.y + otherEnemy.sprite.height &&
+  //          roundedY + sprite.height > otherEnemy.spritePosition.y) {
+  //        return false; // Sovrapposizione con un altro nemico
+  //      }
+  //    }
   //  }
-  
-  //  return false;
+    
+  //  return true;
   //}
   
   boolean isValidMove(int roundedX, int roundedY) {
-    if(isWithinMapBounds(roundedX, roundedY) && !isCollisionTile(roundedX, roundedY)) {
+    // il player si trova all'interno della mappa di gioco
+    if(isWithinMapBounds(roundedX, roundedY)) {
+      // il player si scontra con un tile di collisione
+      if(isCollisionTile(roundedX, roundedY)) {
+        if(spritePosition.x * currentLevel.tileSize <= (roundedX * currentLevel.tileSize) + currentLevel.tileSize ||
+           (spritePosition.x * currentLevel.tileSize) + sprite.width<= roundedX * currentLevel.tileSize ||
+           spritePosition.y * currentLevel.tileSize >= (roundedY * currentLevel.tileSize) + currentLevel.tileSize ||
+           (spritePosition.y * currentLevel.tileSize) + sprite.height >= roundedY * currentLevel.tileSize) {
+           // ritorna falso se il player cerca di attraversa il tile 
+           return false;
+        }
+      }
+      // ritorna vero se il player si trova all'interno della mappa e non si sta scontrando con un tile di collisione
       return true;
     }
     
+    // falso altrimenti
     return false;
   }
   
   // attacca il giocatore
   // da migliorare
   void attack() {
-    println("attacco subito");
+    // println("attacco subito");
     long currentTime = System.currentTimeMillis();
 
       // Verifica se è passato abbastanza tempo dall'ultimo attacco
@@ -144,11 +157,6 @@ public class Enemy {
         (aPlayer.spritePosition.x * currentLevel.tileSize) + aPlayer.sprite.width >= spritePosition.x * currentLevel.tileSize && 
         aPlayer.spritePosition.y * currentLevel.tileSize <= (spritePosition.y * currentLevel.tileSize) + sprite.height && 
         (aPlayer.spritePosition.y * currentLevel.tileSize) + aPlayer.sprite.height >= spritePosition.y * currentLevel.tileSize) {
-            spritesLayer.textFont(myFont);
-            spritesLayer.fill(255);
-            spritesLayer.textSize(15);
-            spritesLayer.text("rat", (spritePosition.x * currentLevel.tileSize) - 50, (spritePosition.y * currentLevel.tileSize) - 10);
-            
             return true;
     }
     

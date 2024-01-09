@@ -111,7 +111,7 @@ class Level {
     generateRandomCoins();
   }
 
-  PVector getStartRoom() {
+  PVector getStartPosition() {
     println("start position: " + rooms.get(startRoomIndex).position);
     return rooms.get(startRoomIndex).position;
   }

@@ -9,6 +9,11 @@ class Player {
   boolean moveRIGHT;
   boolean moveLEFT;
   
+  int direction; 
+  
+  final int DIRECTION_LEFT = 0;
+  final int DIRECTION_RIGHT = 1;
+  
   boolean moveATCK;    // attacco j
   boolean moveINTR;    // interazione k 
   boolean moveUSE;     // utilizza l
@@ -60,10 +65,12 @@ class Player {
     if (moveLEFT) {
       p1.sprite = spriteLeft;
       newX -= spriteSpeed;
+      direction = DIRECTION_LEFT;
     }
     if (moveRIGHT) {
       p1.sprite = spriteRight;
       newX += spriteSpeed;
+      direction = DIRECTION_RIGHT;
     }
 
     // Verifica se la nuova posizione è valida
@@ -82,25 +89,26 @@ class Player {
     }
   }
   
-  // attacca il nemico
-  // in base all'arma equipaggiata 
-  // calcola il danno
-  void attack() {
+  // collisione tra arma e nemico
+  boolean collidesWith(Enemy enemy) { //<>//
     // se l'arma collide con un nemico sottrai danno alla vita nemico
-    //  boolean weaponCollision(Enemy enemy) {
-    //  float weaponPosition = 10;
-    //  if (p1.moveRIGHT) weaponPosition = 10;
-    //  else if (p1.moveLEFT) weaponPosition = -10;
+    
+    float offset = 16;
+    
+    if (direction == DIRECTION_RIGHT) offset = 16;
+    else if (direction == DIRECTION_LEFT) offset = -16;
+    
+    println("giocatore: " + spritePosition);
+    println("arma: " + weapon.spritePosition);
+    
+    if((weapon.spritePosition.x * currentLevel.tileSize) + offset <= (enemy.spritePosition.x * currentLevel.tileSize) + enemy.sprite.width  &&
+      ((weapon.spritePosition.x * currentLevel.tileSize) + weapon.sprite.width) + offset >= enemy.spritePosition.x * currentLevel.tileSize && 
+      weapon.spritePosition.y * currentLevel.tileSize <= (enemy.spritePosition.y * currentLevel.tileSize) + enemy.sprite.height && 
+      (weapon.spritePosition.y * currentLevel.tileSize) + weapon.sprite.height >= enemy.spritePosition.y * currentLevel.tileSize) {
+        return true;
+    }
       
-    //  if((p1.spritePosition.x * currentLevel.tileSize) + weaponPosition <= (enemy.spritePosition.x * currentLevel.tileSize) + enemy.sprite.width  &&
-    //      (p1.spritePosition.x * currentLevel.tileSize) + weaponPosition + p1.weapon.sprite.width >= enemy.spritePosition.x * currentLevel.tileSize && 
-    //      p1.spritePosition.y * currentLevel.tileSize <= (enemy.spritePosition.y * currentLevel.tileSize) + enemy.sprite.height &&
-    //      p1.spritePosition.y * currentLevel.tileSize + p1.weapon.sprite.height >= (enemy.spritePosition.y * currentLevel.tileSize)) {
-    //      return true;
-    //  }
-      
-    //  return false;
-    //}
+    return false;
   }
 
   // collision detection
@@ -127,25 +135,29 @@ class Player {
   
   // metodo che si occupa di disegnare l'arma del giocatore
   void drawPlayerWeapon() {
-    float weaponPosition = 10;
-    if (p1.moveRIGHT) weaponPosition = 10;
-    else if (p1.moveLEFT) weaponPosition = -10;
-  
-    PImage weaponImage = p1.weapon.sprite;
-    float imageX = (p1.spritePosition.x * currentLevel.tileSize) + weaponPosition;
-    float imageY = p1.spritePosition.y * currentLevel.tileSize;
-    float imageWidth = p1.weapon.sprite.width;
-    float imageHeight = p1.weapon.sprite.height;
+    // aggiorna posizione dell'arma
+    weapon.spritePosition = spritePosition;
     
+    // offset
+    float offset = 16;
+    
+    if (direction == DIRECTION_RIGHT) 
+      offset = 16;
+    else if (direction == DIRECTION_LEFT) 
+      offset = -16;
+    
+    // hitbox arma
     spritesLayer.noFill(); // Nessun riempimento
     spritesLayer.stroke(255, 146, 240); // Colore del bordo bianco
-    spritesLayer.rect(imageX, imageY, imageWidth, imageHeight);
+    spritesLayer.rect((weapon.spritePosition.x * currentLevel.tileSize) + offset, weapon.spritePosition.y * currentLevel.tileSize, weapon.sprite.width, weapon.sprite.height);
     
-    spritesLayer.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
+    // arma
+    spritesLayer.image(weapon.sprite, (weapon.spritePosition.x * currentLevel.tileSize) + offset,  weapon.spritePosition.y * currentLevel.tileSize, weapon.sprite.width, weapon.sprite.height);
   }
 
   void display(PGraphics layer) {
     // hitbox giocatore
+    layer.rectMode(CENTER);
     layer.noFill(); // Nessun riempimento
     layer.stroke(255); // Colore del bordo bianco
     layer.rect(spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);

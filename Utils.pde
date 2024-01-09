@@ -3,6 +3,7 @@ boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
 int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 
 boolean isUsingPotion = false;
+boolean isAttacking = false;
 
 // gestione comandi
 void keyPressed() {
@@ -61,6 +62,7 @@ void keyReleased() {
     p1.moveRIGHT = false;
   } else if (key == 'j' || key == 'J') {
     p1.moveATCK = false;
+    isAttacking = false;
   } else if (key == 'k' || key == 'K') {
     p1.moveINTR = false;
   } else if (key == 'l' || key == 'L') {

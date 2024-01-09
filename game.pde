@@ -15,10 +15,14 @@ class Game {
     redPotion.setBonusHP(20);
 
     p1 = new Player(50, 100, 5, 5, 5);
-    p1.spritePosition = currentLevel.getStartRoom();
+    p1.spritePosition = currentLevel.getStartPosition();
     p1.sprite = spriteRight;
     p1.healer = redPotion;
+    
     p1.weapon = weapon;
+    p1.weapon.spritePosition = p1.spritePosition;
+    println(p1.weapon.spritePosition);
+    
     p1.golden_keys = golden_key;
     p1.silver_keys = silver_key;
 
@@ -127,7 +131,7 @@ class Game {
           currentLevel = currentZone.currentLevel;
           currentLevel.init();
           actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-          p1.spritePosition = currentLevel.getStartRoom();
+          p1.spritePosition = currentLevel.getStartPosition();
 
           // aggiorna lo score del player
           p1.playerScore +=  200;
@@ -139,7 +143,7 @@ class Game {
         currentLevel = currentZone.levels.get(currentLevel.levelIndex + 1);
         currentLevel.init();
         actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-        p1.spritePosition = currentLevel.getStartRoom();
+        p1.spritePosition = currentLevel.getStartPosition();
 
         // aggiorna lo score del player
         p1.playerScore += 100;
@@ -167,11 +171,12 @@ class Game {
   
   // gestisce l'attacco del giocatore
   void handlePlayerAttack() {
-    if (p1.moveATCK && (!p1.moveUSE && !p1.moveINTR)) {
+    if (p1.moveATCK && (!p1.moveUSE && !p1.moveINTR) && !isAttacking) {
       p1.drawPlayerWeapon();
-      p1.attack();
+      isAttacking = true;
     }
   }
+  
   
   // gestisce l'uso delle pozioni 
   void handlePotionUse() {
@@ -193,14 +198,38 @@ class Game {
     }
   }
   
-  // gestisce le azioni di ogni nemico 
+  // gestisce le azioni del nemico 
   void handleEnemyActions() {
-    for (Enemy enemy : currentLevel.enemies) {
+    Iterator<Enemy> iterator = currentLevel.enemies.iterator();
+    
+    while (iterator.hasNext()) {
+      Enemy enemy = iterator.next();
+  
       if (isInVisibleArea(enemy.spritePosition)) {
-        if(enemy.enemyHP > 0) {
+        if (enemy.enemyHP > 0) {
           enemy.display(spritesLayer);
         }
-
+  
+        if (isAttacking) {
+          if (p1.collidesWith(enemy)) {
+            // succede qualcosa
+            // vita meno danno dell'arma
+            enemy.enemyHP -= 10;
+            
+            // SOSTITUIRE 10 CON IL DANNO DELL'ARMA
+            spritesLayer.textFont(myFont);
+            spritesLayer.fill(255, 0, 0);
+            spritesLayer.textSize(15);
+            spritesLayer.text(10, (enemy.spritePosition.x * currentLevel.tileSize), (enemy.spritePosition.y * currentLevel.tileSize) - 10);
+  
+            // il nemico muore, rimuovilo dalla lista dei nemici del livello
+            // aggiungi un certo valore allo score del giocatore 
+            if (enemy.enemyHP <= 0) {
+              iterator.remove();  // Rimuovi il nemico dalla lista
+            }
+          }
+        }
+  
         if (enemy.playerCollide(p1)) {
           // attacca il giocatore
           enemy.attack();
