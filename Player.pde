@@ -24,7 +24,8 @@ class Player {
   int playerScore;
   int coins;      // numero di monete che ha il giocatore
   Weapon weapon;
-  Healer healer;
+  Healer redPotion;  // restituisce due - tre cuori
+  Healer greenPotion; // recupera tutta la vita
   Item golden_keys;
   Item silver_keys;
   int numberOfSilverKeys;
@@ -157,11 +158,16 @@ class Player {
 
   void display(PGraphics layer) {
     // hitbox giocatore
-    layer.rectMode(CENTER);
     layer.noFill(); // Nessun riempimento
     layer.stroke(255); // Colore del bordo bianco
-    layer.rect(spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
     
-    layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
+    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
+    
+    layer.rectMode(CENTER); // Imposta il rectMode a center
+    layer.rect(centerX, centerY, sprite.width, sprite.height);
+  
+    layer.imageMode(CENTER); // Imposta l'imageMode a center
+    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
 }

@@ -10,11 +10,13 @@ public class Enemy {
   int damage;
   Item dropItem;    // oggetto droppato dal nemico che puo essere un cuore, meta cuore o altro
   String name;
+  int scoreValue;
 
   Enemy(int enemyHP, String name, int damage) {
     this.enemyHP = enemyHP;
     this.name = name;
     this.damage = damage;
+    this.scoreValue = 20;
   }
 
   void display(PGraphics layer) {

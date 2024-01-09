@@ -8,6 +8,7 @@ Weapon sword;
 Item silver_key;
 Item golden_key;
 Healer redPotion;
+Healer greenPotion;
 Chest selectedChest;
 
 //
@@ -82,7 +83,7 @@ void setup() {
   spritesLayer = createGraphics(width, height);
 
   // load font
-  myFont = createFont("data/font/dpcomic.ttf", 30);
+  myFont = createFont("data/font/minecraft.ttf", 30);
   textFont(myFont);
 
   // schermata iniziale
@@ -139,7 +140,7 @@ void setupSounds() {
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
   specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
   drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
-  attackHit = new SoundFile(this, "data/sound/hitHurt.wav");
+  // attackHit = new SoundFile(this, "data/sound/hitHurt.wav");
 
   soundtrack = new SoundFile(this, "data/sound/dungeon_soundtrack.wav");
   isSoundtrackPlaying = false;
@@ -148,7 +149,7 @@ void setupSounds() {
   normalChestOpen.amp(volumeEffectsLevel);
   specialChestOpen.amp(volumeEffectsLevel);
   drinkPotion.amp(volumeEffectsLevel);
-  attackHit.amp(volumeEffectsLevel);
+  // attackHit.amp(volumeEffectsLevel);
 
   soundtrack.amp(volumeMusicLevel);
 }
@@ -159,17 +160,19 @@ void setupItems() {
   
   // oggetiti per il giocatore
   sword = new Weapon("sword", 10);
-  redPotion = new Healer("red_potion", 10);
+  redPotion = new Healer("red_potion", 20);
+  greenPotion = new Healer("green_potion", 100);
 
   golden_key.sprite = loadImage("data/golden_key.png");
   silver_key.sprite = loadImage("data/silver_key.png");
   sword.sprite = loadImage("data/little_sword.png");
   redPotion.sprite = loadImage("data/object/red_potion.png");
+  greenPotion.sprite = loadImage("data/object/green_potion.png");
 }
 
 void draw() {
   // cambia il titolo della finestra e mostra il framerate
-  surface.setTitle(String.format("%.1f", frameRate));
+  surface.setTitle("Dungeon Game - " + String.format("%.1f", frameRate));
 
   switch(screen_state) {
   case MENU_SCREEN:
@@ -232,7 +235,8 @@ void winScreen() {
   }
 
   // chiama la funzione
-  writer("hai vinto!");
+  writer("Hai vinto!\n" +
+         "Score totalizzato: " + p1.playerScore);
 }
 
 void loseScreen() {

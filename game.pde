@@ -12,7 +12,8 @@ class Game {
     p1 = new Player(50, 100, 5, 5, 5);
     p1.spritePosition = currentLevel.getStartPosition();
     p1.sprite = spriteRight;
-    p1.healer = redPotion;
+    p1.redPotion = redPotion;
+    p1.greenPotion = greenPotion;
     
     p1.weapon = sword;
     p1.weapon.spritePosition = p1.spritePosition;
@@ -179,7 +180,7 @@ class Game {
       isUsingPotion = true;
       if (p1.playerHP < p1.playerMaxHP) {
         drinkPotion.play();
-        p1.playerHP += p1.healer.getBonusHp();
+        p1.playerHP += p1.redPotion.getBonusHp();
 
         if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
 
@@ -208,7 +209,7 @@ class Game {
         if (isAttacking) {
           if (p1.collidesWith(enemy)) {
             // riproduci il suono di hit
-            attackHit.play();
+            // attackHit.play();
             
             // vita meno danno dell'arma
             enemy.enemyHP -= p1.weapon.getDamage();
@@ -221,6 +222,7 @@ class Game {
             // il nemico muore, rimuovilo dalla lista dei nemici del livello
             // aggiungi un certo valore allo score del giocatore 
             if (enemy.enemyHP <= 0) {
+              p1.playerScore += enemy.scoreValue;
               iterator.remove();  // Rimuovi il nemico dalla lista
             }
           }
