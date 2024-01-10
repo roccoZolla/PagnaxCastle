@@ -26,7 +26,36 @@ class Game {
   }
 
   void display() {
+    //maskLayer.beginDraw();
+    //maskLayer.background(0);
+    //maskLayer.blendMode(REPLACE);
+    
+    //maskLayer.textAlign(LEFT, TOP);
+    //maskLayer.fill(255);
+    //maskLayer.textSize(30);
+    //maskLayer.text("maskLayer", 120, 20);
+    
+    //// Imposta il colore del riempimento del cerchio su nero
+    //maskLayer.fill(0, 0);
+    
+    //// Calcola le coordinate del centro del maskLayer
+    //float centerX = width / 2;
+    //float centerY = height / 2;
+    
+    //// Imposta la modalità del cerchio su RADIUS per disegnare un cerchio con dimensioni specificate dal raggio
+    //maskLayer.ellipseMode(RADIUS);
+    
+    //// Calcola il raggio del cerchio vuoto
+    //float holeRadius = 300; // Puoi regolare questa dimensione a tuo piacimento
+    
+    //// Disegna un cerchio vuoto al centro del maskLayer
+    //maskLayer.ellipse(centerX, centerY, holeRadius, holeRadius);
+    
+    //maskLayer.endDraw();
+    
+    /////
     gameScene.beginDraw();
+    
     // cancella lo schermo
     gameScene.background(0);
 
@@ -87,7 +116,17 @@ class Game {
     gameScene.endDraw();
 
     image(gameScene, 0, 0);
+    // image(maskLayer, 0, 0);
     image(spritesLayer, 0, 0);
+
+    // Usa la funzione blend per sovrapporre i layer
+    //PImage blendedImage = createImage(width, height, RGB);
+    //blendedImage.blend(gameScene, 0, 0, width, height, 0, 0, width, height, NORMAL);  // Usa la modalità MASK
+    //blendedImage.blend(spritesLayer, 0, 0, width, height, 0, 0, width, height, NORMAL);  // Usa la modalità NORMAL
+    //blendedImage.blend(maskLayer, 0, 0, width, height, 0, 0, width, height, NORMAL);  // Usa la modalità NORMAL
+  
+    //// Mostra l'immagine risultante
+    //image(blendedImage, 0, 0);
   }
   
   void updateGame() {
@@ -155,10 +194,7 @@ class Game {
             // vita meno danno dell'arma
             enemy.enemyHP -= p1.weapon.getDamage();
             
-            spritesLayer.textFont(myFont);
-            spritesLayer.fill(255, 0, 0);
-            spritesLayer.textSize(15);
-            spritesLayer.text(p1.weapon.getDamage(), (enemy.spritePosition.x * currentLevel.tileSize), (enemy.spritePosition.y * currentLevel.tileSize) - 10);
+            drawDamage(enemy.spritePosition, p1.weapon.getDamage());
   
             // il nemico muore, rimuovilo dalla lista dei nemici del livello
             // aggiungi un certo valore allo score del giocatore 
@@ -172,14 +208,22 @@ class Game {
             
                 // probabilità che il nemico droppi qualcosa
                 // in questo caso 40 %
-                double dropProbability = 0.4;
+                double dropHeartProbability = 0.4;
+                double dropSilverKeyProbability = 0.2;
             
-                if (randomValue <= dropProbability) {
-                    // Il nemico ha superato la probabilità di drop, crea e aggiungi un oggetto alla lista
-                    Healer dropHeart = new Healer("dropHeart", 10);
-                    dropHeart.sprite = heart.sprite;
-                    dropHeart.spritePosition = enemy.spritePosition;
-                    currentLevel.dropItems.add(dropHeart);
+                if (randomValue <= dropHeartProbability) {
+                  // drop del cuore 
+                  Healer dropHeart = new Healer("dropHeart", 10);
+                  dropHeart.sprite = heart.sprite;
+                  dropHeart.spritePosition = enemy.spritePosition;
+                  currentLevel.dropItems.add(dropHeart);
+                } else if(randomValue <= dropHeartProbability + dropSilverKeyProbability) {
+                  // drop della chiave d'argento
+                  Item dropSilverKey = new Item("dropSilverKey");
+                  dropSilverKey.sprite = silver_key.sprite;
+                  dropSilverKey.spritePosition = enemy.spritePosition;
+                  dropSilverKey.isCollectible = true;
+                  currentLevel.dropItems.add(dropSilverKey);
                 }
             
                 iterator.remove();  // Rimuovi il nemico dalla lista
@@ -221,40 +265,99 @@ class Game {
           // se il giocatore preme il tasto interazione e la cassa non è stata aperta
           if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
             if (chest.isRare()) {    // se la cassa è rara
+            // CASSA RARA
               if (p1.numberOfGoldenKeys > 0) {
                 if (chest.getOpenWith().equals(p1.golden_keys)) {
                   // imposta la cassa come aperta
                   chest.setIsOpen(true);
                   specialChestOpen.play();
-                  chest.sprite = loadImage("data/object/special_chest_open.png");
+                  // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+                  chest.sprite = special_chest_open_sprite;
     
                   p1.numberOfGoldenKeys -= 1;
                   p1.playerScore += 50;
+                  
+                  // drop causale dell'item
+                  // numero casuale
+                  double randomValue = Math.random();
+                  println("random value:" + randomValue);
+              
+                  // probabilità che il nemico droppi qualcosa
+                  // in questo caso 40 %
+                  double dropHeartProbability = 0.8;
+                  double dropTorchProbability = 0.2;
+              
+                  if (randomValue <= dropHeartProbability) {
+                      println("cuore droppato");
+                      // drop del cuore 
+                      Healer dropHeart = new Healer("dropHeart", 10);
+                      dropHeart.sprite = heart.sprite;
+                      // da sistemare
+                      dropHeart.spritePosition = chest.spritePosition;    
+                      currentLevel.dropItems.add(dropHeart);
+                  } else if (randomValue > dropHeartProbability && randomValue <= dropHeartProbability + dropTorchProbability) {
+                      println("torcia droppata");
+                      // drop della chiave d'oro
+                      Item dropTorch = new Item("dropTorch");
+                      dropTorch.sprite = torch_sprite;
+                      // da sistemare posizione
+                      dropTorch.spritePosition = chest.spritePosition;                    
+                      dropTorch.isCollectible = true;
+                      currentLevel.dropItems.add(dropTorch);
+                  }
+                  // aggiungere drop della mappa
+                  
+                  
+                  
                 }
               } else {
-                spritesLayer.textFont(myFont);
-                spritesLayer.fill(255);
-                spritesLayer.textSize(15);
-                // da adattare alla rectmode Center
-                spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
+                noMoreKeys();
               }
             } else {  // se la cassa è normale
+            // CASSA NORMALE
               if (p1.numberOfSilverKeys > 0) {
                 if (chest.getOpenWith().equals(p1.silver_keys)) {
                   // imposta la cassa come aperta
                   chest.setIsOpen(true);
                   normalChestOpen.play();
-                  chest.sprite = loadImage("data/object/chest_open.png");
+                  // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+                  chest.sprite = chest_open_sprite;
     
                   p1.numberOfSilverKeys -= 1;
                   p1.playerScore += 30;
+                  
+                  // drop casuale dell'item
+                  // numero casuale
+                  double randomValue = Math.random();
+                  println("random value:" + randomValue);
+              
+                  // probabilità che il nemico droppi qualcosa
+                  // in questo caso 40 %
+                  double dropHeartProbability = 0.8;
+                  double dropSilverKeyProbability = 0.2;
+              
+                  if (randomValue <= dropHeartProbability) {
+                      println("cuore droppato");
+                      // drop del cuore 
+                      Healer dropHeart = new Healer("dropHeart", 10);
+                      dropHeart.sprite = heart.sprite;
+                      // da sistemare
+                      dropHeart.spritePosition = chest.spritePosition; //<>//
+                      currentLevel.dropItems.add(dropHeart);
+                  } else if (randomValue > dropHeartProbability && randomValue <= dropHeartProbability + dropSilverKeyProbability) {
+                      println("chiave oro droppata");
+                      // drop della chiave d'oro
+                      Item dropGoldenKey = new Item("dropGoldenKey");
+                      dropGoldenKey.sprite = golden_key.sprite;
+                      // da sistemare
+                      dropGoldenKey.spritePosition = chest.spritePosition;                      
+                      dropGoldenKey.isCollectible = true;
+                      currentLevel.dropItems.add(dropGoldenKey);
+                  }
+                  
                 }
               } else {
-                spritesLayer.textFont(myFont);
-                spritesLayer.fill(255);
-                spritesLayer.textSize(15);
-                // da adattare alla rectmode Center
-                spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
+                noMoreKeys();
               }
             }
           }
@@ -262,7 +365,7 @@ class Game {
       }
     }
   }
-  
+
   // gestisce le monete
   void handleCoin() {
     // ----- COIN -----
@@ -292,6 +395,7 @@ class Game {
     while(iterator.hasNext()) {
       Item item = iterator.next();
       
+      // controlla che gli elementi droppati siano visibili 
       if(isInVisibleArea(item.spritePosition)) {
         item.display(spritesLayer);
         
@@ -313,6 +417,19 @@ class Game {
               if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
               
               // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
+              iterator.remove();
+            } else if(item.isCollectible && item.name.equals("dropSilverKey")) {
+              // aumenta il numero delle chiavi d'argento
+              p1.numberOfSilverKeys++;
+              
+              iterator.remove();
+            } else if(item.isCollectible && item.name.equals("dropGoldenKey")) {
+              // aumenta il numero delle chiavi d'argento
+              p1.numberOfGoldenKeys++;
+              
+              iterator.remove();
+            } else if (item.isCollectible && item.name.equals("dropTorch")) {
+              // fai in modo di togliere la maschera
               iterator.remove();
             }
           }

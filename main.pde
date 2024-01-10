@@ -30,6 +30,10 @@ PImage letter_k;
 PImage letter_l;
 
 PImage coins;
+PImage torch_sprite;
+PImage dungeon_map_sprite;
+PImage chest_open_sprite;
+PImage special_chest_open_sprite;
 
 // sound effect
 float volumeMusicLevel;
@@ -71,6 +75,7 @@ Camera camera;
 
 PGraphics gameScene;
 PGraphics spritesLayer;
+PGraphics maskLayer;
 
 void setup() {
   // dimensioni schermo
@@ -82,6 +87,7 @@ void setup() {
 
   gameScene = createGraphics(width, height);
   spritesLayer = createGraphics(width, height);
+  maskLayer = createGraphics(width, height);
 
   // load font
   myFont = createFont("data/font/minecraft.ttf", 30);
@@ -131,6 +137,9 @@ void setupImages() {
   letter_l = loadImage("data/letter_l.png");
   
   coins = loadImage("data/coin.png");
+  
+  chest_open_sprite = loadImage("data/object/chest_open.png");
+  special_chest_open_sprite = loadImage("data/object/special_chest_open.png");
 }
 
 void setupSounds() {
@@ -173,6 +182,8 @@ void setupItems() {
   redPotion.sprite = loadImage("data/object/red_potion.png");
   greenPotion.sprite = loadImage("data/object/green_potion.png");
   heart.sprite = loadImage("data/heartFull.png");
+  torch_sprite = loadImage("data/torch.png");
+  // dungeon_map_sprite = loadImage("data/dungeon_map_sprite.png");
 }
 
 void draw() {

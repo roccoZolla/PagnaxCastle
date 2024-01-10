@@ -17,6 +17,9 @@ class Player {
   boolean moveATCK;    // attacco j
   boolean moveINTR;    // interazione k 
   boolean moveUSE;     // utilizza l
+  
+  private static final long ATTACK_COOLDOWN = 3500; // Tempo di cooldown in millisecondi (3 secondi)
+  private long lastAttackTime = 0;
 
   // caratteristiche del player
   int playerMaxHP;
@@ -150,6 +153,28 @@ class Player {
            return false;
         }
       }
+      
+      // verifica che sia un tile che reca danno 
+      if(isDamageTile(roundedX, roundedY)) {        
+        long currentTime = System.currentTimeMillis();
+
+          // Verifica se è passato abbastanza tempo dall'ultimo attacco
+        if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
+            // Esegui l'attacco
+            playerHP -= 5;
+            
+            // fare in modo che rimanga un po piu di tempo a schermo
+            drawDamage(spritePosition, 5);
+    
+            if(playerHP < 0) {
+              playerHP = 0;
+            }
+    
+            // Aggiorna il tempo dell'ultimo attacco
+            lastAttackTime = currentTime;
+        }
+      }
+      
       // ritorna vero se il player si trova all'interno della mappa e non si sta scontrando con un tile di collisione
       return true;
     } else {
@@ -193,13 +218,14 @@ class Player {
     float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
     float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
     
-    layer.rectMode(CENTER); // Imposta il rectMode a center
-    layer.rect(centerX, centerY, sprite.width, sprite.height);
+    // hitbox
+    //layer.rectMode(CENTER); // Imposta il rectMode a center
+    //layer.rect(centerX, centerY, sprite.width, sprite.height);
     
-    layer.stroke(60);
-    layer.point(centerX, centerY);
+    //layer.stroke(60);
+    //layer.point(centerX, centerY);
     
-    //layer.imageMode(CENTER); // Imposta l'imageMode a center
-    //layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+    layer.imageMode(CENTER); // Imposta l'imageMode a center
+    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
 }

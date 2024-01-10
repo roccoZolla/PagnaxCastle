@@ -133,10 +133,7 @@ public class Enemy {
         p1.playerHP -= damage;
         
         // fare in modo che rimanga un po piu di tempo a schermo
-        spritesLayer.textFont(myFont);
-        spritesLayer.fill(255, 0, 0);
-        spritesLayer.textSize(15);
-        spritesLayer.text(damage, (p1.spritePosition.x * currentLevel.tileSize), (p1.spritePosition.y * currentLevel.tileSize) - 10);
+        drawDamage(p1.spritePosition, damage);
 
         if(p1.playerHP < 0) {
           p1.playerHP = 0;
@@ -155,14 +152,15 @@ public class Enemy {
     float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
     float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
     
-    layer.rectMode(CENTER); // Imposta il rectMode a center
-    layer.rect(centerX, centerY, sprite.width, sprite.height);
+    // hitbox
+    //layer.rectMode(CENTER); // Imposta il rectMode a center
+    //layer.rect(centerX, centerY, sprite.width, sprite.height);
     
-    layer.stroke(60);
-    layer.point(centerX, centerY);
+    //layer.stroke(60);
+    //layer.point(centerX, centerY);
     
-    //layer.imageMode(CENTER); // Imposta l'imageMode a center
-    //layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+    layer.imageMode(CENTER); // Imposta l'imageMode a center
+    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
     
     // layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
   }

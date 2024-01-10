@@ -36,11 +36,12 @@ class Coin {
     float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
     float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
     
-    layer.rectMode(CENTER); // Imposta il rectMode a center
-    layer.rect(centerX, centerY, sprite.width, sprite.height);
+    // hitbox
+    //layer.rectMode(CENTER); // Imposta il rectMode a center
+    //layer.rect(centerX, centerY, sprite.width, sprite.height);
     
-    layer.stroke(60);
-    layer.point(centerX, centerY);
+    //layer.stroke(60);
+    //layer.point(centerX, centerY);
     
     layer.imageMode(CENTER); // Imposta l'imageMode a center
     layer.image(sprite, centerX, centerY, sprite.width, sprite.height);

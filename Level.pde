@@ -18,6 +18,7 @@ class Level {
   static final int WALL_PERIMETER_TILE_TYPE = 4;
   static final int HALLWAY_TILE_TYPE = 5;
   static final int CHEST_TILE_TYPE = 6;
+  static final int PEAKS_TILE_TYPE = 7;
 
   // attributi
   PImage startFloorImage;
@@ -31,6 +32,7 @@ class Level {
   //private PImage wallImageEast;
   //private PImage wallImageWest;
   PImage hallwayImage;         // immagine per i corridoi
+  PImage peaksTrapImage;
   PImage stairsNextFloorImage; // scale per accedere al livello successivo
 
   ArrayList<Coin> coins;      // contiene le monete presenti nel livello
@@ -62,7 +64,8 @@ class Level {
 
   void init() {
     // inizializzo il livello
-    System.out.println("inizializzo il livello");
+    println("inizializzo il livello");
+    
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
     rows = height / tileSize;
@@ -75,6 +78,8 @@ class Level {
     wallImageNorth = loadImage(dataPath + "northWallTop.png");
     hallwayImage = loadImage(dataPath + "hallwayTile.png");
     stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
+    peaksTrapImage = loadImage("data/trap/peaks.png");
+    
 
     //startFloorImage = loadImage(dataPath + "startTile.png");
     //floorImage = loadImage(dataPath + "floorTile.png");
@@ -157,9 +162,20 @@ class Level {
       for (int y = roomY; y < roomY + roomHeight; y++) {
         if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
           // Questi sono i bordi della stanza, quindi imposta il tile come tileType 3
-          map[x][y] = 4; // Imposta il tile come muro del perimetro
+          map[x][y] = WALL_PERIMETER_TILE_TYPE; // Imposta il tile come muro del perimetro
         } else {
-          map[x][y] = 1; // Imposta il tile come pavimento
+          map[x][y] = FLOOR_TILE_TYPE; // Imposta il tile come pavimento
+          
+          // spawn delle trappole all'interno delle stanze
+          // da migliorare
+          double trapSpawnProbability = 0.02;
+          double randomValue = random(1);
+  
+          // Se il numero casuale è inferiore o uguale alla probabilità di spawn, aggiungi una trappola
+          if (randomValue <= trapSpawnProbability) {
+            // Imposta il tile come trappola
+            map[x][y] = PEAKS_TILE_TYPE; 
+          }
         }
       }
     }
@@ -360,32 +376,22 @@ class Level {
 
         case FLOOR_TILE_TYPE:
           // pavimento
-          // gameScene.rectMode(CENTER); // Imposta il rectMode a center
-          // hitbox pavimento
+          
+          // hitbox del pavimento
+          //gameScene.rectMode(CENTER);
           //gameScene.noFill(); // Nessun riempimento
-          //gameScene.stroke(255, 0, 0); // Colore del bordo bianco
-          //gameScene.rect(x * tileSize, y * tileSize, floorImage.width, floorImage.height);
+          //gameScene.stroke(0, 0, 255); // Colore del bordo bianco
+          //gameScene.rect(centerX, centerY, tileSize, tileSize);
           
           //gameScene.stroke(60);
-          //gameScene.point(x * tileSize, y * tileSize);
-          
-          gameScene.rectMode(CENTER);
-          gameScene.noFill(); // Nessun riempimento
-          gameScene.stroke(0, 0, 255); // Colore del bordo bianco
-          gameScene.rect(centerX, centerY, tileSize, tileSize);
-          
-          gameScene.stroke(60);
-          gameScene.point(centerX, centerY);
+          //gameScene.point(centerX, centerY);
           
           gameScene.imageMode(CENTER);
           gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case START_ROOM_TILE_TYPE:
-          // Imposta l'immagine per la stanza iniziale (nero)
-          gameScene.stroke(60);
-          gameScene.point(centerX, centerY);
-          
+          // Imposta l'immagine per la stanza iniziale (nero)          
           gameScene.imageMode(CENTER);
           gameScene.image(startFloorImage, centerX, centerY, tileSize, tileSize);
           break;
@@ -398,13 +404,15 @@ class Level {
 
         case WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
-          gameScene.rectMode(CENTER);
-          gameScene.noFill(); // Nessun riempimento
-          gameScene.stroke(100, 34, 50); // Colore del bordo bianco
-          gameScene.rect(centerX, centerY, tileSize, tileSize);
           
-          gameScene.stroke(60);
-          gameScene.point(centerX, centerY);
+          // hitbox dei muri perimetrali
+          //gameScene.rectMode(CENTER);
+          //gameScene.noFill(); // Nessun riempimento
+          //gameScene.stroke(100, 34, 50); // Colore del bordo bianco
+          //gameScene.rect(centerX, centerY, tileSize, tileSize);
+          
+          //gameScene.stroke(60);
+          //gameScene.point(centerX, centerY);
           
           gameScene.imageMode(CENTER);
           gameScene.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
@@ -412,9 +420,6 @@ class Level {
 
         case HALLWAY_TILE_TYPE:
           // corridoio
-          gameScene.stroke(60);
-          gameScene.point(centerX, centerY);
-          
           gameScene.imageMode(CENTER);
           gameScene.image(hallwayImage, centerX, centerY, tileSize, tileSize);
           break;
@@ -424,6 +429,12 @@ class Level {
           // tesori
           gameScene.imageMode(CENTER);
           gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
+          break;
+          
+        case PEAKS_TILE_TYPE:
+          // peaks trap
+          gameScene.imageMode(CENTER);
+          gameScene.image(peaksTrapImage, centerX, centerY, tileSize, tileSize);
           break;
         }
       }
