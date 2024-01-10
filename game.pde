@@ -25,34 +25,7 @@ class Game {
     camera = new Camera();
   }
 
-  void display() {
-    //maskLayer.beginDraw();
-    //maskLayer.background(0);
-    //maskLayer.blendMode(REPLACE);
-    
-    //maskLayer.textAlign(LEFT, TOP);
-    //maskLayer.fill(255);
-    //maskLayer.textSize(30);
-    //maskLayer.text("maskLayer", 120, 20);
-    
-    //// Imposta il colore del riempimento del cerchio su nero
-    //maskLayer.fill(0, 0);
-    
-    //// Calcola le coordinate del centro del maskLayer
-    //float centerX = width / 2;
-    //float centerY = height / 2;
-    
-    //// Imposta la modalità del cerchio su RADIUS per disegnare un cerchio con dimensioni specificate dal raggio
-    //maskLayer.ellipseMode(RADIUS);
-    
-    //// Calcola il raggio del cerchio vuoto
-    //float holeRadius = 300; // Puoi regolare questa dimensione a tuo piacimento
-    
-    //// Disegna un cerchio vuoto al centro del maskLayer
-    //maskLayer.ellipse(centerX, centerY, holeRadius, holeRadius);
-    
-    //maskLayer.endDraw();
-    
+  void display() {    
     /////
     gameScene.beginDraw();
     
@@ -114,19 +87,32 @@ class Game {
     }
 
     gameScene.endDraw();
+    
+    maskLayer.beginDraw();
+    maskLayer.background(0, 255);
+    maskLayer.blendMode(REPLACE);
+    
+    maskLayer.textAlign(LEFT, BOTTOM);
+    maskLayer.fill(255);
+    maskLayer.textSize(30);
+    maskLayer.text("maskLayer", 120, height - 20);
+    
+    maskLayer.fill(255, 0);
+    
+    float centerX = width / 2;
+    float centerY = height / 2;
+    
+    maskLayer.ellipseMode(RADIUS);
+    
+    // dimensione raggio
+    float holeRadius = 300; 
+    maskLayer.ellipse(centerX, centerY, holeRadius, holeRadius);
+    
+    maskLayer.endDraw();
 
     image(gameScene, 0, 0);
-    // image(maskLayer, 0, 0);
     image(spritesLayer, 0, 0);
-
-    // Usa la funzione blend per sovrapporre i layer
-    //PImage blendedImage = createImage(width, height, RGB);
-    //blendedImage.blend(gameScene, 0, 0, width, height, 0, 0, width, height, NORMAL);  // Usa la modalità MASK
-    //blendedImage.blend(spritesLayer, 0, 0, width, height, 0, 0, width, height, NORMAL);  // Usa la modalità NORMAL
-    //blendedImage.blend(maskLayer, 0, 0, width, height, 0, 0, width, height, NORMAL);  // Usa la modalità NORMAL
-  
-    //// Mostra l'immagine risultante
-    //image(blendedImage, 0, 0);
+    image(maskLayer, 0, 0);
   }
   
   void updateGame() {
