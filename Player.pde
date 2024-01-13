@@ -1,6 +1,6 @@
 class Player {
   PVector spritePosition;
-  float spriteSpeed = 0.5;
+  float spriteSpeed = 0.2;
   PImage sprite;
   
   // movements
@@ -105,7 +105,7 @@ class Player {
     println("giocatore: " + spritePosition);
     println("arma: " + weapon.spritePosition);
     
-    // forse da sistemare
+    // da sistemare
     if((weapon.spritePosition.x * currentLevel.tileSize) + offset <= (enemy.spritePosition.x * currentLevel.tileSize) + enemy.sprite.width  &&
       ((weapon.spritePosition.x * currentLevel.tileSize) + weapon.sprite.width) + offset >= enemy.spritePosition.x * currentLevel.tileSize && 
       weapon.spritePosition.y * currentLevel.tileSize <= (enemy.spritePosition.y * currentLevel.tileSize) + enemy.sprite.height && 
@@ -116,35 +116,24 @@ class Player {
     return false;
   }
 
-  // collision detection
-  //boolean isValidMove(int roundedX, int roundedY) {
-  //  // il player si trova all'interno della mappa di gioco
-  //  if(isWithinMapBounds(roundedX, roundedY)) {
-  //    // il player si scontra con un tile di collisione
-  //    if(isCollisionTile(roundedX, roundedY)) {
-  //      // da adattare alla rectMode center
-  //      if(spritePosition.x * currentLevel.tileSize <= (roundedX * currentLevel.tileSize) + currentLevel.tileSize ||
-  //         (spritePosition.x * currentLevel.tileSize) + sprite.width<= roundedX * currentLevel.tileSize ||
-  //         spritePosition.y * currentLevel.tileSize >= (roundedY * currentLevel.tileSize) + currentLevel.tileSize ||
-  //         (spritePosition.y * currentLevel.tileSize) + sprite.height >= roundedY * currentLevel.tileSize) {
-  //         // ritorna falso se il player cerca di attraversa il tile 
-  //         return false;
-  //      }
-  //    }
-  //    // ritorna vero se il player si trova all'interno della mappa e non si sta scontrando con un tile di collisione
-  //    return true;
-  //  }
-    
-  //  // falso altrimenti
-  //  return false;
-  //}
-  
+  // collision detection   
   boolean isValidMove(int roundedX, int roundedY) {
     // il player si trova all'interno della mappa di gioco
     if(isWithinMapBounds(roundedX, roundedY)) {
       // il player si scontra con un tile di collisione
       if(isCollisionTile(roundedX, roundedY)) {
-        // da adattare alla rectMode center
+        
+        // lato destro player maggiore lato sinistro collision tile
+        println("NON ARROTONDATA: " + spritePosition.x + ", " + spritePosition.y);
+        
+        int roundPositionX = round(spritePosition.x);
+        int roundPositionY = round(spritePosition.y);
+        
+        println("ARROTONDATA: " + roundPositionX + ", " + roundPositionY);
+
+        
+        // println("X PLAYER ARRONTONDATA: " + roundPositionX + " ---- " + ((roundedX * currentLevel.tileSize) - (sprite.width / 2)));
+       
         if(spritePosition.x * currentLevel.tileSize + (sprite.width / 2) >= (roundedX * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
           (spritePosition.x * currentLevel.tileSize) - (sprite.width / 2) <= roundedX * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
           spritePosition.y * currentLevel.tileSize + (sprite.height / 2) >= (roundedY * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
@@ -152,6 +141,14 @@ class Player {
            // ritorna falso se il player cerca di attraversa il tile 
            return false;
         }
+        
+        //if(roundPositionX * currentLevel.tileSize + (sprite.width / 2) >= (roundedX * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+        //  (roundPositionX * currentLevel.tileSize) - (sprite.width / 2) <= roundedX * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+        //  roundPositionY * currentLevel.tileSize + (sprite.height / 2) >= (roundedY * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+        //  (roundPositionY * currentLevel.tileSize) - (sprite.height / 2) <= roundedY * currentLevel.tileSize + (sprite.height / 2)) {
+        //   // ritorna falso se il player cerca di attraversa il tile 
+        //   return false;
+        //}
       }
       
       // verifica che sia un tile che reca danno 
@@ -161,10 +158,15 @@ class Player {
           // Verifica se è passato abbastanza tempo dall'ultimo attacco
         if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
             // Esegui l'attacco
-            playerHP -= 5;
+            playerHP -= currentLevel.damagePeaks;
             
             // fare in modo che rimanga un po piu di tempo a schermo
-            drawDamage(spritePosition, 5);
+            TextDisplay damageHitText = new TextDisplay(spritePosition, Integer.toString(currentLevel.damagePeaks), color(255, 0, 0), 1000);
+            damageHitText.display();
+            
+            playerHurt.play();
+            
+            // drawDamage(spritePosition, currentLevel.damagePeaks);
     
             if(playerHP < 0) {
               playerHP = 0;
@@ -222,7 +224,8 @@ class Player {
     //layer.rectMode(CENTER); // Imposta il rectMode a center
     //layer.rect(centerX, centerY, sprite.width, sprite.height);
     
-    //layer.stroke(60);
+    //layer.stroke(160);
+    //layer.strokeWeight(10);
     //layer.point(centerX, centerY);
     
     layer.imageMode(CENTER); // Imposta l'imageMode a center

@@ -5,6 +5,8 @@ class Level {
   boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
   int numberOfRooms;
 
+  int damagePeaks;      // danno delle trappole
+  
   // rooms
   int tileSize = 16;
   int cols, rows;
@@ -58,6 +60,7 @@ class Level {
     this.levelIndex = levelIndex;
     this.dataPath = dataPath;
     this.numberOfRooms = numberOfRooms;
+    this.damagePeaks = 5;
     //finalRoomPosition = new PVector(int(random(width)), int(random(height)));
     //nextLevelStartRoomPosition = new PVector(int(random(width)), int(random(height)));
   }
@@ -241,7 +244,7 @@ class Level {
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
       int coinValue = (int) random(1, 10); // Esempio: valore casuale tra 1 e 10
       Coin coin = new Coin(coinValue);
-      coin.sprite = loadImage("data/coin.png");
+      coin.sprite = coin_sprite;
       coin.spritePosition = new PVector(x, y);
 
       // Aggiungi la moneta alla lista delle monete
@@ -270,14 +273,14 @@ class Level {
       if (chestType < commonChestSpawnRate) {
         // Genera una cassa comune
         chest = new Chest("Cassa comune" + i);
-        chest.sprite = loadImage("data/object/chest_close.png");
+        chest.sprite = chest_close_sprite;
         chest.setId(i);
         chest.setOpenWith(silver_key);              // Specifica l'oggetto chiave necessario
         // Imposta altri attributi della cassa comune
       } else {
         // Genera una cassa rara
         chest = new Chest("Cassa rara" + i);
-        chest.sprite = loadImage("data/object/special_chest_close.png");
+        chest.sprite = special_chest_close_sprite;
         chest.setId(i);
         chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
         chest.setIsRare(true);
@@ -330,13 +333,11 @@ class Level {
         // creazione dell'entita nemico
         int enemyHP = 30;
         Enemy enemy = new Enemy(enemyHP, "rat", 5);
-        enemy.sprite = loadImage("data/npc/rat_enemy.png");
+        enemy.sprite = rat_enemy_sprite;
         enemy.spritePosition = new PVector(x, y);
         
-        // drop del nemico
-        // aggiungere logica secondo cui su una lista di oggetti
-        // il nemico abbia un oggetto in maniera randomico
-        enemy.dropItem = heart;
+        // quando viene ucciso un nemico 
+        // viene droppato un oggetto
 
         // Aggiungi il nemico alla lista
         enemies.add(enemy);
@@ -447,10 +448,10 @@ class Level {
   // metodo per il rilevamento delle collisioni 
   // da sistemare
   boolean playerCollide(Player aPlayer) { 
-    if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) > (rooms.get(endRoomIndex).position.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
-        (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) < rooms.get(endRoomIndex).position.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
-        aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) > (rooms.get(endRoomIndex).position.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
-        (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) < rooms.get(endRoomIndex).position.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
+    if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).position.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
+        (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= rooms.get(endRoomIndex).position.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
+        aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (rooms.get(endRoomIndex).position.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
+        (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= rooms.get(endRoomIndex).position.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
           return true;
     }
     

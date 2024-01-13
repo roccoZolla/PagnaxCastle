@@ -4,12 +4,15 @@ import java.util.Iterator;
 Player p1;
 PImage spriteRight;
 PImage spriteLeft;
+Weapon little_sword;
 Weapon sword;
 Item silver_key;
 Item golden_key;
+// Item torch;
+// Item dungeon_map;
 Healer redPotion;
 Healer greenPotion;
-Healer heart;
+
 Chest selectedChest;
 
 //
@@ -29,21 +32,31 @@ PImage letter_j;
 PImage letter_k;
 PImage letter_l;
 
-PImage coins;
+PImage coin_sprite;
 PImage torch_sprite;
 PImage dungeon_map_sprite;
+PImage chest_close_sprite;
 PImage chest_open_sprite;
+PImage special_chest_close_sprite;
 PImage special_chest_open_sprite;
+PImage rat_enemy_sprite;
+
+PImage heart_sprite;
+PImage half_heart_sprite;
+PImage empty_heart_sprite;
 
 // sound effect
+// float volumeMenuLevel;
 float volumeMusicLevel;
 float volumeEffectsLevel;    // oscilla tra 0.0 e 1.0
 
+SoundFile click;
 SoundFile pickupCoin;
 SoundFile normalChestOpen;
 SoundFile specialChestOpen;
 SoundFile drinkPotion;
-SoundFile attackHit;
+SoundFile swordAttack;
+SoundFile playerHurt;
 
 SoundFile soundtrack;
 boolean isSoundtrackPlaying;
@@ -103,6 +116,9 @@ void setup() {
   tutorial = new Tutorial();
   ui = new UI();
   game = new Game();
+  
+  // setup items (PROVVISORIO)
+  setupItems();
 
   // setup image
   setupImages();
@@ -110,10 +126,19 @@ void setup() {
   // setup sound
   setupSounds();
 
-  // setup items (PROVVISORIO)
-  setupItems();
-
   selectedChest = null;
+}
+
+void setupItems() {
+  golden_key = new Item(2, "golden_key");
+  silver_key = new Item(4, "silver_key");
+  
+  // oggetti per il giocatore
+  little_sword = new Weapon("little_sword", 10);
+  sword = new Weapon("sword", 20);
+  
+  redPotion = new Healer("red_potion", 20);
+  greenPotion = new Healer("green_potion", 100);
 }
 
 void setupImages() {
@@ -136,54 +161,60 @@ void setupImages() {
   // utilizza oggetti
   letter_l = loadImage("data/letter_l.png");
   
-  coins = loadImage("data/coin.png");
+  coin_sprite = loadImage("data/coin.png");
   
+  chest_close_sprite = loadImage("data/object/chest_close.png");
   chest_open_sprite = loadImage("data/object/chest_open.png");
+  special_chest_close_sprite = loadImage("data/object/special_chest_close.png");
   special_chest_open_sprite = loadImage("data/object/special_chest_open.png");
+  
+  rat_enemy_sprite = loadImage("data/npc/rat_enemy.png");
+  
+  golden_key.sprite = loadImage("data/golden_key.png");
+  silver_key.sprite = loadImage("data/silver_key.png");
+  
+  little_sword.sprite = loadImage("data/little_sword.png");
+  sword.sprite = loadImage("data/sword.png");
+  
+  // healers
+  redPotion.sprite = loadImage("data/object/red_potion.png");
+  greenPotion.sprite = loadImage("data/object/green_potion.png");
+  
+  heart_sprite = loadImage("data/heartFull.png");
+  half_heart_sprite = loadImage("data/halfHeart.png");
+  empty_heart_sprite = loadImage("data/emptyHeart.png");
+  
+  torch_sprite = loadImage("data/torch.png");
+  // dungeon_map_sprite = loadImage("data/dungeon_map_sprite.png");
 }
 
 void setupSounds() {
+  // volumeMenuLevel = 0.5;
   volumeMusicLevel = 0.0;
   volumeEffectsLevel = 0.0;
-
+  
+  // click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
   specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
   drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
-  // attackHit = new SoundFile(this, "data/sound/sword_hit.wav");
+  
+  swordAttack = new SoundFile(this, "data/sound/swordAttack.wav");
+  playerHurt = new SoundFile(this, "data/sound/player_hurt.wav");
 
-  soundtrack = new SoundFile(this, "data/sound/dungeon_soundtrack.wav");
+  soundtrack = new SoundFile(this, "data/sound/background/dungeon_soundtrack.wav");
   isSoundtrackPlaying = false;
-
+  
+  // click.amp(volumeMenuLevel);
+  
   pickupCoin.amp(volumeEffectsLevel);
   normalChestOpen.amp(volumeEffectsLevel);
   specialChestOpen.amp(volumeEffectsLevel);
   drinkPotion.amp(volumeEffectsLevel);
-  // attackHit.amp(volumeEffectsLevel);
+  swordAttack.amp(volumeEffectsLevel);
+  playerHurt.amp(volumeEffectsLevel);
 
   soundtrack.amp(volumeMusicLevel);
-}
-
-void setupItems() {
-  golden_key = new Item(2, "golden_key");
-  silver_key = new Item(4, "silver_key");
-  
-  // oggetiti per il giocatore
-  sword = new Weapon("sword", 10);
-  redPotion = new Healer("red_potion", 20);
-  greenPotion = new Healer("green_potion", 100);
-  
-  // drop items
-  heart = new Healer("heart", 10);
-
-  golden_key.sprite = loadImage("data/golden_key.png");
-  silver_key.sprite = loadImage("data/silver_key.png");
-  sword.sprite = loadImage("data/little_sword.png");
-  redPotion.sprite = loadImage("data/object/red_potion.png");
-  greenPotion.sprite = loadImage("data/object/green_potion.png");
-  heart.sprite = loadImage("data/heartFull.png");
-  torch_sprite = loadImage("data/torch.png");
-  // dungeon_map_sprite = loadImage("data/dungeon_map_sprite.png");
 }
 
 void draw() {

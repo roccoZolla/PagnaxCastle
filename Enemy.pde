@@ -3,12 +3,11 @@ public class Enemy {
   float spriteSpeed = 0.1;
   PImage sprite;
   
-  private static final long ATTACK_COOLDOWN = 3500; // Tempo di cooldown in millisecondi (3 secondi)
+  private static final long ATTACK_COOLDOWN = 3000; // Tempo di cooldown in millisecondi (3 secondi)
   private long lastAttackTime = 0;
   
   int enemyHP;
   int damage;
-  Item dropItem;    // oggetto droppato dal nemico che puo essere un cuore, meta cuore o altro
   String name;
   int scoreValue;
 
@@ -133,7 +132,10 @@ public class Enemy {
         p1.playerHP -= damage;
         
         // fare in modo che rimanga un po piu di tempo a schermo
-        drawDamage(p1.spritePosition, damage);
+        TextDisplay damageHitText = new TextDisplay(spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
+        damageHitText.display();
+        
+        // playerHurt.play();
 
         if(p1.playerHP < 0) {
           p1.playerHP = 0;

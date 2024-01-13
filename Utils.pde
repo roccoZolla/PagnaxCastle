@@ -108,20 +108,3 @@ boolean isDamageTile(int x, int y) {
   
   return false; 
 }
-
-// si occupa di stampare la scritta relativa alle chiavi
-void noMoreKeys() {
-  spritesLayer.textFont(myFont);
-  spritesLayer.fill(255);
-  spritesLayer.textSize(15);
-  spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
-}
-
-// disegna il danno subito 
-// metodo che si occupa di disegnare il danno subito dal giocatore
-void drawDamage(PVector spritePosition, int damage) {
-  spritesLayer.textFont(myFont);
-  spritesLayer.fill(255, 0, 0);
-  spritesLayer.textSize(15);
-  spritesLayer.text(damage, (spritePosition.x * currentLevel.tileSize), (spritePosition.y * currentLevel.tileSize) - 10);
-}

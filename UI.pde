@@ -113,7 +113,7 @@ class UI {
     uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(18);
     uiLayer.text(p1.coins, 50, 140);
-    uiLayer.image(coins, 20, 140, 20, 20);
+    uiLayer.image(coin_sprite, 20, 140, 20, 20);
 
     // ------ POZIONE GIOCATORE ------
     uiLayer.fill(255);
@@ -130,7 +130,7 @@ class UI {
     uiLayer.image(greenPotion.sprite, 70, 110, 20, 20);
 
     // ------- MINIMAPPA ------
-    // displayMinimap();
+    displayMinimap();
 
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento
@@ -140,7 +140,6 @@ class UI {
     float scaleFactor = 3.0;
 
     if (p1.weapon.sprite != null) {
-
       float imgWidth = p1.weapon.sprite.width * scaleFactor;
       float imgHeight = p1.weapon.sprite.height * scaleFactor;
 
