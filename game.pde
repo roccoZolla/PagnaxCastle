@@ -1,4 +1,6 @@
 class Game {
+  float holeRadius; // raggio della maschera
+  
   void init() {
     // create world
     castle = new World();
@@ -9,7 +11,7 @@ class Game {
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
-    p1 = new Player(50, 100, 10, 5, 5);
+    p1 = new Player(50, 100, 10, 15, 5);
     p1.spritePosition = currentLevel.getStartPosition();
     p1.sprite = spriteRight;
     p1.redPotion = redPotion;
@@ -23,6 +25,8 @@ class Game {
     p1.silver_keys = silver_key;
 
     camera = new Camera();
+    
+    holeRadius = 100;
   }
 
   void display() {   
@@ -97,9 +101,7 @@ class Game {
     float centerY = p1.spritePosition.y * currentLevel.tileSize + currentLevel.tileSize/ 2;
     
     maskLayer.fill(255, 0);
-    
     maskLayer.ellipseMode(RADIUS);
-    float holeRadius = 100; // dimensione raggio, sostituire con costante
     maskLayer.ellipse(centerX, centerY, holeRadius, holeRadius);
     
     maskLayer.endDraw();
@@ -121,34 +123,46 @@ class Game {
   
   // gestisce il movimento del player
   void handlePlayerMovement() {
-    p1.display(spritesLayer);
+    p1.display();
     p1.move();
   }
   
   // gestisce l'attacco del giocatore
   void handlePlayerAttack() {
-    if (p1.moveATCK && (!p1.moveUSE && !p1.moveINTR) && !isAttacking) {
-      p1.drawPlayerWeapon();
-      isAttacking = true;
+    if (p1.moveATCK && !p1.moveUSE && !p1.moveINTR) {
+      if (!isAttacking && !attackExecuted) {
+        p1.drawPlayerWeapon();
+        isAttacking = true;
+      }
+    } else {
+      // Resetta la variabile di stato se il tasto relativo all'attacco viene rilasciato
+      isAttacking = false;
+      attackExecuted = false;
     }
   }
-  
+
   
   // gestisce l'uso delle pozioni 
   void handlePotionUse() {
-    if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR) && p1.numberOfPotion > 0 && !isUsingPotion) {
-      isUsingPotion = true;
-      if (p1.playerHP < p1.playerMaxHP) {
-        drinkPotion.play();
-        p1.playerHP += p1.redPotion.getBonusHp();
-
-        if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
-
-        p1.numberOfPotion -= 1;
-      } else {
-        TextDisplay healthFull = new TextDisplay(p1.spritePosition, "Salute al massimo", color(255), 1000);
-        healthFull.display();
+    if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR) && p1.numberOfPotion > 0) {
+      if(!isUsingPotion) {
+        isUsingPotion = true;
+        
+        if (p1.playerHP < p1.playerMaxHP) {
+          drinkPotion.play();
+          p1.playerHP += p1.redPotion.getBonusHp();
+  
+          if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
+  
+          p1.numberOfPotion -= 1;
+        } else {
+          TextDisplay healthFull = new TextDisplay(p1.spritePosition, "Salute al massimo", color(255), 1000);
+          healthFull.display();
+        }
       }
+    } else {
+      // resetta la variabile di stato
+      isUsingPotion = false;
     }
   }
   
@@ -161,10 +175,10 @@ class Game {
   
       if (isInVisibleArea(enemy.spritePosition)) {
         if (enemy.enemyHP > 0) {
-          enemy.display(spritesLayer);
+          enemy.display();
         }
   
-        if (isAttacking) {
+        if (isAttacking && !attackExecuted) {
           // da sistemare
           // swordAttack.play();
           if (p1.collidesWith(enemy)) {
@@ -173,6 +187,9 @@ class Game {
             
             // vita meno danno dell'arma
             enemy.enemyHP -= p1.weapon.getDamage();
+            
+            // l'attacco è stato eseguito non continuare ad attaccare
+            attackExecuted = true;
             
             // testo danno subito dal nemico
             TextDisplay damageHitText = new TextDisplay(enemy.spritePosition,  Integer.toString(p1.weapon.getDamage()), color(255, 0, 0), 1000);
@@ -243,14 +260,11 @@ class Game {
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.spritePosition)) {
         // mostra le chest nell'area visibile
-        chest.display(spritesLayer);
+        chest.display();
         
         if(chest.playerCollide(p1) && !chest.isOpen()) {
           println("collsione cassa giocatore");
-          spritesLayer.noFill(); // Nessun riempimento
-          spritesLayer.stroke(255); // Colore del bordo bianco
-          spritesLayer.rectMode(CENTER);
-          spritesLayer.rect(chest.spritePosition.x * currentLevel.tileSize + (chest.sprite.width/2), chest.spritePosition.y * currentLevel.tileSize + (chest.sprite.height / 2), chest.sprite.width, chest.sprite.height);
+          chest.displayHitbox();
           
           float letterImageX = (chest.spritePosition.x * currentLevel.tileSize + (chest.sprite.width / 2));
           float letterImageY = (chest.spritePosition.y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
@@ -277,32 +291,12 @@ class Game {
                   println("random value:" + randomValue);
                   
                   // probabilità che la cassa speciale droppi qualcosa
-                  double dropTorchProbability = 0.15;
-                  double dropMapProbability = 0.15;
-                  double dropSuperSwordProbability = 0.30;
-                  double dropPotionProbability = 0.40;
+                  double dropTorchProbability = 1.0;    // 15 % 
+                  double dropMapProbability = 0.0;     // 15 %
+                  double dropSuperSwordProbability = 0.0; // 30 %
+                  double dropPotionProbability = 0.0;      // 40 %
                   
-                  PVector dropPosition = chest.spritePosition.copy();
-                  
-                  // Definisci un raggio intorno alla cassa entro cui gli oggetti possono essere droppati
-                  float dropRadius = 2;
-                  
-                  for (int i = 0; i < 10; i++) { // Prova fino a 10 volte per evitare un loop infinito
-                      // Calcola un offset casuale all'interno del raggio
-                      float xOffset = random(-dropRadius, dropRadius);
-                      float yOffset = random(-dropRadius, dropRadius);
-                  
-                      // Aggiorna la posizione di drop in base all'offset casuale
-                      dropPosition.add(xOffset, yOffset);
-                  
-                      // Verifica se la nuova posizione è valida (non è all'interno di un muro)
-                      if (!isCollisionTile((int) dropPosition.x, (int) dropPosition.y)) {
-                          break; // Esci dal ciclo se la posizione è valida
-                      } else {
-                          // Ripristina la posizione originale prima di riprovare
-                          dropPosition = chest.spritePosition.copy();
-                      }
-                  }
+                  PVector dropPosition = chest.calculateDropPosition();
                   
                   if (randomValue <= dropTorchProbability) {
                       println("torcia droppata");
@@ -366,27 +360,7 @@ class Game {
                   double dropSwordProbability = 0.4;
                   double dropGoldenKeyProbability = 0.2;
                   
-                  PVector dropPosition = chest.spritePosition.copy();
-                  
-                  // Definisci un raggio intorno alla cassa entro cui gli oggetti possono essere droppati
-                  float dropRadius = 2;
-                  
-                  for (int i = 0; i < 10; i++) { // Prova fino a 10 volte per evitare un loop infinito
-                      // Calcola un offset casuale all'interno del raggio
-                      float xOffset = random(-dropRadius, dropRadius);
-                      float yOffset = random(-dropRadius, dropRadius);
-                  
-                      // Aggiorna la posizione di drop in base all'offset casuale
-                      dropPosition.add(xOffset, yOffset);
-                  
-                      // Verifica se la nuova posizione è valida (non è all'interno di un muro)
-                      if (!isCollisionTile((int) dropPosition.x, (int) dropPosition.y)) {
-                          break; // Esci dal ciclo se la posizione è valida
-                      } else {
-                          // Ripristina la posizione originale prima di riprovare
-                          dropPosition = chest.spritePosition.copy();
-                      }
-                  }
+                  PVector dropPosition = chest.calculateDropPosition();
                   
                   if (randomValue <= dropHeartProbability) {
                       println("cuore droppato");
@@ -422,6 +396,26 @@ class Game {
       }
     }
   }
+  
+  PVector calculateDropPosition(Chest chest) {
+    float dropRadius = 2;
+    PVector dropPosition = chest.spritePosition.copy();
+  
+    for (int i = 0; i < 10; i++) {
+      float xOffset = random(-dropRadius, dropRadius);
+      float yOffset = random(-dropRadius, dropRadius);
+  
+      dropPosition.add(xOffset, yOffset);
+  
+      if (!isCollisionTile((int) dropPosition.x, (int) dropPosition.y)) {
+        break;
+      } else {
+        dropPosition = chest.spritePosition.copy();
+      }
+    }
+  
+    return dropPosition;
+  }
 
   // gestisce le monete
   void handleCoin() {
@@ -430,7 +424,7 @@ class Game {
       if (isInVisibleArea(coin.spritePosition)) {   
         // mostra le monete nell'area visibile
         if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
-          coin.display(spritesLayer);
+          coin.display();
           
           if(coin.playerCollide(p1)) {
             println("collsione moneta giocatore");
@@ -454,13 +448,10 @@ class Game {
       
       // controlla che gli elementi droppati siano visibili 
       if(isInVisibleArea(item.spritePosition)) {
-        item.display(spritesLayer);
+        item.display();
         
         if(item.playerCollide(p1)) {
-          spritesLayer.noFill(); // Nessun riempimento
-          spritesLayer.stroke(255); // Colore del bordo bianco
-          spritesLayer.rectMode(CENTER);
-          spritesLayer.rect(item.spritePosition.x * currentLevel.tileSize + (item.sprite.width/2), item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2), item.sprite.width, item.sprite.height);
+          item.displayHitbox();
           
           float letterImageX = (item.spritePosition.x * currentLevel.tileSize + (item.sprite.width / 2));
           float letterImageY = (item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
@@ -500,7 +491,8 @@ class Game {
               
               iterator.remove();
             } else if (item.isCollectible && item.name.equals("dropTorch")) {
-              // fai in modo di togliere la maschera
+              // aumenta il raggio della maschera
+              holeRadius += 50;
               iterator.remove();
             }
           }

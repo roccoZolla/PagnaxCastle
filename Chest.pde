@@ -47,4 +47,25 @@ class Chest extends Item {
   // il metodo display lo eredita da item
   
   // metodo per collisioni ereditato da item
+  
+  // metodo per calcolare la posizione dei drop 
+  PVector calculateDropPosition() {
+    float dropRadius = 2;
+    PVector dropPosition = spritePosition.copy();
+  
+    for (int i = 0; i < 10; i++) {
+      float xOffset = random(-dropRadius, dropRadius);
+      float yOffset = random(-dropRadius, dropRadius);
+  
+      dropPosition.add(xOffset, yOffset);
+  
+      if (!isCollisionTile((int) dropPosition.x, (int) dropPosition.y)) {
+        break;
+      } else {
+        dropPosition = spritePosition.copy();
+      }
+    }
+  
+    return dropPosition;
+  }
 }

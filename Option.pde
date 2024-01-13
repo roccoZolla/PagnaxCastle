@@ -2,6 +2,9 @@
 class Option {
   ArrayList<Button> buttons;
   PGraphics optionLayer;
+  
+  int effectsVolume;
+  int musicVolume;
 
   Option() {
     optionLayer = createGraphics(width, height);
@@ -17,6 +20,9 @@ class Option {
     buttons.add(new Button(width - 250, 350, 50, 50, "languageLeft", "<", ""));
     buttons.add(new Button(100, 420, 200, 80, "commands", "Comandi", ""));
     buttons.add(new Button(width - 250, height - 150, 200, 80, "back", "Back", ""));
+    
+    effectsVolume = 0;
+    musicVolume = 0;
   }
 
   void display() {
@@ -50,7 +56,8 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text(volumeEffectsLevel, width - 200, 175);
+    effectsVolume = (int) (volumeEffectsLevel * 10);
+    optionLayer.text(effectsVolume, width - 160, 175);
 
     // ----- MUSICA -----
     optionLayer.fill(255);
@@ -61,7 +68,8 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text(volumeMusicLevel, width - 200, 235);
+    int musicVolume = (int) (volumeMusicLevel * 10);
+    optionLayer.text(musicVolume, width - 160, 235);
 
     // scritta difficolta
     optionLayer.fill(255);

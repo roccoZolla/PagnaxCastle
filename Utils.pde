@@ -4,6 +4,7 @@ int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 
 boolean isUsingPotion = false;
 boolean isAttacking = false;
+boolean attackExecuted = false;
 
 // gestione comandi
 void keyPressed() {
@@ -62,12 +63,10 @@ void keyReleased() {
     p1.moveRIGHT = false;
   } else if (key == 'j' || key == 'J') {
     p1.moveATCK = false;
-    isAttacking = false;
   } else if (key == 'k' || key == 'K') {
     p1.moveINTR = false;
   } else if (key == 'l' || key == 'L') {
     p1.moveUSE = false;
-    isUsingPotion = false;
   }
 }
 

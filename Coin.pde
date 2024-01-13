@@ -28,10 +28,10 @@ class Coin {
     return collected;
   }
   
-  void display(PGraphics layer) {
+  void display() {
     // hitbox moneta
-    layer.noFill(); // Nessun riempimento
-    layer.stroke(23, 255, 23);
+    spritesLayer.noFill(); // Nessun riempimento
+    spritesLayer.stroke(23, 255, 23);
     
     float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
     float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
@@ -43,8 +43,8 @@ class Coin {
     //layer.stroke(60);
     //layer.point(centerX, centerY);
     
-    layer.imageMode(CENTER); // Imposta l'imageMode a center
-    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+    spritesLayer.imageMode(CENTER); // Imposta l'imageMode a center
+    spritesLayer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
   
   // verifica collsione

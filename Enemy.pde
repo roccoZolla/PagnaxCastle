@@ -132,7 +132,7 @@ public class Enemy {
         p1.playerHP -= damage;
         
         // fare in modo che rimanga un po piu di tempo a schermo
-        TextDisplay damageHitText = new TextDisplay(spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
+        TextDisplay damageHitText = new TextDisplay(p1.spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
         damageHitText.display();
         
         // playerHurt.play();
@@ -146,10 +146,10 @@ public class Enemy {
     }
   }
   
-  void display(PGraphics layer) {
+  void display() {
     // hitbox giocatore
-    layer.noFill(); // Nessun riempimento
-    layer.stroke(255, 23, 23);
+    spritesLayer.noFill(); // Nessun riempimento
+    spritesLayer.stroke(255, 23, 23);
     
     float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
     float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
@@ -161,8 +161,8 @@ public class Enemy {
     //layer.stroke(60);
     //layer.point(centerX, centerY);
     
-    layer.imageMode(CENTER); // Imposta l'imageMode a center
-    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+    spritesLayer.imageMode(CENTER); // Imposta l'imageMode a center
+    spritesLayer.image(sprite, centerX, centerY, sprite.width, sprite.height);
     
     // layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
   }

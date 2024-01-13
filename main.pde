@@ -13,7 +13,7 @@ Item golden_key;
 Healer redPotion;
 Healer greenPotion;
 
-Chest selectedChest;
+// Chest selectedChest;
 
 //
 Menu menu;
@@ -126,7 +126,7 @@ void setup() {
   // setup sound
   setupSounds();
 
-  selectedChest = null;
+  // selectedChest = null;
 }
 
 void setupItems() {
