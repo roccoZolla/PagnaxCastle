@@ -9,7 +9,7 @@ class Game {
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
-    p1 = new Player(50, 100, 0, 5, 5);
+    p1 = new Player(50, 100, 10, 5, 5);
     p1.spritePosition = currentLevel.getStartPosition();
     p1.sprite = spriteRight;
     p1.redPotion = redPotion;
@@ -96,13 +96,10 @@ class Game {
     float centerX = p1.spritePosition.x * currentLevel.tileSize + currentLevel.tileSize/ 2;
     float centerY = p1.spritePosition.y * currentLevel.tileSize + currentLevel.tileSize/ 2;
     
-    println("posizione camera: " + camera.x + " - " + camera.y);
-    println("centro maschera: " + centerX + " - " + centerY);
-    
     maskLayer.fill(255, 0);
     
     maskLayer.ellipseMode(RADIUS);
-    float holeRadius = 100; // dimensione raggio
+    float holeRadius = 100; // dimensione raggio, sostituire con costante
     maskLayer.ellipse(centerX, centerY, holeRadius, holeRadius);
     
     maskLayer.endDraw();
@@ -178,7 +175,7 @@ class Game {
             enemy.enemyHP -= p1.weapon.getDamage();
             
             // testo danno subito dal nemico
-            TextDisplay damageHitText = new TextDisplay(enemy.spritePosition,  Integer.toString(p1.weapon.getDamage()), color(255), 1000);
+            TextDisplay damageHitText = new TextDisplay(enemy.spritePosition,  Integer.toString(p1.weapon.getDamage()), color(255, 0, 0), 1000);
             damageHitText.display();
   
             // il nemico muore, rimuovilo dalla lista dei nemici del livello
@@ -196,6 +193,8 @@ class Game {
                 double dropSilverKeyProbability = 0.2;
                 double dropHeartProbability = 0.3;
                 double dropHalfHeartProbability = 0.4;
+                
+                PVector dropPosition = enemy.spritePosition.copy();
             
                 if (randomValue <= dropNothingProbability) {
                     // Nessun drop
@@ -203,20 +202,20 @@ class Game {
                     // drop della chiave d'argento
                     Item dropSilverKey = new Item("dropSilverKey");
                     dropSilverKey.sprite = silver_key.sprite;
-                    dropSilverKey.spritePosition = enemy.spritePosition;
+                    dropSilverKey.spritePosition = dropPosition;
                     dropSilverKey.isCollectible = true;
                     currentLevel.dropItems.add(dropSilverKey);
                 } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability) {
                     // drop del cuore intero
                     Healer dropHeart = new Healer("dropHeart", 10); 
                     dropHeart.sprite = heart_sprite;
-                    dropHeart.spritePosition = enemy.spritePosition;
+                    dropHeart.spritePosition =dropPosition;
                     currentLevel.dropItems.add(dropHeart);
                 } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability + dropHalfHeartProbability) {
                     // drop del mezzocuore
                     Healer dropHalfHeart = new Healer("dropHalfHeart", 5); 
                     dropHalfHeart.sprite = half_heart_sprite;
-                    dropHalfHeart.spritePosition = enemy.spritePosition;
+                    dropHalfHeart.spritePosition = dropPosition;
                     currentLevel.dropItems.add(dropHalfHeart);
                 }
             
@@ -250,10 +249,12 @@ class Game {
           println("collsione cassa giocatore");
           spritesLayer.noFill(); // Nessun riempimento
           spritesLayer.stroke(255); // Colore del bordo bianco
+          spritesLayer.rectMode(CENTER);
           spritesLayer.rect(chest.spritePosition.x * currentLevel.tileSize + (chest.sprite.width/2), chest.spritePosition.y * currentLevel.tileSize + (chest.sprite.height / 2), chest.sprite.width, chest.sprite.height);
           
           float letterImageX = (chest.spritePosition.x * currentLevel.tileSize + (chest.sprite.width / 2));
           float letterImageY = (chest.spritePosition.y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          spritesLayer.imageMode(CENTER);
           spritesLayer.image(letter_k, letterImageX, letterImageY);
           
           // se il giocatore preme il tasto interazione e la cassa non è stata aperta
@@ -281,30 +282,52 @@ class Game {
                   double dropSuperSwordProbability = 0.30;
                   double dropPotionProbability = 0.40;
                   
+                  PVector dropPosition = chest.spritePosition.copy();
+                  
+                  // Definisci un raggio intorno alla cassa entro cui gli oggetti possono essere droppati
+                  float dropRadius = 2;
+                  
+                  for (int i = 0; i < 10; i++) { // Prova fino a 10 volte per evitare un loop infinito
+                      // Calcola un offset casuale all'interno del raggio
+                      float xOffset = random(-dropRadius, dropRadius);
+                      float yOffset = random(-dropRadius, dropRadius);
+                  
+                      // Aggiorna la posizione di drop in base all'offset casuale
+                      dropPosition.add(xOffset, yOffset);
+                  
+                      // Verifica se la nuova posizione è valida (non è all'interno di un muro)
+                      if (!isCollisionTile((int) dropPosition.x, (int) dropPosition.y)) {
+                          break; // Esci dal ciclo se la posizione è valida
+                      } else {
+                          // Ripristina la posizione originale prima di riprovare
+                          dropPosition = chest.spritePosition.copy();
+                      }
+                  }
+                  
                   if (randomValue <= dropTorchProbability) {
                       println("torcia droppata");
                       // drop della torcia
                       Item dropTorch = new Item("dropTorch");
                       dropTorch.sprite = torch_sprite;
                       // da sistemare posizione
-                      dropTorch.spritePosition = chest.spritePosition;                    
+                      dropTorch.spritePosition = dropPosition;                    
                       dropTorch.isCollectible = true;
                       currentLevel.dropItems.add(dropTorch);
                   } else if (randomValue > dropTorchProbability && randomValue <= dropTorchProbability + dropMapProbability) {
                       println("mappa droppata");
                       // drop della mappa
-                      Item dropMap = new Item("dropMap");
-                      dropMap.sprite = dungeon_map_sprite;
-                      // da sistemare posizione
-                      dropMap.spritePosition = chest.spritePosition;                    
-                      dropMap.isCollectible = true;
-                      currentLevel.dropItems.add(dropMap);
+                      //Item dropMap = new Item("dropMap");
+                      //dropMap.sprite = dungeon_map_sprite;
+                      //// da sistemare posizione
+                      //dropMap.spritePosition = dropPosition;                    
+                      //dropMap.isCollectible = true;
+                      //currentLevel.dropItems.add(dropMap);
                   } else if (randomValue > dropTorchProbability + dropMapProbability && randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability) {
                       println("super spada droppata");
                       // drop della super spada
                       //Weapon dropSuperSword = new Weapon("dropSuperSword", 50); // Assumendo che una super spada valga 50 danni
                       //// dropSuperSword.sprite = super_sword.sprite;
-                      //dropSuperSword.spritePosition = chest.spritePosition;
+                      //dropSuperSword.spritePosition = dropPosition;
                       //currentLevel.dropItems.add(dropSuperSword);
                   } else if (randomValue > dropTorchProbability + dropMapProbability + dropSuperSwordProbability &&
                              randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability + dropPotionProbability) {
@@ -312,7 +335,7 @@ class Game {
                       // drop della pozione
                       //Potion dropPotion = new Potion("dropPotion", 30); // Assumendo che una pozione aggiunga 30 punti vita
                       //dropPotion.sprite = potion.sprite;
-                      //dropPotion.spritePosition = chest.spritePosition;
+                      //dropPotion.spritePosition = dropPosition;
                       //currentLevel.dropItems.add(dropPotion);
                   }
                 }
@@ -343,26 +366,48 @@ class Game {
                   double dropSwordProbability = 0.4;
                   double dropGoldenKeyProbability = 0.2;
                   
+                  PVector dropPosition = chest.spritePosition.copy();
+                  
+                  // Definisci un raggio intorno alla cassa entro cui gli oggetti possono essere droppati
+                  float dropRadius = 2;
+                  
+                  for (int i = 0; i < 10; i++) { // Prova fino a 10 volte per evitare un loop infinito
+                      // Calcola un offset casuale all'interno del raggio
+                      float xOffset = random(-dropRadius, dropRadius);
+                      float yOffset = random(-dropRadius, dropRadius);
+                  
+                      // Aggiorna la posizione di drop in base all'offset casuale
+                      dropPosition.add(xOffset, yOffset);
+                  
+                      // Verifica se la nuova posizione è valida (non è all'interno di un muro)
+                      if (!isCollisionTile((int) dropPosition.x, (int) dropPosition.y)) {
+                          break; // Esci dal ciclo se la posizione è valida
+                      } else {
+                          // Ripristina la posizione originale prima di riprovare
+                          dropPosition = chest.spritePosition.copy();
+                      }
+                  }
+                  
                   if (randomValue <= dropHeartProbability) {
                       println("cuore droppato");
                       // drop del cuore 
                       Healer dropHeart = new Healer("dropHeart", 10);
                       dropHeart.sprite = heart_sprite;
-                      dropHeart.spritePosition = chest.spritePosition;
+                      dropHeart.spritePosition = dropPosition;
                       currentLevel.dropItems.add(dropHeart);
                   } else if (randomValue > dropHeartProbability && randomValue <= dropHeartProbability + dropSwordProbability) {
                       println("spada droppata");
                       // drop della spada
                       Weapon dropSword = new Weapon("dropSword", 20); // Assumendo che una spada valga 20 danni
                       dropSword.sprite = sword.sprite;
-                      dropSword.spritePosition = chest.spritePosition;
+                      dropSword.spritePosition = dropPosition;
                       currentLevel.dropItems.add(dropSword);
                   } else if (randomValue > dropHeartProbability + dropSwordProbability && randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability) {
                       println("chiave oro droppata");
                       // drop della chiave d'oro
                       Item dropGoldenKey = new Item("dropGoldenKey");
                       dropGoldenKey.sprite = golden_key.sprite;
-                      dropGoldenKey.spritePosition = chest.spritePosition;
+                      dropGoldenKey.spritePosition = dropPosition;
                       dropGoldenKey.isCollectible = true;
                       currentLevel.dropItems.add(dropGoldenKey);
                   } //<>//
@@ -414,10 +459,12 @@ class Game {
         if(item.playerCollide(p1)) {
           spritesLayer.noFill(); // Nessun riempimento
           spritesLayer.stroke(255); // Colore del bordo bianco
+          spritesLayer.rectMode(CENTER);
           spritesLayer.rect(item.spritePosition.x * currentLevel.tileSize + (item.sprite.width/2), item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2), item.sprite.width, item.sprite.height);
           
           float letterImageX = (item.spritePosition.x * currentLevel.tileSize + (item.sprite.width / 2));
           float letterImageY = (item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          spritesLayer.imageMode(CENTER);
           spritesLayer.image(letter_k, letterImageX, letterImageY);
           
           if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
@@ -437,9 +484,11 @@ class Game {
             } else if(item instanceof Weapon) {
               // avviene lo scambio tra l'arma a terra e l'arma equippagiata
               // da sistemare
+              //PVector tempPosition = item.spritePosition;
               //Weapon temp = p1.weapon;
               //p1.weapon = (Weapon) item;
               //item = temp;
+              //item.spritePosition = tempPosition;
             } else if(item.isCollectible && item.name.equals("dropSilverKey")) {
               // aumenta il numero delle chiavi d'argento
               p1.numberOfSilverKeys++;

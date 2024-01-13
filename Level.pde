@@ -171,7 +171,7 @@ class Level {
           
           // spawn delle trappole all'interno delle stanze
           // da migliorare
-          double trapSpawnProbability = 0.02;
+          double trapSpawnProbability = 0.03;
           double randomValue = random(1);
   
           // Se il numero casuale è inferiore o uguale alla probabilità di spawn, aggiungi una trappola

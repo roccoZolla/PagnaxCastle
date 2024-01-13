@@ -130,7 +130,7 @@ class UI {
     uiLayer.image(greenPotion.sprite, 70, 110, 20, 20);
 
     // ------- MINIMAPPA ------
-    displayMinimap();
+    // displayMinimap();
 
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento
@@ -145,11 +145,16 @@ class UI {
 
       float imgX = (uiLayer.width - 70) + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
       float imgY = uiLayer.height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
-
+      
       uiLayer.image(p1.weapon.sprite, imgX, imgY, imgWidth, imgHeight);
     }
+    
+    uiLayer.fill(255);
+    uiLayer.textSize(18);
+    uiLayer.text(p1.weapon.name, width - 95, height - 40);
 
     uiLayer.endDraw();
+    
     image(uiLayer, 0, 0);
   }
 

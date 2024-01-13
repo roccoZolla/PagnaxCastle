@@ -152,30 +152,31 @@ class Player {
       }
       
       // verifica che sia un tile che reca danno 
-      if(isDamageTile(roundedX, roundedY)) {        
-        long currentTime = System.currentTimeMillis();
-
+      long currentTime = System.currentTimeMillis();
+      if (isDamageTile(roundedX, roundedY)) {        
           // Verifica se è passato abbastanza tempo dall'ultimo attacco
-        if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
-            // Esegui l'attacco
-            playerHP -= currentLevel.damagePeaks;
-            
-            // fare in modo che rimanga un po piu di tempo a schermo
-            TextDisplay damageHitText = new TextDisplay(spritePosition, Integer.toString(currentLevel.damagePeaks), color(255, 0, 0), 1000);
-            damageHitText.display();
-            
-            playerHurt.play();
-            
-            // drawDamage(spritePosition, currentLevel.damagePeaks);
-    
-            if(playerHP < 0) {
-              playerHP = 0;
-            }
-    
-            // Aggiorna il tempo dell'ultimo attacco
-            lastAttackTime = currentTime;
-        }
+          if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
+              // Esegui l'attacco periodico
+              playerHP -= currentLevel.damagePeaks;
+      
+              // fare in modo che rimanga un po' più di tempo a schermo
+              TextDisplay damageHitText = new TextDisplay(spritePosition, Integer.toString(currentLevel.damagePeaks), color(255, 0, 0), 1000);
+              damageHitText.display();
+      
+              playerHurt.play();
+      
+              if (playerHP < 0) {
+                  playerHP = 0;
+              }
+      
+              // Aggiorna il tempo dell'ultimo attacco
+              lastAttackTime = currentTime;
+          }
+      } else {
+          // Se il giocatore non si trova più su una casella di danno, reimposta il timer
+          lastAttackTime = currentTime;
       }
+
       
       // ritorna vero se il player si trova all'interno della mappa e non si sta scontrando con un tile di collisione
       return true;
