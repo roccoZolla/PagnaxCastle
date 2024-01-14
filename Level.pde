@@ -105,14 +105,14 @@ class Level {
     connectRooms();
 
     // da rimuovere
-    map[int(rooms.get(startRoomIndex).getPosition().x)][int(rooms.get(startRoomIndex).getPosition().y)] = 2; // Stanza iniziale
-    map[int(rooms.get(endRoomIndex).getPosition().x)][int(rooms.get(endRoomIndex).getPosition().y)] = 3; // Stanza finale
+    //map[int(rooms.get(startRoomIndex).getPosition().x)][int(rooms.get(startRoomIndex).getPosition().y)] = 2; // Stanza iniziale
+    map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = 3; // Stanza finale
 
     // inizializza l'array dei drop items 
     // inizialmente è vuoto
     dropItems = new ArrayList<>();
     
-    // genera i loot
+    // genera le chest 
     generateRandomChests();
     
     // aggiungi i nemici
@@ -124,12 +124,12 @@ class Level {
   }
 
   PVector getStartPosition() {
-    println("start position: " + rooms.get(startRoomIndex).position);
-    return rooms.get(startRoomIndex).position;
+    println("start position: " + rooms.get(startRoomIndex).roomPosition);
+    return rooms.get(startRoomIndex).roomPosition;
   }
 
   PVector getEndRoomPosition() {
-    return rooms.get(endRoomIndex).position;
+    return rooms.get(endRoomIndex).roomPosition;
   }
 
   // metodi per la generazione delle stanze
@@ -158,6 +158,14 @@ class Level {
       roomY = int(random(1, rows - roomHeight - 1));
       roomOverlap = checkRoomOverlap(roomX, roomY, roomWidth, roomHeight);
     } while (roomOverlap);
+    
+    // crea nuova stanza e aggiungila alla lista delle stanze
+    // mi salvo le coordinate del centro della stanza 
+    PVector roomPosition = new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2);
+    Room room = new Room(roomWidth, roomHeight, roomPosition);
+    rooms.add(room);
+    
+    // rooms.add(new Room(roomWidth, roomHeight, new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2)));
 
     // Estrai i muri dell'immagine dei muri delle stanze
     for (int x = roomX; x < roomX + roomWidth; x++) {
@@ -181,9 +189,6 @@ class Level {
         }
       }
     }
-
-    // Memorizza la posizione della stanza
-    rooms.add(new Room(roomWidth, roomHeight, new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2)));
   }
 
   private boolean checkRoomOverlap(int x, int y, int width, int height) {
@@ -200,8 +205,8 @@ class Level {
 
   private void connectRooms() {
     for (int i = 0; i < rooms.size() - 1; i++) {
-      PVector room1 = rooms.get(i).getPosition();
-      PVector room2 = rooms.get(i + 1).getPosition();
+      PVector room1 = rooms.get(i).roomPosition.copy();
+      PVector room2 = rooms.get(i + 1).roomPosition.copy();
 
       int x1 = int(room1.x);
       int y1 = int(room1.y);
@@ -256,11 +261,17 @@ class Level {
     treasures = new ArrayList<Chest>();
     boolean positionOccupied;
     Chest chest;
+    Room room;  // stanza selezionata casualmente
     float commonChestSpawnRate = 0.90; // Tasso di spawn per le casse comuni (90%)
-    // float rareChestSpawnRate = 0.10;   // Tasso di spawn per le casse rare (10%)
-
+    float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza 
 
     for (int i = 0; i < spawnLevel; i++) {
+      room = rooms.get((int) random(rooms.size()));
+      
+      // offset rispetto al centro della stanza
+      float offsetX = random(-spawnRadius, spawnRadius);
+      float offsetY = random(-spawnRadius, spawnRadius);
+    
       int x, y;
 
       // Genera un numero casuale tra 0 e 1 per determinare il tipo di cassa
@@ -286,9 +297,9 @@ class Level {
       }
 
       do {
-        // Scegli una posizione casuale sulla mappa
-        x = (int) random(cols);
-        y = (int) random(rows);
+        // posizione casuale intorno al centro della stanza selezionata casualmente
+        x = (int) (room.roomPosition.x + offsetX);
+        y = (int) (room.roomPosition.y + offsetY);
 
         // Verifica se la posizione è già occupata da un muro, una parete o un'altra cassa
         positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6);
@@ -309,7 +320,7 @@ class Level {
     boolean positionOccupied;
 
     for (Room room : rooms) {
-      PVector roomPosition = room.position;
+      PVector roomPosition = room.roomPosition.copy();
       int roomWidth = room.roomWidth;
       int roomHeight = room.roomHeight;
 
@@ -441,16 +452,30 @@ class Level {
     }
   }
   
+  void displayRooms() {
+    for(int i = 0; i < rooms.size(); i++) {
+      gameScene.rectMode(CENTER);
+      gameScene.fill(0); // nero
+      gameScene.stroke(255, 0, 0);
+      gameScene.rect(rooms.get(i).roomPosition.x, rooms.get(i).roomPosition.y, rooms.get(i).roomWidth, rooms.get(i).roomHeight);
+      
+      gameScene.fill(255, 0, 0);
+      gameScene.stroke(255, 0, 0);
+      gameScene.strokeWeight(1);
+      gameScene.point(rooms.get(i).roomPosition.x, rooms.get(i).roomPosition.y);
+    }
+  }
+  
   // verifica la collisione con le scale
   // collide con le scale
   
   // metodo per il rilevamento delle collisioni 
   // da sistemare
   boolean playerCollide(Player aPlayer) { 
-    if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).position.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
-        (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= rooms.get(endRoomIndex).position.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
-        aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (rooms.get(endRoomIndex).position.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
-        (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= rooms.get(endRoomIndex).position.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
+    if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
+        (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
+        aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
+        (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
           return true;
     }
     

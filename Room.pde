@@ -1,23 +1,11 @@
-class Room {
-  int roomWidth;
-  int roomHeight;
-  PVector position;
+class Room {  
+  int roomWidth;  // larghezza stanza
+  int roomHeight;  // altezza stanza
+  PVector roomPosition;
   
-  Room(int roomWidth, int roomHeight, PVector position) {
+  Room(int roomWidth, int roomHeight, PVector roomPosition) {
     this.roomWidth = roomWidth;
     this.roomHeight = roomHeight;
-    this.position = position;
+    this.roomPosition = roomPosition;
   }
-  
-  int getWidth(){
-    return roomWidth;
-  }  
-  
-  int getHeight(){
-    return roomHeight;
-  }  
-  
-  PVector getPosition(){
-    return position;
-  }  
 }

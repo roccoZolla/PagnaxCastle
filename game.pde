@@ -1,5 +1,7 @@
 class Game {
   float holeRadius; // raggio della maschera
+  boolean isTorchDropped; // indica se la torcia è stata droppata
+  boolean isMapDropped; // indica se la mappa è stata droppata
   
   void init() {
     // create world
@@ -27,6 +29,8 @@ class Game {
     camera = new Camera();
     
     holeRadius = 100;
+    isTorchDropped = false;
+    isMapDropped = false;
   }
 
   void display() {   
@@ -41,6 +45,7 @@ class Game {
     gameScene.scale(camera.zoom);
 
     // Disegna la mappa del livello corrente
+    currentLevel.displayRooms();
     currentLevel.display(); // renderizza il 4,6 % della mappa
 
     spritesLayer.beginDraw();
@@ -108,7 +113,7 @@ class Game {
 
     image(gameScene, 0, 0);
     image(spritesLayer, 0, 0);
-    image(maskLayer, 0, 0);
+    // image(maskLayer, 0, 0);
   }
   
   void updateGame() {
@@ -291,14 +296,14 @@ class Game {
                   println("random value:" + randomValue);
                   
                   // probabilità che la cassa speciale droppi qualcosa
-                  double dropTorchProbability = 1.0;    // 15 % 
-                  double dropMapProbability = 0.0;     // 15 %
-                  double dropSuperSwordProbability = 0.0; // 30 %
-                  double dropPotionProbability = 0.0;      // 40 %
+                  double dropTorchProbability = 0.15;    // 15 % 
+                  double dropMapProbability = 0.15;     // 15 %
+                  double dropSuperSwordProbability = 0.3; // 30 %
+                  double dropPotionProbability = 0.4;      // 40 %
                   
                   PVector dropPosition = chest.calculateDropPosition();
                   
-                  if (randomValue <= dropTorchProbability) {
+                  if (randomValue <= dropTorchProbability && !isTorchDropped) {
                       println("torcia droppata");
                       // drop della torcia
                       Item dropTorch = new Item("dropTorch");
@@ -307,7 +312,8 @@ class Game {
                       dropTorch.spritePosition = dropPosition;                    
                       dropTorch.isCollectible = true;
                       currentLevel.dropItems.add(dropTorch);
-                  } else if (randomValue > dropTorchProbability && randomValue <= dropTorchProbability + dropMapProbability) {
+                      isTorchDropped = true;
+                  } else if (randomValue > dropTorchProbability && randomValue <= dropTorchProbability + dropMapProbability && !isMapDropped) {
                       println("mappa droppata");
                       // drop della mappa
                       //Item dropMap = new Item("dropMap");
@@ -316,6 +322,7 @@ class Game {
                       //dropMap.spritePosition = dropPosition;                    
                       //dropMap.isCollectible = true;
                       //currentLevel.dropItems.add(dropMap);
+                      isMapDropped = true;
                   } else if (randomValue > dropTorchProbability + dropMapProbability && randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability) {
                       println("super spada droppata");
                       // drop della super spada

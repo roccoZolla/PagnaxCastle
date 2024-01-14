@@ -81,7 +81,7 @@ float proximityThreshold = 0.5; // Soglia di prossimità consentita per le scale
 String actualLevel;
 
 // titolo del gioco
-String gameTitle = "dungeon game";
+String gameTitle = "rangeon game";
 PFont myFont;  // font del gioco
 
 Camera camera;

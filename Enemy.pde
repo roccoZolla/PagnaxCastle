@@ -23,7 +23,7 @@ public class Enemy {
     PVector playerPosition = p1.spritePosition;
 
     // distanza tra il nemico e il giocatore
-    float distance = dist(this.spritePosition.x, this.spritePosition.y, playerPosition.x, playerPosition.y);
+    float distance = dist(spritePosition.x, spritePosition.y, playerPosition.x, playerPosition.y);
 
     // distanza minima 
     float threshold = 4;
@@ -31,12 +31,12 @@ public class Enemy {
     // Verifica se il giocatore è abbastanza vicino
     if (distance <= threshold) {
       // Calcola la direzione verso il giocatore
-      PVector direction = PVector.sub(playerPosition, this.spritePosition);
+      PVector direction = PVector.sub(playerPosition, spritePosition);
       direction.normalize();
 
       // Calcola il movimento in base alla direzione
-      float newX = this.spritePosition.x + direction.x * spriteSpeed;
-      float newY = this.spritePosition.y + direction.y * spriteSpeed;
+      float newX = spritePosition.x + direction.x * spriteSpeed;
+      float newY = spritePosition.y + direction.y * spriteSpeed;
       
       int roundedX = 0, roundedY = 0;
       
@@ -49,22 +49,22 @@ public class Enemy {
         this.spritePosition.y = newY;
       }
     } else {
-      // Il giocatore non è nelle vicinanze, quindi il nemico si muove casualmente
-      float randomDirection = int(random(4)); // 0: su, 1: giù, 2: sinistra, 3: destra
+      //  il giocatore non è nelle vicinanze, quindi il nemico si muove casualmente
+      float randomDirection = random(1);
       
-      float newX = this.spritePosition.x;
-      float newY = this.spritePosition.y;
+      float newX = spritePosition.x;
+      float newY = spritePosition.y;
       
       int roundedX = 0, roundedY = 0;
 
-      if (randomDirection == 0) {
-        newY -= spriteSpeed;
-      } else if (randomDirection == 1) {
-        newY += spriteSpeed;
-      } else if (randomDirection == 2) {
-        newX -= spriteSpeed;
-      } else if (randomDirection == 3) {
+      if (randomDirection < 0.25) {
         newX += spriteSpeed;
+      } else if (randomDirection < 0.5) {
+        newX -= spriteSpeed;
+      } else if (randomDirection < 0.75) {
+        newY += spriteSpeed;
+      } else {
+        newY -= spriteSpeed;
       }
       
       // Verifica se la nuova posizione è valida
