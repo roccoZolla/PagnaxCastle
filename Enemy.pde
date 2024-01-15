@@ -150,21 +150,21 @@ class Enemy implements Damageable{
 
     // Verifica se è passato abbastanza tempo dall'ultimo attacco
     if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
-        // Esegui l'attacco
-        p1.playerHP -= damage;
-        
-        // fare in modo che rimanga un po piu di tempo a schermo
-        TextDisplay damageHitText = new TextDisplay(p1.spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
-        damageHitText.display();
-        
-        // playerHurt.play();
+      // Esegui l'attacco
+      p1.playerHP -= damage;
+      
+      // fare in modo che rimanga un po piu di tempo a schermo
+      TextDisplay damageHitText = new TextDisplay(p1.spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
+      damageHitText.display();
+      
+      // playerHurt.play();
 
-        if(p1.playerHP < 0) {
-          p1.playerHP = 0;
-        }
+      if(p1.playerHP < 0) {
+        p1.playerHP = 0;
+      }
 
-        // Aggiorna il tempo dell'ultimo attacco
-        lastAttackTime = currentTime;
+      // Aggiorna il tempo dell'ultimo attacco
+      lastAttackTime = currentTime;
     }
   }
   

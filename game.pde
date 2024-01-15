@@ -258,7 +258,8 @@ class Game {
           println("giocatore: " + p1.spritePosition);
           enemy.handleAttack();
         } else {
-          // muovi il nemico
+          // muovi il nemico e resetta la first attack
+          enemy.first_attack = true;
           enemy.move();
         }
       }
