@@ -57,11 +57,6 @@ class UI {
     uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(24);
     uiLayer.text(actualLevel, 20, 20);
-    
-    // tempo trascorso
-    uiLayer.fill(255);
-    uiLayer.textSize(24);
-    uiLayer.text(millis(), 20, uiLayer.height / 2);
 
     // pause button
     if (buttons.get(0).isClicked()) {

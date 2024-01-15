@@ -12,14 +12,6 @@ class Coin {
     this.scoreValue = 10;
   }
 
-  void setValue(int value) {
-    this.value = value;
-  }
-
-  int getValue() {
-    return value;
-  }
-
   void collect() {
     this.collected = true;
   }

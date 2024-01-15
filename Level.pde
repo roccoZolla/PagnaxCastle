@@ -277,6 +277,7 @@ class Level {
 
     for (int i = 0; i < spawnLevel; i++) {
       // stanza selezionata casualmente
+      // e verifica se nella stanza sono gia presenti casse
       do{
         room = rooms.get((int) random(rooms.size()));
       } while(room.isChestPresent);
