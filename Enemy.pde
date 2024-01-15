@@ -5,8 +5,9 @@ class Enemy implements Damageable{
   
   ConcreteDamageHandler damageTileHandler;
   
-  private static final long ATTACK_COOLDOWN = 3000; // Tempo di cooldown in millisecondi (3 secondi)
+  private static final long ATTACK_COOLDOWN = 2000; // Tempo di cooldown in millisecondi (3 secondi)
   private long lastAttackTime = 0;
+  boolean first_attack;    // di base è true
   
   int enemyHP;
   int damage;
@@ -18,6 +19,8 @@ class Enemy implements Damageable{
     this.name = name;
     this.damage = damage;
     this.scoreValue = 20;
+    
+    first_attack = true;
     
     this.damageTileHandler = damageTileHandler;
   }
@@ -87,54 +90,65 @@ class Enemy implements Damageable{
     }
   }
   
-  //boolean isValidMove(int roundedX, int roundedY) {
-  //  if(!isWithinMapBounds(roundedX, roundedY) && isCollisionTile(roundedX, roundedY)) {
-  //    return false;
-  //  }
-    
-  //  // verifica che due nemici non si sovrappongano
-  //  for (Enemy otherEnemy : currentLevel.enemies) {
-  //    if (otherEnemy != this) {
-  //      if (roundedX < otherEnemy.spritePosition.x + otherEnemy.sprite.width &&
-  //          roundedX + sprite.width > otherEnemy.spritePosition.x &&
-  //          roundedY < otherEnemy.spritePosition.y + otherEnemy.sprite.height &&
-  //          roundedY + sprite.height > otherEnemy.spritePosition.y) {
-  //        return false; // Sovrapposizione con un altro nemico
-  //      }
-  //    }
-  //  }
-    
-  //  return true;
-  //}
-  
+  // collision detection
   boolean isValidMove(int roundedX, int roundedY) {
-    // il player si trova all'interno della mappa di gioco
-    if(isWithinMapBounds(roundedX, roundedY)) {
-      // il player si scontra con un tile di collisione
-      if(isCollisionTile(roundedX, roundedY)) {
-        if(spritePosition.x * currentLevel.tileSize <= (roundedX * currentLevel.tileSize) + currentLevel.tileSize ||
-           (spritePosition.x * currentLevel.tileSize) + sprite.width<= roundedX * currentLevel.tileSize ||
-           spritePosition.y * currentLevel.tileSize >= (roundedY * currentLevel.tileSize) + currentLevel.tileSize ||
-           (spritePosition.y * currentLevel.tileSize) + sprite.height >= roundedY * currentLevel.tileSize) {
-           // ritorna falso se il player cerca di attraversa il tile 
-           return false;
-        }
-      }
-      // ritorna vero se il player si trova all'interno della mappa e non si sta scontrando con un tile di collisione
-      return true;
+    if (!isWithinMapBounds(roundedX, roundedY)) {
+        return false;
     }
-    
-    // falso altrimenti
-    return false;
+
+    if (isCollisionTile(roundedX, roundedY) && isCollidingWithTile(roundedX, roundedY)) {
+        return false;
+    }
+
+    return true;
   }
+  
+  boolean isCollidingWithTile(int roundedX, int roundedY) {
+      float playerRight = spritePosition.x * currentLevel.tileSize + (sprite.width / 2);
+      float playerLeft = spritePosition.x * currentLevel.tileSize - (sprite.width / 2);
+      float playerBottom = spritePosition.y * currentLevel.tileSize + (sprite.height / 2);
+      float playerTop = spritePosition.y * currentLevel.tileSize - (sprite.height / 2);
+  
+      float tileRight = roundedX * currentLevel.tileSize + (sprite.width / 2);
+      float tileLeft = roundedX * currentLevel.tileSize - (sprite.width / 2);
+      float tileBottom = roundedY * currentLevel.tileSize + (sprite.height / 2);
+      float tileTop = roundedY * currentLevel.tileSize - (sprite.height / 2);
+  
+      return playerRight >= tileLeft && playerLeft <= tileRight &&
+             playerBottom >= tileTop && playerTop <= tileBottom;
+  }
+  
   
   // attacca il giocatore
   // da migliorare
+  void handleAttack() {
+    if(first_attack) {
+      attack();
+      first_attack = false;
+    }
+    periodicAttack();
+  }
+  
   void attack() {
-    // println("attacco subito");
+    // Esegui l'attacco
+    p1.playerHP -= damage;
+    
+    // fare in modo che rimanga un po piu di tempo a schermo
+    TextDisplay damageHitText = new TextDisplay(p1.spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
+    damageHitText.display();
+    
+    // playerHurt.play();
+
+    if(p1.playerHP < 0) {
+      p1.playerHP = 0;
+    }
+  }
+  
+  
+  void periodicAttack() {
     long currentTime = System.currentTimeMillis();
 
-      // Verifica se è passato abbastanza tempo dall'ultimo attacco
+    // Verifica se è passato abbastanza tempo dall'ultimo attacco
     if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
         // Esegui l'attacco
         p1.playerHP -= damage;

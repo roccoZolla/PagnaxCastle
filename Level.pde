@@ -317,7 +317,7 @@ class Level {
         y = (int) (room.roomPosition.y + offsetY);
 
         // Verifica se la posizione è già occupata da un muro, una parete o un'altra cassa
-        positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6);
+        positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6 || map[x][y] == 3);
       } while (positionOccupied);
 
       // Aggiungi la cassa alla lista delle casse

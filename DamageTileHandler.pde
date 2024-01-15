@@ -16,7 +16,6 @@ abstract class DamageHandler {
   void handleDamageTiles(Damageable damageable, int x, int y) {
     long currentTime = System.currentTimeMillis();
     
-
     if (isDamageTile(x, y)) {
       if (currentTime - lastAttackTime >= ATTACK_COOLDOWN || firstTimeDamageTile) {
         performPeriodicAttack(damageable, currentTime);
@@ -29,7 +28,7 @@ abstract class DamageHandler {
 
   private void performPeriodicAttack(Damageable damageable, long currentTime) {
     damageable.receiveDamage(currentLevel.damagePeaks);
-    TextDisplay damageHitText = new TextDisplay(damageable.getPosition(), Integer.toString(currentLevel.damagePeaks), color(255, 0, 0), 1000);
+    TextDisplay damageHitText = new TextDisplay(damageable.getPosition(), Integer.toString(currentLevel.damagePeaks), color(255, 0, 0), 2000);
     damageHitText.display();
     playHurtSound();
     
@@ -62,6 +61,6 @@ class ConcreteDamageHandler extends DamageHandler {
 
   @Override
   void playHurtSound() {
-    // Implementa la riproduzione del suono quando si riceve un danno
+    playerHurt.play();
   }
 }

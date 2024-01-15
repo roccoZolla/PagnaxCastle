@@ -110,8 +110,8 @@ class Player implements Damageable{
     if (direction == DIRECTION_RIGHT) offset = 16;
     else if (direction == DIRECTION_LEFT) offset = -16;
     
-    println("giocatore: " + spritePosition);
-    println("arma: " + weapon.spritePosition);
+    //println("giocatore: " + spritePosition);
+    //println("arma: " + weapon.spritePosition);
     
     // da sistemare
     if((weapon.spritePosition.x * currentLevel.tileSize) + offset <= (enemy.spritePosition.x * currentLevel.tileSize) + enemy.sprite.width  &&

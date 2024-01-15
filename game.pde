@@ -164,8 +164,8 @@ class Game {
   
           p1.numberOfPotion -= 1;
         } else {
-          TextDisplay healthFull = new TextDisplay(p1.spritePosition, "Salute al massimo", color(255), 1000);
-          healthFull.display();
+          //TextDisplay healthFull = new TextDisplay(p1.spritePosition, "Salute al massimo", color(255), 1000);
+          //healthFull.display();
         }
       }
     } else {
@@ -203,9 +203,9 @@ class Game {
             attackExecuted = true;
             
             // testo danno subito dal nemico
-            TextDisplay damageHitText = new TextDisplay(enemy.spritePosition,  Integer.toString(p1.weapon.getDamage()), color(255, 0, 0), 1000);
+            TextDisplay damageHitText = new TextDisplay(enemy.spritePosition, Integer.toString(p1.weapon.damage), color(255, 0, 0), 2000);
             damageHitText.display();
-  
+
             // il nemico muore, rimuovilo dalla lista dei nemici del livello
             // aggiungi un certo valore allo score del giocatore 
             // possibilita di droppare l'oggetto
@@ -256,7 +256,7 @@ class Game {
           println("---- COLLISIONE NEMICO GIOCATORE ----");
           println("nemico: " + enemy.spritePosition);
           println("giocatore: " + p1.spritePosition);
-          enemy.attack();
+          enemy.handleAttack();
         } else {
           // muovi il nemico
           enemy.move();
