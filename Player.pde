@@ -22,7 +22,7 @@ class Player implements Damageable{
   //private long lastAttackTime = 0;
   //boolean firstTimeDamageTile = true;
   
-  DamageHandler damageTileHandler;
+  ConcreteDamageHandler damageTileHandler;
 
   // caratteristiche del player
   int playerMaxHP;
@@ -38,7 +38,7 @@ class Player implements Damageable{
   int numberOfGoldenKeys;
   int numberOfPotion;
 
-  Player(int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, DamageHandler damageTileHandler) {
+  Player(int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
     this.playerScore = 0;
     this.playerHP = playerHP;
     this.playerMaxHP = maxHP;
@@ -86,7 +86,6 @@ class Player implements Damageable{
     roundedX = round(newX);
     roundedY = round(newY);
     
-    damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
     
     //println("newX: " + newX);
     //println("newY: " + newY);
@@ -95,6 +94,8 @@ class Player implements Damageable{
     //println("roundedY: " + roundedY);
   
     if (isValidMove(roundedX, roundedY)) {
+      damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
+    
       spritePosition.x = newX;
       spritePosition.y = newY;
     }

@@ -145,13 +145,16 @@ class Level {
       generateRandomRoom();
     }
 
-    // Scegli la stanza iniziale e finale
+    // stanza iniziale e finale scelte casualmente
     startRoomIndex = int(random(rooms.size()));
-    endRoomIndex = int(random(rooms.size()));
-
-    while (endRoomIndex == startRoomIndex) {
+    
+    do {
       endRoomIndex = int(random(rooms.size()));
-    }
+    } while(endRoomIndex == startRoomIndex);
+    
+    
+    rooms.get(startRoomIndex).startRoom = true;
+    rooms.get(endRoomIndex).endRoom = true;
   }
 
   private void generateRandomRoom() {
@@ -330,9 +333,6 @@ class Level {
   private void generateEnemies() {
     enemies = new ArrayList<Enemy>();
     boolean positionOccupied;
-    ConcreteDamageHandler damageTileHandler;
-    
-    damageTileHandler = new ConcreteDamageHandler();
 
     for (Room room : rooms) {
       PVector roomPosition = room.roomPosition.copy();
@@ -354,6 +354,8 @@ class Level {
           // Verifica se la posizione è già occupata da un muro o un altro oggetto
           positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 3 || map[x][y] == 2 || map[x][y] == 6;
         } while (positionOccupied);
+        
+        ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();
 
         // creazione dell'entita nemico
         Enemy enemy = new Enemy(ENEMY_HP, "rat", 5, damageTileHandler);

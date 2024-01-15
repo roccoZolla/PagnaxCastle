@@ -32,6 +32,14 @@ abstract class DamageHandler {
     TextDisplay damageHitText = new TextDisplay(damageable.getPosition(), Integer.toString(currentLevel.damagePeaks), color(255, 0, 0), 1000);
     damageHitText.display();
     playHurtSound();
+    
+    println("---- DANNO DA DAMAGE TILE ----");
+    println("posizione: " + damageable.getPosition());
+    
+    spritesLayer.rectMode(CENTER);
+    spritesLayer.fill(255, 0, 0); // nero
+    spritesLayer.stroke(255);
+    spritesLayer.rect(damageable.getPosition().x * currentLevel.tileSize + currentLevel.tileSize / 2, damageable.getPosition().y * currentLevel.tileSize + currentLevel.tileSize / 2, currentLevel.tileSize, currentLevel.tileSize);
 
     lastAttackTime = currentTime;
     firstTimeDamageTile = false;

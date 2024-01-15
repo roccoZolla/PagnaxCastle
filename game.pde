@@ -184,6 +184,9 @@ class Game {
       if (isInVisibleArea(enemy.spritePosition)) {
         if (enemy.enemyHP > 0) {
           enemy.display();
+        } else {
+          // caso in cui i nemici si uccidono con le trappole
+          iterator.remove();
         }
   
         if (isAttacking && !attackExecuted) {
@@ -211,7 +214,6 @@ class Game {
                 
                 // numero casuale
                 double randomValue = Math.random();
-                println("random value:" + randomValue);
             
                 // probabilità che il nemico droppi qualcosa
                 double dropNothingProbability = 0.1;
@@ -251,7 +253,9 @@ class Game {
   
         if (enemy.playerCollide(p1)) {
           // attacca il giocatore
-          println("collsione nemico giocatore");
+          println("---- COLLISIONE NEMICO GIOCATORE ----");
+          println("nemico: " + enemy.spritePosition);
+          println("giocatore: " + p1.spritePosition);
           enemy.attack();
         } else {
           // muovi il nemico

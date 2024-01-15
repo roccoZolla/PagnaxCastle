@@ -130,7 +130,7 @@ class UI {
     uiLayer.image(greenPotion.sprite, 70, 110, 20, 20);
 
     // ------- MINIMAPPA ------
-    // displayMinimap();
+    displayMinimap();
 
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento
@@ -182,7 +182,7 @@ class UI {
           miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
 
           uiLayer.noFill(); 
-          uiLayer.stroke(0, 0, 255);
+          uiLayer.stroke(0, 127, 255);
           uiLayer.rect(miniMapTileX, miniMapTileY, miniMapSize / currentLevel.cols, miniMapSize / currentLevel.rows);
         }
       }

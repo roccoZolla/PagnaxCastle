@@ -3,7 +3,7 @@ class Enemy implements Damageable{
   float spriteSpeed = 0.1;
   PImage sprite;
   
-  DamageHandler damageTileHandler;
+  ConcreteDamageHandler damageTileHandler;
   
   private static final long ATTACK_COOLDOWN = 3000; // Tempo di cooldown in millisecondi (3 secondi)
   private long lastAttackTime = 0;
@@ -13,7 +13,7 @@ class Enemy implements Damageable{
   String name;
   int scoreValue;
 
-  Enemy(int enemyHP, String name, int damage, DamageHandler damageTileHandler) {
+  Enemy(int enemyHP, String name, int damage, ConcreteDamageHandler damageTileHandler) {
     this.enemyHP = enemyHP;
     this.name = name;
     this.damage = damage;
@@ -47,9 +47,9 @@ class Enemy implements Damageable{
       roundedX = round(newX);
       roundedY = round(newY);
       
-      damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
-
       if (isValidMove(roundedX, roundedY)) {
+        damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
+        
         // Aggiorna la posizione del nemico
         this.spritePosition.x = newX;
         this.spritePosition.y = newY;
@@ -76,10 +76,10 @@ class Enemy implements Damageable{
       // Verifica se la nuova posizione è valida
       roundedX = round(newX);
       roundedY = round(newY);
-      
-      damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
 
       if(isValidMove(roundedX, roundedY)) {
+        damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
+        
         // Aggiorna la posizione del nemico in modo casuale
         this.spritePosition.x = newX;
         this.spritePosition.y = newY;
