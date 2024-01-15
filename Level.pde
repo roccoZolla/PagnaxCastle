@@ -21,6 +21,12 @@ class Level {
   static final int HALLWAY_TILE_TYPE = 5;
   static final int CHEST_TILE_TYPE = 6;
   static final int PEAKS_TILE_TYPE = 7;
+  
+  // probabilita di spawn delle trappole all'interno del livello
+  static final double TRAP_SPAWN_PROBABILITY = 0.03;
+  
+  // vita dei nemici
+  static final int ENEMY_HP = 30; 
 
   // attributi
   PImage startFloorImage;
@@ -76,6 +82,7 @@ class Level {
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
     
+    // togliere di qua
     startFloorImage = loadImage(dataPath + "startTile.png");
     floorImage = loadImage(dataPath + "floorTile.png");
     wallImageNorth = loadImage(dataPath + "northWallTop.png");
@@ -178,7 +185,7 @@ class Level {
           
           // spawn delle trappole all'interno delle stanze
           // da migliorare
-          double trapSpawnProbability = 0.03;
+          double trapSpawnProbability = TRAP_SPAWN_PROBABILITY;
           double randomValue = random(1);
   
           // Se il numero casuale è inferiore o uguale alla probabilità di spawn, aggiungi una trappola
@@ -261,12 +268,17 @@ class Level {
     treasures = new ArrayList<Chest>();
     boolean positionOccupied;
     Chest chest;
-    Room room;  // stanza selezionata casualmente
+    Room room;  
     float commonChestSpawnRate = 0.90; // Tasso di spawn per le casse comuni (90%)
     float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza 
 
     for (int i = 0; i < spawnLevel; i++) {
-      room = rooms.get((int) random(rooms.size()));
+      // stanza selezionata casualmente
+      do{
+        room = rooms.get((int) random(rooms.size()));
+      } while(room.isChestPresent);
+      
+      room.isChestPresent = true;
       
       // offset rispetto al centro della stanza
       float offsetX = random(-spawnRadius, spawnRadius);
@@ -318,6 +330,9 @@ class Level {
   private void generateEnemies() {
     enemies = new ArrayList<Enemy>();
     boolean positionOccupied;
+    ConcreteDamageHandler damageTileHandler;
+    
+    damageTileHandler = new ConcreteDamageHandler();
 
     for (Room room : rooms) {
       PVector roomPosition = room.roomPosition.copy();
@@ -341,8 +356,7 @@ class Level {
         } while (positionOccupied);
 
         // creazione dell'entita nemico
-        int enemyHP = 30;
-        Enemy enemy = new Enemy(enemyHP, "rat", 5);
+        Enemy enemy = new Enemy(ENEMY_HP, "rat", 5, damageTileHandler);
         enemy.sprite = rat_enemy_sprite;
         enemy.spritePosition = new PVector(x, y);
         

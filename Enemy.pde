@@ -1,7 +1,9 @@
-public class Enemy {
+class Enemy implements Damageable{
   PVector spritePosition;
   float spriteSpeed = 0.1;
   PImage sprite;
+  
+  DamageHandler damageTileHandler;
   
   private static final long ATTACK_COOLDOWN = 3000; // Tempo di cooldown in millisecondi (3 secondi)
   private long lastAttackTime = 0;
@@ -11,11 +13,13 @@ public class Enemy {
   String name;
   int scoreValue;
 
-  Enemy(int enemyHP, String name, int damage) {
+  Enemy(int enemyHP, String name, int damage, DamageHandler damageTileHandler) {
     this.enemyHP = enemyHP;
     this.name = name;
     this.damage = damage;
     this.scoreValue = 20;
+    
+    this.damageTileHandler = damageTileHandler;
   }
   
   void move() {
@@ -42,6 +46,8 @@ public class Enemy {
       
       roundedX = round(newX);
       roundedY = round(newY);
+      
+      damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
 
       if (isValidMove(roundedX, roundedY)) {
         // Aggiorna la posizione del nemico
@@ -70,6 +76,8 @@ public class Enemy {
       // Verifica se la nuova posizione è valida
       roundedX = round(newX);
       roundedY = round(newY);
+      
+      damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
 
       if(isValidMove(roundedX, roundedY)) {
         // Aggiorna la posizione del nemico in modo casuale
@@ -144,6 +152,20 @@ public class Enemy {
         // Aggiorna il tempo dell'ultimo attacco
         lastAttackTime = currentTime;
     }
+  }
+  
+  // override dei metodi dell'interfaccia
+  @Override
+  public void receiveDamage(int damage) {
+    enemyHP -= damage;
+    if (enemyHP < 0) {
+      enemyHP = 0;
+    }
+  }
+  
+  @Override
+  PVector getPosition() {
+    return spritePosition;
   }
   
   void display() {

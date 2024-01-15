@@ -2,10 +2,13 @@ class Game {
   float holeRadius; // raggio della maschera
   boolean isTorchDropped; // indica se la torcia è stata droppata
   boolean isMapDropped; // indica se la mappa è stata droppata
+  ConcreteDamageHandler damageTileHandler;
   
   void init() {
     // create world
     castle = new World();
+    
+    damageTileHandler = new ConcreteDamageHandler();
 
     currentZone = castle.currentZone;
     currentLevel = currentZone.currentLevel;
@@ -13,7 +16,7 @@ class Game {
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
-    p1 = new Player(50, 100, 10, 15, 5);
+    p1 = new Player(50, 100, 10, 15, 5, damageTileHandler);
     p1.spritePosition = currentLevel.getStartPosition();
     p1.sprite = spriteRight;
     p1.redPotion = redPotion;
@@ -28,7 +31,7 @@ class Game {
 
     camera = new Camera();
     
-    holeRadius = 100;
+    holeRadius = 50;
     isTorchDropped = false;
     isMapDropped = false;
   }
@@ -252,7 +255,7 @@ class Game {
           enemy.attack();
         } else {
           // muovi il nemico
-          // enemy.move();
+          enemy.move();
         }
       }
     }

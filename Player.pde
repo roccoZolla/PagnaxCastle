@@ -1,4 +1,4 @@
-class Player {
+class Player implements Damageable{
   PVector spritePosition;
   float spriteSpeed = 0.2;
   PImage sprite;
@@ -18,8 +18,11 @@ class Player {
   boolean moveINTR;    // interazione k 
   boolean moveUSE;     // utilizza l
   
-  private static final long ATTACK_COOLDOWN = 3500; // Tempo di cooldown in millisecondi (3 secondi)
-  private long lastAttackTime = 0;
+  //private static final long ATTACK_COOLDOWN = 2000; // Tempo di cooldown in millisecondi (3 secondi)
+  //private long lastAttackTime = 0;
+  //boolean firstTimeDamageTile = true;
+  
+  DamageHandler damageTileHandler;
 
   // caratteristiche del player
   int playerMaxHP;
@@ -35,7 +38,7 @@ class Player {
   int numberOfGoldenKeys;
   int numberOfPotion;
 
-  Player(int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion) {
+  Player(int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, DamageHandler damageTileHandler) {
     this.playerScore = 0;
     this.playerHP = playerHP;
     this.playerMaxHP = maxHP;
@@ -43,6 +46,8 @@ class Player {
     this.numberOfSilverKeys = numberOfSilverKeys;
     this.numberOfGoldenKeys = numberOfGoldenKeys;
     this.numberOfPotion = numberOfPotion;
+    
+    this.damageTileHandler = damageTileHandler;
     
     this.moveUP = false;
     this.moveDOWN = false;
@@ -80,6 +85,8 @@ class Player {
     // Verifica se la nuova posizione è valida
     roundedX = round(newX);
     roundedY = round(newY);
+    
+    damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
     
     //println("newX: " + newX);
     //println("newY: " + newY);
@@ -126,8 +133,6 @@ class Player {
         return false;
     }
 
-    handleDamageTiles(roundedX, roundedY);
-
     return true;
   }
   
@@ -146,36 +151,20 @@ class Player {
              playerBottom >= tileTop && playerTop <= tileBottom;
   }
   
-  void handleDamageTiles(int roundedX, int roundedY) {
-      long currentTime = System.currentTimeMillis();
-  
-      if (isDamageTile(roundedX, roundedY)) {
-          if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
-              performPeriodicAttack(currentTime);
-          }
-      } else {
-          resetAttackTimer(currentTime);
-      }
+  // override dei metodi dell'interfaccia
+  @Override
+  public void receiveDamage(int damage) {
+    playerHP -= damage;
+    if (playerHP < 0) {
+      playerHP = 0;
+    }
   }
   
-  void performPeriodicAttack(long currentTime) {
-      playerHP -= currentLevel.damagePeaks;
-      TextDisplay damageHitText = new TextDisplay(spritePosition, Integer.toString(currentLevel.damagePeaks), color(255, 0, 0), 1000);
-      damageHitText.display();
-      playerHurt.play();
-  
-      if (playerHP < 0) {
-          playerHP = 0;
-      }
-  
-      lastAttackTime = currentTime;
-  }
-  
-  void resetAttackTimer(long currentTime) {
-      lastAttackTime = currentTime;
+  @Override
+  PVector getPosition() {
+    return spritePosition;
   }
 
-  
   // metodo che si occupa di disegnare l'arma del giocatore
   void drawPlayerWeapon() {
     // aggiorna posizione dell'arma

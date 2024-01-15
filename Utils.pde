@@ -102,8 +102,8 @@ boolean isCollisionTile(int x, int y) {
     return false;
 }
 
-boolean isDamageTile(int x, int y) {
-  if(currentLevel.map[x][y] == 7) return true;
+//boolean isDamageTile(int x, int y) {
+//  if(currentLevel.map[x][y] == 7) return true;
   
-  return false; 
-}
+//  return false; 
+//}

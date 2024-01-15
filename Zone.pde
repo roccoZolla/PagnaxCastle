@@ -23,12 +23,16 @@ class Zone {
     this.filesPath = filesPath;
     this.finalArea = false;
 
+    createLevel(filesPath, numberOfRooms);
+    
+    currentLevel = levels.get(0);
+  }
+  
+  void createLevel(String filesPath, int numberOfRooms) {
     for (int i = 0; i < numLevels; i++) {
       Level level = new Level("Livello " + i, i, filesPath, numberOfRooms);
       levels.add(level);
     }
-    
-    currentLevel = levels.get(0);
   }
 
   void setFinalArea(boolean finalArea) {
