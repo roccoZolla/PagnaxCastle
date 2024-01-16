@@ -45,6 +45,8 @@ PImage heart_sprite;
 PImage half_heart_sprite;
 PImage empty_heart_sprite;
 
+PImage up_buff;
+
 // sound effect
 // float volumeMenuLevel;
 float volumeMusicLevel;
@@ -185,7 +187,9 @@ void setupImages() {
   empty_heart_sprite = loadImage("data/emptyHeart.png");
   
   torch_sprite = loadImage("data/torch.png");
-  // dungeon_map_sprite = loadImage("data/dungeon_map_sprite.png");
+  dungeon_map_sprite = loadImage("data/dungeon_map.png");
+  
+  up_buff = loadImage("data/up_buff.png");
 }
 
 void setupSounds() {

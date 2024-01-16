@@ -46,7 +46,7 @@ class Level {
   ArrayList<Coin> coins;      // contiene le monete presenti nel livello
 
   // chest che puoi trovare nel livello
-  int spawnLevel = 5; // Livello di spawn
+  int spawnLevel = 2; // Livello di spawn
   ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
   // nemici che puoi trovare nel livello
@@ -272,7 +272,7 @@ class Level {
     boolean positionOccupied;
     Chest chest;
     Room room;  
-    float commonChestSpawnRate = 0.90; // Tasso di spawn per le casse comuni (90%)
+    float commonChestSpawnRate = 1.0; // Tasso di spawn per le casse comuni (90%)
     float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza 
 
     for (int i = 0; i < spawnLevel; i++) {
@@ -362,9 +362,6 @@ class Level {
         Enemy enemy = new Enemy(ENEMY_HP, "rat", 5, damageTileHandler);
         enemy.sprite = rat_enemy_sprite;
         enemy.spritePosition = new PVector(x, y);
-        
-        // quando viene ucciso un nemico 
-        // viene droppato un oggetto
 
         // Aggiungi il nemico alla lista
         enemies.add(enemy);

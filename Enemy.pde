@@ -168,6 +168,43 @@ class Enemy implements Damageable{
     }
   }
   
+  void dropItem() {
+    // numero casuale
+    double randomValue = Math.random();
+
+    // dropRate degli oggetti droppati dai nemici
+    double dropNothingProbability = 0.1;
+    double dropSilverKeyProbability = 0.2;
+    double dropHeartProbability = 0.3;
+    double dropHalfHeartProbability = 0.4;
+    
+    PVector dropPosition = spritePosition.copy();
+
+    if (randomValue <= dropNothingProbability) {
+      // Nessun drop
+    } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability) {
+      // drop della chiave d'argento
+      Item dropSilverKey = new Item("dropSilverKey");
+      dropSilverKey.sprite = silver_key.sprite;
+      dropSilverKey.spritePosition = dropPosition;
+      dropSilverKey.isCollectible = true;
+      currentLevel.dropItems.add(dropSilverKey);
+    } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability) {
+      // drop del cuore intero
+      Healer dropHeart = new Healer("dropHeart", 10); 
+      dropHeart.sprite = heart_sprite;
+      dropHeart.spritePosition =dropPosition;
+      currentLevel.dropItems.add(dropHeart);
+    } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability + dropHalfHeartProbability) {
+      // drop del mezzocuore
+      Healer dropHalfHeart = new Healer("dropHalfHeart", 5); 
+      dropHalfHeart.sprite = half_heart_sprite;
+      dropHalfHeart.spritePosition = dropPosition;
+      currentLevel.dropItems.add(dropHalfHeart);
+    }
+  }
+  
+  
   // override dei metodi dell'interfaccia
   @Override
   public void receiveDamage(int damage) {

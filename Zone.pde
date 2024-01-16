@@ -30,7 +30,7 @@ class Zone {
   
   void createLevel(String filesPath, int numberOfRooms) {
     for (int i = 0; i < numLevels; i++) {
-      Level level = new Level("Livello " + i, i, filesPath, numberOfRooms);
+      Level level = new Level("Livello " + (i+1), i, filesPath, numberOfRooms);
       levels.add(level);
     }
   }

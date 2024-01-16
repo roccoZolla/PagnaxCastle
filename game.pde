@@ -15,6 +15,9 @@ class Game {
     currentLevel.init();
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
+    
+    // reimposta lo stato della mappa
+    ui.deactivateMap();
 
     p1 = new Player(50, 100, 10, 15, 5, damageTileHandler);
     p1.spritePosition = currentLevel.getStartPosition();
@@ -164,8 +167,8 @@ class Game {
   
           p1.numberOfPotion -= 1;
         } else {
-          //TextDisplay healthFull = new TextDisplay(p1.spritePosition, "Salute al massimo", color(255), 1000);
-          //healthFull.display();
+          TextDisplay healthFull = new TextDisplay(p1.spritePosition, "Salute al massimo", color(255), 1000);
+          healthFull.display();
         }
       }
     } else {
@@ -212,39 +215,8 @@ class Game {
             if (enemy.enemyHP <= 0) {
                 p1.playerScore += enemy.scoreValue;
                 
-                // numero casuale
-                double randomValue = Math.random();
-            
-                // probabilità che il nemico droppi qualcosa
-                double dropNothingProbability = 0.1;
-                double dropSilverKeyProbability = 0.2;
-                double dropHeartProbability = 0.3;
-                double dropHalfHeartProbability = 0.4;
-                
-                PVector dropPosition = enemy.spritePosition.copy();
-            
-                if (randomValue <= dropNothingProbability) {
-                    // Nessun drop
-                } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability) {
-                    // drop della chiave d'argento
-                    Item dropSilverKey = new Item("dropSilverKey");
-                    dropSilverKey.sprite = silver_key.sprite;
-                    dropSilverKey.spritePosition = dropPosition;
-                    dropSilverKey.isCollectible = true;
-                    currentLevel.dropItems.add(dropSilverKey);
-                } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability) {
-                    // drop del cuore intero
-                    Healer dropHeart = new Healer("dropHeart", 10); 
-                    dropHeart.sprite = heart_sprite;
-                    dropHeart.spritePosition =dropPosition;
-                    currentLevel.dropItems.add(dropHeart);
-                } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability + dropHalfHeartProbability) {
-                    // drop del mezzocuore
-                    Healer dropHalfHeart = new Healer("dropHalfHeart", 5); 
-                    dropHalfHeart.sprite = half_heart_sprite;
-                    dropHalfHeart.spritePosition = dropPosition;
-                    currentLevel.dropItems.add(dropHalfHeart);
-                }
+                // metodo per la generazione di un item casuale da droppare
+                enemy.dropItem();
             
                 iterator.remove();  // Rimuovi il nemico dalla lista
             }
@@ -259,6 +231,7 @@ class Game {
           enemy.handleAttack();
         } else {
           // muovi il nemico e resetta la first attack
+          // da sistemare
           enemy.first_attack = true;
           enemy.move();
         }
@@ -299,54 +272,7 @@ class Game {
                   p1.numberOfGoldenKeys -= 1;
                   p1.playerScore += 50;
                   
-                  // drop causale dell'item
-                  double randomValue = Math.random();
-                  println("random value:" + randomValue);
-                  
-                  // probabilità che la cassa speciale droppi qualcosa
-                  double dropTorchProbability = 0.15;    // 15 % 
-                  double dropMapProbability = 0.15;     // 15 %
-                  double dropSuperSwordProbability = 0.3; // 30 %
-                  double dropPotionProbability = 0.4;      // 40 %
-                  
-                  PVector dropPosition = chest.calculateDropPosition();
-                  
-                  if (randomValue <= dropTorchProbability && !isTorchDropped) {
-                      println("torcia droppata");
-                      // drop della torcia
-                      Item dropTorch = new Item("dropTorch");
-                      dropTorch.sprite = torch_sprite;
-                      // da sistemare posizione
-                      dropTorch.spritePosition = dropPosition;                    
-                      dropTorch.isCollectible = true;
-                      currentLevel.dropItems.add(dropTorch);
-                      isTorchDropped = true;
-                  } else if (randomValue > dropTorchProbability && randomValue <= dropTorchProbability + dropMapProbability && !isMapDropped) {
-                      println("mappa droppata");
-                      // drop della mappa
-                      //Item dropMap = new Item("dropMap");
-                      //dropMap.sprite = dungeon_map_sprite;
-                      //// da sistemare posizione
-                      //dropMap.spritePosition = dropPosition;                    
-                      //dropMap.isCollectible = true;
-                      //currentLevel.dropItems.add(dropMap);
-                      isMapDropped = true;
-                  } else if (randomValue > dropTorchProbability + dropMapProbability && randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability) {
-                      println("super spada droppata");
-                      // drop della super spada
-                      //Weapon dropSuperSword = new Weapon("dropSuperSword", 50); // Assumendo che una super spada valga 50 danni
-                      //// dropSuperSword.sprite = super_sword.sprite;
-                      //dropSuperSword.spritePosition = dropPosition;
-                      //currentLevel.dropItems.add(dropSuperSword);
-                  } else if (randomValue > dropTorchProbability + dropMapProbability + dropSuperSwordProbability &&
-                             randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability + dropPotionProbability) {
-                      println("pozione droppata");
-                      // drop della pozione
-                      //Potion dropPotion = new Potion("dropPotion", 30); // Assumendo che una pozione aggiunga 30 punti vita
-                      //dropPotion.sprite = potion.sprite;
-                      //dropPotion.spritePosition = dropPosition;
-                      //currentLevel.dropItems.add(dropPotion);
-                  }
+                  chest.dropItemSpecialChest();
                 }
               } else {
                 TextDisplay noMoreKeyText = new TextDisplay(p1.spritePosition, "Non hai piu chiavi", color(255), 1000);
@@ -365,41 +291,8 @@ class Game {
                   p1.numberOfSilverKeys -= 1;
                   p1.playerScore += 30;
                   
-                  // drop casuale dell'item
-                  // numero casuale
-                  double randomValue = Math.random();
-                  println("random value:" + randomValue);
-                  
-                  // probabilità che la cassa droppi qualcosa
-                  double dropHeartProbability = 0.4;
-                  double dropSwordProbability = 0.4;
-                  double dropGoldenKeyProbability = 0.2;
-                  
-                  PVector dropPosition = chest.calculateDropPosition();
-                  
-                  if (randomValue <= dropHeartProbability) {
-                      println("cuore droppato");
-                      // drop del cuore 
-                      Healer dropHeart = new Healer("dropHeart", 10);
-                      dropHeart.sprite = heart_sprite;
-                      dropHeart.spritePosition = dropPosition;
-                      currentLevel.dropItems.add(dropHeart);
-                  } else if (randomValue > dropHeartProbability && randomValue <= dropHeartProbability + dropSwordProbability) {
-                      println("spada droppata");
-                      // drop della spada
-                      Weapon dropSword = new Weapon("dropSword", 20); // Assumendo che una spada valga 20 danni
-                      dropSword.sprite = sword.sprite;
-                      dropSword.spritePosition = dropPosition;
-                      currentLevel.dropItems.add(dropSword);
-                  } else if (randomValue > dropHeartProbability + dropSwordProbability && randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability) {
-                      println("chiave oro droppata");
-                      // drop della chiave d'oro
-                      Item dropGoldenKey = new Item("dropGoldenKey");
-                      dropGoldenKey.sprite = golden_key.sprite;
-                      dropGoldenKey.spritePosition = dropPosition;
-                      dropGoldenKey.isCollectible = true;
-                      currentLevel.dropItems.add(dropGoldenKey);
-                  } //<>//
+                  // metodo per drop item casuale
+                  chest.dropItemNormalChest(); //<>//
                 }
               } else {
                 TextDisplay noMoreKeyText = new TextDisplay(p1.spritePosition, "Non hai piu chiavi", color(255), 1000);
@@ -410,26 +303,6 @@ class Game {
         }
       }
     }
-  }
-  
-  PVector calculateDropPosition(Chest chest) {
-    float dropRadius = 2;
-    PVector dropPosition = chest.spritePosition.copy();
-  
-    for (int i = 0; i < 10; i++) {
-      float xOffset = random(-dropRadius, dropRadius);
-      float yOffset = random(-dropRadius, dropRadius);
-  
-      dropPosition.add(xOffset, yOffset);
-  
-      if (!isCollisionTile((int) dropPosition.x, (int) dropPosition.y)) {
-        break;
-      } else {
-        dropPosition = chest.spritePosition.copy();
-      }
-    }
-  
-    return dropPosition;
   }
 
   // gestisce le monete
@@ -490,6 +363,13 @@ class Game {
             } else if(item instanceof Weapon) {
               // avviene lo scambio tra l'arma a terra e l'arma equippagiata
               // da sistemare
+              Weapon temp = (Weapon) item;
+              if(temp.damage > p1.weapon.damage) {
+                float imageX = (item.spritePosition.x * currentLevel.tileSize + (item.sprite.width / 2));
+                float imageY = (item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+                spritesLayer.imageMode(CENTER);
+                spritesLayer.image(up_buff, imageX, imageY);
+              }
               //PVector tempPosition = item.spritePosition;
               //Weapon temp = p1.weapon;
               //p1.weapon = (Weapon) item;
@@ -508,6 +388,9 @@ class Game {
             } else if (item.isCollectible && item.name.equals("dropTorch")) {
               // aumenta il raggio della maschera
               holeRadius += 50;
+              iterator.remove();
+            } else if (item.isCollectible && item.name.equals("dropMap")) {
+              ui.activateMap();
               iterator.remove();
             }
           }

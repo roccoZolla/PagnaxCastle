@@ -15,6 +15,7 @@ class UI {
   boolean isHalfHeart;
 
   // ----- MINIMAPPA -----
+  boolean isMapActive; // di base false
   float miniMapSize;
   float miniMapX;
   float miniMapY;
@@ -38,6 +39,8 @@ class UI {
     miniMapSize = 200;
     miniMapX = 20;
     miniMapY = uiLayer.height - miniMapSize - 10;
+    
+    isMapActive = false;
 
     buttons = new ArrayList();
 
@@ -130,8 +133,8 @@ class UI {
     uiLayer.image(greenPotion.sprite, 70, 110, 20, 20);
 
     // ------- MINIMAPPA ------
-    displayMinimap();
-
+    if(isMapActive) displayMinimap();
+    
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento
     uiLayer.stroke(255); // Colore del bordo bianco
@@ -156,6 +159,14 @@ class UI {
     uiLayer.endDraw();
     
     image(uiLayer, 0, 0);
+  }
+  
+  void activateMap() {
+    isMapActive = true;
+  }
+  
+  void deactivateMap() {
+    isMapActive = false;
   }
 
   void displayMinimap() {
