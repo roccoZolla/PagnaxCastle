@@ -8,12 +8,7 @@ Weapon little_sword;
 Weapon sword;
 Item silver_key;
 Item golden_key;
-// Item torch;
-// Item dungeon_map;
 Healer redPotion;
-Healer greenPotion;
-
-// Chest selectedChest;
 
 //
 Menu menu;
@@ -145,7 +140,6 @@ void setupItems() {
   sword = new Weapon("sword", 20);
   
   redPotion = new Healer("red_potion", 20);
-  greenPotion = new Healer("green_potion", 100);
 }
 
 void setupImages() {
@@ -185,7 +179,6 @@ void setupImages() {
   
   // healers
   redPotion.sprite = loadImage("data/object/red_potion.png");
-  greenPotion.sprite = loadImage("data/object/green_potion.png");
   
   heart_sprite = loadImage("data/heartFull.png");
   half_heart_sprite = loadImage("data/halfHeart.png");
@@ -201,9 +194,9 @@ void setupImages() {
 void setupSounds() {
   // volumeMenuLevel = 0.5;
   volumeMusicLevel = 0.0;
-  volumeEffectsLevel = 0.0;
+  volumeEffectsLevel = 0.5;
   
-  // click = new SoundFile(this, "data/sound/click.wav");
+  click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
   normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
   specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
@@ -215,7 +208,7 @@ void setupSounds() {
   soundtrack = new SoundFile(this, "data/sound/background/dungeon_soundtrack.wav");
   isSoundtrackPlaying = false;
   
-  // click.amp(volumeMenuLevel);
+  click.amp(volumeEffectsLevel);
   
   pickupCoin.amp(volumeEffectsLevel);
   normalChestOpen.amp(volumeEffectsLevel);

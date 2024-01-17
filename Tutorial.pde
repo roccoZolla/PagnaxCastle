@@ -1,12 +1,17 @@
 // tutorial screen
 class Tutorial {
   ArrayList<Button> buttons;
+  int imageWidth;
+  int imageHeight;
 
   Tutorial() {
     // menu
     buttons = new ArrayList();
     
     buttons.add(new Button(width - 250, height - 150, 200, 80, "back", "Back", ""));
+    
+    imageWidth = 32;
+    imageHeight = 32;
   }
   
     void display() {
@@ -29,10 +34,10 @@ class Tutorial {
       textAlign(LEFT, CENTER);
       text("- Movimento giocatore", 100, 100);
       
-      image(letter_w, 150, 150);
-      image(letter_a, 130, 170);
-      image(letter_s, 150, 170);
-      image(letter_d, 170, 170);
+      image(letter_w, 150, 130, imageWidth, imageHeight);
+      image(letter_a, 110, 170, imageWidth, imageHeight);
+      image(letter_s, 150, 170, imageWidth, imageHeight);
+      image(letter_d, 190, 170, imageWidth, imageHeight);
       
       // ----- ATTACCO -----
       fill(255);
@@ -40,7 +45,7 @@ class Tutorial {
       textAlign(LEFT, CENTER);
       text("- Attacca i nemici", 100, 230);
       
-      image(letter_j, 150, 270);
+      image(letter_j, 150, 270, imageWidth, imageHeight);
     
       // ----- INTERAZIONE -----
       fill(255);
@@ -48,7 +53,7 @@ class Tutorial {
       textAlign(LEFT, CENTER);
       text("- Interagisci con gli oggetti", 100, 330);
       
-      image(letter_k, 150, 370);
+      image(letter_k, 150, 370, imageWidth, imageHeight);
       
       // ----- UTILIZZA GLI OGGETTI -----
       fill(255);
@@ -56,7 +61,7 @@ class Tutorial {
       textAlign(LEFT, CENTER);
       text("- Utilizza gli oggetti", 100, 430);
       
-      image(letter_l, 150, 470);
+      image(letter_l, 150, 470, imageWidth, imageHeight);
       
        for (Button button : buttons) {
         if (button.isClicked()) {

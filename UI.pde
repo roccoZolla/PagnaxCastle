@@ -124,13 +124,6 @@ class UI {
     uiLayer.textSize(18);
     uiLayer.text(p1.numberOfPotion, 50, 110);
     uiLayer.image(redPotion.sprite, 20, 110, 20, 20);
-    
-    // ------ POZIONE CURATUTTO GIOCATORE -----
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(18);
-    uiLayer.text(p1.numberOfPotion, 100, 110);
-    uiLayer.image(greenPotion.sprite, 70, 110, 20, 20);
 
     // ------- MINIMAPPA ------
     if(isMapActive) displayMinimap();

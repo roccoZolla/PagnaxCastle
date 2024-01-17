@@ -18,10 +18,6 @@ class Player implements Damageable{
   boolean moveINTR;    // interazione k 
   boolean moveUSE;     // utilizza l
   
-  //private static final long ATTACK_COOLDOWN = 2000; // Tempo di cooldown in millisecondi (3 secondi)
-  //private long lastAttackTime = 0;
-  //boolean firstTimeDamageTile = true;
-  
   ConcreteDamageHandler damageTileHandler;
 
   // caratteristiche del player
@@ -31,7 +27,6 @@ class Player implements Damageable{
   int coins;      // numero di monete che ha il giocatore
   Weapon weapon;
   Healer redPotion;  // restituisce due - tre cuori
-  Healer greenPotion; // recupera tutta la vita
   Item golden_keys;
   Item silver_keys;
   int numberOfSilverKeys;

@@ -94,31 +94,6 @@ class Level {
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
     
-    loadAssetsLevel();
-    
-    // togliere di qua
-    //startFloorImage = loadImage(dataPath + "startTile.png");
-    //floorImage = loadImage(dataPath + "floorTile.png");
-    //wallImageNorth = loadImage(dataPath + "northWallTop.png");
-    //hallwayImage = loadImage(dataPath + "hallwayTile.png");
-    //stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
-    //peaksTrapImage = loadImage("data/trap/peaks.png");
-
-    //startFloorImage = loadImage(dataPath + "startTile.png");
-    //floorImage = loadImage(dataPath + "floorTile.png");
-    //// wallImage = loadImage(dataPath + "wallTile.png");
-
-    //wallImageNorth = loadImage(dataPath + "northWallTop.png");
-    //wallImageNorthTop = loadImage(dataPath + "northWallTop.png");
-    //wallImageNorthBottom = loadImage(dataPath + "northWallBottom.png");
-
-    //wallImageSouth = loadImage(dataPath + "southWall.png");
-    //wallImageEast = loadImage(dataPath + "eastWall.png");
-    //wallImageWest = loadImage(dataPath + "westWall.png");
-
-    //hallwayImage = loadImage(dataPath + "hallwayTile.png");
-    //stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
-
     // Genera stanze
     generateRooms();
 
@@ -328,8 +303,8 @@ class Level {
 
       do {
         // posizione casuale intorno al centro della stanza selezionata casualmente
-        x = (int) (room.roomPosition.x + offsetX);
-        y = (int) (room.roomPosition.y + offsetY);
+        x = (int) (room.roomPosition.x + offsetX) + 1;
+        y = (int) (room.roomPosition.y + offsetY) + 1;
 
         // Verifica se la posizione è già occupata da un muro, una parete o un'altra cassa
         positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6 || map[x][y] == 3);

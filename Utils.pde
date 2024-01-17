@@ -5,6 +5,7 @@ int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 boolean isUsingPotion = false;
 boolean isAttacking = false;
 boolean attackExecuted = false;
+boolean isInteracting = false;
 
 // gestione comandi
 void keyPressed() {

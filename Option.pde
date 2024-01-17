@@ -180,6 +180,7 @@ class Option {
   }
 
   void updateEffectsVolume(float volumeEffectsLevel) {
+    click.amp(volumeEffectsLevel);
     pickupCoin.amp(volumeEffectsLevel);
     normalChestOpen.amp(volumeEffectsLevel);
     specialChestOpen.amp(volumeEffectsLevel);

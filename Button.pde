@@ -42,6 +42,7 @@ class Button {
       pressed = true;
       if (isMouseOver()) {
         clicked = true;
+        click.play();
       }
     } else {
       clicked = false;
@@ -63,7 +64,6 @@ class Button {
     // Imposta il colore del pulsante in base allo stato (normale, hover, premuto)
     if (clicked) {
       // Colore quando premuto
-      // click.play();
       fill(255, 0, 0);
     } else if (hover) {
       // Colore quando il mouse è sopra

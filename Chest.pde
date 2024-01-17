@@ -52,9 +52,10 @@ class Chest extends Item {
     double randomValue = Math.random();
     
     // probabilità che la cassa droppi qualcosa
-    double dropHeartProbability = 0.4;    // 40
-    double dropSwordProbability = 0.4;    // 40
-    double dropGoldenKeyProbability = 0.2;  // 20
+    double dropHeartProbability = 0.0;    // 40
+    double dropSwordProbability = 0.0;    // 40
+    double dropGoldenKeyProbability = 0.0;  // 20
+    double dropPotionProbability = 1;
     
     PVector dropPosition = calculateDropPosition();
     
@@ -80,6 +81,15 @@ class Chest extends Item {
         dropGoldenKey.spritePosition = dropPosition;
         dropGoldenKey.isCollectible = true;
         currentLevel.dropItems.add(dropGoldenKey);
+    } else if (randomValue > dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability &&
+      randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability + dropPotionProbability) {
+      println("pozione droppata");
+      // drop della pozione
+      Healer dropPotion = new Healer("dropPotion", 20);
+      dropPotion.sprite = redPotion.sprite;
+      dropPotion.spritePosition = dropPosition;
+      dropPotion.isCollectible = true;
+      currentLevel.dropItems.add(dropPotion);
     }
   }
   
@@ -91,7 +101,6 @@ class Chest extends Item {
     double dropTorchProbability = 0.15;    // 15 % 
     double dropMapProbability = 0.15;     // 15 %
     double dropSuperSwordProbability = 0.30; // 30 %
-    double dropPotionProbability = 0.40;      // 40 %
     
     PVector dropPosition = calculateDropPosition();
     
@@ -120,14 +129,6 @@ class Chest extends Item {
         //// dropSuperSword.sprite = super_sword.sprite;
         //dropSuperSword.spritePosition = dropPosition;
         //currentLevel.dropItems.add(dropSuperSword);
-    } else if (randomValue > dropTorchProbability + dropMapProbability + dropSuperSwordProbability &&
-               randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability + dropPotionProbability) {
-        println("pozione droppata");
-        // drop della pozione
-        //Potion dropPotion = new Potion("dropPotion", 30); // Assumendo che una pozione aggiunga 30 punti vita
-        //dropPotion.sprite = potion.sprite;
-        //dropPotion.spritePosition = dropPosition;
-        //currentLevel.dropItems.add(dropPotion);
     }
   }
   
