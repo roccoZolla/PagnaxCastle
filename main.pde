@@ -26,6 +26,8 @@ PImage letter_j;
 PImage letter_k;
 PImage letter_l;
 
+PImage cross_sprite;
+
 PImage coin_sprite;
 PImage torch_sprite;
 PImage dungeon_map_sprite;
@@ -188,6 +190,7 @@ void setupImages() {
   
   up_buff = loadImage("data/up_buff.png");
   down_buff = loadImage("data/down_buff.png");
+  cross_sprite = loadImage("data/cross.png");
 }
 
 void setupSounds() {

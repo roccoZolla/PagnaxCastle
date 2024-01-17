@@ -58,23 +58,28 @@ class Enemy implements Damageable{
         this.spritePosition.y = newY;
       }
     } else {
-      //  il giocatore non è nelle vicinanze, quindi il nemico si muove casualmente
-      float randomDirection = random(1);
+      // Calcolo delle nuove coordinate
+      float newDirection = random(4);
+      float moveDistance = spriteSpeed;
       
-      float newX = spritePosition.x;
-      float newY = spritePosition.y;
+      float deltaX = 0;
+      float deltaY = 0;
+      
+      if (newDirection < 1) {
+        deltaX = moveDistance;
+      } else if (newDirection < 2) {
+        deltaX = -moveDistance;
+      } else if (newDirection < 3) {
+        deltaY = moveDistance;
+      } else {
+        deltaY = -moveDistance;
+      }
+      
+      float newX = spritePosition.x + deltaX;
+      float newY = spritePosition.y + deltaY;
       
       int roundedX = 0, roundedY = 0;
 
-      if (randomDirection < 0.25) {
-        newX += spriteSpeed;
-      } else if (randomDirection < 0.5) {
-        newX -= spriteSpeed;
-      } else if (randomDirection < 0.75) {
-        newY += spriteSpeed;
-      } else {
-        newY -= spriteSpeed;
-      }
       
       // Verifica se la nuova posizione è valida
       roundedX = round(newX);

@@ -38,7 +38,7 @@ class Game {
     // reimposta lo stato della mappa, disattivo
     ui.deactivateMap();
 
-    p1 = new Player(100, 100, 10, 15, 5, damageTileHandler);
+    p1 = new Player(100, 100, 0, 10, 10, damageTileHandler);
     p1.spritePosition = currentLevel.getStartPosition();
     p1.sprite = spriteRight;
     p1.redPotion = redPotion;
@@ -184,24 +184,34 @@ class Game {
   
   // gestisce l'uso delle pozioni 
   void handlePotionUse() {
-    if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR) && p1.numberOfPotion > 0) {
+    if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR)) {
       if(!isUsingPotion) {
         isUsingPotion = true;
         
-        if (p1.playerHP < p1.playerMaxHP) {
-          drinkPotion.play();
-          p1.playerHP += p1.redPotion.getBonusHp();
+        // se il numero delle pozioni è maggiore di 0
+        if(p1.numberOfPotion > 0) {
+          // se vita minore della vita massima
+          if (p1.playerHP < p1.playerMaxHP) {
+            drinkPotion.play();
+            p1.playerHP += p1.redPotion.getBonusHp();
   
-          if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
+            if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
   
-          p1.numberOfPotion -= 1;
+            // dimunuisci numero di pozioni del giocatore
+            p1.numberOfPotion -= 1;
+          } else {
+            // stampa massaggio di salute al massimo
+          }
         } else {
-          TextDisplay healthFull = new TextDisplay(p1.spritePosition, "Salute al massimo", color(255), 1000);
-          healthFull.display();
+          // stampa x per indicare che non hai piu funzioni
+          float crossImageX = (p1.spritePosition.x * currentLevel.tileSize + (p1.sprite.width / 2));
+          float crossImageY = (p1.spritePosition.y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          spritesLayer.imageMode(CENTER);
+          spritesLayer.image(cross_sprite, crossImageX, crossImageY);
         }
       }
     } else {
-      // resetta la variabile di stato
+      // resetta la variabile
       isUsingPotion = false;
     }
   }
@@ -281,8 +291,8 @@ class Game {
           println("collsione cassa giocatore");
           chest.displayHitbox();
           
-          float letterImageX = (chest.spritePosition.x * currentLevel.tileSize + (chest.sprite.width / 2));
-          float letterImageY = (chest.spritePosition.y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          float letterImageX = (chest.spritePosition.x * currentLevel.tileSize + (p1.sprite.width / 2));
+          float letterImageY = (chest.spritePosition.y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
           spritesLayer.imageMode(CENTER);
           spritesLayer.image(letter_k, letterImageX, letterImageY);
           
@@ -306,8 +316,10 @@ class Game {
                     chest.dropItemSpecialChest();
                   }
                 } else {
-                  TextDisplay noMoreKeyText = new TextDisplay(p1.spritePosition, "Non hai piu chiavi", color(255), 1000);
-                  noMoreKeyText.display();
+                  float crossImageX = (p1.spritePosition.x * currentLevel.tileSize + (chest.sprite.width / 2));
+                  float crossImageY = (p1.spritePosition.y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+                  spritesLayer.imageMode(CENTER);
+                  spritesLayer.image(cross_sprite, crossImageX, crossImageY);
                 }
               } else {  // se la cassa è normale
               // CASSA NORMALE
@@ -326,8 +338,10 @@ class Game {
                     chest.dropItemNormalChest();
                   }
                 } else {
-                  TextDisplay noMoreKeyText = new TextDisplay(p1.spritePosition, "Non hai piu chiavi", color(255), 1000);
-                  noMoreKeyText.display();
+                  float crossImageX = (p1.spritePosition.x * currentLevel.tileSize + (p1.sprite.width / 2));
+                  float crossImageY = (p1.spritePosition.y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+                  spritesLayer.imageMode(CENTER);
+                  spritesLayer.image(cross_sprite, crossImageX, crossImageY);
                 }
               }
             } //<>//
@@ -350,7 +364,6 @@ class Game {
           coin.display();
           
           if(coin.playerCollide(p1)) {
-            println("collsione moneta giocatore");
             coin.collect();  // raccogli la moneta
             p1.collectCoin();
             pickupCoin.play();
