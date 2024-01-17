@@ -13,14 +13,14 @@ class Level {
   int[][] map;
   ArrayList<Room> rooms;
   
-  static final int BACKGROUND_TILE_TYPE = 0;
-  static final int FLOOR_TILE_TYPE = 1;
-  static final int START_ROOM_TILE_TYPE = 2;
-  static final int STAIRS_TILE_TYPE = 3;
-  static final int WALL_PERIMETER_TILE_TYPE = 4;
-  static final int HALLWAY_TILE_TYPE = 5;
-  static final int CHEST_TILE_TYPE = 6;
-  static final int PEAKS_TILE_TYPE = 7;
+  final int BACKGROUND_TILE_TYPE = 0;
+  final int FLOOR_TILE_TYPE = 1;
+  final int START_ROOM_TILE_TYPE = 2;
+  final int STAIRS_TILE_TYPE = 3;
+  final int WALL_PERIMETER_TILE_TYPE = 4;
+  final int HALLWAY_TILE_TYPE = 5;
+  final int CHEST_TILE_TYPE = 6;
+  final int PEAKS_TILE_TYPE = 7;
   
   // probabilita di spawn delle trappole all'interno del livello
   static final double TRAP_SPAWN_PROBABILITY = 0.03;
@@ -70,10 +70,22 @@ class Level {
     //finalRoomPosition = new PVector(int(random(width)), int(random(height)));
     //nextLevelStartRoomPosition = new PVector(int(random(width)), int(random(height)));
   }
+  
+  void loadAssetsLevel() {
+    println("carico gli assets del livello...");
+    startFloorImage = currentZone.startFloorImage;
+    floorImage = currentZone.floorImage;
+    wallImageNorth = currentZone.wallImageNorth;
+    hallwayImage = currentZone.hallwayImage;
+    stairsNextFloorImage = currentZone.stairsNextFloorImage;
+    peaksTrapImage = currentZone.peaksTrapImage;
+    hallwayImage = currentZone.hallwayImage;
+    stairsNextFloorImage = currentZone.stairsNextFloorImage;
+  }
 
   void init() {
     // inizializzo il livello
-    println("inizializzo il livello");
+    println("inizializzo il livello...");
     
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
@@ -82,13 +94,15 @@ class Level {
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
     
+    loadAssetsLevel();
+    
     // togliere di qua
-    startFloorImage = loadImage(dataPath + "startTile.png");
-    floorImage = loadImage(dataPath + "floorTile.png");
-    wallImageNorth = loadImage(dataPath + "northWallTop.png");
-    hallwayImage = loadImage(dataPath + "hallwayTile.png");
-    stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
-    peaksTrapImage = loadImage("data/trap/peaks.png");
+    //startFloorImage = loadImage(dataPath + "startTile.png");
+    //floorImage = loadImage(dataPath + "floorTile.png");
+    //wallImageNorth = loadImage(dataPath + "northWallTop.png");
+    //hallwayImage = loadImage(dataPath + "hallwayTile.png");
+    //stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
+    //peaksTrapImage = loadImage("data/trap/peaks.png");
 
     //startFloorImage = loadImage(dataPath + "startTile.png");
     //floorImage = loadImage(dataPath + "floorTile.png");
@@ -102,8 +116,8 @@ class Level {
     //wallImageEast = loadImage(dataPath + "eastWall.png");
     //wallImageWest = loadImage(dataPath + "westWall.png");
 
-    hallwayImage = loadImage(dataPath + "hallwayTile.png");
-    stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
+    //hallwayImage = loadImage(dataPath + "hallwayTile.png");
+    //stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
 
     // Genera stanze
     generateRooms();

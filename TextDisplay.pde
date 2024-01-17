@@ -172,10 +172,10 @@ class TextDisplay {
   }
 
   boolean isExpired() {
-    println("---- TEMPO ----");
-    println("start Time: " + displayStartTime);
-    println("millis: " + millis());
-    println("diff: " + (millis() - displayStartTime));
+    //println("---- TEMPO ----");
+    //println("start Time: " + displayStartTime);
+    //println("millis: " + millis());
+    //println("diff: " + (millis() - displayStartTime));
     return millis() - displayStartTime >= displayDuration;
   }
 }

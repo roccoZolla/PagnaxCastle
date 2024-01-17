@@ -10,6 +10,14 @@ class Zone {
   int numLevels;
   int chests;
   int enemies;
+  
+  // assets della zona
+  PImage startFloorImage;
+  PImage floorImage; // Immagine per il pavimento
+  PImage wallImageNorth;
+  PImage hallwayImage;         // immagine per i corridoi
+  PImage peaksTrapImage;
+  PImage stairsNextFloorImage; // scale per accedere al livello successivo
 
   ArrayList<Level> levels = new ArrayList<>();
   Level currentLevel;
@@ -26,6 +34,18 @@ class Zone {
     createLevel(filesPath, numberOfRooms);
     
     currentLevel = levels.get(0);
+  }
+  
+  void loadAssetsZone() {
+    println("carico gli assets della zona...");
+    startFloorImage = loadImage(filesPath + "startTile.png");
+    floorImage = loadImage(filesPath + "floorTile.png");
+    wallImageNorth = loadImage(filesPath + "northWallTop.png");
+    hallwayImage = loadImage(filesPath + "hallwayTile.png");
+    stairsNextFloorImage = loadImage(filesPath + "stairsNextFloor.png");
+    peaksTrapImage = loadImage("data/trap/peaks.png");
+    hallwayImage = loadImage(filesPath + "hallwayTile.png");
+    stairsNextFloorImage = loadImage(filesPath + "stairsNextFloor.png");
   }
   
   void createLevel(String filesPath, int numberOfRooms) {

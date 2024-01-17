@@ -50,7 +50,6 @@ class Chest extends Item {
   
   void dropItemNormalChest() {
     double randomValue = Math.random();
-    println("random value:" + randomValue);
     
     // probabilità che la cassa droppi qualcosa
     double dropHeartProbability = 0.4;    // 40
@@ -87,7 +86,6 @@ class Chest extends Item {
   void dropItemSpecialChest() {
     // drop causale dell'item
     double randomValue = Math.random();
-    println("random value:" + randomValue);
     
     // probabilità che la cassa speciale droppi qualcosa
     double dropTorchProbability = 0.15;    // 15 % 

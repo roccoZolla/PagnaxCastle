@@ -23,7 +23,9 @@ class Game {
     damageTileHandler = new ConcreteDamageHandler();
 
     currentZone = castle.currentZone;
+    currentZone.loadAssetsZone();
     currentLevel = currentZone.currentLevel;
+    // inizializzo un livello per volta
     currentLevel.init();
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
@@ -245,9 +247,9 @@ class Game {
   
         if (enemy.playerCollide(p1)) {
           // attacca il giocatore
-          println("---- COLLISIONE NEMICO GIOCATORE ----");
-          println("nemico: " + enemy.spritePosition);
-          println("giocatore: " + p1.spritePosition);
+          //println("---- COLLISIONE NEMICO GIOCATORE ----");
+          //println("nemico: " + enemy.spritePosition);
+          //println("giocatore: " + p1.spritePosition);
           enemy.handleAttack();
         } else {
           // muovi il nemico e resetta la first attack
