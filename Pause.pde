@@ -31,7 +31,7 @@ class Pause {
           previous_state = screen_state;
 
           // cambia lo stato
-          screen_state = GAME_SCREEN;
+          screen_state = ScreenState.GAME_SCREEN;
 
           soundtrack.play();
           break;
@@ -41,7 +41,7 @@ class Pause {
           previous_state = screen_state;
 
           // cambia lo stato
-          screen_state = OPTION_SCREEN;
+          screen_state = ScreenState.OPTION_SCREEN;
           break;
 
         case "back":
@@ -49,7 +49,7 @@ class Pause {
           previous_state = screen_state;
 
           // torna al menu
-          screen_state = MENU_SCREEN;
+          screen_state = ScreenState.MENU_SCREEN;
           
           // stoppa la traccia di sottofondo
           soundtrack.stop();

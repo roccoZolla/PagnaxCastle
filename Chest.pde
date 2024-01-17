@@ -53,9 +53,9 @@ class Chest extends Item {
     println("random value:" + randomValue);
     
     // probabilità che la cassa droppi qualcosa
-    double dropHeartProbability = 0.0;    // 40
-    double dropSwordProbability = 1.0;    // 40
-    double dropGoldenKeyProbability = 0.0;  // 20
+    double dropHeartProbability = 0.4;    // 40
+    double dropSwordProbability = 0.4;    // 40
+    double dropGoldenKeyProbability = 0.2;  // 20
     
     PVector dropPosition = calculateDropPosition();
     

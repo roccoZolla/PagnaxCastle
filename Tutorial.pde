@@ -62,7 +62,7 @@ class Tutorial {
         if (button.isClicked()) {
           switch(button.name) {
             case "back":
-              screen_state = OPTION_SCREEN;
+              screen_state = ScreenState.OPTION_SCREEN;
               break;
             }
         }

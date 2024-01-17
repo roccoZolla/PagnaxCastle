@@ -46,6 +46,7 @@ PImage half_heart_sprite;
 PImage empty_heart_sprite;
 
 PImage up_buff;
+PImage down_buff;
 
 // sound effect
 // float volumeMenuLevel;
@@ -63,17 +64,21 @@ SoundFile playerHurt;
 SoundFile soundtrack;
 boolean isSoundtrackPlaying;
 
+enum ScreenState {
+  MENU_SCREEN,
+  GAME_SCREEN,
+  STORY_SCREEN,
+  WIN_SCREEN,
+  LOSE_SCREEN,
+  PAUSE_SCREEN,
+  OPTION_SCREEN,
+  TUTORIAL_SCREEN
+}
+
 // stato dello schermo
-int screen_state;
-int previous_state;  // salva lo stato precedente
-final int MENU_SCREEN = 0;
-final int GAME_SCREEN = 1;
-final int STORY_SCREEN = 2;
-final int WIN_SCREEN = 3;
-final int LOSE_SCREEN = 4;
-final int PAUSE_SCREEN = 5;
-final int OPTION_SCREEN = 6;
-final int TUTORIAL_SCREEN = 7;
+ScreenState screen_state;
+ScreenState previous_state;  // salva lo stato precedente
+
 
 World castle;
 Zone currentZone;
@@ -109,7 +114,7 @@ void setup() {
   textFont(myFont);
 
   // schermata iniziale
-  screen_state = MENU_SCREEN;
+  screen_state = ScreenState.MENU_SCREEN;
   previous_state = screen_state;
 
   menu = new Menu();
@@ -190,6 +195,7 @@ void setupImages() {
   dungeon_map_sprite = loadImage("data/dungeon_map.png");
   
   up_buff = loadImage("data/up_buff.png");
+  down_buff = loadImage("data/down_buff.png");
 }
 
 void setupSounds() {
@@ -301,7 +307,7 @@ void loseScreen() {
   }
 
   // chiama la funzione
-  writer("hai perso!");
+  writer("hai perso merda!");
 }
 
 void storyScreen(String storyText) {

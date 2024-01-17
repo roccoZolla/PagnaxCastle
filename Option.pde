@@ -150,22 +150,22 @@ class Option {
           
         case "commands":
           // previous_state = screen_state;
-          screen_state = TUTORIAL_SCREEN;
+          screen_state = ScreenState.TUTORIAL_SCREEN;
           break;
 
         case "back":
-          if (previous_state == MENU_SCREEN) {
+          if (previous_state == ScreenState.MENU_SCREEN) {
             // salva lo stato
             previous_state = screen_state;
 
             // torna al menu
-            screen_state = MENU_SCREEN;
-          } else if (previous_state == PAUSE_SCREEN) {
+            screen_state = ScreenState.MENU_SCREEN;
+          } else if (previous_state == ScreenState.PAUSE_SCREEN) {
             // salva lo stato
             previous_state = screen_state;
 
             // torna alla schermata di pausa
-            screen_state = PAUSE_SCREEN;
+            screen_state = ScreenState.PAUSE_SCREEN;
           }
           break;
         }

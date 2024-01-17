@@ -30,7 +30,7 @@ class Menu {
           game.init();
 
           // far partire di qua la creazione dei livelli
-          screen_state = STORY_SCREEN;
+          screen_state = ScreenState.STORY_SCREEN;
           // screen_state = TUTORIAL_SCREEN;
           break;
 
@@ -39,7 +39,7 @@ class Menu {
           previous_state = screen_state;
 
           // cambia lo stato
-          screen_state = OPTION_SCREEN;
+          screen_state = ScreenState.OPTION_SCREEN;
           break;
 
         case "exit":

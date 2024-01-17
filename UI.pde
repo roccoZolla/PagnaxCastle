@@ -63,7 +63,7 @@ class UI {
 
     // pause button
     if (buttons.get(0).isClicked()) {
-      screen_state = PAUSE_SCREEN;
+      screen_state = ScreenState.PAUSE_SCREEN;
       soundtrack.pause();
     }
 

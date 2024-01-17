@@ -8,7 +8,7 @@ boolean attackExecuted = false;
 
 // gestione comandi
 void keyPressed() {
-  if (screen_state == GAME_SCREEN) {
+  if (screen_state == ScreenState.GAME_SCREEN) {
     if (key == 'w' || key == 'W') {
       p1.moveUP = true;
     } else if (key == 's' || key == 'S') {
@@ -29,19 +29,19 @@ void keyPressed() {
     if (!isTyping) {
       switch(previous_state) {
       case STORY_SCREEN:
-        screen_state = GAME_SCREEN;
+        screen_state = ScreenState.GAME_SCREEN;
         break;
 
       case GAME_SCREEN:
-        screen_state = GAME_SCREEN;
+        screen_state = ScreenState.GAME_SCREEN;
         break;
 
       case WIN_SCREEN:
-        screen_state = MENU_SCREEN;
+        screen_state = ScreenState.MENU_SCREEN;
         break;
 
       case LOSE_SCREEN:
-        screen_state = MENU_SCREEN;
+        screen_state = ScreenState.MENU_SCREEN;
         break;
       }
 
@@ -53,20 +53,22 @@ void keyPressed() {
 }
 
 void keyReleased() {
-  if (key == 'w' || key == 'W') {
-    p1.moveUP = false;
-  } else if (key == 's' || key == 'S') {
-    p1.moveDOWN = false;
-  } else if (key == 'a' || key == 'A') {
-    p1.moveLEFT = false;
-  } else if (key == 'd' || key == 'D') {
-    p1.moveRIGHT = false;
-  } else if (key == 'j' || key == 'J') {
-    p1.moveATCK = false;
-  } else if (key == 'k' || key == 'K') {
-    p1.moveINTR = false;
-  } else if (key == 'l' || key == 'L') {
-    p1.moveUSE = false;
+  if(screen_state == ScreenState.GAME_SCREEN) {
+    if (key == 'w' || key == 'W') {
+      p1.moveUP = false;
+    } else if (key == 's' || key == 'S') {
+      p1.moveDOWN = false;
+    } else if (key == 'a' || key == 'A') {
+      p1.moveLEFT = false;
+    } else if (key == 'd' || key == 'D') {
+      p1.moveRIGHT = false;
+    } else if (key == 'j' || key == 'J') {
+      p1.moveATCK = false;
+    } else if (key == 'k' || key == 'K') {
+      p1.moveINTR = false;
+    } else if (key == 'l' || key == 'L') {
+      p1.moveUSE = false;
+    }
   }
 }
 

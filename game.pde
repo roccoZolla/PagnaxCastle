@@ -83,7 +83,7 @@ class Game {
       if (currentLevel.levelIndex == currentZone.numLevels - 1) {
         // controlla se è l'area finale
         if (currentZone.isFinal()) {
-          screen_state = WIN_SCREEN;
+          screen_state = ScreenState.WIN_SCREEN;
         } else {
           // passa alla prossima macroarea
           currentZone = castle.zones.get(currentZone.zoneIndex + 1);
@@ -95,7 +95,7 @@ class Game {
 
           // aggiorna lo score del player
           p1.playerScore +=  200;
-          screen_state = STORY_SCREEN;
+          screen_state = ScreenState.STORY_SCREEN;
         }
       } else {
         // passa al livello successivo - stessa macro area
@@ -135,6 +135,7 @@ class Game {
   }
   
   void updateGame() {
+    // handlePlayerDeath();
     handlePlayerMovement();
     handlePlayerAttack();
     handlePotionUse();
@@ -142,6 +143,13 @@ class Game {
     handleChest();
     handleCoin();
     handleDropItems();
+  }
+  
+  // gestisce la morte del giocatore
+  void handlePlayerDeath() {
+    if(p1.playerHP <= 0) {
+      screen_state = ScreenState.LOSE_SCREEN;
+    }
   }
   
   // gestisce il movimento del player
@@ -358,6 +366,24 @@ class Game {
           spritesLayer.imageMode(CENTER);
           spritesLayer.image(letter_k, letterImageX, letterImageY);
           
+          if(item instanceof Weapon) {
+            Weapon temp = (Weapon) item;
+            
+            if(temp.damage > p1.weapon.damage) {
+              float imageX = (item.spritePosition.x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+              float imageY = (item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+              spritesLayer.imageMode(CENTER);
+              spritesLayer.image(up_buff, imageX, imageY);
+            } 
+            
+            else if(temp.damage < p1.weapon.damage) {
+              float imageX = (item.spritePosition.x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+              float imageY = (item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+              spritesLayer.imageMode(CENTER);
+              spritesLayer.image(down_buff, imageX, imageY);
+            }
+          }
+          
           if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
             if (item instanceof Healer) { // verifico prima che sia un oggetto curativo 
               if(p1.playerHP < p1.playerMaxHP) { // verifico che la salute del giocatore sia minore della salute massima
@@ -372,21 +398,14 @@ class Game {
                 TextDisplay healthFull = new TextDisplay(p1.spritePosition, "Salute al massimo", color(255), 1000);
                 healthFull.display();
               }
-            } else if(item instanceof Weapon) {
-              // avviene lo scambio tra l'arma a terra e l'arma equippagiata
-              // da sistemare
-              Weapon temp = (Weapon) item;
-              if(temp.damage > p1.weapon.damage) {
-                float imageX = (item.spritePosition.x * currentLevel.tileSize + (item.sprite.width / 2));
-                float imageY = (item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-                spritesLayer.imageMode(CENTER);
-                spritesLayer.image(up_buff, imageX, imageY);
-              }
-              //PVector tempPosition = item.spritePosition;
-              //Weapon temp = p1.weapon;
-              //p1.weapon = (Weapon) item;
-              //item = temp;
-              //item.spritePosition = tempPosition;
+            } else if (item instanceof Weapon) {
+              // una volta scambiata l'arma non è piu possibile recuperare quella vecchia
+              // assegna arma a terra al giocatore
+              p1.weapon = (Weapon) item;
+              
+              // rimuovi l'oggetto droppato a terra
+              iterator.remove();
+              
             } else if(item.isCollectible && item.name.equals("dropSilverKey")) {
               // aumenta il numero delle chiavi d'argento
               p1.numberOfSilverKeys++;

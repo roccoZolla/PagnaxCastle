@@ -173,10 +173,10 @@ class Enemy implements Damageable{
     double randomValue = Math.random();
 
     // dropRate degli oggetti droppati dai nemici
-    double dropNothingProbability = 0.1;
-    double dropSilverKeyProbability = 0.2;
-    double dropHeartProbability = 0.3;
-    double dropHalfHeartProbability = 0.4;
+    double dropNothingProbability = 0.3;        // 30 %
+    double dropSilverKeyProbability = 0.1;      // 10 % 
+    double dropHeartProbability = 0.3;          // 30 %
+    double dropHalfHeartProbability = 0.3;      // 30 % 
     
     PVector dropPosition = spritePosition.copy();
 
