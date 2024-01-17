@@ -153,8 +153,8 @@ class TextDisplay {
   }
 
   void display() {
-    //long currentTime = millis();
-    //float elapsedTime = currentTime - displayStartTime;
+    // long currentTime = millis();
+    // float elapsedTime = currentTime - displayStartTime;
     
     if(!isDisplayed) {
       displayStartTime = millis();

@@ -39,23 +39,6 @@ class Coin {
     spritesLayer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
   
-  // verifica collsione
-  // metodo differente dal quello di chest ed enemy
-  // da adattare alla rectmode center
-  //void playerCollide(Player aPlayer) {
-  //  if( aPlayer.spritePosition.x * currentLevel.tileSize < (spritePosition.x * currentLevel.tileSize) + sprite.width  &&
-  //      (aPlayer.spritePosition.x * currentLevel.tileSize) + aPlayer.sprite.width > spritePosition.x * currentLevel.tileSize && 
-  //      aPlayer.spritePosition.y * currentLevel.tileSize < (spritePosition.y * currentLevel.tileSize) + sprite.height && 
-  //      (aPlayer.spritePosition.y * currentLevel.tileSize) + aPlayer.sprite.height > spritePosition.y * currentLevel.tileSize) {
-        
-  //        // collisione rilevata
-  //      collect();  // raccogli la moneta
-  //      p1.collectCoin();
-  //      pickupCoin.play();
-  //      p1.playerScore += scoreValue;
-  //  }
-  //}
-  
   // metodo per il rilevamento delle collisioni 
   boolean playerCollide(Player aPlayer) { 
     if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) > (spritePosition.x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2

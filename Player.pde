@@ -133,18 +133,21 @@ class Player implements Damageable{
   }
   
   boolean isCollidingWithTile(int roundedX, int roundedY) {
-      float playerRight = spritePosition.x * currentLevel.tileSize + (sprite.width / 2);
-      float playerLeft = spritePosition.x * currentLevel.tileSize - (sprite.width / 2);
-      float playerBottom = spritePosition.y * currentLevel.tileSize + (sprite.height / 2);
-      float playerTop = spritePosition.y * currentLevel.tileSize - (sprite.height / 2);
+    float playerRight = spritePosition.x * currentLevel.tileSize + (sprite.width / 2);
+    float playerLeft = spritePosition.x * currentLevel.tileSize - (sprite.width / 2);
+    float playerBottom = spritePosition.y * currentLevel.tileSize + (sprite.height / 2);
+    float playerTop = spritePosition.y * currentLevel.tileSize - (sprite.height / 2);
   
-      float tileRight = roundedX * currentLevel.tileSize + (sprite.width / 2);
-      float tileLeft = roundedX * currentLevel.tileSize - (sprite.width / 2);
-      float tileBottom = roundedY * currentLevel.tileSize + (sprite.height / 2);
-      float tileTop = roundedY * currentLevel.tileSize - (sprite.height / 2);
+    float tileRight = roundedX * currentLevel.tileSize + (currentLevel.tileSize / 2);
+    float tileLeft = roundedX * currentLevel.tileSize - (currentLevel.tileSize / 2);
+    float tileBottom = roundedY * currentLevel.tileSize + (currentLevel.tileSize / 2);
+    float tileTop = roundedY * currentLevel.tileSize - (currentLevel.tileSize / 2);
   
-      return playerRight >= tileLeft && playerLeft <= tileRight &&
-             playerBottom >= tileTop && playerTop <= tileBottom;
+    // Verifica delle collisioni
+    boolean collisionX = playerRight >= tileLeft && playerLeft <= tileRight;
+    boolean collisionY = playerBottom >= tileTop && playerTop <= tileBottom;
+  
+    return collisionX && collisionY;
   }
   
   // override dei metodi dell'interfaccia

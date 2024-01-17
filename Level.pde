@@ -46,7 +46,7 @@ class Level {
   ArrayList<Coin> coins;      // contiene le monete presenti nel livello
 
   // chest che puoi trovare nel livello
-  int spawnLevel = 2; // Livello di spawn
+  int spawnLevel = 3; // Livello di spawn
   ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
   // nemici che puoi trovare nel livello
@@ -73,7 +73,6 @@ class Level {
   
   void loadAssetsLevel() {
     println("carico gli assets del livello...");
-    startFloorImage = currentZone.startFloorImage;
     floorImage = currentZone.floorImage;
     wallImageNorth = currentZone.wallImageNorth;
     hallwayImage = currentZone.hallwayImage;
@@ -101,7 +100,7 @@ class Level {
     connectRooms();
 
     // da rimuovere
-    //map[int(rooms.get(startRoomIndex).getPosition().x)][int(rooms.get(startRoomIndex).getPosition().y)] = 2; // Stanza iniziale
+    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = 2; // Stanza iniziale
     map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = 3; // Stanza finale
 
     // inizializza l'array dei drop items 
@@ -140,7 +139,6 @@ class Level {
     do {
       endRoomIndex = int(random(rooms.size()));
     } while(endRoomIndex == startRoomIndex);
-    
     
     rooms.get(startRoomIndex).startRoom = true;
     rooms.get(endRoomIndex).endRoom = true;
@@ -241,7 +239,8 @@ class Level {
         y = (int) random(rows);
 
         // Verifica se la posizione è già occupata da un muro, una parete, una cassa o un'altra moneta
-        positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6 || map[x][y] == 3);
+        positionOccupied = (map[x][y] == BACKGROUND_TILE_TYPE || map[x][y] == WALL_PERIMETER_TILE_TYPE ||
+                            map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE);
       } while (positionOccupied);
 
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
@@ -261,7 +260,7 @@ class Level {
     boolean positionOccupied;
     Chest chest;
     Room room;  
-    float commonChestSpawnRate = 1.0; // Tasso di spawn per le casse comuni (90%)
+    float commonChestSpawnRate = 1.0; // Tasso di spawn per le casse comuni (60%)
     float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza 
 
     for (int i = 0; i < spawnLevel; i++) {
@@ -307,7 +306,9 @@ class Level {
         y = (int) (room.roomPosition.y + offsetY) + 1;
 
         // Verifica se la posizione è già occupata da un muro, una parete o un'altra cassa
-        positionOccupied = (map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 6 || map[x][y] == 3);
+        positionOccupied = (map[x][y] == BACKGROUND_TILE_TYPE || map[x][y] == WALL_PERIMETER_TILE_TYPE ||
+                            map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE ||
+                            map[x][y] == START_ROOM_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE);
       } while (positionOccupied);
 
       // Aggiungi la cassa alla lista delle casse
@@ -342,7 +343,9 @@ class Level {
           y = int(random(roomPosition.y - roomHeight / 2, roomPosition.y + roomHeight / 2));
 
           // Verifica se la posizione è già occupata da un muro o un altro oggetto
-          positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5 || map[x][y] == 3 || map[x][y] == 2 || map[x][y] == 6;
+          positionOccupied = (map[x][y] == BACKGROUND_TILE_TYPE || map[x][y] == WALL_PERIMETER_TILE_TYPE ||
+                             map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE ||
+                             map[x][y] == START_ROOM_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE);
         } while (positionOccupied);
         
         ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();
@@ -407,7 +410,7 @@ class Level {
         case START_ROOM_TILE_TYPE:
           // Imposta l'immagine per la stanza iniziale (nero)          
           gameScene.imageMode(CENTER);
-          gameScene.image(startFloorImage, centerX, centerY, tileSize, tileSize);
+          gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case STAIRS_TILE_TYPE:
@@ -468,11 +471,9 @@ class Level {
       gameScene.point(rooms.get(i).roomPosition.x, rooms.get(i).roomPosition.y);
     }
   }
-  
-  // verifica la collisione con le scale
-  // collide con le scale
-  
+
   // metodo per il rilevamento delle collisioni 
+  // verifica collisione con le scale
   // da sistemare
   boolean playerCollide(Player aPlayer) { 
     if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2

@@ -38,7 +38,6 @@ class Zone {
   
   void loadAssetsZone() {
     println("carico gli assets della zona...");
-    startFloorImage = loadImage(filesPath + "startTile.png");
     floorImage = loadImage(filesPath + "floorTile.png");
     wallImageNorth = loadImage(filesPath + "northWallTop.png");
     hallwayImage = loadImage(filesPath + "hallwayTile.png");

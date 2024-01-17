@@ -4,8 +4,7 @@ import java.util.Iterator;
 Player p1;
 PImage spriteRight;
 PImage spriteLeft;
-Weapon little_sword;
-Weapon sword;
+Weapon weapon;
 Item silver_key;
 Item golden_key;
 Healer redPotion;
@@ -35,6 +34,10 @@ PImage chest_open_sprite;
 PImage special_chest_close_sprite;
 PImage special_chest_open_sprite;
 PImage rat_enemy_sprite;
+
+// weapons image
+PImage sword_sprite;
+PImage master_sword_sprite;
 
 PImage heart_sprite;
 PImage half_heart_sprite;
@@ -74,12 +77,10 @@ enum ScreenState {
 ScreenState screen_state;
 ScreenState previous_state;  // salva lo stato precedente
 
-
 World castle;
 Zone currentZone;
 Level currentLevel;
 
-float proximityThreshold = 0.5; // Soglia di prossimità consentita per le scale
 String actualLevel;
 
 // titolo del gioco
@@ -127,8 +128,6 @@ void setup() {
 
   // setup sound
   setupSounds();
-
-  // selectedChest = null;
 }
 
 void setupItems() {
@@ -136,8 +135,7 @@ void setupItems() {
   silver_key = new Item(4, "silver_key");
   
   // oggetti per il giocatore
-  little_sword = new Weapon("little_sword", 10);
-  sword = new Weapon("sword", 20);
+  weapon = new Weapon("little_sword", 10);
   
   redPotion = new Healer("red_potion", 20);
 }
@@ -174,8 +172,9 @@ void setupImages() {
   golden_key.sprite = loadImage("data/golden_key.png");
   silver_key.sprite = loadImage("data/silver_key.png");
   
-  little_sword.sprite = loadImage("data/little_sword.png");
-  sword.sprite = loadImage("data/sword.png");
+  weapon.sprite = loadImage("data/little_sword.png");
+  sword_sprite = loadImage("data/sword.png");
+  master_sword_sprite = loadImage("data/master_sword.png");
   
   // healers
   redPotion.sprite = loadImage("data/object/red_potion.png");
@@ -194,7 +193,7 @@ void setupImages() {
 void setupSounds() {
   // volumeMenuLevel = 0.5;
   volumeMusicLevel = 0.0;
-  volumeEffectsLevel = 0.5;
+  volumeEffectsLevel = 0.2;
   
   click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
@@ -235,7 +234,7 @@ void draw() {
     storyScreen(currentZone.storyText);
     break;
     
-    case TUTORIAL_SCREEN:
+  case TUTORIAL_SCREEN:
     // show tutorial
     tutorial.display();
     break;

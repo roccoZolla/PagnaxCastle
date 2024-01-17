@@ -7,8 +7,9 @@ enum DifficultyLevel {
 class Game {
   DifficultyLevel difficultyLevel; // livello di difficolta del gioco
   float holeRadius; // raggio della maschera
-  boolean isTorchDropped; // indica se la torcia è stata droppata
-  boolean isMapDropped; // indica se la mappa è stata droppata
+  boolean isTorchDropped;       // indica se la torcia è stata droppata
+  boolean isMapDropped;         // indica se la mappa è stata droppata
+  boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata
   ConcreteDamageHandler damageTileHandler;
   
   Game() {
@@ -42,7 +43,7 @@ class Game {
     p1.sprite = spriteRight;
     p1.redPotion = redPotion;
     
-    p1.weapon = little_sword;
+    p1.weapon = weapon;
     p1.weapon.spritePosition = p1.spritePosition;
     // println(p1.weapon.spritePosition);
     
@@ -52,8 +53,10 @@ class Game {
     camera = new Camera();
     
     holeRadius = 50;
+    
     isTorchDropped = false;
     isMapDropped = false;
+    isMasterSwordDropped = false;
   }
 
   void display() {   
@@ -87,6 +90,7 @@ class Game {
       if (currentLevel.levelIndex == currentZone.numLevels - 1) {
         // controlla se è l'area finale
         if (currentZone.isFinal()) {
+          // AGGIUNGERE LOGICA PER LA GESTIONE DEL BOSS
           screen_state = ScreenState.WIN_SCREEN;
         } else {
           // passa alla prossima macroarea

@@ -63,6 +63,10 @@ class Tutorial {
       
       image(letter_l, 150, 470, imageWidth, imageHeight);
       
+      // linea che parte dal pulsante back a chiudere a la pagina
+      stroke(255);
+      line(50, height - 100, width - 270, height - 100);
+      
        for (Button button : buttons) {
         if (button.isClicked()) {
           switch(button.name) {

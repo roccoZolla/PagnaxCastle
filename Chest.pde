@@ -52,10 +52,10 @@ class Chest extends Item {
     double randomValue = Math.random();
     
     // probabilità che la cassa droppi qualcosa
-    double dropHeartProbability = 0.0;    // 40
-    double dropSwordProbability = 0.0;    // 40
-    double dropGoldenKeyProbability = 0.0;  // 20
-    double dropPotionProbability = 1;
+    double dropHeartProbability = 0.3;    // 30
+    double dropSwordProbability = 0.3;    // 30
+    double dropGoldenKeyProbability = 0.3;  // 10
+    double dropPotionProbability = 0.3;        // 30
     
     PVector dropPosition = calculateDropPosition();
     
@@ -70,7 +70,7 @@ class Chest extends Item {
         println("spada droppata");
         // drop della spada
         Weapon dropSword = new Weapon("dropSword", 20); // Assumendo che una spada valga 20 danni
-        dropSword.sprite = sword.sprite;
+        dropSword.sprite = sword_sprite;
         dropSword.spritePosition = dropPosition;
         currentLevel.dropItems.add(dropSword);
     } else if (randomValue > dropHeartProbability + dropSwordProbability && randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability) {
@@ -98,9 +98,9 @@ class Chest extends Item {
     double randomValue = Math.random();
     
     // probabilità che la cassa speciale droppi qualcosa
-    double dropTorchProbability = 0.15;    // 15 % 
-    double dropMapProbability = 0.15;     // 15 %
-    double dropSuperSwordProbability = 0.30; // 30 %
+    double dropTorchProbability = 0.3;    // 15 % 
+    double dropMapProbability = 0.3;     // 15 %
+    double dropSuperSwordProbability = 0.4; // 30 %
     
     PVector dropPosition = calculateDropPosition();
     
@@ -113,7 +113,9 @@ class Chest extends Item {
         dropTorch.isCollectible = true;
         currentLevel.dropItems.add(dropTorch);
         game.isTorchDropped = true;
-    } else if (randomValue > dropTorchProbability && randomValue <= dropTorchProbability + dropMapProbability && !game.isMapDropped) {
+    } else if (randomValue > dropTorchProbability 
+      && randomValue <= dropTorchProbability + dropMapProbability 
+      && !game.isMapDropped) {
         println("mappa droppata");
         // drop della mappa
         Item dropMap = new Item("dropMap");
@@ -122,13 +124,16 @@ class Chest extends Item {
         dropMap.isCollectible = true;
         currentLevel.dropItems.add(dropMap);
         game.isMapDropped = true;
-    } else if (randomValue > dropTorchProbability + dropMapProbability && randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability) {
+    } else if (randomValue > dropTorchProbability + dropMapProbability 
+      && randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability 
+      && !game.isMasterSwordDropped) {
         println("super spada droppata");
         // drop della super spada
-        //Weapon dropSuperSword = new Weapon("dropSuperSword", 50); // Assumendo che una super spada valga 50 danni
-        //// dropSuperSword.sprite = super_sword.sprite;
-        //dropSuperSword.spritePosition = dropPosition;
-        //currentLevel.dropItems.add(dropSuperSword);
+        Weapon dropMasterSword = new Weapon("masterSword", 50); // Assumendo che una super spada valga 50 danni
+        dropMasterSword.sprite = master_sword_sprite;
+        dropMasterSword.spritePosition = dropPosition;
+        currentLevel.dropItems.add(dropMasterSword);
+        game.isMasterSwordDropped = true;
     }
   }
   

@@ -131,12 +131,10 @@ class Option {
           break;
           
         case "difficultyRight":
-          println("difficultyRight");
           changeDifficulty(true);
           break;
         
         case "difficultyLeft":
-          println("difficultyLeft");
           changeDifficulty(false);
           break;
           
