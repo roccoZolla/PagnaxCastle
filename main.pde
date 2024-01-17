@@ -113,11 +113,11 @@ void setup() {
   previous_state = screen_state;
 
   menu = new Menu();
+  game = new Game();
   pauseMenu = new Pause();
   optionMenu = new Option();
   tutorial = new Tutorial();
   ui = new UI();
-  game = new Game();
   
   // setup items (PROVVISORIO)
   setupItems();

@@ -1,8 +1,20 @@
+enum DifficultyLevel {
+  FACILE,
+  NORMALE,
+  DIFFICILE
+}
+
 class Game {
+  DifficultyLevel difficultyLevel; // livello di difficolta del gioco
   float holeRadius; // raggio della maschera
   boolean isTorchDropped; // indica se la torcia è stata droppata
   boolean isMapDropped; // indica se la mappa è stata droppata
   ConcreteDamageHandler damageTileHandler;
+  
+  Game() {
+    // di default la difficolta del gioco è impostata su normale
+    difficultyLevel = DifficultyLevel.NORMALE;
+  }
   
   void init() {
     // create world

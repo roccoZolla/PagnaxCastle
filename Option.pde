@@ -3,6 +3,8 @@ class Option {
   ArrayList<Button> buttons;
   PGraphics optionLayer;
   
+  String difficultyLevel;
+  
   int effectsVolume;
   int musicVolume;
 
@@ -15,11 +17,13 @@ class Option {
     buttons.add(new Button(width - 100, 210, 50, 50, "musicUp", "+", ""));   // selettore volume musica
     buttons.add(new Button(width - 250, 210, 50, 50, "musicDown", "-", ""));
     buttons.add(new Button(width - 100, 280, 50, 50, "difficultyRight", ">", ""));    // selettore difficolta
-    buttons.add(new Button(width - 250, 280, 50, 50, "difficultyLeft", "<", ""));
+    buttons.add(new Button(width - 290, 280, 50, 50, "difficultyLeft", "<", ""));
     buttons.add(new Button(width - 100, 350, 50, 50, "languageRight", ">", ""));    // selettore lingua
-    buttons.add(new Button(width - 250, 350, 50, 50, "languageLeft", "<", ""));
+    buttons.add(new Button(width - 290, 350, 50, 50, "languageLeft", "<", ""));
     buttons.add(new Button(100, 420, 200, 80, "commands", "Comandi", ""));
     buttons.add(new Button(width - 250, height - 150, 200, 80, "back", "Back", ""));
+    
+    updateDifficultyText();
     
     effectsVolume = 0;
     musicVolume = 0;
@@ -71,11 +75,16 @@ class Option {
     int musicVolume = (int) (volumeMusicLevel * 10);
     optionLayer.text(musicVolume, width - 160, 235);
 
-    // scritta difficolta
+    // ----- DIFFICOLTA -----
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
     optionLayer.text("Difficolta: ", 100, 290);
+    
+    optionLayer.fill(255);
+    optionLayer.textSize(30);
+    optionLayer.textAlign(LEFT, CENTER);
+    optionLayer.text(difficultyLevel,  width - 230, 305);
 
     // scritta lingua
     optionLayer.fill(255);
@@ -123,10 +132,12 @@ class Option {
           
         case "difficultyRight":
           println("difficultyRight");
+          changeDifficulty(true);
           break;
         
         case "difficultyLeft":
           println("difficultyLeft");
+          changeDifficulty(false);
           break;
           
         case "languageRight":
@@ -179,5 +190,43 @@ class Option {
 
   void updateMusicVolume(float volumeMusicLevel) {
     soundtrack.amp(volumeMusicLevel);
+  }
+  
+  // aggiorna il testo da mostrare in base alla difficolta corrente
+  void updateDifficultyText() {
+    switch(game.difficultyLevel){
+      case FACILE:
+        difficultyLevel = "Facile";
+        break;
+      
+      case NORMALE:       
+        difficultyLevel = "Normale";
+      break;
+      
+      case DIFFICILE:
+        difficultyLevel = "Difficile";
+      break;
+    }
+  }
+  
+  // incrementa o decrementa il livello di difficolta
+  void changeDifficulty(boolean increases) {
+    if (game.difficultyLevel == DifficultyLevel.DIFFICILE && increases) {
+      // se il livello di difficolta è massimo non fare niente 
+      return;
+    }
+    
+    else if(game.difficultyLevel == DifficultyLevel.FACILE && !increases) {
+      // se il livello di difficolta è il minimo non fare niente
+      return;
+    }
+    
+    if (increases) {
+      game.difficultyLevel = DifficultyLevel.values()[(game.difficultyLevel.ordinal() + 1) % DifficultyLevel.values().length];
+    } else {
+      game.difficultyLevel = DifficultyLevel.values()[(game.difficultyLevel.ordinal() - 1 + DifficultyLevel.values().length) % DifficultyLevel.values().length];
+    }
+    
+    updateDifficultyText();
   }
 }
