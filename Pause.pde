@@ -33,7 +33,7 @@ class Pause {
           // cambia lo stato
           screen_state = ScreenState.GAME_SCREEN;
 
-          soundtrack.play();
+          dungeon_background.play();
           break;
 
         case "option":
@@ -52,7 +52,8 @@ class Pause {
           screen_state = ScreenState.MENU_SCREEN;
           
           // stoppa la traccia di sottofondo
-          soundtrack.stop();
+          dungeon_background.stop();
+          isDungeonBackgroundPlaying = false;
           break;
         }
       }

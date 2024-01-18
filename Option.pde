@@ -180,15 +180,16 @@ class Option {
   void updateEffectsVolume(float volumeEffectsLevel) {
     click.amp(volumeEffectsLevel);
     pickupCoin.amp(volumeEffectsLevel);
-    normalChestOpen.amp(volumeEffectsLevel);
-    specialChestOpen.amp(volumeEffectsLevel);
+    chest_open.amp(volumeEffectsLevel);
     drinkPotion.amp(volumeEffectsLevel);
     swordAttack.amp(volumeEffectsLevel);
-    playerHurt.amp(volumeEffectsLevel);
+    hurt_sound.amp(volumeEffectsLevel);
+    enemy_death_sound.amp(volumeEffectsLevel);
   }
 
   void updateMusicVolume(float volumeMusicLevel) {
-    soundtrack.amp(volumeMusicLevel);
+    menu_background.amp(volumeMusicLevel);
+    dungeon_background.amp(volumeMusicLevel);
   }
   
   // aggiorna il testo da mostrare in base alla difficolta corrente

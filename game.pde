@@ -58,6 +58,14 @@ class Game {
     isMapDropped = false;
     isMasterSwordDropped = false;
   }
+  
+  // metodo che inizializza il necessario per la battaglia finale
+  void initBossBattle() {
+    // inizializza la variabile relativa al boss
+    
+    // inizializza il livello del boss
+    
+  }
 
   void display() {   
     gameScene.beginDraw();
@@ -92,6 +100,8 @@ class Game {
         if (currentZone.isFinal()) {
           // AGGIUNGERE LOGICA PER LA GESTIONE DEL BOSS
           screen_state = ScreenState.WIN_SCREEN;
+          screen_state = ScreenState.BOSS_SCREEN;
+          initBossBattle();
         } else {
           // passa alla prossima macroarea
           currentZone = castle.zones.get(currentZone.zoneIndex + 1);
@@ -172,6 +182,7 @@ class Game {
     if (p1.moveATCK && !p1.moveUSE && !p1.moveINTR) {
       if (!isAttacking && !attackExecuted) {
         p1.drawPlayerWeapon();
+        swordAttack.play();
         isAttacking = true;
       }
     } else {
@@ -232,11 +243,9 @@ class Game {
         }
   
         if (isAttacking && !attackExecuted) {
-          // da sistemare
-          // swordAttack.play();
           if (p1.collidesWith(enemy)) {
             // riproduci il suono di hit del nemico
-            // enemy_hurt.play();
+            hurt_sound.play();
             
             // vita meno danno dell'arma
             enemy.enemyHP -= p1.weapon.getDamage();
@@ -253,7 +262,8 @@ class Game {
             // possibilita di droppare l'oggetto
             if (enemy.enemyHP <= 0) {
               p1.playerScore += enemy.scoreValue;
-              
+              // riproduci suono morte nemico
+              enemy_death_sound.play();
               // metodo per la generazione di un item casuale da droppare
               enemy.dropItem();
           
@@ -306,7 +316,7 @@ class Game {
                   if (chest.getOpenWith().equals(p1.golden_keys)) {
                     // imposta la cassa come aperta
                     chest.setIsOpen(true);
-                    specialChestOpen.play();
+                    chest_open.play();
                     // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
                     chest.sprite = special_chest_open_sprite;
       
@@ -327,7 +337,7 @@ class Game {
                   if (chest.getOpenWith().equals(p1.silver_keys)) {
                     // imposta la cassa come aperta
                     chest.setIsOpen(true);
-                    normalChestOpen.play();
+                    chest_open.play();
                     // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
                     chest.sprite = chest_open_sprite;
       

@@ -61,6 +61,6 @@ class ConcreteDamageHandler extends DamageHandler {
 
   @Override
   void playHurtSound() {
-    playerHurt.play();
+    hurt_sound.play();
   }
 }

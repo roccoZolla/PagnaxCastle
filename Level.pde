@@ -161,8 +161,6 @@ class Level {
     PVector roomPosition = new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2);
     Room room = new Room(roomWidth, roomHeight, roomPosition);
     rooms.add(room);
-    
-    // rooms.add(new Room(roomWidth, roomHeight, new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2)));
 
     // Estrai i muri dell'immagine dei muri delle stanze
     for (int x = roomX; x < roomX + roomWidth; x++) {
@@ -175,11 +173,10 @@ class Level {
           
           // spawn delle trappole all'interno delle stanze
           // da migliorare
-          double trapSpawnProbability = TRAP_SPAWN_PROBABILITY;
           double randomValue = random(1);
   
           // Se il numero casuale è inferiore o uguale alla probabilità di spawn, aggiungi una trappola
-          if (randomValue <= trapSpawnProbability) {
+          if (randomValue <= TRAP_SPAWN_PROBABILITY) {
             // Imposta il tile come trappola
             map[x][y] = PEAKS_TILE_TYPE; 
           }
@@ -455,20 +452,6 @@ class Level {
           break;
         }
       }
-    }
-  }
-  
-  void displayRooms() {
-    for(int i = 0; i < rooms.size(); i++) {
-      gameScene.rectMode(CENTER);
-      gameScene.fill(0); // nero
-      gameScene.stroke(255, 0, 0);
-      gameScene.rect(rooms.get(i).roomPosition.x, rooms.get(i).roomPosition.y, rooms.get(i).roomWidth, rooms.get(i).roomHeight);
-      
-      gameScene.fill(255, 0, 0);
-      gameScene.stroke(255, 0, 0);
-      gameScene.strokeWeight(1);
-      gameScene.point(rooms.get(i).roomPosition.x, rooms.get(i).roomPosition.y);
     }
   }
 

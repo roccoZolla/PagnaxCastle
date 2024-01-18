@@ -1,6 +1,9 @@
 class UI {
   ArrayList<Button> buttons;
   PGraphics uiLayer;
+  
+  // ----- CUORI BOSS -----
+  boolean isBossBattle;  // indica se il giocatore si trova nel livello finale
 
   // ------ CUORI GIOCATORE ------
   PImage heartFull;
@@ -8,6 +11,7 @@ class UI {
   PImage emptyHeart;
 
   int heartsToDisplay;
+  int heartX;  
   int heartY;
   int heartWidth = 20; // Larghezza di un cuore
   int heartHeight = 20; // Altezza di un cuore
@@ -40,7 +44,8 @@ class UI {
     miniMapX = 20;
     miniMapY = uiLayer.height - miniMapSize - 10;
     
-    isMapActive = false;
+    isBossBattle = true;    // di base, false
+    isMapActive = false;    // di base, false, si attiva con la minimappa trovata nei livelli
 
     buttons = new ArrayList();
 
@@ -64,33 +69,14 @@ class UI {
     // pause button
     if (buttons.get(0).isClicked()) {
       screen_state = ScreenState.PAUSE_SCREEN;
-      soundtrack.pause();
+      dungeon_background.pause();
     }
 
     buttons.get(0).update();
     buttons.get(0).display(uiLayer);
 
     // ------ CUORI GIOCATORE ------
-    // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
-    heartsToDisplay = p1.playerHP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
-    heartY = 50;
-    maxHearts = p1.playerMaxHP / 10;
-    isHalfHeart = p1.playerHP % 10 >= 5; // Controlla se c'è un cuore a metà
-
-    // Disegna i cuori pieni
-    for (int i = 0; i < heartsToDisplay; i++) {
-      uiLayer.image(heartFull, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
-    }
-
-    // Disegna il cuore a metà se necessario
-    if (isHalfHeart) {
-      uiLayer.image(halfHeart, 20 + heartsToDisplay * (heartWidth + 5), heartY, heartWidth, heartHeight);
-    }
-
-    // Disegna i cuori vuoti per completare il numero massimo di cuori
-    for (int i = heartsToDisplay + (isHalfHeart ? 1 : 0); i < maxHearts; i++) {
-      uiLayer.image(emptyHeart, 20 + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
-    }
+    displayPlayerHearts();
 
     // ------ SCORE GIOCATORE ------
     uiLayer.fill(255);
@@ -148,10 +134,72 @@ class UI {
     uiLayer.fill(255);
     uiLayer.textSize(18);
     uiLayer.text(p1.weapon.name, width - 95, height - 40);
+    
+    // se il giocatore si trova nel livello del boss mostra i cuori del boss
+    if(isBossBattle) displayBossHearts();
+    
+    // optionLayer.stroke(255);
+    // optionLayer.line(50, height - 100, width - 270, height - 100);
+    
 
     uiLayer.endDraw();
     
     image(uiLayer, 0, 0);
+  }
+  
+  void displayPlayerHearts() {
+     // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
+    heartsToDisplay = p1.playerHP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
+    heartX = 20;
+    heartY = 50;
+    maxHearts = p1.playerMaxHP / 10;
+    isHalfHeart = p1.playerHP % 10 >= 5; // Controlla se c'è un cuore a metà
+
+    // Disegna i cuori pieni
+    for (int i = 0; i < heartsToDisplay; i++) {
+      uiLayer.image(heartFull, heartX + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
+    }
+
+    // Disegna il cuore a metà se necessario
+    if (isHalfHeart) {
+      uiLayer.image(halfHeart, heartX + heartsToDisplay * (heartWidth + 5), heartY, heartWidth, heartHeight);
+    }
+
+    // Disegna i cuori vuoti per completare il numero massimo di cuori
+    for (int i = heartsToDisplay + (isHalfHeart ? 1 : 0); i < maxHearts; i++) {
+      uiLayer.image(emptyHeart, heartX + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
+    }
+  }
+  
+  void displayBossHearts() {
+    // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
+    heartsToDisplay = p1.playerHP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
+    // da sistemare si deve trovare esattamente al centro
+    heartX = uiLayer.width / 2 - 100;
+    heartY = uiLayer.height - 100;
+    maxHearts = p1.playerMaxHP / 10;
+    isHalfHeart = p1.playerHP % 10 >= 5; // Controlla se c'è un cuore a metà
+    
+    // uiLayer.textFont(myFont);
+    uiLayer.fill(255);
+    // uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(30);
+    uiLayer.text("BOSS", heartX, heartY - 30);
+
+    // Disegna i cuori pieni
+    for (int i = 0; i < heartsToDisplay; i++) {
+      uiLayer.image(heartFull, heartX + i * (heartWidth + 15), heartY, heartWidth + 10, heartHeight + 10);
+    }
+
+    // Disegna il cuore a metà se necessario
+    if (isHalfHeart) {
+      uiLayer.image(halfHeart, heartX + heartsToDisplay * (heartWidth + 15), heartY, heartWidth + 10, heartHeight + 10);
+    }
+
+    // Disegna i cuori vuoti per completare il numero massimo di cuori
+    for (int i = heartsToDisplay + (isHalfHeart ? 1 : 0); i < maxHearts; i++) {
+      uiLayer.image(emptyHeart, heartX + i * (heartWidth + 15), heartY, heartWidth + 10, heartHeight + 10);
+    }
   }
   
   void activateMap() {

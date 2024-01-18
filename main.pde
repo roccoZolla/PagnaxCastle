@@ -55,14 +55,16 @@ float volumeEffectsLevel;    // oscilla tra 0.0 e 1.0
 
 SoundFile click;
 SoundFile pickupCoin;
-SoundFile normalChestOpen;
-SoundFile specialChestOpen;
+SoundFile chest_open;
 SoundFile drinkPotion;
 SoundFile swordAttack;
-SoundFile playerHurt;
+SoundFile hurt_sound;
+SoundFile enemy_death_sound;
 
-SoundFile soundtrack;
-boolean isSoundtrackPlaying;
+SoundFile menu_background;
+boolean isMenuBackgroundPlaying;
+SoundFile dungeon_background;
+boolean isDungeonBackgroundPlaying;
 
 enum ScreenState {
   MENU_SCREEN,
@@ -72,7 +74,8 @@ enum ScreenState {
   LOSE_SCREEN,
   PAUSE_SCREEN,
   OPTION_SCREEN,
-  TUTORIAL_SCREEN
+  TUTORIAL_SCREEN,
+  BOSS_SCREEN
 }
 
 // stato dello schermo
@@ -194,32 +197,36 @@ void setupImages() {
 }
 
 void setupSounds() {
-  // volumeMenuLevel = 0.5;
   volumeMusicLevel = 0.0;
-  volumeEffectsLevel = 0.2;
+  volumeEffectsLevel = 0.0;
   
   click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
-  normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
-  specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
+  chest_open = new SoundFile(this, "data/sound/chest_open.wav");
   drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
   
-  swordAttack = new SoundFile(this, "data/sound/swordAttack.wav");
-  playerHurt = new SoundFile(this, "data/sound/player_hurt.wav");
-
-  soundtrack = new SoundFile(this, "data/sound/background/dungeon_soundtrack.wav");
-  isSoundtrackPlaying = false;
+  swordAttack = new SoundFile(this, "data/sound/sword_hit.wav");
+  hurt_sound = new SoundFile(this, "data/sound/hurt_sound.wav");
+  
+  enemy_death_sound = new SoundFile(this, "data/sound/enemy_death.wav");
+  
+  menu_background = new SoundFile(this, "data/sound/background/menu_background.wav");
+  isMenuBackgroundPlaying = false;
+  
+  dungeon_background = new SoundFile(this, "data/sound/background/dungeon_background.wav");
+  isDungeonBackgroundPlaying = false;
   
   click.amp(volumeEffectsLevel);
   
   pickupCoin.amp(volumeEffectsLevel);
-  normalChestOpen.amp(volumeEffectsLevel);
-  specialChestOpen.amp(volumeEffectsLevel);
+  chest_open.amp(volumeEffectsLevel);
   drinkPotion.amp(volumeEffectsLevel);
   swordAttack.amp(volumeEffectsLevel);
-  playerHurt.amp(volumeEffectsLevel);
+  hurt_sound.amp(volumeEffectsLevel);
+  enemy_death_sound.amp(volumeEffectsLevel);
 
-  soundtrack.amp(volumeMusicLevel);
+  menu_background.amp(volumeMusicLevel);
+  dungeon_background.amp(volumeMusicLevel);
 }
 
 void draw() {
@@ -229,11 +236,21 @@ void draw() {
   switch(screen_state) {
   case MENU_SCREEN:
     // show menu
+    if(!isMenuBackgroundPlaying) {
+      menu_background.play();
+      isMenuBackgroundPlaying = true;
+    }
+    
     menu.display();
     break;
 
   case STORY_SCREEN:
     // show story
+    if(isMenuBackgroundPlaying) {
+      menu_background.stop();
+      isMenuBackgroundPlaying = false;
+    }
+    
     storyScreen(currentZone.storyText);
     break;
     
@@ -243,14 +260,19 @@ void draw() {
     break;
 
   case GAME_SCREEN:
-    if (!isSoundtrackPlaying) {
-      soundtrack.play();
-      isSoundtrackPlaying = true;
+    if (!isDungeonBackgroundPlaying) {
+      dungeon_background.play();
+      isDungeonBackgroundPlaying = true;
     }
 
     // show game screen
     game.display();
     ui.display();
+    break;
+  
+  case BOSS_SCREEN:
+    // game.displayBossBattle();
+    // ui.display();
     break;
 
   case WIN_SCREEN:
@@ -281,9 +303,9 @@ void winScreen() {
   previous_state = screen_state;
   
   // stoppa la soundtrack
-  if (isSoundtrackPlaying) {
-    soundtrack.stop();
-    isSoundtrackPlaying = false;
+  if (isDungeonBackgroundPlaying) {
+    dungeon_background.stop();
+    isDungeonBackgroundPlaying = false;
   }
 
   // chiama la funzione
@@ -296,9 +318,9 @@ void loseScreen() {
   previous_state = screen_state;
   
   // stoppa la soundtrack
-  if (isSoundtrackPlaying) {
-    soundtrack.stop();
-    isSoundtrackPlaying = false;
+  if (isDungeonBackgroundPlaying) {
+    dungeon_background.stop();
+    isDungeonBackgroundPlaying = false;
   }
 
   // chiama la funzione
