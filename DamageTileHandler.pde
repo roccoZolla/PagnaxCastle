@@ -32,8 +32,8 @@ abstract class DamageHandler {
     damageHitText.display();
     playHurtSound();
     
-    println("---- DANNO DA DAMAGE TILE ----");
-    println("posizione: " + damageable.getPosition());
+    //println("---- DANNO DA DAMAGE TILE ----");
+    //println("posizione: " + damageable.getPosition());
     
     spritesLayer.rectMode(CENTER);
     spritesLayer.fill(255, 0, 0); // nero

@@ -5,12 +5,15 @@ class World {
   
   World() {
    System.out.println("Creazione del mondo...");
-    Zone cellar = new Zone(0, "Castle", 2, "data/zone_1/", 8);
+    Zone cellar = new Zone(0, "Castle", 2, "data/zone_1/", 2);
     cellar.storyText = "La principessa Chela e' in pericolo. E' stata rapita dallo stregone Pagnax.\n" +
     "Vai al castello del cattivone ma vieni subito scoperto e mandato nelle cantine del castello.\n" +
     "Devi risalire il castello fino alle sale reali per sconfiggere il cattivone di turno.\n";
     
     cellar.setFinalArea(true);
+    
+    println("numero di livello: " + cellar.numLevels);
+    println("size levels: " + cellar.levels.size());
     
     //Macroarea piano_base = new Macroarea(1, "piano_base", 1, "data/zone_2/");
     //piano_base.setStory("Sei arrivato al piano base daje roma daje!\n");   

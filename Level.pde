@@ -4,15 +4,16 @@ class Level {
   String dataPath;
   boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
   int numberOfRooms;
+  boolean isFinalLevel;      // indica se è il livello finale, composto da una singola stanza, di base false
 
   int damagePeaks;      // danno delle trappole
-  
+
   // rooms
   int tileSize = 16;
   int cols, rows;
   int[][] map;
   ArrayList<Room> rooms;
-  
+
   final int BACKGROUND_TILE_TYPE = 0;
   final int FLOOR_TILE_TYPE = 1;
   final int START_ROOM_TILE_TYPE = 2;
@@ -21,12 +22,12 @@ class Level {
   final int HALLWAY_TILE_TYPE = 5;
   final int CHEST_TILE_TYPE = 6;
   final int PEAKS_TILE_TYPE = 7;
-  
+
   // probabilita di spawn delle trappole all'interno del livello
   static final double TRAP_SPAWN_PROBABILITY = 0.03;
-  
+
   // vita dei nemici
-  static final int ENEMY_HP = 30; 
+  static final int ENEMY_HP = 30;
 
   // attributi
   PImage startFloorImage;
@@ -46,14 +47,14 @@ class Level {
   ArrayList<Coin> coins;      // contiene le monete presenti nel livello
 
   // chest che puoi trovare nel livello
-  int spawnLevel = 3; // Livello di spawn
+  int spawnLevel = 1; // Livello di spawn delle chest
   ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
   // nemici che puoi trovare nel livello
   ArrayList<Enemy> enemies; // Lista dei nemici
-  
+
   ArrayList<Item> dropItems; // lista degli oggetti caduti a terra
-  
+
   PVector finalRoomPosition;
   PVector nextLevelStartRoomPosition;
 
@@ -67,10 +68,12 @@ class Level {
     this.dataPath = dataPath;
     this.numberOfRooms = numberOfRooms;
     this.damagePeaks = 5;
+
+    this.isFinalLevel = false;
     //finalRoomPosition = new PVector(int(random(width)), int(random(height)));
     //nextLevelStartRoomPosition = new PVector(int(random(width)), int(random(height)));
   }
-  
+
   void loadAssetsLevel() {
     println("carico gli assets del livello...");
     floorImage = currentZone.floorImage;
@@ -85,14 +88,14 @@ class Level {
   void init() {
     // inizializzo il livello
     println("inizializzo il livello...");
-    
+
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
     rows = height / tileSize;
 
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
-    
+
     // Genera stanze
     generateRooms();
 
@@ -100,22 +103,46 @@ class Level {
     connectRooms();
 
     // da rimuovere
-    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = 2; // Stanza iniziale
-    map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = 3; // Stanza finale
+    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
+    map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = STAIRS_TILE_TYPE; // Stanza finale
 
-    // inizializza l'array dei drop items 
+    // inizializza l'array dei drop items
     // inizialmente è vuoto
     dropItems = new ArrayList<>();
-    
-    // genera le chest 
+
+    // genera le chest
     generateRandomChests();
-    
+
     // aggiungi i nemici
     // da chiamare quando il giocatore entra nella stanza
     generateEnemies();
 
     // genera le monete
     generateRandomCoins();
+  }
+
+  void initBossLevel() {
+    println("inizializzo il livello finale...");
+
+    // logica per la creazione del livello (mappa del livello)
+    cols = width / tileSize;
+    rows = height / tileSize;
+
+    map = new int[cols][rows];
+    rooms = new ArrayList<Room>();
+
+    // Genera stanze
+    generateRooms();
+
+    // da rimuovere
+    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
+    
+    println("----- BOSS ROOM -----");
+    println("start room index: " + startRoomIndex);
+    println("end room index: " + endRoomIndex);
+    println("start position END LEVEL: " + getStartPosition());
+    println("end position END LEVEL: " + getEndRoomPosition());
+    // genera il boss
   }
 
   PVector getStartPosition() {
@@ -129,17 +156,19 @@ class Level {
 
   // metodi per la generazione delle stanze
   private void generateRooms() {
+    println("genero lo stanze...");
     for (int i = 0; i < numberOfRooms; i++) {
       generateRandomRoom();
     }
 
     // stanza iniziale e finale scelte casualmente
     startRoomIndex = int(random(rooms.size()));
-    
+
     do {
+      println("assegnazione posizione finale...");
       endRoomIndex = int(random(rooms.size()));
-    } while(endRoomIndex == startRoomIndex);
-    
+    } while (endRoomIndex == startRoomIndex && !isFinalLevel);
+
     rooms.get(startRoomIndex).startRoom = true;
     rooms.get(endRoomIndex).endRoom = true;
   }
@@ -155,9 +184,9 @@ class Level {
       roomY = int(random(1, rows - roomHeight - 1));
       roomOverlap = checkRoomOverlap(roomX, roomY, roomWidth, roomHeight);
     } while (roomOverlap);
-    
+
     // crea nuova stanza e aggiungila alla lista delle stanze
-    // mi salvo le coordinate del centro della stanza 
+    // mi salvo le coordinate del centro della stanza
     PVector roomPosition = new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2);
     Room room = new Room(roomWidth, roomHeight, roomPosition);
     rooms.add(room);
@@ -170,15 +199,15 @@ class Level {
           map[x][y] = WALL_PERIMETER_TILE_TYPE; // Imposta il tile come muro del perimetro
         } else {
           map[x][y] = FLOOR_TILE_TYPE; // Imposta il tile come pavimento
-          
+
           // spawn delle trappole all'interno delle stanze
           // da migliorare
           double randomValue = random(1);
-  
+
           // Se il numero casuale è inferiore o uguale alla probabilità di spawn, aggiungi una trappola
           if (randomValue <= TRAP_SPAWN_PROBABILITY) {
             // Imposta il tile come trappola
-            map[x][y] = PEAKS_TILE_TYPE; 
+            map[x][y] = PEAKS_TILE_TYPE;
           }
         }
       }
@@ -198,6 +227,7 @@ class Level {
   }
 
   private void connectRooms() {
+    println("collego le stanze...");
     for (int i = 0; i < rooms.size() - 1; i++) {
       PVector room1 = rooms.get(i).roomPosition.copy();
       PVector room2 = rooms.get(i + 1).roomPosition.copy();
@@ -223,6 +253,7 @@ class Level {
 
   // generatore di monete casuale
   private void generateRandomCoins() {
+    println("genero le monete...");
     coins = new ArrayList<>();
     boolean positionOccupied;
     int totalCoins = 20; // Modifica il numero di monete da generare come preferisci
@@ -237,7 +268,7 @@ class Level {
 
         // Verifica se la posizione è già occupata da un muro, una parete, una cassa o un'altra moneta
         positionOccupied = (map[x][y] == BACKGROUND_TILE_TYPE || map[x][y] == WALL_PERIMETER_TILE_TYPE ||
-                            map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE);
+          map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE);
       } while (positionOccupied);
 
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
@@ -253,26 +284,27 @@ class Level {
 
   // da sistemare ma decente
   private void generateRandomChests() {
+    println("genero le chest...");
     treasures = new ArrayList<Chest>();
     boolean positionOccupied;
     Chest chest;
-    Room room;  
+    Room room;
     float commonChestSpawnRate = 1.0; // Tasso di spawn per le casse comuni (60%)
-    float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza 
+    float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza
 
     for (int i = 0; i < spawnLevel; i++) {
       // stanza selezionata casualmente
       // e verifica se nella stanza sono gia presenti casse
-      do{
+      do {
         room = rooms.get((int) random(rooms.size()));
-      } while(room.isChestPresent);
-      
+      } while (room.isChestPresent);
+
       room.isChestPresent = true;
-      
+
       // offset rispetto al centro della stanza
       float offsetX = random(-spawnRadius, spawnRadius);
       float offsetY = random(-spawnRadius, spawnRadius);
-    
+
       int x, y;
 
       // Genera un numero casuale tra 0 e 1 per determinare il tipo di cassa
@@ -304,14 +336,14 @@ class Level {
 
         // Verifica se la posizione è già occupata da un muro, una parete o un'altra cassa
         positionOccupied = (map[x][y] == BACKGROUND_TILE_TYPE || map[x][y] == WALL_PERIMETER_TILE_TYPE ||
-                            map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE ||
-                            map[x][y] == START_ROOM_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE);
+          map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE ||
+          map[x][y] == START_ROOM_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE);
       } while (positionOccupied);
 
       // Aggiungi la cassa alla lista delle casse
       chest.spritePosition = new PVector(x, y);
       map[x][y] = CHEST_TILE_TYPE; // Imposta il tipo di tile corrispondente a una cassa
-      
+
       treasures.add(chest);
     }
   }
@@ -319,6 +351,7 @@ class Level {
   // spawner aggiornato
   // genera nemici in ogni stanza in maniera casuale
   private void generateEnemies() {
+    println("genero i nemici...");
     enemies = new ArrayList<Enemy>();
     boolean positionOccupied;
 
@@ -329,7 +362,7 @@ class Level {
 
       // Genera un numero casuale di nemici in ogni stanza
       // AGGIUNGI LOGICA DI DIFFICOLTA
-      int numEnemiesInRoom = floor(random(3, 5)); 
+      int numEnemiesInRoom = floor(random(3, 5));
 
       for (int i = 0; i < numEnemiesInRoom; i++) {
         int x, y;
@@ -341,10 +374,10 @@ class Level {
 
           // Verifica se la posizione è già occupata da un muro o un altro oggetto
           positionOccupied = (map[x][y] == BACKGROUND_TILE_TYPE || map[x][y] == WALL_PERIMETER_TILE_TYPE ||
-                             map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE ||
-                             map[x][y] == START_ROOM_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE);
+            map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE ||
+            map[x][y] == START_ROOM_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE);
         } while (positionOccupied);
-        
+
         ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();
 
         // creazione dell'entita nemico
@@ -365,7 +398,7 @@ class Level {
     int startY = floor((camera.y / (tileSize * camera.zoom)));
     int endX = ceil((camera.x + gameScene.width) / (tileSize * camera.zoom));
     int endY = ceil((camera.y + gameScene.height) / (tileSize * camera.zoom));
-  
+
     // Assicurati che i limiti siano all'interno dei limiti della mappa
     startX = constrain(startX, 0, cols - 1);
     startY = constrain(startY, 0, rows - 1);
@@ -375,7 +408,7 @@ class Level {
     for (int x = startX; x < endX; x++) {
       for (int y = startY; y < endY; y++) {
         int tileType = map[x][y];
-        
+
         float centerX = x * tileSize + tileSize / 2;
         float centerY = y * tileSize + tileSize / 2;
 
@@ -390,22 +423,22 @@ class Level {
 
         case FLOOR_TILE_TYPE:
           // pavimento
-          
+
           // hitbox del pavimento
           //gameScene.rectMode(CENTER);
           //gameScene.noFill(); // Nessun riempimento
           //gameScene.stroke(0, 0, 255); // Colore del bordo bianco
           //gameScene.rect(centerX, centerY, tileSize, tileSize);
-          
+
           //gameScene.stroke(60);
           //gameScene.point(centerX, centerY);
-          
+
           gameScene.imageMode(CENTER);
           gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case START_ROOM_TILE_TYPE:
-          // Imposta l'immagine per la stanza iniziale (nero)          
+          // Imposta l'immagine per la stanza iniziale (nero)
           gameScene.imageMode(CENTER);
           gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
@@ -418,16 +451,16 @@ class Level {
 
         case WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
-          
+
           // hitbox dei muri perimetrali
           //gameScene.rectMode(CENTER);
           //gameScene.noFill(); // Nessun riempimento
           //gameScene.stroke(100, 34, 50); // Colore del bordo bianco
           //gameScene.rect(centerX, centerY, tileSize, tileSize);
-          
+
           //gameScene.stroke(60);
           //gameScene.point(centerX, centerY);
-          
+
           gameScene.imageMode(CENTER);
           gameScene.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
           break;
@@ -444,7 +477,7 @@ class Level {
           gameScene.imageMode(CENTER);
           gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
-          
+
         case PEAKS_TILE_TYPE:
           // peaks trap
           gameScene.imageMode(CENTER);
@@ -455,17 +488,17 @@ class Level {
     }
   }
 
-  // metodo per il rilevamento delle collisioni 
+  // metodo per il rilevamento delle collisioni
   // verifica collisione con le scale
   // da sistemare
-  boolean playerCollide(Player aPlayer) { 
-    if(aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
-        (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
-        aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
-        (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
-          return true;
+  boolean playerCollide(Player aPlayer) {
+    if (aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
+      (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
+      aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
+      (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
+      return true;
     }
-    
+
     return false;
   }
 }

@@ -49,9 +49,16 @@ class Zone {
   
   void createLevel(String filesPath, int numberOfRooms) {
     for (int i = 0; i < numLevels; i++) {
-      Level level = new Level("Livello " + (i+1), i, filesPath, numberOfRooms);
+      Level level = new Level("Livello " + (i), i, filesPath, numberOfRooms);    // da modificare assegnazione stringa con i+1
+      println("Level index: " + level.levelIndex);
       levels.add(level);
     }
+  }
+  
+  Level createBossLevel() {
+    println("creazione del livello finale...");
+    Level bossLevel = new Level("Livello finale", 0, filesPath, 1);
+    return bossLevel;
   }
 
   void setFinalArea(boolean finalArea) {

@@ -115,7 +115,7 @@ void setup() {
   textFont(myFont);
 
   // schermata iniziale
-  screen_state = ScreenState.MENU_SCREEN;
+  screen_state = ScreenState.MENU_SCREEN;    // menu screen
   previous_state = screen_state;
 
   menu = new Menu();
@@ -264,6 +264,9 @@ void draw() {
       dungeon_background.play();
       isDungeonBackgroundPlaying = true;
     }
+    
+    // game.update();
+    // ui.update();
       
     // show game screen
     game.display();
@@ -271,8 +274,11 @@ void draw() {
     break;
   
   case BOSS_SCREEN:
-    // game.displayBossBattle();
-    // ui.display();
+    // game.update();
+    // ui.update();
+  
+    //game.display();
+    //ui.display();
     break;
 
   case WIN_SCREEN:
@@ -324,7 +330,8 @@ void loseScreen() {
   }
 
   // chiama la funzione
-  writer("hai perso merda!");
+  writer("Hai perso!\n" +
+         "Score totalizzato: " + p1.playerScore);
 }
 
 void storyScreen(String storyText) {

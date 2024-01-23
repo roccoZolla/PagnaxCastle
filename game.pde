@@ -6,15 +6,17 @@ enum DifficultyLevel { //<>//
 
 class Game {
   DifficultyLevel difficultyLevel; // livello di difficolta del gioco
+  Enemy boss;    // boss del gioco
+  boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
   float holeRadius; // raggio della maschera
   boolean isTorchDropped;       // indica se la torcia è stata droppata
   boolean isMapDropped;         // indica se la mappa è stata droppata
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata
   ConcreteDamageHandler damageTileHandler;
-
   Game() {
     // di default la difficolta del gioco è impostata su normale
     difficultyLevel = DifficultyLevel.NORMALE;
+    isBossLevel = false;
   }
 
   void init() {
@@ -59,11 +61,22 @@ class Game {
     isMasterSwordDropped = false;
   }
 
-  // metodo che inizializza il necessario per la battaglia finale
   void initBossBattle() {
-    // inizializza la variabile relativa al boss
+    // crea il livello finale
+    currentLevel = currentZone.createBossLevel();
 
     // inizializza il livello del boss
+    currentLevel.isFinalLevel = true;
+    currentLevel.loadAssetsLevel();
+    currentLevel.initBossLevel();
+
+    // posizione il giocatore nel punto di spawn
+    p1.spritePosition = currentLevel.getStartPosition();
+
+    // aggiorna il testo relativo al livello attuale
+    actualLevel = currentZone.zoneName + " - Livello Finale";
+
+    ui.activateBossUI();
   }
 
   void display() {
@@ -86,7 +99,11 @@ class Game {
     spritesLayer.scale(camera.zoom);
 
     // aggiorna lo stato corrente del gioco
-    update();
+    if (currentLevel.isFinalLevel) {
+      updateBossBattle();
+    } else {
+      update();
+    }
 
     spritesLayer.endDraw();
 
@@ -116,7 +133,6 @@ class Game {
 
   void update() {
     // handlePlayerDeath();
-    handleNextLevel();    // gestisce il passaggio al livello successivo
     handlePlayerMovement();
     handlePlayerAttack();
     handlePotionUse();
@@ -124,6 +140,14 @@ class Game {
     handleChest();
     handleCoin();
     handleDropItems();
+    handleNextLevel();    // gestisce il passaggio al livello successivo
+  }
+
+  void updateBossBattle() {
+    // handlePlayerDeath();
+    handlePlayerMovement();
+    handlePlayerAttack();
+    handlePotionUse();
   }
 
   // gestisce la morte del giocatore
@@ -139,18 +163,17 @@ class Game {
     // aggiungere collider
     if (currentLevel.playerCollide(p1)) {
       // se il livello dell'area è l'ultimo passa alla prossima area
-      if (currentLevel.levelIndex == currentZone.numLevels - 1) {
+      if (currentLevel.levelIndex == currentZone.levels.size() - 1) {
+        println("E' L'ULTIMO LIVELLO DELLA ZONA...");
         // controlla se è l'area finale
         if (currentZone.isFinal()) {
-          // AGGIUNGERE LOGICA PER LA GESTIONE DEL BOSS
-          screen_state = ScreenState.WIN_SCREEN;
-          screen_state = ScreenState.BOSS_SCREEN;
           initBossBattle();
+          isBossLevel = true;
         } else {
           // passa alla prossima macroarea
           currentZone = castle.zones.get(currentZone.zoneIndex + 1);
-          // currentArea.initLevels();
           currentLevel = currentZone.currentLevel;
+          currentLevel.loadAssetsLevel();
           currentLevel.init();
           actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
           p1.spritePosition = currentLevel.getStartPosition();
@@ -161,7 +184,6 @@ class Game {
         }
       } else {
         // passa al livello successivo - stessa macro area
-        // Il giocatore è abbastanza vicino al punto di accesso, quindi passa al livello successivo
         currentLevel = currentZone.levels.get(currentLevel.levelIndex + 1);
         currentLevel.loadAssetsLevel();
         currentLevel.init();
@@ -301,7 +323,7 @@ class Game {
         chest.display();
 
         if (chest.playerCollide(p1) && !chest.isOpen()) {
-          println("collsione cassa giocatore");
+          // println("collsione cassa giocatore");
           chest.displayHitbox();
 
           float letterImageX = (chest.spritePosition.x * currentLevel.tileSize + (p1.sprite.width / 2));

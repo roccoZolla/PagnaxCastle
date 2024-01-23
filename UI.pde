@@ -44,7 +44,7 @@ class UI {
     miniMapX = 20;
     miniMapY = uiLayer.height - miniMapSize - 10;
     
-    isBossBattle = true;    // di base, false
+    isBossBattle = false;    // di base, false
     isMapActive = false;    // di base, false, si attiva con la minimappa trovata nei livelli
 
     buttons = new ArrayList();
@@ -169,6 +169,14 @@ class UI {
     for (int i = heartsToDisplay + (isHalfHeart ? 1 : 0); i < maxHearts; i++) {
       uiLayer.image(emptyHeart, heartX + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
     }
+  }
+  
+  void activateBossUI(){
+    isBossBattle = true;
+  }
+  
+  void deactivateBossUI() {
+    isBossBattle = false;
   }
   
   void displayBossHearts() {
