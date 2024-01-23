@@ -78,14 +78,14 @@ class Game {
 
     ui.activateBossUI();
   }
-
+  
   void display() {
-    gameScene.beginDraw();
-    gameScene.background(0);
-
     // aggiorna la camera
     camera.update();
-
+    
+    // disegna il game layer
+    gameScene.beginDraw();
+    gameScene.background(0);
     // Imposta la telecamera alla nuova posizione e applica il fattore di scala
     gameScene.translate(-camera.x, -camera.y);
     gameScene.scale(camera.zoom);
@@ -93,6 +93,9 @@ class Game {
     // Disegna la mappa del livello corrente
     currentLevel.display(); // renderizza il 4,6 % della mappa
 
+    gameScene.endDraw();
+
+    // disegna lo sprites layer
     spritesLayer.beginDraw();
     spritesLayer.background(255, 0);
     spritesLayer.translate(-camera.x, -camera.y);
@@ -107,9 +110,6 @@ class Game {
 
     spritesLayer.endDraw();
 
-    gameScene.endDraw();
-
-    // mask layer
     maskLayer.beginDraw();
     maskLayer.background(0, 255);
     maskLayer.blendMode(REPLACE);
@@ -128,7 +128,7 @@ class Game {
 
     image(gameScene, 0, 0);
     image(spritesLayer, 0, 0);
-    // image(maskLayer, 0, 0);
+    image(maskLayer, 0, 0);
   }
 
   void update() {
