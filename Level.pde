@@ -136,7 +136,7 @@ class Level {
 
     // da rimuovere
     map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
-    
+
     println("----- BOSS ROOM -----");
     println("start room index: " + startRoomIndex);
     println("end room index: " + endRoomIndex);
@@ -176,51 +176,46 @@ class Level {
   private void generateRandomRoom() {
     int roomWidth = int(random(8, 20));
     int roomHeight = int(random(8, 20));
-    int roomX, roomY;
+    int maxAttempts = 1000;
 
-    boolean roomOverlap;
-    do {
-      roomX = int(random(1, cols - roomWidth - 1));
-      roomY = int(random(1, rows - roomHeight - 1));
-      roomOverlap = checkRoomOverlap(roomX, roomY, roomWidth, roomHeight);
-    } while (roomOverlap);
+    for (int attempt = 0; attempt < maxAttempts; attempt++) {
+      int roomX = int(random(1, cols - roomWidth - 1));
+      int roomY = int(random(1, rows - roomHeight - 1));
+      
+      // Verifica l'overlapping solo con le stanze già generate
+      if (!checkRoomOverlap(roomX, roomY, roomWidth, roomHeight)) {
+        // Crea e aggiungi la nuova stanza alla lista delle stanze
+        PVector roomPosition = new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2);
+        Room room = new Room(roomWidth, roomHeight, roomPosition);
+        rooms.add(room);
 
-    // crea nuova stanza e aggiungila alla lista delle stanze
-    // mi salvo le coordinate del centro della stanza
-    PVector roomPosition = new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2);
-    Room room = new Room(roomWidth, roomHeight, roomPosition);
-    rooms.add(room);
-
-    // Estrai i muri dell'immagine dei muri delle stanze
-    for (int x = roomX; x < roomX + roomWidth; x++) {
-      for (int y = roomY; y < roomY + roomHeight; y++) {
-        if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
-          // Questi sono i bordi della stanza, quindi imposta il tile come tileType 3
-          map[x][y] = WALL_PERIMETER_TILE_TYPE; // Imposta il tile come muro del perimetro
-        } else {
-          map[x][y] = FLOOR_TILE_TYPE; // Imposta il tile come pavimento
-
-          // spawn delle trappole all'interno delle stanze
-          // da migliorare
-          double randomValue = random(1);
-
-          // Se il numero casuale è inferiore o uguale alla probabilità di spawn, aggiungi una trappola
-          if (randomValue <= TRAP_SPAWN_PROBABILITY) {
-            // Imposta il tile come trappola
-            map[x][y] = PEAKS_TILE_TYPE;
+        // Estrai i muri dell'immagine dei muri delle stanze
+        for (int x = roomX; x < roomX + roomWidth; x++) {
+          for (int y = roomY; y < roomY + roomHeight; y++) {
+            if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
+              map[x][y] = WALL_PERIMETER_TILE_TYPE;
+            } else {
+              map[x][y] = FLOOR_TILE_TYPE;
+              // spawn delle trappole all'interno delle stanze
+              if (random(1) <= TRAP_SPAWN_PROBABILITY) {
+                map[x][y] = PEAKS_TILE_TYPE;
+              }
+            }
           }
         }
+
+        // Esci dal ciclo una volta generata e posizionata con successo la stanza
+        break;
       }
     }
   }
 
-  private boolean checkRoomOverlap(int x, int y, int width, int height) {
-    for (int i = x - 1; i < x + width + 1; i++) {
-      for (int j = y - 1; j < y + height + 1; j++) {
-        // Verifica se il tile è già occupato (1 rappresenta il pavimento)
-        if (map[i][j] == 1 || map[i][j] == 4) {
-          return true;
-        }
+  private boolean checkRoomOverlap(int x, int y, int roomWidth, int roomHeight) {
+    println("room overlap...");
+    for (Room room : rooms) {
+      // Verifica se la stanza attuale si sovrappone con la nuova stanza
+      if (room.overlaps(x, y, roomWidth, roomHeight)) {
+        return true;
       }
     }
     return false;

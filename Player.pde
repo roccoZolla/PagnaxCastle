@@ -53,6 +53,10 @@ class Player implements Damageable{
   public void collectCoin() {
     this.coins++;
   }
+  
+  void updateScore(int score) {
+    this.playerScore += score;
+  }
  
   void move() {
     float newX = spritePosition.x;

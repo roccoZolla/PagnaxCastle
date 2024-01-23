@@ -75,7 +75,7 @@ class Game {
 
     // aggiorna il testo relativo al livello attuale
     actualLevel = currentZone.zoneName + " - Livello Finale";
-
+    
     ui.activateBossUI();
   }
   
@@ -128,7 +128,7 @@ class Game {
 
     image(gameScene, 0, 0);
     image(spritesLayer, 0, 0);
-    image(maskLayer, 0, 0);
+    // image(maskLayer, 0, 0);
   }
 
   void update() {
@@ -179,7 +179,7 @@ class Game {
           p1.spritePosition = currentLevel.getStartPosition();
 
           // aggiorna lo score del player
-          p1.playerScore +=  200;
+          p1.updateScore(200);
           screen_state = ScreenState.STORY_SCREEN;
         }
       } else {
@@ -191,15 +191,15 @@ class Game {
         p1.spritePosition = currentLevel.getStartPosition();
 
         // aggiorna lo score del player
-        p1.playerScore += 100;
+        p1.updateScore(100);
       }
     }
   }
 
   // gestisce il movimento del player
   void handlePlayerMovement() {
-    p1.display();
     p1.move();
+    p1.display();
   }
 
   // gestisce l'attacco del giocatore
@@ -286,7 +286,7 @@ class Game {
             // aggiungi un certo valore allo score del giocatore
             // possibilita di droppare l'oggetto
             if (enemy.enemyHP <= 0) {
-              p1.playerScore += enemy.scoreValue;
+              p1.updateScore(enemy.scoreValue);
               // riproduci suono morte nemico
               enemy_death_sound.play();
               // metodo per la generazione di un item casuale da droppare
@@ -346,7 +346,7 @@ class Game {
                     chest.sprite = special_chest_open_sprite;
 
                     p1.numberOfGoldenKeys -= 1;
-                    p1.playerScore += 50;
+                    p1.updateScore(50);
 
                     chest.dropItemSpecialChest();
                   }
@@ -367,7 +367,7 @@ class Game {
                     chest.sprite = chest_open_sprite;
 
                     p1.numberOfSilverKeys -= 1;
-                    p1.playerScore += 30;
+                    p1.updateScore(30);
 
                     // metodo per drop item casuale
                     chest.dropItemNormalChest();
@@ -402,7 +402,7 @@ class Game {
             coin.collect();  // raccogli la moneta
             p1.collectCoin();
             pickupCoin.play();
-            p1.playerScore += coin.scoreValue;
+            p1.updateScore(coin.scoreValue);
           }
         }
       }
