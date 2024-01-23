@@ -37,9 +37,6 @@ class Game {
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
-    // reimposta lo stato della mappa, disattivo
-    ui.deactivateMap();
-
     p1 = new Player(100, 100, 0, 10, 10, damageTileHandler);
     p1.spritePosition = currentLevel.getStartPosition();
     p1.sprite = spriteRight;
@@ -56,9 +53,16 @@ class Game {
 
     holeRadius = 50;
 
+    isBossLevel = false;
+     
     isTorchDropped = false;
     isMapDropped = false;
     isMasterSwordDropped = false;
+    
+    
+    // reimposta lo stato della mappa, disattivo
+    ui.deactivateMap();
+    ui.deactivateBossUI();
   }
 
   void initBossBattle() {

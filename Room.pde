@@ -46,4 +46,12 @@ class Room {
 
     return horizontalOverlap && verticalOverlap;
   }
+  
+  boolean isChestPresent() {
+    return isChestPresent;
+  }
+  
+  void setIsChestPresent(boolean isChestPresent) {
+    this.isChestPresent = isChestPresent;
+  }
 }

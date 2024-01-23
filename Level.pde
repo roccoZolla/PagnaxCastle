@@ -47,7 +47,7 @@ class Level {
   ArrayList<Coin> coins;      // contiene le monete presenti nel livello
 
   // chest che puoi trovare nel livello
-  int spawnLevel = 1; // Livello di spawn delle chest
+  int spawnLevel = 7; // Livello di spawn delle chest
   ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
   // nemici che puoi trovare nel livello
@@ -181,7 +181,7 @@ class Level {
     for (int attempt = 0; attempt < maxAttempts; attempt++) {
       int roomX = int(random(1, cols - roomWidth - 1));
       int roomY = int(random(1, rows - roomHeight - 1));
-      
+
       // Verifica l'overlapping solo con le stanze già generate
       if (!checkRoomOverlap(roomX, roomY, roomWidth, roomHeight)) {
         // Crea e aggiungi la nuova stanza alla lista delle stanze
@@ -261,9 +261,8 @@ class Level {
         x = (int) random(cols);
         y = (int) random(rows);
 
-        // Verifica se la posizione è già occupata da un muro, una parete, una cassa o un'altra moneta
-        positionOccupied = (map[x][y] == BACKGROUND_TILE_TYPE || map[x][y] == WALL_PERIMETER_TILE_TYPE ||
-          map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE);
+        // Verifica se la posizione non è pavimento
+        positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
       } while (positionOccupied);
 
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
@@ -292,15 +291,38 @@ class Level {
       // e verifica se nella stanza sono gia presenti casse
       do {
         room = rooms.get((int) random(rooms.size()));
-      } while (room.isChestPresent);
+        println("check chest in the room...");
+      } while (room.isChestPresent());
 
-      room.isChestPresent = true;
+      room.setIsChestPresent(true);
 
       // offset rispetto al centro della stanza
+      // potrebbe generare un offset uguale a 0 e quindi la posizione coinciderebbe
+      // con coordinate del punto centrale della stanza
       float offsetX = random(-spawnRadius, spawnRadius);
       float offsetY = random(-spawnRadius, spawnRadius);
 
       int x, y;
+      int attempt = 0;
+      int maxAttempts = 100;
+
+      do {
+        // posizione casuale intorno al centro della stanza selezionata casualmente
+        x = (int) (room.roomPosition.x + offsetX) + 1;
+        y = (int) (room.roomPosition.y + offsetY) + 1;
+
+        // Verifica se la posizione non è il pavimento
+        positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
+        println("check position for the chest...");
+        println(positionOccupied);
+        
+        attempt++;
+
+        if (attempt >= maxAttempts) {
+          break;
+        }
+        
+      } while (positionOccupied);
 
       // Genera un numero casuale tra 0 e 1 per determinare il tipo di cassa
       float chestType = random(1);
@@ -323,17 +345,6 @@ class Level {
         chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
         chest.setIsRare(true);
       }
-
-      do {
-        // posizione casuale intorno al centro della stanza selezionata casualmente
-        x = (int) (room.roomPosition.x + offsetX) + 1;
-        y = (int) (room.roomPosition.y + offsetY) + 1;
-
-        // Verifica se la posizione è già occupata da un muro, una parete o un'altra cassa
-        positionOccupied = (map[x][y] == BACKGROUND_TILE_TYPE || map[x][y] == WALL_PERIMETER_TILE_TYPE ||
-          map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE ||
-          map[x][y] == START_ROOM_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE);
-      } while (positionOccupied);
 
       // Aggiungi la cassa alla lista delle casse
       chest.spritePosition = new PVector(x, y);
@@ -367,10 +378,8 @@ class Level {
           x = int(random(roomPosition.x - roomWidth / 2, roomPosition.x + roomWidth / 2));
           y = int(random(roomPosition.y - roomHeight / 2, roomPosition.y + roomHeight / 2));
 
-          // Verifica se la posizione è già occupata da un muro o un altro oggetto
-          positionOccupied = (map[x][y] == BACKGROUND_TILE_TYPE || map[x][y] == WALL_PERIMETER_TILE_TYPE ||
-            map[x][y] == HALLWAY_TILE_TYPE || map[x][y] == STAIRS_TILE_TYPE ||
-            map[x][y] == START_ROOM_TILE_TYPE || map[x][y] == CHEST_TILE_TYPE);
+          // Verifica se la posizione non è il pavimento
+          positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
         } while (positionOccupied);
 
         ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();

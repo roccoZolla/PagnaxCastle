@@ -5,7 +5,7 @@ class World {
   
   World() {
    System.out.println("Creazione del mondo...");
-    Zone cellar = new Zone(0, "Castle", 8, "data/zone_1/", 8);
+    Zone cellar = new Zone(0, "Castle", 14, "data/zone_1/", 8);
     cellar.storyText = "La principessa Chela e' in pericolo. E' stata rapita dallo stregone Pagnax.\n" +
     "Vai al castello del cattivone ma vieni subito scoperto e mandato nelle cantine del castello.\n" +
     "Devi risalire il castello fino alle sale reali per sconfiggere il cattivone di turno.\n";
