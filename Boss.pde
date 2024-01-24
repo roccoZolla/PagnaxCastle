@@ -23,7 +23,7 @@ class Boss {
 
   void update(Player player) {
     // Calcola la direzione verso il giocatore
-    PVector direction = PVector.sub(player.spritePosition, spritePosition);
+    PVector direction = PVector.sub(player.getPosition(), spritePosition);
     direction.normalize();
 
     // Muovi il boss nella direzione del giocatore

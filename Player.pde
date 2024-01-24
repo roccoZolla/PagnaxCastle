@@ -1,7 +1,7 @@
-class Player implements Damageable { //<>//
-  PVector spritePosition;
+class Player extends Sprite implements Damageable { //<>//
+  // PVector spritePosition;
   float spriteSpeed = 0.2;
-  PImage sprite;
+  // PImage sprite;
 
   // movements
   boolean moveUP;
@@ -33,7 +33,8 @@ class Player implements Damageable { //<>//
   int numberOfGoldenKeys;
   int numberOfPotion;
 
-  Player(int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
+  Player(PVector position, PImage sprite, int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
+    super(position, sprite);
     this.playerScore = 0;
     this.playerHP = playerHP;
     this.playerMaxHP = maxHP;
@@ -60,8 +61,8 @@ class Player implements Damageable { //<>//
 
   // movimento del giocatore
   void update() {
-    float newX = spritePosition.x;
-    float newY = spritePosition.y;
+    float newX = position.x;
+    float newY = position.y;
 
     int roundedX = 0, roundedY = 0;
 
@@ -88,14 +89,34 @@ class Player implements Damageable { //<>//
 
     if (isValidMove(roundedX, roundedY)) {
       damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
+      
+      updatePosition(new PVector(newX, newY));
+    }
+  }
 
-      spritePosition.x = newX;
-      spritePosition.y = newY;
+  // da fixare
+  void attack() {
+    if (moveATCK && !moveUSE && !moveINTR) {
+      displayWeapon();
+     
+      for (Enemy enemy : currentLevel.enemies) {
+        if (collidesWith(enemy.spritePosition)) {
+          swordAttack.play();
+          enemy.enemyHP -= weapon.getDamage();
+
+          // l'attacco è stato eseguito non continuare ad attaccare
+          // attackExecuted = true;
+
+          // testo danno subito dal nemico
+          TextDisplay damageHitText = new TextDisplay(enemy.spritePosition, Integer.toString(p1.weapon.damage), color(255, 0, 0), 2000);
+          damageHitText.display();
+        }
+      }
     }
   }
 
   // collisione tra arma e nemico
-  boolean collidesWith(Enemy enemy) {
+  boolean collidesWith(PVector position) {
     // se l'arma collide con un nemico sottrai danno alla vita nemico
 
     float offset = 16;
@@ -107,10 +128,10 @@ class Player implements Damageable { //<>//
     //println("arma: " + weapon.spritePosition);
 
     // da sistemare
-    if ((weapon.spritePosition.x * currentLevel.tileSize) + offset <= (enemy.spritePosition.x * currentLevel.tileSize) + enemy.sprite.width  &&
-      ((weapon.spritePosition.x * currentLevel.tileSize) + weapon.sprite.width) + offset >= enemy.spritePosition.x * currentLevel.tileSize &&
-      weapon.spritePosition.y * currentLevel.tileSize <= (enemy.spritePosition.y * currentLevel.tileSize) + enemy.sprite.height &&
-      (weapon.spritePosition.y * currentLevel.tileSize) + weapon.sprite.height >= enemy.spritePosition.y * currentLevel.tileSize) {
+    if ((weapon.spritePosition.x * currentLevel.tileSize) + offset <= (position.x * currentLevel.tileSize) + sprite.width  &&
+      ((weapon.spritePosition.x * currentLevel.tileSize) + weapon.sprite.width) + offset >= position.x * currentLevel.tileSize &&
+      weapon.spritePosition.y * currentLevel.tileSize <= (position.y * currentLevel.tileSize) + sprite.height &&
+      (weapon.spritePosition.y * currentLevel.tileSize) + weapon.sprite.height >= position.y * currentLevel.tileSize) {
       return true;
     }
 
@@ -131,10 +152,10 @@ class Player implements Damageable { //<>//
   }
 
   boolean isCollidingWithTile(int roundedX, int roundedY) {
-    float playerRight = spritePosition.x * currentLevel.tileSize + (sprite.width / 2);
-    float playerLeft = spritePosition.x * currentLevel.tileSize - (sprite.width / 2);
-    float playerBottom = spritePosition.y * currentLevel.tileSize + (sprite.height / 2);
-    float playerTop = spritePosition.y * currentLevel.tileSize - (sprite.height / 2);
+    float playerRight = position.x * currentLevel.tileSize + (sprite.width / 2);
+    float playerLeft = position.x * currentLevel.tileSize - (sprite.width / 2);
+    float playerBottom = position.y * currentLevel.tileSize + (sprite.height / 2);
+    float playerTop = position.y * currentLevel.tileSize - (sprite.height / 2);
 
     float tileRight = roundedX * currentLevel.tileSize + (currentLevel.tileSize / 2);
     float tileLeft = roundedX * currentLevel.tileSize - (currentLevel.tileSize / 2);
@@ -159,13 +180,13 @@ class Player implements Damageable { //<>//
 
   @Override
     PVector getPosition() {
-    return spritePosition;
+    return position;
   }
 
   // metodo che si occupa di disegnare l'arma del giocatore
-  void drawPlayerWeapon() {
+  void displayWeapon() {
     // aggiorna posizione dell'arma
-    weapon.spritePosition = spritePosition;
+    weapon.spritePosition = position;
 
     // offset
     float offset = 16;
@@ -175,8 +196,8 @@ class Player implements Damageable { //<>//
     else if (direction == DIRECTION_LEFT)
       offset = -16;
 
-    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
+    float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
 
     // hitbox arma
     spritesLayer.rectMode(CENTER);
@@ -187,25 +208,5 @@ class Player implements Damageable { //<>//
     // arma
     spritesLayer.imageMode(CENTER);
     spritesLayer.image(weapon.sprite, centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
-  }
-
-  void display() {
-    // hitbox giocatore
-    spritesLayer.noFill(); // Nessun riempimento
-    spritesLayer.stroke(255); // Colore del bordo bianco
-
-    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
-
-    // hitbox
-    //layer.rectMode(CENTER); // Imposta il rectMode a center
-    //layer.rect(centerX, centerY, sprite.width, sprite.height);
-
-    //layer.stroke(160);
-    //layer.strokeWeight(10);
-    //layer.point(centerX, centerY);
-
-    spritesLayer.imageMode(CENTER); // Imposta l'imageMode a center
-    spritesLayer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
 }

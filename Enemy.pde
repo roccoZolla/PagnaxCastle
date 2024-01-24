@@ -28,7 +28,7 @@ class Enemy implements Damageable {
   // gestisce il movimento del nemico
   void update() {
     // Ottieni la posizione del giocatore
-    PVector playerPosition = p1.spritePosition;
+    PVector playerPosition = p1.getPosition();
 
     // distanza tra il nemico e il giocatore
     float distance = dist(spritePosition.x, spritePosition.y, playerPosition.x, playerPosition.y);
@@ -127,20 +127,20 @@ class Enemy implements Damageable {
 
   // attacca il giocatore
   // da migliorare
-  void handleAttack() {
-    if (first_attack) {
-      attack();
-      first_attack = false;
-    }
-    periodicAttack();
-  }
+  //void handleAttack() {
+  //  if (first_attack) {
+  //    attack();
+  //    first_attack = false;
+  //  }
+  //  periodicAttack();
+  //}
 
-  void attack() {
+  void attack(Player player) {
     // Esegui l'attacco
-    p1.playerHP -= damage;
+    player.playerHP -= damage;
 
     // fare in modo che rimanga un po piu di tempo a schermo
-    TextDisplay damageHitText = new TextDisplay(p1.spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
+    TextDisplay damageHitText = new TextDisplay(p1.getPosition(), Integer.toString(damage), color(255, 0, 0), 2000);
     damageHitText.display();
 
     // playerHurt.play();
@@ -160,7 +160,7 @@ class Enemy implements Damageable {
       p1.playerHP -= damage;
 
       // fare in modo che rimanga un po piu di tempo a schermo
-      TextDisplay damageHitText = new TextDisplay(p1.spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
+      TextDisplay damageHitText = new TextDisplay(p1.getPosition(), Integer.toString(damage), color(255, 0, 0), 2000);
       damageHitText.display();
 
       // playerHurt.play();
@@ -173,8 +173,13 @@ class Enemy implements Damageable {
       lastAttackTime = currentTime;
     }
   }
+  
+  void death() {
+    enemy_death_sound.play();
+    dropItem();
+  }
 
-  void dropItem() {
+  private void dropItem() {
     // numero casuale
     double randomValue = Math.random();
 
@@ -234,36 +239,18 @@ class Enemy implements Damageable {
     float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
     float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
 
-    // hitbox
-    //layer.rectMode(CENTER); // Imposta il rectMode a center
-    //layer.rect(centerX, centerY, sprite.width, sprite.height);
-
-    //layer.stroke(60);
-    //layer.point(centerX, centerY);
-
     spritesLayer.imageMode(CENTER); // Imposta l'imageMode a center
     spritesLayer.image(sprite, centerX, centerY, sprite.width, sprite.height);
-
-    // layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
   }
-
-  void update(Player player) {
-    // Calcola la direzione verso il giocatore
-    PVector direction = PVector.sub(player.spritePosition, spritePosition);
-    direction.normalize();
-
-    // Muovi il boss nella direzione del giocatore
-    spritePosition.add(PVector.mult(direction, spriteSpeed));
-  }
-
+  
   // metodo per il rilevamento delle collisioni adattato alla rectmode CENTER
   boolean playerCollide(Player aPlayer) {
-    if (aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (spritePosition.x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
-      (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= spritePosition.x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
-      aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (spritePosition.y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
-      (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= spritePosition.y * currentLevel.tileSize + (sprite.height / 2)) {                              // y1 - h1/2 < y2 + h2/2
-      return true;
-    }
+    //if (aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (spritePosition.x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+    //  (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= spritePosition.x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+    //  aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (spritePosition.y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+    //  (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= spritePosition.y * currentLevel.tileSize + (sprite.height / 2)) {                              // y1 - h1/2 < y2 + h2/2
+    //  return true;
+    //}
 
     return false;
   }

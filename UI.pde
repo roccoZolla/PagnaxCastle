@@ -249,8 +249,8 @@ class UI {
     }
 
     // ----- PLAYER PALLINO ROSSO -----
-    playerMiniMapX = map(p1.spritePosition.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
-    playerMiniMapY = map(p1.spritePosition.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+    playerMiniMapX = map(p1.getPosition().x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
+    playerMiniMapY = map(p1.getPosition().y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
 
     uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
     uiLayer.noStroke();

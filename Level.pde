@@ -166,8 +166,8 @@ class Level {
 
   // genera la stanza del boss finale
   private void generateBossRoom() {
-    int roomWidth = int(random(15, 30));
-    int roomHeight = int(random(15, 30));
+    int roomWidth = int(random(20, 35));
+    int roomHeight = int(random(20, 35));
 
     int roomX = int(random(1, cols - roomWidth - 1));
     int roomY = int(random(1, rows - roomHeight - 1));
@@ -184,6 +184,7 @@ class Level {
         } else {
           map[x][y] = FLOOR_TILE_TYPE;
           // spawn delle trappole all'interno delle stanze
+          // da generare solo per la modalita difficile
           if (random(1) <= TRAP_SPAWN_PROBABILITY) {
             map[x][y] = PEAKS_TILE_TYPE;
           }
@@ -305,9 +306,10 @@ class Level {
 
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
       int coinValue = (int) random(1, 10); // Esempio: valore casuale tra 1 e 10
-      Coin coin = new Coin(coinValue);
-      coin.sprite = coin_sprite;
-      coin.spritePosition = new PVector(x, y);
+      Coin coin = new Coin(new PVector(x, y), coin_sprite, coinValue);
+      //coin.sprite = coin_sprite;
+      //coin.spritePosition = new PVector(x, y);
+      
 
       // Aggiungi la moneta alla lista delle monete
       coins.add(coin);
@@ -526,12 +528,12 @@ class Level {
   // verifica collisione con le scale
   // da sistemare
   boolean playerCollide(Player aPlayer) {
-    if (aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
-      (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
-      aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
-      (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
-      return true;
-    }
+    //if (aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
+    //  (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
+    //  aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
+    //  (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
+    //  return true;
+    //}
 
     return false;
   }
