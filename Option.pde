@@ -18,8 +18,6 @@ class Option {
     buttons.add(new Button(width - 250, 210, 50, 50, "musicDown", "-", ""));
     buttons.add(new Button(width - 100, 280, 50, 50, "difficultyRight", ">", ""));    // selettore difficolta
     buttons.add(new Button(width - 290, 280, 50, 50, "difficultyLeft", "<", ""));
-    buttons.add(new Button(width - 100, 350, 50, 50, "languageRight", ">", ""));    // selettore lingua
-    buttons.add(new Button(width - 290, 350, 50, 50, "languageLeft", "<", ""));
     buttons.add(new Button(100, 420, 200, 80, "commands", "Comandi", ""));
     buttons.add(new Button(width - 250, height - 150, 200, 80, "back", "Back", ""));
     
@@ -86,12 +84,6 @@ class Option {
     optionLayer.textAlign(LEFT, CENTER);
     optionLayer.text(difficultyLevel,  width - 230, 305);
 
-    // scritta lingua
-    optionLayer.fill(255);
-    optionLayer.textSize(30);
-    optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Lingua: ", 100, 360);
-
     // linea che parte dal pulsante back a chiudere a la pagina
     optionLayer.stroke(255);
     optionLayer.line(50, height - 100, width - 270, height - 100);
@@ -136,14 +128,6 @@ class Option {
         
         case "difficultyLeft":
           changeDifficulty(false);
-          break;
-          
-        case "languageRight":
-          println("languageRight");
-          break;
-          
-        case "languageLeft":
-          println("languageLeft");
           break;
           
         case "commands":

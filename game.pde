@@ -13,6 +13,7 @@ class Game {
   boolean isMapDropped;         // indica se la mappa è stata droppata
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata
   ConcreteDamageHandler damageTileHandler;
+
   Game() {
     // di default la difficolta del gioco è impostata su normale
     difficultyLevel = DifficultyLevel.NORMALE;
@@ -54,12 +55,12 @@ class Game {
     holeRadius = 50;
 
     isBossLevel = false;
-     
+
     isTorchDropped = false;
     isMapDropped = false;
     isMasterSwordDropped = false;
-    
-    
+
+
     // reimposta lo stato della mappa, disattivo
     ui.deactivateMap();
     ui.deactivateBossUI();
@@ -79,14 +80,14 @@ class Game {
 
     // aggiorna il testo relativo al livello attuale
     actualLevel = currentZone.zoneName + " - Livello Finale";
-    
+
     ui.activateBossUI();
   }
-  
+
   void display() {
     // aggiorna la camera
     camera.update();
-    
+
     // disegna il game layer
     gameScene.beginDraw();
     gameScene.background(0);
@@ -268,7 +269,19 @@ class Game {
           enemy.display();
         } else {
           // caso in cui i nemici si uccidono con le trappole
+          enemy_death_sound.play();
+          enemy.dropItem();
           iterator.remove();
+        }
+        
+        if (enemy.playerCollide(p1)) {
+          // attacca il giocatore
+          enemy.handleAttack();
+        } else {
+          // muovi il nemico e resetta la first attack
+          // da sistemare
+          enemy.first_attack = true;
+          enemy.move();
         }
 
         if (isAttacking && !attackExecuted) {
@@ -299,19 +312,6 @@ class Game {
               iterator.remove();  // Rimuovi il nemico dalla lista
             }
           }
-        }
-
-        if (enemy.playerCollide(p1)) {
-          // attacca il giocatore
-          //println("---- COLLISIONE NEMICO GIOCATORE ----");
-          //println("nemico: " + enemy.spritePosition);
-          //println("giocatore: " + p1.spritePosition);
-          enemy.handleAttack();
-        } else {
-          // muovi il nemico e resetta la first attack
-          // da sistemare
-          enemy.first_attack = true;
-          enemy.move();
         }
       }
     }

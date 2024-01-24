@@ -14,6 +14,9 @@ class Level {
   int[][] map;
   ArrayList<Room> rooms;
 
+  int startRoomIndex;
+  int endRoomIndex;
+
   final int BACKGROUND_TILE_TYPE = 0;
   final int FLOOR_TILE_TYPE = 1;
   final int START_ROOM_TILE_TYPE = 2;
@@ -24,10 +27,10 @@ class Level {
   final int PEAKS_TILE_TYPE = 7;
 
   // probabilita di spawn delle trappole all'interno del livello
-  static final double TRAP_SPAWN_PROBABILITY = 0.03;
+  final double TRAP_SPAWN_PROBABILITY = 0.03;
 
   // vita dei nemici
-  static final int ENEMY_HP = 30;
+  final int ENEMY_HP = 30;
 
   // attributi
   PImage startFloorImage;
@@ -47,19 +50,12 @@ class Level {
   ArrayList<Coin> coins;      // contiene le monete presenti nel livello
 
   // chest che puoi trovare nel livello
-  int spawnLevel = 7; // Livello di spawn delle chest
   ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
   // nemici che puoi trovare nel livello
   ArrayList<Enemy> enemies; // Lista dei nemici
 
   ArrayList<Item> dropItems; // lista degli oggetti caduti a terra
-
-  PVector finalRoomPosition;
-  PVector nextLevelStartRoomPosition;
-
-  int startRoomIndex;
-  int endRoomIndex;
 
   Level(String levelName, int levelIndex, String dataPath, int numberOfRooms) {
     this.levelName = levelName;
@@ -70,8 +66,6 @@ class Level {
     this.damagePeaks = 5;
 
     this.isFinalLevel = false;
-    //finalRoomPosition = new PVector(int(random(width)), int(random(height)));
-    //nextLevelStartRoomPosition = new PVector(int(random(width)), int(random(height)));
   }
 
   void loadAssetsLevel() {
@@ -146,8 +140,21 @@ class Level {
   }
 
   PVector getStartPosition() {
-    println("start position: " + rooms.get(startRoomIndex).roomPosition);
-    return rooms.get(startRoomIndex).roomPosition;
+    Room startRoom = rooms.get(startRoomIndex);
+    float randomX, randomY;
+    boolean positionOccupied;
+
+    do {
+      randomX = startRoom.roomPosition.x + random(-2, 2);
+      randomY = startRoom.roomPosition.y + random(-2, 2);
+
+      // Verifica se la posizione è già occupata da un muro, una parete o un'altra entità
+      positionOccupied = (map[(int) randomX][(int) randomY] != FLOOR_TILE_TYPE);
+    } while (positionOccupied);
+
+    PVector randomPosition = new PVector(randomX, randomY);
+    println("start position: " + randomPosition);
+    return randomPosition;
   }
 
   PVector getEndRoomPosition() {
@@ -176,7 +183,7 @@ class Level {
   private void generateRandomRoom() {
     int roomWidth = int(random(8, 20));
     int roomHeight = int(random(8, 20));
-    int maxAttempts = 1000;
+    int maxAttempts = 100;
 
     for (int attempt = 0; attempt < maxAttempts; attempt++) {
       int roomX = int(random(1, cols - roomWidth - 1));
@@ -279,16 +286,29 @@ class Level {
   // da sistemare ma decente
   private void generateRandomChests() {
     println("genero le chest...");
+    int spawnLevel = 3; // Livello di spawn delle chest
     treasures = new ArrayList<Chest>();
     boolean positionOccupied;
     Chest chest;
     Room room;
-    float commonChestSpawnRate = 1.0; // Tasso di spawn per le casse comuni (60%)
+    float commonChestSpawnRate = 0.7; // Tasso di spawn per le casse comuni (70%)
     float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza
 
     for (int i = 0; i < spawnLevel; i++) {
+      // se tutte le stanze sono occupate non creare la chest
+      if (areAllRoomsOccupied()) {
+        println("tutte le stanze sono occupate!");
+        break;
+      }
+
       // stanza selezionata casualmente
       // e verifica se nella stanza sono gia presenti casse
+      // da sistemare perche puo essere che non tutte le stanze vengano generate
+      // e quindi se in tutte le stanze sono presenti chest
+      // cicla all'infinito
+
+      // se in tutte le stanze sono presenti le casse
+      // e sta controllato con il counter j esci da ciclo
       do {
         room = rooms.get((int) random(rooms.size()));
         println("check chest in the room...");
@@ -315,13 +335,12 @@ class Level {
         positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
         println("check position for the chest...");
         println(positionOccupied);
-        
+
         attempt++;
 
         if (attempt >= maxAttempts) {
           break;
         }
-        
       } while (positionOccupied);
 
       // Genera un numero casuale tra 0 e 1 per determinare il tipo di cassa
@@ -352,6 +371,16 @@ class Level {
 
       treasures.add(chest);
     }
+  }
+
+  private boolean areAllRoomsOccupied() {
+    for (Room room : rooms) {
+      if (!room.isChestPresent()) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   // spawner aggiornato
@@ -419,24 +448,10 @@ class Level {
         switch(tileType) {
         case BACKGROUND_TILE_TYPE:
           // sfondo
-          gameScene.rectMode(CENTER);
-          gameScene.fill(0); // nero
-          gameScene.noStroke();
-          gameScene.rect(centerX, centerY, tileSize, tileSize);
           break;
 
         case FLOOR_TILE_TYPE:
           // pavimento
-
-          // hitbox del pavimento
-          //gameScene.rectMode(CENTER);
-          //gameScene.noFill(); // Nessun riempimento
-          //gameScene.stroke(0, 0, 255); // Colore del bordo bianco
-          //gameScene.rect(centerX, centerY, tileSize, tileSize);
-
-          //gameScene.stroke(60);
-          //gameScene.point(centerX, centerY);
-
           gameScene.imageMode(CENTER);
           gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
@@ -455,16 +470,6 @@ class Level {
 
         case WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
-
-          // hitbox dei muri perimetrali
-          //gameScene.rectMode(CENTER);
-          //gameScene.noFill(); // Nessun riempimento
-          //gameScene.stroke(100, 34, 50); // Colore del bordo bianco
-          //gameScene.rect(centerX, centerY, tileSize, tileSize);
-
-          //gameScene.stroke(60);
-          //gameScene.point(centerX, centerY);
-
           gameScene.imageMode(CENTER);
           gameScene.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
           break;

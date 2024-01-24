@@ -59,7 +59,7 @@ class Tutorial {
       fill(255);
       textSize(30);
       textAlign(LEFT, CENTER);
-      text("- Utilizza gli oggetti", 100, 430);
+      text("- Utilizza le pozioni", 100, 430);
       
       image(letter_l, 150, 470, imageWidth, imageHeight);
       

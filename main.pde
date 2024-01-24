@@ -74,8 +74,7 @@ enum ScreenState {
   LOSE_SCREEN,
   PAUSE_SCREEN,
   OPTION_SCREEN,
-  TUTORIAL_SCREEN,
-  BOSS_SCREEN
+  TUTORIAL_SCREEN
 }
 
 // stato dello schermo
@@ -271,14 +270,6 @@ void draw() {
     // show game screen
     game.display();
     ui.display();
-    break;
-  
-  case BOSS_SCREEN:
-    // game.update();
-    // ui.update();
-  
-    //game.display();
-    //ui.display();
     break;
 
   case WIN_SCREEN:
