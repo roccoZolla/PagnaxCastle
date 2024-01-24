@@ -39,10 +39,10 @@ class Level {
   // pareti delle stanze
   PImage wallImageNorth;
   // private PImage wallImageNorthTop;
-  //private PImage wallImageNorthBottom;
-  //private PImage wallImageSouth;
-  //private PImage wallImageEast;
-  //private PImage wallImageWest;
+  // private PImage wallImageNorthBottom;
+  // private PImage wallImageSouth;
+  // private PImage wallImageEast;
+  // private PImage wallImageWest;
   PImage hallwayImage;         // immagine per i corridoi
   PImage peaksTrapImage;
   PImage stairsNextFloorImage; // scale per accedere al livello successivo
@@ -122,11 +122,14 @@ class Level {
     cols = width / tileSize;
     rows = height / tileSize;
 
+    println("cols: " + cols);
+    println("rows: " + rows);
+
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
 
     // Genera stanze
-    generateRooms();
+    generateBossRoom();
 
     // da rimuovere
     map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
@@ -141,15 +144,15 @@ class Level {
 
   PVector getStartPosition() {
     Room startRoom = rooms.get(startRoomIndex);
-    float randomX, randomY;
+    int randomX, randomY;
     boolean positionOccupied;
 
     do {
-      randomX = startRoom.roomPosition.x + random(-2, 2);
-      randomY = startRoom.roomPosition.y + random(-2, 2);
+      randomX = (int) (startRoom.roomPosition.x + random(-2, 2));
+      randomY = (int) (startRoom.roomPosition.y + random(-2, 2));
 
       // Verifica se la posizione è già occupata da un muro, una parete o un'altra entità
-      positionOccupied = (map[(int) randomX][(int) randomY] != FLOOR_TILE_TYPE);
+      positionOccupied = (map[randomX][randomY] != FLOOR_TILE_TYPE);
     } while (positionOccupied);
 
     PVector randomPosition = new PVector(randomX, randomY);
@@ -159,6 +162,34 @@ class Level {
 
   PVector getEndRoomPosition() {
     return rooms.get(endRoomIndex).roomPosition;
+  }
+
+  // genera la stanza del boss finale
+  private void generateBossRoom() {
+    int roomWidth = int(random(15, 30));
+    int roomHeight = int(random(15, 30));
+
+    int roomX = int(random(1, cols - roomWidth - 1));
+    int roomY = int(random(1, rows - roomHeight - 1));
+
+    PVector roomPosition = new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2);
+    Room room = new Room(roomWidth, roomHeight, roomPosition);
+    rooms.add(room);
+
+    // Estrai i muri dell'immagine dei muri delle stanze
+    for (int x = roomX; x < roomX + roomWidth; x++) {
+      for (int y = roomY; y < roomY + roomHeight; y++) {
+        if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
+          map[x][y] = WALL_PERIMETER_TILE_TYPE;
+        } else {
+          map[x][y] = FLOOR_TILE_TYPE;
+          // spawn delle trappole all'interno delle stanze
+          if (random(1) <= TRAP_SPAWN_PROBABILITY) {
+            map[x][y] = PEAKS_TILE_TYPE;
+          }
+        }
+      }
+    }
   }
 
   // metodi per la generazione delle stanze
@@ -303,12 +334,6 @@ class Level {
 
       // stanza selezionata casualmente
       // e verifica se nella stanza sono gia presenti casse
-      // da sistemare perche puo essere che non tutte le stanze vengano generate
-      // e quindi se in tutte le stanze sono presenti chest
-      // cicla all'infinito
-
-      // se in tutte le stanze sono presenti le casse
-      // e sta controllato con il counter j esci da ciclo
       do {
         room = rooms.get((int) random(rooms.size()));
         println("check chest in the room...");

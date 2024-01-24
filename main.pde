@@ -36,6 +36,7 @@ PImage chest_open_sprite;
 PImage special_chest_close_sprite;
 PImage special_chest_open_sprite;
 PImage rat_enemy_sprite;
+PImage boss_sprite;
 
 // weapons image
 PImage sword_sprite;
@@ -172,6 +173,7 @@ void setupImages() {
   special_chest_open_sprite = loadImage("data/object/special_chest_open.png");
   
   rat_enemy_sprite = loadImage("data/npc/rat_enemy.png");
+  boss_sprite = loadImage("data/npc/boss_sprite.png");
   
   golden_key.sprite = loadImage("data/golden_key.png");
   silver_key.sprite = loadImage("data/silver_key.png");

@@ -181,18 +181,18 @@ class UI {
   
   void displayBossHearts() {
     // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
-    heartsToDisplay = p1.playerHP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
+    heartsToDisplay = game.boss.HP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
     // da sistemare si deve trovare esattamente al centro
     heartX = uiLayer.width / 2 - 100;
     heartY = uiLayer.height - 100;
-    maxHearts = p1.playerMaxHP / 10;
-    isHalfHeart = p1.playerHP % 10 >= 5; // Controlla se c'è un cuore a metà
+    maxHearts = game.boss.maxHP / 10;
+    isHalfHeart = game.boss.HP % 10 >= 5; // Controlla se c'è un cuore a metà
     
     // uiLayer.textFont(myFont);
     uiLayer.fill(255);
     // uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(30);
-    uiLayer.text("BOSS", heartX, heartY - 30);
+    uiLayer.text(game.boss.name, heartX, heartY - 30);
 
     // Disegna i cuori pieni
     for (int i = 0; i < heartsToDisplay; i++) {

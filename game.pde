@@ -1,4 +1,4 @@
-enum DifficultyLevel { //<>//
+enum DifficultyLevel {
   FACILE,
     NORMALE,
     DIFFICILE
@@ -6,7 +6,7 @@ enum DifficultyLevel { //<>//
 
 class Game {
   DifficultyLevel difficultyLevel; // livello di difficolta del gioco
-  Enemy boss;    // boss del gioco
+  Boss boss;    // boss del gioco
   boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
   float holeRadius; // raggio della maschera
   boolean isTorchDropped;       // indica se la torcia è stata droppata
@@ -60,7 +60,6 @@ class Game {
     isMapDropped = false;
     isMasterSwordDropped = false;
 
-
     // reimposta lo stato della mappa, disattivo
     ui.deactivateMap();
     ui.deactivateBossUI();
@@ -81,7 +80,14 @@ class Game {
     // aggiorna il testo relativo al livello attuale
     actualLevel = currentZone.zoneName + " - Livello Finale";
 
+    // crea il boss
+    boss = new Boss(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y, 0.1, "Stregone Pagnax", 100, 100);
+    boss.sprite = boss_sprite;
+    // boss.spritePosition = currentLevel.getStartPosition();
+    boss.spritePosition.x += 3;
+
     ui.activateBossUI();
+    ui.deactivateMap();
   }
 
   void display() {
@@ -108,6 +114,7 @@ class Game {
 
     // aggiorna lo stato corrente del gioco
     if (currentLevel.isFinalLevel) {
+      println("chiamata a update boss battle...");
       updateBossBattle();
     } else {
       update();
@@ -149,10 +156,19 @@ class Game {
   }
 
   void updateBossBattle() {
+    // handlePlayerVictory();
     // handlePlayerDeath();
     handlePlayerMovement();
     handlePlayerAttack();
     handlePotionUse();
+    handleBossActions();    // gestisce il boss
+  }
+  
+  // gestisce la vittoria del giocatore
+  void handlePlayerVictory() {
+    if (boss.HP <= 0) {
+      screen_state = ScreenState.WIN_SCREEN;
+    }
   }
 
   // gestisce la morte del giocatore
@@ -203,7 +219,7 @@ class Game {
 
   // gestisce il movimento del player
   void handlePlayerMovement() {
-    p1.move();
+    p1.update();
     p1.display();
   }
 
@@ -266,6 +282,7 @@ class Game {
 
       if (isInVisibleArea(enemy.spritePosition)) {
         if (enemy.enemyHP > 0) {
+          enemy.update();
           enemy.display();
         } else {
           // caso in cui i nemici si uccidono con le trappole
@@ -273,7 +290,7 @@ class Game {
           enemy.dropItem();
           iterator.remove();
         }
-        
+
         if (enemy.playerCollide(p1)) {
           // attacca il giocatore
           enemy.handleAttack();
@@ -281,7 +298,6 @@ class Game {
           // muovi il nemico e resetta la first attack
           // da sistemare
           enemy.first_attack = true;
-          enemy.move();
         }
 
         if (isAttacking && !attackExecuted) {
@@ -315,6 +331,12 @@ class Game {
         }
       }
     }
+  }
+  
+  // gestione del boss finale di gioco 
+  void handleBossActions() {
+    boss.update(p1);
+    boss.display(); //<>//
   }
 
   // gestione delle chest
