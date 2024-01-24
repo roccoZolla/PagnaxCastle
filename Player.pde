@@ -1,22 +1,39 @@
-class Player {
+class Player implements Damageable { //<>//
   PVector spritePosition;
-  float spriteSpeed = 0.5;
-  Rectangle playerBox;
+  float spriteSpeed = 0.2;
   PImage sprite;
 
+  // movements
+  boolean moveUP;
+  boolean moveDOWN;
+  boolean moveRIGHT;
+  boolean moveLEFT;
+
+  int direction;
+
+  final int DIRECTION_LEFT = 0;
+  final int DIRECTION_RIGHT = 1;
+
+  boolean moveATCK;    // attacco j
+  boolean moveINTR;    // interazione k
+  boolean moveUSE;     // utilizza l
+
+  ConcreteDamageHandler damageTileHandler;
+
+  // caratteristiche del player
   int playerMaxHP;
   int playerHP;
   int playerScore;
   int coins;      // numero di monete che ha il giocatore
-  Item weapon;
-  Item healer;
+  Weapon weapon;
+  Healer redPotion;  // restituisce due - tre cuori
   Item golden_keys;
   Item silver_keys;
   int numberOfSilverKeys;
   int numberOfGoldenKeys;
   int numberOfPotion;
 
-  Player(int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion) {
+  Player(int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
     this.playerScore = 0;
     this.playerHP = playerHP;
     this.playerMaxHP = maxHP;
@@ -24,132 +41,171 @@ class Player {
     this.numberOfSilverKeys = numberOfSilverKeys;
     this.numberOfGoldenKeys = numberOfGoldenKeys;
     this.numberOfPotion = numberOfPotion;
-    this.playerBox = new Rectangle(0, 0, 0, 0);
-  }
-  
-  void setPlayerBox() {
-    playerBox.x = spritePosition.x;
-    playerBox.y = spritePosition.y;
-    playerBox.width = sprite.width;
-    playerBox.height = sprite.height;
+
+    this.damageTileHandler = damageTileHandler;
+
+    this.moveUP = false;
+    this.moveDOWN = false;
+    this.moveRIGHT = false;
+    this.moveLEFT = false;
   }
 
   public void collectCoin() {
     this.coins++;
   }
 
-  //void move() {
-  //  if (keyPressed) {
-  //    float newX = p1.spritePosition.x;
-  //    float newY = p1.spritePosition.y;
+  void updateScore(int score) {
+    this.playerScore += score;
+  }
 
-  //    if (moveUP) {
-  //      newY -= spriteSpeed;
-  //    }
-  //    if (moveDOWN) {
-  //      newY += spriteSpeed;
-  //    }
-  //    if (moveLEFT) {
-  //      newX -= spriteSpeed;
-  //    }
-  //    if (moveRIGHT) {
-  //      newX += spriteSpeed;
-  //    }
+  // movimento del giocatore
+  void update() {
+    float newX = spritePosition.x;
+    float newY = spritePosition.y;
 
-  //    // Verifica se la nuova posizione è valida
-  //    int roundedX = round(newX);
-  //    int roundedY = round(newY);
+    int roundedX = 0, roundedY = 0;
 
-  //    // check delle collisioni
-  //    if (roundedX >= 0 && roundedX < currentLevel.cols && roundedY >= 0 && roundedY < currentLevel.rows &&
-  //      currentLevel.map[roundedX][roundedY] != 0 && 
-  //      currentLevel.map[roundedX][roundedY] != 4 &&
-  //      currentLevel.map[roundedX][roundedY] != 6 &&
-  //      currentLevel.map[roundedX][roundedY] != 7) {
-  //      p1.spritePosition.x = newX;
-  //      p1.spritePosition.y = newY;
-  //    }
-  //  }
-  //}
-  
-  void move() {
-    if (keyPressed) {    
-      float newX = p1.spritePosition.x;
-      float newY = p1.spritePosition.y;
-      float spriteWidth = p1.sprite.width;  // Larghezza dello sprite
-      float spriteHeight = p1.sprite.height;  // Altezza dello sprite
-  
-      if (moveUP) {
-        newY -= spriteSpeed;
-      }
-      if (moveDOWN) {
-        newY += spriteSpeed;
-      }
-      if (moveLEFT) {
-        newX -= spriteSpeed;
-      }
-      if (moveRIGHT) {
-        newX += spriteSpeed;
-      }
-  
-      // Verifica se la nuova posizione è valida
-      int roundedX = round(newX);
-      int roundedY = round(newY);
-      
-      println("roundedX: " + roundedX);
-      println("roundedY: " + roundedY);
-      
-      // Calcola il rettangolo di collisione intorno allo sprite
-      playerBox.x = roundedX;
-      playerBox.y = roundedY;
-      
-      spritesLayer.noFill(); // Nessun riempimento
-      spritesLayer.stroke(255); // Colore del bordo bianco
-      spritesLayer.rect(roundedX, roundedY, spriteWidth, spriteHeight);
-    
-      if (isValidMove(playerBox, roundedX, roundedY)) {
-        p1.spritePosition.x = newX;
-        p1.spritePosition.y = newY;
-      }
+    if (moveUP) {
+      newY -= spriteSpeed;
+    }
+    if (moveDOWN) {
+      newY += spriteSpeed;
+    }
+    if (moveLEFT) {
+      p1.sprite = spriteLeft;
+      newX -= spriteSpeed;
+      direction = DIRECTION_LEFT;
+    }
+    if (moveRIGHT) {
+      p1.sprite = spriteRight;
+      newX += spriteSpeed;
+      direction = DIRECTION_RIGHT;
+    }
+
+    // Verifica se la nuova posizione è valida
+    roundedX = round(newX);
+    roundedY = round(newY);
+
+    if (isValidMove(roundedX, roundedY)) {
+      damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
+
+      spritePosition.x = newX;
+      spritePosition.y = newY;
     }
   }
 
+  // collisione tra arma e nemico
+  boolean collidesWith(Enemy enemy) {
+    // se l'arma collide con un nemico sottrai danno alla vita nemico
+
+    float offset = 16;
+
+    if (direction == DIRECTION_RIGHT) offset = 16;
+    else if (direction == DIRECTION_LEFT) offset = -16;
+
+    //println("giocatore: " + spritePosition);
+    //println("arma: " + weapon.spritePosition);
+
+    // da sistemare
+    if ((weapon.spritePosition.x * currentLevel.tileSize) + offset <= (enemy.spritePosition.x * currentLevel.tileSize) + enemy.sprite.width  &&
+      ((weapon.spritePosition.x * currentLevel.tileSize) + weapon.sprite.width) + offset >= enemy.spritePosition.x * currentLevel.tileSize &&
+      weapon.spritePosition.y * currentLevel.tileSize <= (enemy.spritePosition.y * currentLevel.tileSize) + enemy.sprite.height &&
+      (weapon.spritePosition.y * currentLevel.tileSize) + weapon.sprite.height >= enemy.spritePosition.y * currentLevel.tileSize) {
+      return true;
+    }
+
+    return false;
+  }
 
   // collision detection
-  boolean isValidMove(Rectangle collisionRect, int roundedX, int roundedY) {
-     int startX = floor((camera.x / (camera.zoom)));
-     int startY = floor((camera.y / (camera.zoom)));
-     int endX = ceil((camera.x + gameScene.width) / (camera.zoom));
-     int endY = ceil((camera.y + gameScene.height) / (camera.zoom));
-     
-      spritesLayer.noFill(); // Nessun riempimento
-      spritesLayer.stroke(255, 0 ,0); // Colore del bordo bianco
-      spritesLayer.ellipse(startX, startY, 30, 30);
-      
-      spritesLayer.noFill(); // Nessun riempimento
-      spritesLayer.stroke(255, 0 ,0); // Colore del bordo bianco
-      spritesLayer.ellipse(endX, endY, 30, 30);
-      
-      println(collisionRect.intersectsTile(roundedX, roundedY));
-      
-     if (collisionRect.intersectsTile(roundedX, roundedY) &&
-        (currentLevel.map[roundedX][roundedY] == 0 || 
-        currentLevel.map[roundedX][roundedY] == 4 ||
-        currentLevel.map[roundedX][roundedY] == 6 ||
-        currentLevel.map[roundedX][roundedY] == 7)) {
-        return false;
-      }
-  
+  boolean isValidMove(int roundedX, int roundedY) {
+    if (!isWithinMapBounds(roundedX, roundedY)) {
+      return false;
+    }
+
+    if (isCollisionTile(roundedX, roundedY) && isCollidingWithTile(roundedX, roundedY)) {
+      return false;
+    }
+
     return true;
   }
 
-  void display(PGraphics layer) {
-    layer.noFill(); // Nessun riempimento
-    layer.stroke(255); // Colore del bordo bianco
-    layer.rect(spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
-    layer.noFill();
-    layer.stroke(255, 0, 0);
-    layer.point(spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize);
-    layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
+  boolean isCollidingWithTile(int roundedX, int roundedY) {
+    float playerRight = spritePosition.x * currentLevel.tileSize + (sprite.width / 2);
+    float playerLeft = spritePosition.x * currentLevel.tileSize - (sprite.width / 2);
+    float playerBottom = spritePosition.y * currentLevel.tileSize + (sprite.height / 2);
+    float playerTop = spritePosition.y * currentLevel.tileSize - (sprite.height / 2);
+
+    float tileRight = roundedX * currentLevel.tileSize + (currentLevel.tileSize / 2);
+    float tileLeft = roundedX * currentLevel.tileSize - (currentLevel.tileSize / 2);
+    float tileBottom = roundedY * currentLevel.tileSize + (currentLevel.tileSize / 2);
+    float tileTop = roundedY * currentLevel.tileSize - (currentLevel.tileSize / 2);
+
+    // Verifica delle collisioni
+    boolean collisionX = playerRight >= tileLeft && playerLeft <= tileRight;
+    boolean collisionY = playerBottom >= tileTop && playerTop <= tileBottom;
+
+    return collisionX && collisionY;
+  }
+
+  // override dei metodi dell'interfaccia
+  @Override
+    public void receiveDamage(int damage) {
+    playerHP -= damage;
+    if (playerHP < 0) {
+      playerHP = 0;
+    }
+  }
+
+  @Override
+    PVector getPosition() {
+    return spritePosition;
+  }
+
+  // metodo che si occupa di disegnare l'arma del giocatore
+  void drawPlayerWeapon() {
+    // aggiorna posizione dell'arma
+    weapon.spritePosition = spritePosition;
+
+    // offset
+    float offset = 16;
+
+    if (direction == DIRECTION_RIGHT)
+      offset = 16;
+    else if (direction == DIRECTION_LEFT)
+      offset = -16;
+
+    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
+
+    // hitbox arma
+    spritesLayer.rectMode(CENTER);
+    spritesLayer.noFill(); // Nessun riempimento
+    spritesLayer.stroke(255, 146, 240); // Colore del bordo bianco
+    spritesLayer.rect(centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
+
+    // arma
+    spritesLayer.imageMode(CENTER);
+    spritesLayer.image(weapon.sprite, centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
+  }
+
+  void display() {
+    // hitbox giocatore
+    spritesLayer.noFill(); // Nessun riempimento
+    spritesLayer.stroke(255); // Colore del bordo bianco
+
+    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
+
+    // hitbox
+    //layer.rectMode(CENTER); // Imposta il rectMode a center
+    //layer.rect(centerX, centerY, sprite.width, sprite.height);
+
+    //layer.stroke(160);
+    //layer.strokeWeight(10);
+    //layer.point(centerX, centerY);
+
+    spritesLayer.imageMode(CENTER); // Imposta l'imageMode a center
+    spritesLayer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
 }

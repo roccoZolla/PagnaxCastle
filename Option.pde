@@ -1,16 +1,30 @@
+// option screen
 class Option {
   ArrayList<Button> buttons;
   PGraphics optionLayer;
+  
+  String difficultyLevel;
+  
+  int effectsVolume;
+  int musicVolume;
 
   Option() {
     optionLayer = createGraphics(width, height);
     buttons = new ArrayList();
 
-    buttons.add(new Button(width - 100, 120, 50, 50, "e+", ""));
-    buttons.add(new Button(width - 250, 120, 50, 50, "e-", ""));
-    buttons.add(new Button(width - 100, 200, 50, 50, "m+", ""));
-    buttons.add(new Button(width - 250, 200, 50, 50, "m-", ""));
-    buttons.add(new Button(width - 250, height - 150, 200, 80, "Back to menu", ""));
+    buttons.add(new Button(width - 100, 150, 50, 50, "effectsUp", "+", ""));    // selettore effetti sonori
+    buttons.add(new Button(width - 250, 150, 50, 50, "effectsDown", "-", ""));
+    buttons.add(new Button(width - 100, 210, 50, 50, "musicUp", "+", ""));   // selettore volume musica
+    buttons.add(new Button(width - 250, 210, 50, 50, "musicDown", "-", ""));
+    buttons.add(new Button(width - 100, 280, 50, 50, "difficultyRight", ">", ""));    // selettore difficolta
+    buttons.add(new Button(width - 290, 280, 50, 50, "difficultyLeft", "<", ""));
+    buttons.add(new Button(100, 420, 200, 80, "commands", "Comandi", ""));
+    buttons.add(new Button(width - 250, height - 150, 200, 80, "back", "Back", ""));
+    
+    updateDifficultyText();
+    
+    effectsVolume = 0;
+    musicVolume = 0;
   }
 
   void display() {
@@ -25,6 +39,7 @@ class Option {
     optionLayer.textAlign(CENTER, CENTER);
     optionLayer.text("OPTIONS", 100, 50);
 
+    // linea che parte dalla scritta opzioni e chiudere la pagina
     optionLayer.stroke(255);
     optionLayer.line(200, 50, width - 50, 50);
 
@@ -38,42 +53,45 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Effetti sonori: ", 200, 150);
+    optionLayer.text("Effetti sonori: ", 200, 160);
+    
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text(volumeEffectsLevel, width - 200, 150);
+    effectsVolume = (int) (volumeEffectsLevel * 10);
+    optionLayer.text(effectsVolume, width - 160, 175);
 
     // ----- MUSICA -----
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Musica: ", 200, 200);
+    optionLayer.text("Musica: ", 200, 220);
 
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text(volumeMusicLevel, width - 200, 225);
+    int musicVolume = (int) (volumeMusicLevel * 10);
+    optionLayer.text(musicVolume, width - 160, 235);
 
-    // scritta difficolta
+    // ----- DIFFICOLTA -----
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Difficolta: ", 100, 250);
-
-    // scritta lingua
+    optionLayer.text("Difficolta: ", 100, 290);
+    
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Lingua: ", 100, 300);
+    optionLayer.text(difficultyLevel,  width - 230, 305);
 
+    // linea che parte dal pulsante back a chiudere a la pagina
     optionLayer.stroke(255);
     optionLayer.line(50, height - 100, width - 270, height - 100);
 
     for (Button button : buttons) {
       if (button.isClicked()) {
-        switch(button.label) {
-        case "e+":
+        switch(button.name) {
+        case "effectsUp":
           volumeEffectsLevel += 0.1;
 
           if (volumeEffectsLevel > 1.0) volumeEffectsLevel = 1.0;
@@ -81,7 +99,7 @@ class Option {
           updateEffectsVolume(volumeEffectsLevel);
           break;
 
-        case "e-":
+        case "effectsDown":
           volumeEffectsLevel -= 0.1;
 
           if (volumeEffectsLevel < 0.0) volumeEffectsLevel = 0.0;
@@ -89,7 +107,7 @@ class Option {
           updateEffectsVolume(volumeEffectsLevel);
           break;
 
-        case "m+":
+        case "musicUp":
           volumeMusicLevel += 0.1;
 
           if (volumeMusicLevel > 1.0) volumeMusicLevel = 1.0;
@@ -97,26 +115,39 @@ class Option {
           updateMusicVolume(volumeMusicLevel);
           break;
 
-        case "m-":
+        case "musicDown":
           volumeMusicLevel -= 0.1;
 
           if (volumeMusicLevel < 0.0) volumeMusicLevel = 0.0;
           updateMusicVolume(volumeMusicLevel);
           break;
+          
+        case "difficultyRight":
+          changeDifficulty(true);
+          break;
+        
+        case "difficultyLeft":
+          changeDifficulty(false);
+          break;
+          
+        case "commands":
+          // previous_state = screen_state;
+          screen_state = ScreenState.TUTORIAL_SCREEN;
+          break;
 
-        case "Back to menu":
-          if (previous_state == MENU_SCREEN) {
+        case "back":
+          if (previous_state == ScreenState.MENU_SCREEN) {
             // salva lo stato
             previous_state = screen_state;
 
             // torna al menu
-            screen_state = MENU_SCREEN;
-          } else if (previous_state == PAUSE_SCREEN) {
+            screen_state = ScreenState.MENU_SCREEN;
+          } else if (previous_state == ScreenState.PAUSE_SCREEN) {
             // salva lo stato
             previous_state = screen_state;
 
             // torna alla schermata di pausa
-            screen_state = PAUSE_SCREEN;
+            screen_state = ScreenState.PAUSE_SCREEN;
           }
           break;
         }
@@ -131,13 +162,55 @@ class Option {
   }
 
   void updateEffectsVolume(float volumeEffectsLevel) {
+    click.amp(volumeEffectsLevel);
     pickupCoin.amp(volumeEffectsLevel);
-    normalChestOpen.amp(volumeEffectsLevel);
-    specialChestOpen.amp(volumeEffectsLevel);
+    chest_open.amp(volumeEffectsLevel);
     drinkPotion.amp(volumeEffectsLevel);
+    swordAttack.amp(volumeEffectsLevel);
+    hurt_sound.amp(volumeEffectsLevel);
+    enemy_death_sound.amp(volumeEffectsLevel);
   }
 
   void updateMusicVolume(float volumeMusicLevel) {
-    soundtrack.amp(volumeMusicLevel);
+    menu_background.amp(volumeMusicLevel);
+    dungeon_background.amp(volumeMusicLevel);
+  }
+  
+  // aggiorna il testo da mostrare in base alla difficolta corrente
+  void updateDifficultyText() {
+    switch(game.difficultyLevel){
+      case FACILE:
+        difficultyLevel = "Facile";
+        break;
+      
+      case NORMALE:       
+        difficultyLevel = "Normale";
+      break;
+      
+      case DIFFICILE:
+        difficultyLevel = "Difficile";
+      break;
+    }
+  }
+  
+  // incrementa o decrementa il livello di difficolta
+  void changeDifficulty(boolean increases) {
+    if (game.difficultyLevel == DifficultyLevel.DIFFICILE && increases) {
+      // se il livello di difficolta è massimo non fare niente 
+      return;
+    }
+    
+    else if(game.difficultyLevel == DifficultyLevel.FACILE && !increases) {
+      // se il livello di difficolta è il minimo non fare niente
+      return;
+    }
+    
+    if (increases) {
+      game.difficultyLevel = DifficultyLevel.values()[(game.difficultyLevel.ordinal() + 1) % DifficultyLevel.values().length];
+    } else {
+      game.difficultyLevel = DifficultyLevel.values()[(game.difficultyLevel.ordinal() - 1 + DifficultyLevel.values().length) % DifficultyLevel.values().length];
+    }
+    
+    updateDifficultyText();
   }
 }

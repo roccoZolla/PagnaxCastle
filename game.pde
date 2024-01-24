@@ -1,40 +1,102 @@
+enum DifficultyLevel {
+  FACILE,
+    NORMALE,
+    DIFFICILE
+}
+
 class Game {
+  DifficultyLevel difficultyLevel; // livello di difficolta del gioco
+  Boss boss;    // boss del gioco
+  boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
+  float holeRadius; // raggio della maschera
+  boolean isTorchDropped;       // indica se la torcia è stata droppata
+  boolean isMapDropped;         // indica se la mappa è stata droppata
+  boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata
+  ConcreteDamageHandler damageTileHandler;
+
+  Game() {
+    // di default la difficolta del gioco è impostata su normale
+    difficultyLevel = DifficultyLevel.NORMALE;
+    isBossLevel = false;
+  }
+
   void init() {
     // create world
     castle = new World();
 
+    damageTileHandler = new ConcreteDamageHandler();
+
     currentZone = castle.currentZone;
+
+    // caricamento delle immagini
+    currentZone.loadAssetsZone();
+
+    // inizializzo un livello per volta
     currentLevel = currentZone.currentLevel;
+    currentLevel.loadAssetsLevel();
     currentLevel.init();
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
-    redPotion.setTakeable(true);    // si puo prendere
-    redPotion.setUseable(true);    // si puo usare
-    redPotion.setHealerable(true);  // restitusce vita
-    redPotion.setBonusHP(20);
+    p1 = new Player(100, 100, 0, 10, 10, damageTileHandler);
+    p1.spritePosition = currentLevel.getStartPosition();
+    p1.sprite = spriteRight;
+    p1.redPotion = redPotion;
 
-    p1 = new Player(80, 100, 5, 5, 5);
-    p1.spritePosition = currentLevel.getStartRoom();
-    p1.sprite = loadImage("data/player.png");
-    p1.healer = redPotion;
     p1.weapon = weapon;
+    p1.weapon.spritePosition = p1.spritePosition;
+    // println(p1.weapon.spritePosition);
+
     p1.golden_keys = golden_key;
     p1.silver_keys = silver_key;
-    
-    p1.setPlayerBox();
 
     camera = new Camera();
+
+    holeRadius = 50;
+
+    isBossLevel = false;
+
+    isTorchDropped = false;
+    isMapDropped = false;
+    isMasterSwordDropped = false;
+
+    // reimposta lo stato della mappa, disattivo
+    ui.deactivateMap();
+    ui.deactivateBossUI();
+  }
+
+  void initBossBattle() {
+    // crea il livello finale
+    currentLevel = currentZone.createBossLevel();
+
+    // inizializza il livello del boss
+    currentLevel.isFinalLevel = true;
+    currentLevel.loadAssetsLevel();
+    currentLevel.initBossLevel();
+
+    // posizione il giocatore nel punto di spawn
+    p1.spritePosition = currentLevel.getStartPosition();
+
+    // aggiorna il testo relativo al livello attuale
+    actualLevel = currentZone.zoneName + " - Livello Finale";
+
+    // crea il boss
+    boss = new Boss(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y, 0.1, "Stregone Pagnax", 100, 100);
+    boss.sprite = boss_sprite;
+    // boss.spritePosition = currentLevel.getStartPosition();
+    boss.spritePosition.x += 3;
+
+    ui.activateBossUI();
+    ui.deactivateMap();
   }
 
   void display() {
-    gameScene.beginDraw();
-    // cancella lo schermo
-    gameScene.background(0);
-
     // aggiorna la camera
     camera.update();
 
+    // disegna il game layer
+    gameScene.beginDraw();
+    gameScene.background(0);
     // Imposta la telecamera alla nuova posizione e applica il fattore di scala
     gameScene.translate(-camera.x, -camera.y);
     gameScene.scale(camera.zoom);
@@ -42,182 +104,427 @@ class Game {
     // Disegna la mappa del livello corrente
     currentLevel.display(); // renderizza il 4,6 % della mappa
 
+    gameScene.endDraw();
+
+    // disegna lo sprites layer
     spritesLayer.beginDraw();
     spritesLayer.background(255, 0);
     spritesLayer.translate(-camera.x, -camera.y);
     spritesLayer.scale(camera.zoom);
 
-    // ----- ENEMY -----
-    // disegna solo i nemici visibili
-    for (Enemy enemy : currentLevel.enemies) {
-      if (isInVisibleArea(enemy.spritePosition)) {
-        enemy.display(spritesLayer);
-        enemy.move(currentLevel);
-      }
+    // aggiorna lo stato corrente del gioco
+    if (currentLevel.isFinalLevel) {
+      println("chiamata a update boss battle...");
+      updateBossBattle();
+    } else {
+      update();
     }
 
+    spritesLayer.endDraw();
 
+    maskLayer.beginDraw();
+    maskLayer.background(0, 255);
+    maskLayer.blendMode(REPLACE);
+
+    maskLayer.translate(-camera.x, -camera.y);
+    maskLayer.scale(camera.zoom);
+
+    float centerX = p1.spritePosition.x * currentLevel.tileSize + currentLevel.tileSize/ 2;
+    float centerY = p1.spritePosition.y * currentLevel.tileSize + currentLevel.tileSize/ 2;
+
+    maskLayer.fill(255, 0);
+    maskLayer.ellipseMode(RADIUS);
+    maskLayer.ellipse(centerX, centerY, holeRadius, holeRadius);
+
+    maskLayer.endDraw();
+
+    image(gameScene, 0, 0);
+    image(spritesLayer, 0, 0);
+    // image(maskLayer, 0, 0);
+  }
+
+  void update() {
+    // handlePlayerDeath();
+    handlePlayerMovement();
+    handlePlayerAttack();
+    handlePotionUse();
+    handleEnemyActions();
+    handleChest();
+    handleCoin();
+    handleDropItems();
+    handleNextLevel();    // gestisce il passaggio al livello successivo
+  }
+
+  void updateBossBattle() {
+    // handlePlayerVictory();
+    // handlePlayerDeath();
+    handlePlayerMovement();
+    handlePlayerAttack();
+    handlePotionUse();
+    handleBossActions();    // gestisce il boss
+  }
+  
+  // gestisce la vittoria del giocatore
+  void handlePlayerVictory() {
+    if (boss.HP <= 0) {
+      screen_state = ScreenState.WIN_SCREEN;
+    }
+  }
+
+  // gestisce la morte del giocatore
+  void handlePlayerDeath() {
+    if (p1.playerHP <= 0) {
+      screen_state = ScreenState.LOSE_SCREEN;
+    }
+  }
+
+  // gestisce il passaggio al livello successivo
+  void handleNextLevel() {
+    // passa al livello successivo
+    // aggiungere collider
+    if (currentLevel.playerCollide(p1)) {
+      // se il livello dell'area è l'ultimo passa alla prossima area
+      if (currentLevel.levelIndex == currentZone.levels.size() - 1) {
+        println("E' L'ULTIMO LIVELLO DELLA ZONA...");
+        // controlla se è l'area finale
+        if (currentZone.isFinal()) {
+          initBossBattle();
+          isBossLevel = true;
+        } else {
+          // passa alla prossima macroarea
+          currentZone = castle.zones.get(currentZone.zoneIndex + 1);
+          currentLevel = currentZone.currentLevel;
+          currentLevel.loadAssetsLevel();
+          currentLevel.init();
+          actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
+          p1.spritePosition = currentLevel.getStartPosition();
+
+          // aggiorna lo score del player
+          p1.updateScore(200);
+          screen_state = ScreenState.STORY_SCREEN;
+        }
+      } else {
+        // passa al livello successivo - stessa macro area
+        currentLevel = currentZone.levels.get(currentLevel.levelIndex + 1);
+        currentLevel.loadAssetsLevel();
+        currentLevel.init();
+        actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
+        p1.spritePosition = currentLevel.getStartPosition();
+
+        // aggiorna lo score del player
+        p1.updateScore(100);
+      }
+    }
+  }
+
+  // gestisce il movimento del player
+  void handlePlayerMovement() {
+    p1.update();
+    p1.display();
+  }
+
+  // gestisce l'attacco del giocatore
+  void handlePlayerAttack() {
+    if (p1.moveATCK && !p1.moveUSE && !p1.moveINTR) {
+      if (!isAttacking && !attackExecuted) {
+        p1.drawPlayerWeapon();
+        swordAttack.play();
+        isAttacking = true;
+      }
+    } else {
+      // Resetta la variabile di stato se il tasto relativo all'attacco viene rilasciato
+      isAttacking = false;
+      attackExecuted = false;
+    }
+  }
+
+
+  // gestisce l'uso delle pozioni
+  void handlePotionUse() {
+    if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR)) {
+      if (!isUsingPotion) {
+        isUsingPotion = true;
+
+        // se il numero delle pozioni è maggiore di 0
+        if (p1.numberOfPotion > 0) {
+          // se vita minore della vita massima
+          if (p1.playerHP < p1.playerMaxHP) {
+            drinkPotion.play();
+            p1.playerHP += p1.redPotion.getBonusHp();
+
+            if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
+
+            // dimunuisci numero di pozioni del giocatore
+            p1.numberOfPotion -= 1;
+          } else {
+            // stampa massaggio di salute al massimo
+          }
+        } else {
+          // stampa x per indicare che non hai piu funzioni
+          float crossImageX = (p1.spritePosition.x * currentLevel.tileSize + (p1.sprite.width / 2));
+          float crossImageY = (p1.spritePosition.y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          spritesLayer.imageMode(CENTER);
+          spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+        }
+      }
+    } else {
+      // resetta la variabile
+      isUsingPotion = false;
+    }
+  }
+
+  // gestisce le azioni del nemico
+  void handleEnemyActions() {
+    Iterator<Enemy> iterator = currentLevel.enemies.iterator();
+
+    while (iterator.hasNext()) {
+      Enemy enemy = iterator.next();
+
+      if (isInVisibleArea(enemy.spritePosition)) {
+        if (enemy.enemyHP > 0) {
+          enemy.update();
+          enemy.display();
+        } else {
+          // caso in cui i nemici si uccidono con le trappole
+          enemy_death_sound.play();
+          enemy.dropItem();
+          iterator.remove();
+        }
+
+        if (enemy.playerCollide(p1)) {
+          // attacca il giocatore
+          enemy.handleAttack();
+        } else {
+          // muovi il nemico e resetta la first attack
+          // da sistemare
+          enemy.first_attack = true;
+        }
+
+        if (isAttacking && !attackExecuted) {
+          if (p1.collidesWith(enemy)) {
+            // riproduci il suono di hit del nemico
+            hurt_sound.play();
+
+            // vita meno danno dell'arma
+            enemy.enemyHP -= p1.weapon.getDamage();
+
+            // l'attacco è stato eseguito non continuare ad attaccare
+            attackExecuted = true;
+
+            // testo danno subito dal nemico
+            TextDisplay damageHitText = new TextDisplay(enemy.spritePosition, Integer.toString(p1.weapon.damage), color(255, 0, 0), 2000);
+            damageHitText.display();
+
+            // il nemico muore, rimuovilo dalla lista dei nemici del livello
+            // aggiungi un certo valore allo score del giocatore
+            // possibilita di droppare l'oggetto
+            if (enemy.enemyHP <= 0) {
+              p1.updateScore(enemy.scoreValue);
+              // riproduci suono morte nemico
+              enemy_death_sound.play();
+              // metodo per la generazione di un item casuale da droppare
+              enemy.dropItem();
+
+              iterator.remove();  // Rimuovi il nemico dalla lista
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // gestione del boss finale di gioco 
+  void handleBossActions() {
+    boss.update(p1);
+    boss.display(); //<>//
+  }
+
+  // gestione delle chest
+  void handleChest() {
     // ----- CHEST -----
     // disegna solo le chest visibili
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.spritePosition)) {
-        chest.display(spritesLayer);
+        // mostra le chest nell'area visibile
+        chest.display();
 
-        // Calcola la distanza tra il giocatore e la cassa
-        // AGGIORNA CON LA COLLISION DETECTION
-        float distanceToChest = dist(p1.spritePosition.x, p1.spritePosition.y, chest.spritePosition.x, chest.spritePosition.y);
+        if (chest.playerCollide(p1) && !chest.isOpen()) {
+          // println("collsione cassa giocatore");
+          chest.displayHitbox();
 
-        // Imposta una soglia per la distanza in cui il giocatore può interagire con la cassa
-        float interactionThreshold = 1.5; // Puoi regolare questa soglia a tuo piacimento
+          float letterImageX = (chest.spritePosition.x * currentLevel.tileSize + (p1.sprite.width / 2));
+          float letterImageY = (chest.spritePosition.y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          spritesLayer.imageMode(CENTER);
+          spritesLayer.image(letter_k, letterImageX, letterImageY);
 
-        if (distanceToChest < interactionThreshold) {
-          // Il giocatore è abbastanza vicino alla cassa per interagire
-          selectedChest = chest;
-          println("chest selezionata");
-        } else {
-          selectedChest = null;
+          // se il giocatore preme il tasto interazione e la cassa non è stata aperta
+          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
+            if (!isInteracting) {
+              isInteracting = true;
+              if (chest.isRare()) {    // se la cassa è rara
+                // CASSA RARA
+                if (p1.numberOfGoldenKeys > 0) {
+                  if (chest.getOpenWith().equals(p1.golden_keys)) {
+                    // imposta la cassa come aperta
+                    chest.setIsOpen(true);
+                    chest_open.play();
+                    // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+                    chest.sprite = special_chest_open_sprite;
+
+                    p1.numberOfGoldenKeys -= 1;
+                    p1.updateScore(50);
+
+                    chest.dropItemSpecialChest();
+                  }
+                } else {
+                  float crossImageX = (p1.spritePosition.x * currentLevel.tileSize + (chest.sprite.width / 2));
+                  float crossImageY = (p1.spritePosition.y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+                  spritesLayer.imageMode(CENTER);
+                  spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+                }
+              } else {  // se la cassa è normale
+                // CASSA NORMALE
+                if (p1.numberOfSilverKeys > 0) {
+                  if (chest.getOpenWith().equals(p1.silver_keys)) {
+                    // imposta la cassa come aperta
+                    chest.setIsOpen(true);
+                    chest_open.play();
+                    // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+                    chest.sprite = chest_open_sprite;
+
+                    p1.numberOfSilverKeys -= 1;
+                    p1.updateScore(30);
+
+                    // metodo per drop item casuale
+                    chest.dropItemNormalChest();
+                  }
+                } else {
+                  float crossImageX = (p1.spritePosition.x * currentLevel.tileSize + (p1.sprite.width / 2));
+                  float crossImageY = (p1.spritePosition.y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+                  spritesLayer.imageMode(CENTER);
+                  spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+                }
+              }
+            }
+          } else {
+            // resettta la variabile
+            isInteracting = false;
+          }
         }
       }
     }
+  }
 
-    // da sistemare
-    // funziona parzialemente
-    if (selectedChest != null) {
-      // Calcola le coordinate x e y per il testo in modo che sia centrato sopra la cassa
-      float letterImageX = (selectedChest.spritePosition.x * currentLevel.tileSize);
-      float letterImageY = (selectedChest.spritePosition.y * currentLevel.tileSize) - 20; // Regola l'offset verticale a tuo piacimento
-
-      // da fixare deve apparire nel ui layer
-      spritesLayer.image(letter_k, letterImageX, letterImageY);
-
-      if (moveINTR && !selectedChest.isOpen()) {
-        if (selectedChest.isRare()) {    // se la cassa è rara
-          if (p1.numberOfGoldenKeys > 0) {
-            if (selectedChest.getOpenWith().equals(p1.golden_keys)) {
-              // imposta la cassa come aperta
-              selectedChest.setIsOpen(true);
-              specialChestOpen.play();
-              selectedChest.sprite = loadImage("data/object/special_chest_open.png");
-
-              p1.numberOfGoldenKeys -= 1;
-              p1.playerScore += 50;
-            }
-          } else {
-            spritesLayer.textFont(myFont);
-            spritesLayer.fill(255);
-            spritesLayer.textSize(15);
-            spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
-          }
-        } else {  // se la cassa è normale
-          if (p1.numberOfSilverKeys > 0) {
-            if (selectedChest.getOpenWith().equals(p1.silver_keys)) {
-              // imposta la cassa come aperta
-              selectedChest.setIsOpen(true);
-              normalChestOpen.play();
-              selectedChest.sprite = loadImage("data/object/chest_open.png");
-
-              p1.numberOfSilverKeys -= 1;
-              p1.playerScore += 30;
-            }
-          } else {
-            spritesLayer.textFont(myFont);
-            spritesLayer.fill(255);
-            spritesLayer.textSize(15);
-            spritesLayer.text("Non hai piu chiavi!", (p1.spritePosition.x * currentLevel.tileSize) - 50, (p1.spritePosition.y * currentLevel.tileSize) - 10);
-          }
-        }
-      }
-    } else {
-      println("chest null");
-    }
-
+  // gestisce le monete
+  void handleCoin() {
     // ----- COIN -----
     for (Coin coin : currentLevel.coins) {
       if (isInVisibleArea(coin.spritePosition)) {
+        // mostra le monete nell'area visibile
         if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
-        
-        // AGGIORNA CON LA COLLISION DETECTION
-          if (PVector.dist(p1.spritePosition, coin.spritePosition) < coinCollectionThreshold) {
+          coin.display();
+
+          if (coin.playerCollide(p1)) {
             coin.collect();  // raccogli la moneta
             p1.collectCoin();
             pickupCoin.play();
-            p1.playerScore += coin.scoreValue;
-          } else {
-            coin.display(spritesLayer);
+            p1.updateScore(coin.scoreValue);
           }
         }
       }
     }
-
-    // Gestione del movimento del giocatore
-    // da migliorare
-    p1.move();
-
-    if (moveATCK) {
-      drawPlayerWeapon();
-    }
-
-    // usa le pozioni
-    if (moveUSE && p1.numberOfPotion > 0) {
-      if (p1.playerHP < p1.playerMaxHP) {
-        drinkPotion.play();
-        p1.playerHP += redPotion.bonusHP;
-
-        if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
-
-        p1.numberOfPotion -= 1;
-      } else {
-        spritesLayer.textFont(myFont);
-        spritesLayer.fill(255);
-        spritesLayer.textSize(10);
-        spritesLayer.text("Cuori al massimo!", (p1.spritePosition.x * currentLevel.tileSize) - 30, (p1.spritePosition.y * currentLevel.tileSize) - 5);
-      }
-    }
-
-    // mostra il player
-    p1.display(spritesLayer);
-    spritesLayer.endDraw();
-
-    // passa al livello successivo
-    if (dist(p1.spritePosition.x, p1.spritePosition.y, currentLevel.getEndRoomPosition().x, currentLevel.getEndRoomPosition().y) < proximityThreshold) {
-      // se il livello dell'area è l'ultimo passa alla prossima area
-      if (currentLevel.levelIndex == currentZone.numLevels - 1) {
-        // controlla se è l'area finale
-        if (currentZone.isFinal()) {
-          screen_state = WIN_SCREEN;
-        } else {
-          // passa alla prossima macroarea
-          currentZone = castle.zones.get(currentZone.zoneIndex + 1);
-          // currentArea.initLevels();
-          currentLevel = currentZone.currentLevel;
-          currentLevel.init();
-          actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-          p1.spritePosition = currentLevel.getStartRoom();
-
-          // aggiorna lo score del player
-          p1.playerScore +=  200;
-          screen_state = STORY_SCREEN;
-        }
-      } else {
-        // passa al livello successivo - stessa macro area
-        // Il giocatore è abbastanza vicino al punto di accesso, quindi passa al livello successivo
-        currentLevel = currentZone.levels.get(currentLevel.levelIndex + 1);
-        currentLevel.init();
-        actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-        p1.spritePosition = currentLevel.getStartRoom();
-
-        // aggiorna lo score del player
-        p1.playerScore += 100;
-      }
-    }
-
-    gameScene.endDraw();
-
-    image(gameScene, 0, 0);
-    image(spritesLayer, 0, 0);
   }
-  
-  void updateScene() {
 
+  // gestisce gli oggetti rilasciati dai nemici e dalle casse
+  void handleDropItems() {
+    // ----- DROP ITEMS -----
+    Iterator<Item> iterator = currentLevel.dropItems.iterator();
+
+    while (iterator.hasNext()) {
+      Item item = iterator.next();
+
+      // controlla che gli elementi droppati siano visibili
+      if (isInVisibleArea(item.spritePosition)) {
+        item.display();
+
+        if (item.playerCollide(p1)) {
+          item.displayHitbox();
+
+          float letterImageX = (item.spritePosition.x * currentLevel.tileSize + (item.sprite.width / 2));
+          float letterImageY = (item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          spritesLayer.imageMode(CENTER);
+          spritesLayer.image(letter_k, letterImageX, letterImageY);
+
+          if (item instanceof Weapon) {
+            Weapon temp = (Weapon) item;
+
+            if (temp.damage > p1.weapon.damage) {
+              float imageX = (item.spritePosition.x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+              float imageY = (item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+              spritesLayer.imageMode(CENTER);
+              spritesLayer.image(up_buff, imageX, imageY);
+            } else if (temp.damage < p1.weapon.damage) {
+              float imageX = (item.spritePosition.x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+              float imageY = (item.spritePosition.y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+              spritesLayer.imageMode(CENTER);
+              spritesLayer.image(down_buff, imageX, imageY);
+            }
+          }
+
+          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
+            if (!isInteracting) {
+              isInteracting = true;
+
+              if (item instanceof Healer) { // verifico prima che sia un oggetto curativo
+                if (item.name.equals("dropPotion")) {  // se è un pozione aggiungila
+                  p1.numberOfPotion++;
+                  iterator.remove();
+                } else {  // se è un cuore recupera la vita istantaneamente
+                  if (p1.playerHP < p1.playerMaxHP) { // verifico che la salute del giocatore sia minore della salute massima
+                    Healer healerItem = (Healer) item;
+                    p1.playerHP += healerItem.getBonusHp();
+
+                    if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
+
+                    // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
+                    iterator.remove();
+                  } else {
+                    TextDisplay healthFull = new TextDisplay(p1.spritePosition, "Salute al massimo", color(255), 1000);
+                    healthFull.display();
+                  }
+                }
+              } else if (item instanceof Weapon) {
+                // una volta scambiata l'arma non è piu possibile recuperare quella vecchia
+                // assegna arma a terra al giocatore
+                p1.weapon = (Weapon) item;
+
+                // rimuovi l'oggetto droppato a terra
+                iterator.remove();
+              } else if (item.isCollectible && item.name.equals("dropSilverKey")) {
+                // aumenta il numero delle chiavi d'argento
+                p1.numberOfSilverKeys++;
+
+                iterator.remove();
+              } else if (item.isCollectible && item.name.equals("dropGoldenKey")) {
+                // aumenta il numero delle chiavi d'argento
+                p1.numberOfGoldenKeys++;
+
+                iterator.remove();
+              } else if (item.isCollectible && item.name.equals("dropTorch")) {
+                // aumenta il raggio della maschera
+                holeRadius += 50;
+                iterator.remove();
+              } else if (item.isCollectible && item.name.equals("dropMap")) {
+                ui.activateMap();
+                iterator.remove();
+              }
+            }
+          } else {
+            // resetta la variabile di stato
+            isInteracting = false;
+          }
+        }
+      }
+    }
   }
 }

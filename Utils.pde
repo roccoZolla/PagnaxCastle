@@ -1,54 +1,48 @@
-// movements
-boolean moveUP;
-boolean moveDOWN;
-boolean moveRIGHT;
-boolean moveLEFT;
-
-boolean moveATCK;    // attacco
-boolean moveINTR;    // interazione
-boolean moveUSE;     // utilizza
-
-//
 int letterIndex = 0; // Indice della lettera corrente
 boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
 int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 
+boolean isUsingPotion = false;
+boolean isAttacking = false;
+boolean attackExecuted = false;
+boolean isInteracting = false;
+
 // gestione comandi
 void keyPressed() {
-  if (screen_state == GAME_SCREEN) {
+  if (screen_state == ScreenState.GAME_SCREEN) {
     if (key == 'w' || key == 'W') {
-      moveUP = true;
+      p1.moveUP = true;
     } else if (key == 's' || key == 'S') {
-      moveDOWN = true;
+      p1.moveDOWN = true;
     } else if (key == 'a' || key == 'A') {
-      moveLEFT = true;
+      p1.moveLEFT = true;
     } else if (key == 'd' || key == 'D') {
-      moveRIGHT = true;
+      p1.moveRIGHT = true;
     } else if (key == 'j' || key == 'J') {
-      moveATCK = true;
+      p1.moveATCK = true; 
     } else if (key == 'k' || key == 'K') {
-      moveINTR = true;
+      p1.moveINTR = true;
     } else if (key == 'l' || key == 'L') {
-      moveUSE = true;
+      p1.moveUSE = true;
     }
   } else {
     // premi qualsiasi tasto
     if (!isTyping) {
       switch(previous_state) {
       case STORY_SCREEN:
-        screen_state = GAME_SCREEN;
+        screen_state = ScreenState.GAME_SCREEN;
         break;
 
       case GAME_SCREEN:
-        screen_state = GAME_SCREEN;
+        screen_state = ScreenState.GAME_SCREEN;
         break;
 
       case WIN_SCREEN:
-        screen_state = MENU_SCREEN;
+        screen_state = ScreenState.MENU_SCREEN;
         break;
 
       case LOSE_SCREEN:
-        screen_state = MENU_SCREEN;
+        screen_state = ScreenState.MENU_SCREEN;
         break;
       }
 
@@ -60,20 +54,22 @@ void keyPressed() {
 }
 
 void keyReleased() {
-  if (key == 'w' || key == 'W') {
-    moveUP = false;
-  } else if (key == 's' || key == 'S') {
-    moveDOWN = false;
-  } else if (key == 'a' || key == 'A') {
-    moveLEFT = false;
-  } else if (key == 'd' || key == 'D') {
-    moveRIGHT = false;
-  } else if (key == 'j' || key == 'J') {
-    moveATCK = false;
-  } else if (key == 'k' || key == 'K') {
-    moveINTR = false;
-  } else if (key == 'l' || key == 'L') {
-    moveUSE = false;
+  if(screen_state == ScreenState.GAME_SCREEN) {
+    if (key == 'w' || key == 'W') {
+      p1.moveUP = false;
+    } else if (key == 's' || key == 'S') {
+      p1.moveDOWN = false;
+    } else if (key == 'a' || key == 'A') {
+      p1.moveLEFT = false;
+    } else if (key == 'd' || key == 'D') {
+      p1.moveRIGHT = false;
+    } else if (key == 'j' || key == 'J') {
+      p1.moveATCK = false;
+    } else if (key == 'k' || key == 'K') {
+      p1.moveINTR = false;
+    } else if (key == 'l' || key == 'L') {
+      p1.moveUSE = false;
+    }
   }
 }
 
@@ -92,16 +88,19 @@ boolean isInVisibleArea(PVector spritePosition) {
   return (spritePosition.x >= startX && spritePosition.x <= endX && spritePosition.y >= startY && spritePosition.y <= endY);
 }
 
-void drawPlayerWeapon() {
-  float weaponPosition = 10;
-  if (moveRIGHT) weaponPosition = 10;
-  else if (moveLEFT) weaponPosition = -10;
+// controlla che le coordinate si trovino all'interno della mappa
+boolean isWithinMapBounds(int x, int y) {
+    return x >= 0 && x < currentLevel.cols && y >= 0 && y < currentLevel.rows;
+}
 
-  PImage weaponImage = p1.weapon.sprite;
-  float imageX = (p1.spritePosition.x * currentLevel.tileSize) + weaponPosition;
-  float imageY = p1.spritePosition.y * currentLevel.tileSize;
-  float imageWidth = p1.weapon.sprite.width;
-  float imageHeight = p1.weapon.sprite.height;
-
-  spritesLayer.image(weaponImage, imageX, imageY, imageWidth, imageHeight);
+// verifica se è un tile di collisione
+boolean isCollisionTile(int x, int y) {
+    int[] collisionValues = {0, 4, 6, 3};
+    
+    for (int value : collisionValues) {
+        if (currentLevel.map[x][y] == value) {
+            return true;
+        }
+    }
+    return false;
 }

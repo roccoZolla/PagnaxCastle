@@ -1,62 +1,102 @@
 import processing.sound.*;
+import java.util.Iterator;
 
 Player p1;
-Item weapon;
+PImage spriteRight;
+PImage spriteLeft;
+Weapon weapon;
 Item silver_key;
 Item golden_key;
-Item redPotion;
-Chest selectedChest;
+Healer redPotion;
 
 //
 Menu menu;
 Pause pauseMenu;
 Option optionMenu;
+Tutorial tutorial;
 UI ui;
 Game game;
 
 // ui
+PImage letter_w;
+PImage letter_a;
+PImage letter_s;
+PImage letter_d;
+PImage letter_j;
 PImage letter_k;
-PImage coins;
+PImage letter_l;
+
+PImage cross_sprite;
+
+PImage coin_sprite;
+PImage torch_sprite;
+PImage dungeon_map_sprite;
+PImage chest_close_sprite;
+PImage chest_open_sprite;
+PImage special_chest_close_sprite;
+PImage special_chest_open_sprite;
+PImage rat_enemy_sprite;
+PImage boss_sprite;
+
+// weapons image
+PImage sword_sprite;
+PImage master_sword_sprite;
+
+PImage heart_sprite;
+PImage half_heart_sprite;
+PImage empty_heart_sprite;
+
+PImage up_buff;
+PImage down_buff;
 
 // sound effect
+// float volumeMenuLevel;
 float volumeMusicLevel;
 float volumeEffectsLevel;    // oscilla tra 0.0 e 1.0
 
+SoundFile click;
 SoundFile pickupCoin;
-SoundFile normalChestOpen;
-SoundFile specialChestOpen;
+SoundFile chest_open;
 SoundFile drinkPotion;
+SoundFile swordAttack;
+SoundFile hurt_sound;
+SoundFile enemy_death_sound;
 
-SoundFile soundtrack;
-boolean isSoundtrackPlaying;
+SoundFile menu_background;
+boolean isMenuBackgroundPlaying;
+SoundFile dungeon_background;
+boolean isDungeonBackgroundPlaying;
+
+enum ScreenState {
+  MENU_SCREEN,
+  GAME_SCREEN,
+  STORY_SCREEN,
+  WIN_SCREEN,
+  LOSE_SCREEN,
+  PAUSE_SCREEN,
+  OPTION_SCREEN,
+  TUTORIAL_SCREEN
+}
 
 // stato dello schermo
-int screen_state;
-int previous_state;  // salva lo stato precedente
-final int MENU_SCREEN = 0;
-final int GAME_SCREEN = 1;
-final int STORY_SCREEN = 2;
-final int WIN_SCREEN = 3;
-final int LOSE_SCREEN = 4;
-final int PAUSE_SCREEN = 5;
-final int OPTION_SCREEN = 6;
+ScreenState screen_state;
+ScreenState previous_state;  // salva lo stato precedente
 
 World castle;
 Zone currentZone;
 Level currentLevel;
 
-float proximityThreshold = 0.5; // Soglia di prossimità consentita per le scale
-float coinCollectionThreshold = 0.5; // soglia di prossimita per il raccoglimento delle monete
 String actualLevel;
 
 // titolo del gioco
-String gameTitle = "dungeon game";
+String gameTitle = "rangeon game";
 PFont myFont;  // font del gioco
 
 Camera camera;
 
 PGraphics gameScene;
 PGraphics spritesLayer;
+PGraphics maskLayer;
 
 void setup() {
   // dimensioni schermo
@@ -68,87 +108,167 @@ void setup() {
 
   gameScene = createGraphics(width, height);
   spritesLayer = createGraphics(width, height);
+  maskLayer = createGraphics(width, height);
 
   // load font
-  myFont = createFont("data/font/Minecraft.ttf", 20);
+  myFont = createFont("data/font/minecraft.ttf", 30);
   textFont(myFont);
 
   // schermata iniziale
-  screen_state = MENU_SCREEN;
+  screen_state = ScreenState.MENU_SCREEN;    // menu screen
   previous_state = screen_state;
 
   menu = new Menu();
+  game = new Game();
   pauseMenu = new Pause();
   optionMenu = new Option();
+  tutorial = new Tutorial();
   ui = new UI();
-  game = new Game();
+  
+  // setup items (PROVVISORIO)
+  setupItems();
 
   // setup image
   setupImages();
 
   // setup sound
   setupSounds();
+}
 
-  // setup items (PROVVISORIO)
+void setupItems() {
   golden_key = new Item(2, "golden_key");
   silver_key = new Item(4, "silver_key");
-  weapon = new Item(1, "sword");
-  redPotion = new Item(3, "Red Potion");
-
-  golden_key.sprite = loadImage("data/golden_key.png");
-  silver_key.sprite = loadImage("data/silver_key.png");
-  weapon.sprite = loadImage("data/little_sword.png");
-  redPotion.sprite = loadImage("data/object/red_potion.png");
-
-  selectedChest = null;
+  
+  // oggetti per il giocatore
+  weapon = new Weapon("little_sword", 10);
+  
+  redPotion = new Healer("red_potion", 20);
 }
 
 void setupImages() {
+  // sprites player
+  spriteRight = loadImage("data/playerRIGHT.png");
+  spriteLeft = loadImage("data/playerLEFT.png");
+  
+  // movimento
+  letter_w = loadImage("data/letter_w.png");
+  letter_a = loadImage("data/letter_a.png");
+  letter_s = loadImage("data/letter_s.png");
+  letter_d = loadImage("data/letter_d.png");
+  
+  // interazione oggetti
   letter_k = loadImage("data/letter_k.png");
-  coins = loadImage("data/coin.png");
+  
+  // attcca
+  letter_j = loadImage("data/letter_j.png");
+  
+  // utilizza oggetti
+  letter_l = loadImage("data/letter_l.png");
+  
+  coin_sprite = loadImage("data/coin.png");
+  
+  chest_close_sprite = loadImage("data/object/chest_close.png");
+  chest_open_sprite = loadImage("data/object/chest_open.png");
+  special_chest_close_sprite = loadImage("data/object/special_chest_close.png");
+  special_chest_open_sprite = loadImage("data/object/special_chest_open.png");
+  
+  rat_enemy_sprite = loadImage("data/npc/rat_enemy.png");
+  boss_sprite = loadImage("data/npc/boss_sprite.png");
+  
+  golden_key.sprite = loadImage("data/golden_key.png");
+  silver_key.sprite = loadImage("data/silver_key.png");
+  
+  weapon.sprite = loadImage("data/little_sword.png");
+  sword_sprite = loadImage("data/sword.png");
+  master_sword_sprite = loadImage("data/master_sword.png");
+  
+  // healers
+  redPotion.sprite = loadImage("data/object/red_potion.png");
+  
+  heart_sprite = loadImage("data/heartFull.png");
+  half_heart_sprite = loadImage("data/halfHeart.png");
+  empty_heart_sprite = loadImage("data/emptyHeart.png");
+  
+  torch_sprite = loadImage("data/torch.png");
+  dungeon_map_sprite = loadImage("data/dungeon_map.png");
+  
+  up_buff = loadImage("data/up_buff.png");
+  down_buff = loadImage("data/down_buff.png");
+  cross_sprite = loadImage("data/cross.png");
 }
 
 void setupSounds() {
   volumeMusicLevel = 0.0;
   volumeEffectsLevel = 0.0;
-
+  
+  click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
-  normalChestOpen = new SoundFile(this, "data/sound/normal_chest_open.wav");
-  specialChestOpen = new SoundFile(this, "data/sound/special_chest_open.wav");
+  chest_open = new SoundFile(this, "data/sound/chest_open.wav");
   drinkPotion = new SoundFile(this, "data/sound/drink_potion.wav");
-
-  soundtrack = new SoundFile(this, "data/sound/dungeon_soundtrack.wav");
-  isSoundtrackPlaying = false;
-
+  
+  swordAttack = new SoundFile(this, "data/sound/sword_hit.wav");
+  hurt_sound = new SoundFile(this, "data/sound/hurt_sound.wav");
+  
+  enemy_death_sound = new SoundFile(this, "data/sound/enemy_death.wav");
+  
+  menu_background = new SoundFile(this, "data/sound/background/menu_background.wav");
+  isMenuBackgroundPlaying = false;
+  
+  dungeon_background = new SoundFile(this, "data/sound/background/dungeon_background.wav");
+  isDungeonBackgroundPlaying = false;
+  
+  click.amp(volumeEffectsLevel);
+  
   pickupCoin.amp(volumeEffectsLevel);
-  normalChestOpen.amp(volumeEffectsLevel);
-  specialChestOpen.amp(volumeEffectsLevel);
+  chest_open.amp(volumeEffectsLevel);
   drinkPotion.amp(volumeEffectsLevel);
+  swordAttack.amp(volumeEffectsLevel);
+  hurt_sound.amp(volumeEffectsLevel);
+  enemy_death_sound.amp(volumeEffectsLevel);
 
-  soundtrack.amp(volumeMusicLevel);
+  menu_background.amp(volumeMusicLevel);
+  dungeon_background.amp(volumeMusicLevel);
 }
 
 void draw() {
   // cambia il titolo della finestra e mostra il framerate
-  surface.setTitle(String.format("%.1f", frameRate));
+  surface.setTitle("Dungeon Game - " + String.format("%.1f", frameRate));
 
   switch(screen_state) {
   case MENU_SCREEN:
     // show menu
+    if(!isMenuBackgroundPlaying) {
+      menu_background.play();
+      isMenuBackgroundPlaying = true;
+    }
+    
     menu.display();
     break;
 
   case STORY_SCREEN:
     // show story
+    if(isMenuBackgroundPlaying) {
+      menu_background.stop();
+      isMenuBackgroundPlaying = false;
+    }
+    
     storyScreen(currentZone.storyText);
+    break;
+    
+  case TUTORIAL_SCREEN:
+    // show tutorial
+    tutorial.display();
     break;
 
   case GAME_SCREEN:
-    if (!isSoundtrackPlaying) {
-      soundtrack.play();
-      isSoundtrackPlaying = true;
+    if (!isDungeonBackgroundPlaying) {
+      dungeon_background.play();
+      isDungeonBackgroundPlaying = true;
     }
-
+    
+    // game.update();
+    // ui.update();
+      
     // show game screen
     game.display();
     ui.display();
@@ -180,17 +300,31 @@ void draw() {
 void winScreen() {
   // salva lo stato precedente
   previous_state = screen_state;
+  
+  // stoppa la soundtrack
+  if (isDungeonBackgroundPlaying) {
+    dungeon_background.stop();
+    isDungeonBackgroundPlaying = false;
+  }
 
   // chiama la funzione
-  writer("hai vinto!");
+  writer("Hai vinto!\n" +
+         "Score totalizzato: " + p1.playerScore);
 }
 
 void loseScreen() {
   // salva lo stato precedente
   previous_state = screen_state;
+  
+  // stoppa la soundtrack
+  if (isDungeonBackgroundPlaying) {
+    dungeon_background.stop();
+    isDungeonBackgroundPlaying = false;
+  }
 
   // chiama la funzione
-  writer("hai perso!");
+  writer("Hai perso!\n" +
+         "Score totalizzato: " + p1.playerScore);
 }
 
 void storyScreen(String storyText) {
