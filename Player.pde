@@ -18,6 +18,11 @@ class Player extends Sprite implements Damageable { //<>//
   boolean moveINTR;    // interazione k
   boolean moveUSE;     // utilizza l
 
+  boolean isUsingPotion = false;
+  boolean isAttacking = false;
+  boolean attackExecuted = false;
+  boolean isInteracting = false;
+
   ConcreteDamageHandler damageTileHandler;
 
   // caratteristiche del player
@@ -59,6 +64,21 @@ class Player extends Sprite implements Damageable { //<>//
     this.playerScore += score;
   }
 
+  // override dei metodi dell'interfaccia
+  @Override
+    public void takeDamage(int damage) {
+    playerHP -= damage;
+
+    TextDisplay damageHitText = new TextDisplay(position, Integer.toString(damage), color(255, 0, 0));
+    damageHitText.display();
+
+    hurt_sound.play();
+
+    if (playerHP < 0) {
+      playerHP = 0;
+    }
+  }
+
   // movimento del giocatore
   void update() {
     float newX = position.x;
@@ -89,7 +109,7 @@ class Player extends Sprite implements Damageable { //<>//
 
     if (isValidMove(roundedX, roundedY)) {
       damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
-      
+
       updatePosition(new PVector(newX, newY));
     }
   }
@@ -97,45 +117,74 @@ class Player extends Sprite implements Damageable { //<>//
   // da fixare
   void attack() {
     if (moveATCK && !moveUSE && !moveINTR) {
-      displayWeapon();
-     
-      for (Enemy enemy : currentLevel.enemies) {
-        if (collidesWith(enemy.spritePosition)) {
-          swordAttack.play();
-          enemy.enemyHP -= weapon.getDamage();
+      if (!isAttacking) {
+        isAttacking = true;
+        // offset
+        PVector new_position = position.copy();
 
-          // l'attacco è stato eseguito non continuare ad attaccare
-          // attackExecuted = true;
+        if (direction == DIRECTION_RIGHT)
+          new_position.x += 1;
+        else if (direction == DIRECTION_LEFT)
+          new_position.x -= 1;
 
-          // testo danno subito dal nemico
-          TextDisplay damageHitText = new TextDisplay(enemy.spritePosition, Integer.toString(p1.weapon.damage), color(255, 0, 0), 2000);
-          damageHitText.display();
+        weapon.updatePosition(new_position);
+        weapon.display(spritesLayer);
+
+        if (game.isBossLevel) {
+          println("attack in the boss level...");
+          if (weapon.sprite_collision(game.boss)) {
+            swordAttack.play();
+            game.boss.takeDamage(weapon.getDamage());
+            // l'attacco è stato eseguito non continuare ad attaccare
+          }
+        } else {
+          for (Enemy enemy : currentLevel.enemies) {
+            if (weapon.sprite_collision(enemy)) {
+              swordAttack.play();
+              enemy.takeDamage(weapon.getDamage());
+            }
+          }
         }
       }
+    } else {
+      isAttacking = false;
     }
   }
 
-  // collisione tra arma e nemico
-  boolean collidesWith(PVector position) {
-    // se l'arma collide con un nemico sottrai danno alla vita nemico
+  void usePotion() {
+    if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR)) {
+      if (!isUsingPotion) {
+        isUsingPotion = true;
 
-    float offset = 16;
+        // se il numero delle pozioni è maggiore di 0
+        if (p1.numberOfPotion > 0) {
+          // se vita minore della vita massima
+          if (p1.playerHP < p1.playerMaxHP) {
+            drinkPotion.play();
+            p1.playerHP += p1.redPotion.getBonusHp();
 
-    if (direction == DIRECTION_RIGHT) offset = 16;
-    else if (direction == DIRECTION_LEFT) offset = -16;
+            if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
 
-    //println("giocatore: " + spritePosition);
-    //println("arma: " + weapon.spritePosition);
-
-    // da sistemare
-    if ((weapon.spritePosition.x * currentLevel.tileSize) + offset <= (position.x * currentLevel.tileSize) + sprite.width  &&
-      ((weapon.spritePosition.x * currentLevel.tileSize) + weapon.sprite.width) + offset >= position.x * currentLevel.tileSize &&
-      weapon.spritePosition.y * currentLevel.tileSize <= (position.y * currentLevel.tileSize) + sprite.height &&
-      (weapon.spritePosition.y * currentLevel.tileSize) + weapon.sprite.height >= position.y * currentLevel.tileSize) {
-      return true;
+            // dimunuisci numero di pozioni del giocatore
+            p1.numberOfPotion -= 1;
+          } else {
+            // stampa massaggio di salute al massimo
+            PVector text_position = p1.getPosition();
+            TextDisplay healthFull = new TextDisplay(text_position, "Salute al massimo", color(255));
+            healthFull.display();
+          }
+        } else {
+          // stampa x per indicare che non hai piu pozioni
+          float crossImageX = (p1.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
+          float crossImageY = (p1.getPosition().y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          spritesLayer.imageMode(CENTER);
+          spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+        }
+      }
+    } else {
+      // resetta la variabile
+      isUsingPotion = false;
     }
-
-    return false;
   }
 
   // collision detection
@@ -169,15 +218,6 @@ class Player extends Sprite implements Damageable { //<>//
     return collisionX && collisionY;
   }
 
-  // override dei metodi dell'interfaccia
-  @Override
-    public void receiveDamage(int damage) {
-    playerHP -= damage;
-    if (playerHP < 0) {
-      playerHP = 0;
-    }
-  }
-
   @Override
     PVector getPosition() {
     return position;
@@ -185,9 +225,6 @@ class Player extends Sprite implements Damageable { //<>//
 
   // metodo che si occupa di disegnare l'arma del giocatore
   void displayWeapon() {
-    // aggiorna posizione dell'arma
-    weapon.spritePosition = position;
-
     // offset
     float offset = 16;
 

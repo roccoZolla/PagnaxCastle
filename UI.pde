@@ -261,8 +261,8 @@ class UI {
     uiLayer.noStroke();
 
     for (Enemy enemy : currentLevel.enemies) {
-      enemyMiniMapX = map(enemy.spritePosition.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
-      enemyMiniMapY = map(enemy.spritePosition.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+      enemyMiniMapX = map(enemy.position.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
+      enemyMiniMapY = map(enemy.position.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
       uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
     }
   }

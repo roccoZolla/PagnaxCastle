@@ -1,6 +1,6 @@
 // Interfaccia per gli oggetti che possono subire danni
 interface Damageable {
-  void receiveDamage(int damage);
+  void takeDamage(int damage);
   PVector getPosition();
 }
 
@@ -27,8 +27,8 @@ abstract class DamageHandler {
   }
 
   private void performPeriodicAttack(Damageable damageable, long currentTime) {
-    damageable.receiveDamage(currentLevel.damagePeaks);
-    TextDisplay damageHitText = new TextDisplay(damageable.getPosition(), Integer.toString(currentLevel.damagePeaks), color(255, 0, 0), 2000);
+    damageable.takeDamage(currentLevel.damagePeaks);
+    TextDisplay damageHitText = new TextDisplay(damageable.getPosition(), Integer.toString(currentLevel.damagePeaks), color(255, 0, 0));
     damageHitText.display();
     playHurtSound();
 

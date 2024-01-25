@@ -2,8 +2,8 @@ class Healer extends Item {
   // classe che rappresenta la classe degli oggetti curativi 
   int bonusHp;
   
-  Healer(String name, int bonusHp) {
-    super(name);
+  Healer(PVector position, PImage sprite, String name, int bonusHp) {
+    super(position, sprite, name);
     this.bonusHp = bonusHp;
   }
   

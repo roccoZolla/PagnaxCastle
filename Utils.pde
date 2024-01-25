@@ -2,11 +2,6 @@ int letterIndex = 0; // Indice della lettera corrente
 boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
 int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 
-boolean isUsingPotion = false;
-boolean isAttacking = false;
-boolean attackExecuted = false;
-boolean isInteracting = false;
-
 // gestione comandi
 void keyPressed() {
   if (screen_state == ScreenState.GAME_SCREEN) {

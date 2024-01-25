@@ -5,6 +5,8 @@ class Level {
   boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
   int numberOfRooms;
   boolean isFinalLevel;      // indica se è il livello finale, composto da una singola stanza, di base false
+  
+  Sprite stairsNextFloor;
 
   int damagePeaks;      // danno delle trappole
 
@@ -95,6 +97,8 @@ class Level {
 
     // Collega le stanze con corridoi
     connectRooms();
+    
+    stairsNextFloor = new Sprite(new PVector((rooms.get(endRoomIndex).roomPosition.x), rooms.get(endRoomIndex).roomPosition.y), stairsNextFloorImage);
 
     // da rimuovere
     map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
@@ -378,22 +382,19 @@ class Level {
       // isRare è impostato su false nel costruttore
       if (chestType < commonChestSpawnRate) {
         // Genera una cassa comune
-        chest = new Chest("Cassa comune" + i);
-        chest.sprite = chest_close_sprite;
-        chest.setId(i);
+        chest = new Chest(new PVector(x, y), chest_close_sprite, "Cassa comune" + i);
+        // chest.setId(i);
         chest.setOpenWith(silver_key);              // Specifica l'oggetto chiave necessario
         // Imposta altri attributi della cassa comune
       } else {
         // Genera una cassa rara
-        chest = new Chest("Cassa rara" + i);
-        chest.sprite = special_chest_close_sprite;
-        chest.setId(i);
+        chest = new Chest(new PVector(x, y), special_chest_close_sprite,"Cassa rara" + i);
+        // chest.setId(i);
         chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
         chest.setIsRare(true);
       }
 
       // Aggiungi la cassa alla lista delle casse
-      chest.spritePosition = new PVector(x, y);
       map[x][y] = CHEST_TILE_TYPE; // Imposta il tipo di tile corrispondente a una cassa
 
       treasures.add(chest);
@@ -441,9 +442,7 @@ class Level {
         ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();
 
         // creazione dell'entita nemico
-        Enemy enemy = new Enemy(ENEMY_HP, "rat", 5, damageTileHandler);
-        enemy.sprite = rat_enemy_sprite;
-        enemy.spritePosition = new PVector(x, y);
+        Enemy enemy = new Enemy(new PVector(x, y), rat_enemy_sprite,ENEMY_HP, "rat", 5, damageTileHandler);
 
         // Aggiungi il nemico alla lista
         enemies.add(enemy);
@@ -522,19 +521,5 @@ class Level {
         }
       }
     }
-  }
-
-  // metodo per il rilevamento delle collisioni
-  // verifica collisione con le scale
-  // da sistemare
-  boolean playerCollide(Player aPlayer) {
-    //if (aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
-    //  (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
-    //  aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
-    //  (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
-    //  return true;
-    //}
-
-    return false;
   }
 }

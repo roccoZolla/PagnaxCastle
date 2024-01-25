@@ -34,16 +34,23 @@ class Sprite {
     layer.imageMode(CENTER); // Imposta l'imageMode a center
     layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
+  
+  void displayHitbox(PGraphics layer) {
+    layer.noFill(); // Nessun riempimento
+    layer.stroke(255); // Colore del bordo bianco
+    layer.rectMode(CENTER);
+    layer.rect(position.x * currentLevel.tileSize + (sprite.width/2), position.y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
+  }
 
   // metodo che si occupa delle collisioni
   boolean sprite_collision(Sprite other) {
     PVector otherPosition = other.getPosition();
     PImage otherSprite = other.getSprite();
 
-    if (position.x * currentLevel.tileSize + (sprite.width / 2) > (otherPosition.x * currentLevel.tileSize) - (otherSprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
-      (position.x * currentLevel.tileSize) - (sprite.width / 2) < otherPosition.x * currentLevel.tileSize + (otherSprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
-      position.y * currentLevel.tileSize + (sprite.height / 2) > (otherPosition.y * currentLevel.tileSize) - (otherSprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
-      (position.y * currentLevel.tileSize) - (sprite.height / 2) < otherPosition.y * currentLevel.tileSize + (otherSprite.height / 2)) {                              // y1 - h1/2 < y2 + h2/2
+    if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (otherPosition.x * currentLevel.tileSize) - (otherSprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+      (position.x * currentLevel.tileSize) - (sprite.width / 2) <= otherPosition.x * currentLevel.tileSize + (otherSprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+      position.y * currentLevel.tileSize + (sprite.height / 2) >= (otherPosition.y * currentLevel.tileSize) - (otherSprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+      (position.y * currentLevel.tileSize) - (sprite.height / 2) <= otherPosition.y * currentLevel.tileSize + (otherSprite.height / 2)) {                              // y1 - h1/2 < y2 + h2/2
       return true;
     }
 

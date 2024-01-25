@@ -37,6 +37,7 @@ PImage special_chest_close_sprite;
 PImage special_chest_open_sprite;
 PImage rat_enemy_sprite;
 PImage boss_sprite;
+PImage orb_sprite;
 
 // weapons image
 PImage sword_sprite;
@@ -136,13 +137,13 @@ void setup() {
 }
 
 void setupItems() {
-  golden_key = new Item(2, "golden_key");
-  silver_key = new Item(4, "silver_key");
+  golden_key = new Item(null, null, "golden_key");
+  silver_key = new Item(null, null, "silver_key");
   
   // oggetti per il giocatore
-  weapon = new Weapon("little_sword", 10);
+  weapon = new Weapon(null, null, "little_sword", 10);
   
-  redPotion = new Healer("red_potion", 20);
+  redPotion = new Healer(null, null, "red_potion", 20);
 }
 
 void setupImages() {
@@ -174,16 +175,21 @@ void setupImages() {
   
   rat_enemy_sprite = loadImage("data/npc/rat_enemy.png");
   boss_sprite = loadImage("data/npc/boss_sprite.png");
+  orb_sprite = loadImage("data/orb_sprite.png");
   
-  golden_key.sprite = loadImage("data/golden_key.png");
-  silver_key.sprite = loadImage("data/silver_key.png");
+  // golden_key.sprite = loadImage("data/golden_key.png");
+  golden_key.updateSprite(loadImage("data/golden_key.png"));
+  // silver_key.sprite = loadImage("data/silver_key.png");
+  silver_key.updateSprite(loadImage("data/silver_key.png"));
   
-  weapon.sprite = loadImage("data/little_sword.png");
+  //weapon.sprite = ;
+  weapon.updateSprite(loadImage("data/little_sword.png"));
   sword_sprite = loadImage("data/sword.png");
   master_sword_sprite = loadImage("data/master_sword.png");
   
   // healers
-  redPotion.sprite = loadImage("data/object/red_potion.png");
+  // redPotion.sprite = loadImage("data/object/red_potion.png");
+  redPotion.updateSprite(loadImage("data/object/red_potion.png"));
   
   heart_sprite = loadImage("data/heartFull.png");
   half_heart_sprite = loadImage("data/halfHeart.png");
