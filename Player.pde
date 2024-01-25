@@ -1,7 +1,5 @@
 class Player extends Sprite implements Damageable { //<>//
-  // PVector spritePosition;
   float spriteSpeed = 0.2;
-  // PImage sprite;
 
   // movements
   boolean moveUP;

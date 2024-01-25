@@ -31,6 +31,7 @@ class Boss extends Sprite {
 
     // Lancio di proiettili nella direzione del giocatore
     if (frameCount % 120 == 0) {  // Lanciare un proiettile ogni secondo
+      // costoso creare una nuova istanza di proiettile
       Projectile projectile = new Projectile(position.x, position.y, direction);
       projectiles.add(projectile);
     }
@@ -40,21 +41,20 @@ class Boss extends Sprite {
       projectile.update();
 
       // verifica se il proiettile ha colpito il player
-      if (projectile.sprite_collision(p1)) {
+      if (projectile.sprite_collision(p1) && !projectile.attack_executed) {
         p1.takeDamage(projectile.damage);
+        projectile.attack_executed = true;
       }
       
-      // da fixare
-      //if (p1.isAttacking) {
-      //  if (projectile.sprite_collision(p1.weapon)) {
-      //    projectile.reverseDirection();
+      if(projectile.sprite_collision(this) && !projectile.attack_executed) {
+        takeDamage(projectile.damage);
+        projectile.attack_executed = true;
+      }
 
-      //    // verifica se il boss viene colpito dopo il proiettile viene rimbalzato
-      //    if (projectile.sprite_collision(this)) {
-      //      takeDamage(projectile.damage);
-      //    }
-      //  }
-      //}
+      // da fixare considera l'utlima posizione dell'arma del giocatore 
+      if (p1.isAttacking && projectile.sprite_collision(p1.weapon)) {
+        projectile.reverseDirection();
+      }
     }
   }
 
@@ -95,11 +95,13 @@ class Boss extends Sprite {
 class Projectile extends Sprite {
   PVector velocity;
   int damage;    // danni provocati dalla proiettile
+  boolean attack_executed; // di base false
 
   Projectile(float x, float y, PVector direction) {
     super(new PVector(x, y), orb_sprite);
-    velocity = PVector.mult(direction, 5.0);  // Velocità dei proiettili
+    velocity = PVector.mult(direction, 4.0);  // Velocità dei proiettili, 5 di base
     damage = 10;
+    attack_executed = false;
   }
 
   void update() {
@@ -108,7 +110,6 @@ class Projectile extends Sprite {
   }
 
   void reverseDirection() {
-    velocity.x = -velocity.x;
-    velocity.y = -velocity.y;
+    velocity.mult(-1);
   }
 }

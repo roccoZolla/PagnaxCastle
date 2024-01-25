@@ -83,7 +83,8 @@ class Game {
 
     // crea il boss
     PVector spawn_boss_position = new PVector(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y);
-    boss = new Boss(spawn_boss_position, boss_sprite, 0.1, "Stregone Pagnax", 100, 100);
+    // velocita di base boss 0.1
+    boss = new Boss(spawn_boss_position, boss_sprite, 0.05, "Stregone Pagnax", 100, 100);
     // boss.spritePosition.x += 3;
 
     ui.activateBossUI();
@@ -245,6 +246,7 @@ class Game {
           }
         } else {
           enemy.death();
+          p1.updateScore(enemy.scoreValue);
           iterator.remove();
         }
       }
