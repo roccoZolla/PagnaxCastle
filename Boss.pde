@@ -45,15 +45,19 @@ class Boss extends Sprite {
         p1.takeDamage(projectile.damage);
         projectile.attack_executed = true;
       }
-      
-      if(projectile.sprite_collision(this) && !projectile.attack_executed) {
+
+      // verifica se il proiettile colpisce il boss
+      // se l'attacco non è stato eseguito e puo colpire il boss 
+      if (projectile.sprite_collision(this) && !projectile.attack_executed && projectile.canHitBoss) {
         takeDamage(projectile.damage);
         projectile.attack_executed = true;
+        println("boss colpito...");
       }
 
-      // da fixare considera l'utlima posizione dell'arma del giocatore 
+      // verifica se il giocatore colpisce con l'arma un proiettile
       if (p1.isAttacking && projectile.sprite_collision(p1.weapon)) {
         projectile.reverseDirection();
+        projectile.canHitBoss = true;
       }
     }
   }
@@ -65,11 +69,12 @@ class Boss extends Sprite {
     hurt_sound.play();
 
     TextDisplay damageHitText = new TextDisplay(position, Integer.toString(actual_damage), color(255, 0, 0));
-    damageHitText.display();
+    damageHitText.display(game.spritesLayer);
 
     if (HP < 0) {
       HP = 0;
     }
+    println("vita boss: " + HP);
   }
 
   @Override
@@ -96,12 +101,14 @@ class Projectile extends Sprite {
   PVector velocity;
   int damage;    // danni provocati dalla proiettile
   boolean attack_executed; // di base false
+  boolean canHitBoss; // di base false, indica se il proiettile puo colpire il boss
 
   Projectile(float x, float y, PVector direction) {
     super(new PVector(x, y), orb_sprite);
     velocity = PVector.mult(direction, 4.0);  // Velocità dei proiettili, 5 di base
     damage = 10;
     attack_executed = false;
+    canHitBoss = false;
   }
 
   void update() {

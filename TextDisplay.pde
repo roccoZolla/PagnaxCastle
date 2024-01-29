@@ -15,10 +15,10 @@ class TextDisplay {
     this.text_color = text_color;
   }
 
-  void display() {
-    spritesLayer.textFont(myFont);
-    spritesLayer.fill(text_color);
-    spritesLayer.textSize(15);
-    spritesLayer.text(text, text_position.x * currentLevel.tileSize, (text_position.y * currentLevel.tileSize) - 10);
+  void display(PGraphics layer) {
+    layer.textFont(myFont);
+    layer.fill(text_color);
+    layer.textSize(15);
+    layer.text(text, text_position.x * currentLevel.tileSize, (text_position.y * currentLevel.tileSize) - 10);
   }
 }

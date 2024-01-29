@@ -57,6 +57,17 @@ class Button {
   boolean isClicked() {
     return clicked;
   }
+  
+  // nel caso in cui dovessero cambiare le dimensioni della finestra
+  // aggiorna la posizione del bottone
+  void updatePosition(int x, int y, float w, float h) {
+    pos = new PVector(0, 0);
+    pos.x = x;
+    pos.y = y;
+
+    this.w = w;
+    this.h = h;
+  }
 
   void display() {
     hover = isMouseOver();

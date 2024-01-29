@@ -4,10 +4,10 @@ class Menu {
   Menu() {
     // menu
     buttons = new ArrayList();
-    
+
     buttons.add(new Button(width / 2 - 100, height / 2, 200, 80, "start", "Start", ""));
     buttons.add(new Button(width / 2 - 100, height / 2 + 100, 200, 80, "option", "Option", ""));
-    buttons.add(new Button(width / 2 - 100, height / 2 + 200, 200, 80, "exit","Exit", ""));
+    buttons.add(new Button(width / 2 - 100, height / 2 + 200, 200, 80, "exit", "Exit", ""));
   }
 
   void display() {
@@ -47,9 +47,17 @@ class Menu {
           break;
         }
       }
-      
+
       button.update();
       button.display();
     }
+  }
+  
+  // metodo che viene chiamato ogni qual volta la finestra 
+  // subisce cambiamenti nelle dimensioni
+  void updateScreen() {
+    buttons.get(0).updatePosition(width / 2 - 100, height / 2, 200, 80);  // start
+    buttons.get(1).updatePosition(width / 2 - 100, height / 2 + 100, 200, 80);  // option
+    buttons.get(2).updatePosition(width / 2 - 100, height / 2 + 200, 200, 80);  // exit
   }
 }

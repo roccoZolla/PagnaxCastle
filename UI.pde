@@ -266,4 +266,11 @@ class UI {
       uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
     }
   }
+  
+  void updateScreen() {
+    uiLayer = createGraphics(width, height);
+    
+    // aggiorna posizione bottone
+    buttons.get(0).updatePosition(width - 50, 20, 40, 40);  // pause
+  }
 }

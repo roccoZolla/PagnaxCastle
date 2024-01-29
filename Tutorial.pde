@@ -23,10 +23,11 @@ class Tutorial {
       fill(255);
       textSize(36);
       textAlign(CENTER, CENTER);
-      text("COMANDI", 100, 50);
+      text("COMANDI", 135, 50);
       
+      // linea che parte dalla scritta comandi a chiudere la pagina
       stroke(255);
-      line(200, 50, width - 50, 50);
+      line(235, 50, width - 50, 50);
         
       // ----- MOVIMENTO -----
       fill(255);
@@ -79,5 +80,10 @@ class Tutorial {
         button.update();
         button.display();
     }
+  }
+  
+  void updateScreen() {
+    // aggiorna posizione bottoni
+    buttons.get(0).updatePosition(width - 250, height - 150, 200, 80);
   }
 }

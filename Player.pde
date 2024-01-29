@@ -68,7 +68,7 @@ class Player extends Sprite implements Damageable { //<>//
     playerHP -= damage;
 
     TextDisplay damageHitText = new TextDisplay(position, Integer.toString(damage), color(255, 0, 0));
-    damageHitText.display();
+    damageHitText.display(game.spritesLayer);
 
     hurt_sound.play();
 
@@ -113,9 +113,10 @@ class Player extends Sprite implements Damageable { //<>//
   }
 
   // da fixare
-  void attack() {
+  void attack(PGraphics layer) {
     if (moveATCK && !moveUSE && !moveINTR) {
       if (!isAttacking) {
+        println("sta attaccando...");
         isAttacking = true;
         // offset
         PVector new_position = position.copy();
@@ -126,10 +127,9 @@ class Player extends Sprite implements Damageable { //<>//
           new_position.x -= 1;
 
         weapon.updatePosition(new_position);
-        weapon.display(spritesLayer);
+        weapon.display(layer);
 
         if (game.isBossLevel) {
-          println("attack in the boss level...");
           if (weapon.sprite_collision(game.boss)) {
             swordAttack.play();
             game.boss.takeDamage(weapon.getDamage());
@@ -145,11 +145,12 @@ class Player extends Sprite implements Damageable { //<>//
         }
       }
     } else {
+      println("non sta piu attaccando...");
       isAttacking = false;
     }
   }
-
-  void usePotion() {
+ 
+  void usePotion(PGraphics layer) {
     if (p1.moveUSE && (!p1.moveATCK && !p1.moveINTR)) {
       if (!isUsingPotion) {
         isUsingPotion = true;
@@ -169,14 +170,14 @@ class Player extends Sprite implements Damageable { //<>//
             // stampa massaggio di salute al massimo
             PVector text_position = p1.getPosition();
             TextDisplay healthFull = new TextDisplay(text_position, "Salute al massimo", color(255));
-            healthFull.display();
+            healthFull.display(layer);
           }
         } else {
           // stampa x per indicare che non hai piu pozioni
           float crossImageX = (p1.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
           float crossImageY = (p1.getPosition().y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-          spritesLayer.imageMode(CENTER);
-          spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+          layer.imageMode(CENTER);
+          layer.image(cross_sprite, crossImageX, crossImageY);
         }
       }
     } else {
@@ -221,27 +222,27 @@ class Player extends Sprite implements Damageable { //<>//
     return position;
   }
 
-  // metodo che si occupa di disegnare l'arma del giocatore
-  void displayWeapon() {
-    // offset
-    float offset = 16;
+//  // metodo che si occupa di disegnare l'arma del giocatore
+//  void displayWeapon() {
+//    // offset
+//    float offset = 16;
 
-    if (direction == DIRECTION_RIGHT)
-      offset = 16;
-    else if (direction == DIRECTION_LEFT)
-      offset = -16;
+//    if (direction == DIRECTION_RIGHT)
+//      offset = 16;
+//    else if (direction == DIRECTION_LEFT)
+//      offset = -16;
 
-    float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
+//    float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
+//    float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
 
-    // hitbox arma
-    spritesLayer.rectMode(CENTER);
-    spritesLayer.noFill(); // Nessun riempimento
-    spritesLayer.stroke(255, 146, 240); // Colore del bordo bianco
-    spritesLayer.rect(centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
+//    // hitbox arma
+//    spritesLayer.rectMode(CENTER);
+//    spritesLayer.noFill(); // Nessun riempimento
+//    spritesLayer.stroke(255, 146, 240); // Colore del bordo bianco
+//    spritesLayer.rect(centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
 
-    // arma
-    spritesLayer.imageMode(CENTER);
-    spritesLayer.image(weapon.sprite, centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
-  }
+//    // arma
+//    spritesLayer.imageMode(CENTER);
+//    spritesLayer.image(weapon.sprite, centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
+//  }
 }

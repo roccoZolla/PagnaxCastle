@@ -451,12 +451,12 @@ class Level {
   }
 
   // disegna solo cio che vede il giocatore
-  void display() {
+  void display(PGraphics layer) {
     // Calcola i limiti dello schermo visibile in termini di celle di mappa
     int startX = floor((camera.x / (tileSize * camera.zoom)));
     int startY = floor((camera.y / (tileSize * camera.zoom)));
-    int endX = ceil((camera.x + gameScene.width) / (tileSize * camera.zoom));
-    int endY = ceil((camera.y + gameScene.height) / (tileSize * camera.zoom));
+    int endX = ceil((camera.x + width) / (tileSize * camera.zoom));
+    int endY = ceil((camera.y + height) / (tileSize * camera.zoom));
 
     // Assicurati che i limiti siano all'interno dei limiti della mappa
     startX = constrain(startX, 0, cols - 1);
@@ -478,45 +478,45 @@ class Level {
 
         case FLOOR_TILE_TYPE:
           // pavimento
-          gameScene.imageMode(CENTER);
-          gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
+          layer.imageMode(CENTER);
+          layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case START_ROOM_TILE_TYPE:
           // Imposta l'immagine per la stanza iniziale (nero)
-          gameScene.imageMode(CENTER);
-          gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
+          layer.imageMode(CENTER);
+          layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case STAIRS_TILE_TYPE:
           // scale per il piano successivo
-          gameScene.imageMode(CENTER);
-          gameScene.image(stairsNextFloorImage, centerX, centerY, tileSize, tileSize);
+          layer.imageMode(CENTER);
+          layer.image(stairsNextFloorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
-          gameScene.imageMode(CENTER);
-          gameScene.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
+          layer.imageMode(CENTER);
+          layer.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
           break;
 
         case HALLWAY_TILE_TYPE:
           // corridoio
-          gameScene.imageMode(CENTER);
-          gameScene.image(hallwayImage, centerX, centerY, tileSize, tileSize);
+          layer.imageMode(CENTER);
+          layer.image(hallwayImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case CHEST_TILE_TYPE:
           // ci sta tenerlo sono statiche le casse
           // tesori
-          gameScene.imageMode(CENTER);
-          gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
+          layer.imageMode(CENTER);
+          layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case PEAKS_TILE_TYPE:
           // peaks trap
-          gameScene.imageMode(CENTER);
-          gameScene.image(peaksTrapImage, centerX, centerY, tileSize, tileSize);
+          layer.imageMode(CENTER);
+          layer.image(peaksTrapImage, centerX, centerY, tileSize, tileSize);
           break;
         }
       }

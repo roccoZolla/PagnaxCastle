@@ -5,6 +5,11 @@ enum DifficultyLevel {
 }
 
 class Game {
+  // layer della scena di gioco
+  PGraphics gameScene;
+  PGraphics spritesLayer;
+  PGraphics maskLayer;
+
   DifficultyLevel difficultyLevel; // livello di difficolta del gioco
   Boss boss;    // boss del gioco
   boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
@@ -15,9 +20,19 @@ class Game {
   ConcreteDamageHandler damageTileHandler;
 
   Game() {
+    gameScene = createGraphics(width, height);
+    spritesLayer = createGraphics(width, height);
+    maskLayer = createGraphics(width, height);
+
     // di default la difficolta del gioco è impostata su normale
     difficultyLevel = DifficultyLevel.NORMALE;
     isBossLevel = false;
+  }
+
+  void updateScreen() {
+    gameScene = createGraphics(width, height);
+    spritesLayer = createGraphics(width, height);
+    maskLayer = createGraphics(width, height);
   }
 
   void init() {
@@ -40,20 +55,18 @@ class Game {
 
     p1 = new Player(new PVector(0, 0), spriteRight, 100, 100, 0, 10, 10, damageTileHandler);
     p1.updatePosition(currentLevel.getStartPosition());
-    // p1.spritePosition = currentLevel.getStartPosition();
-    // p1.sprite = spriteRight;
     p1.redPotion = redPotion;
 
     p1.weapon = weapon;
     p1.weapon.updatePosition(p1.getPosition());
-    // println(p1.weapon.spritePosition);
 
     p1.golden_keys = golden_key;
     p1.silver_keys = silver_key;
 
     camera = new Camera();
-
-    holeRadius = 50;
+    
+    // raggio della maschera
+    holeRadius = 70;
 
     isBossLevel = false;
 
@@ -85,7 +98,6 @@ class Game {
     PVector spawn_boss_position = new PVector(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y);
     // velocita di base boss 0.1
     boss = new Boss(spawn_boss_position, boss_sprite, 0.05, "Stregone Pagnax", 100, 100);
-    // boss.spritePosition.x += 3;
 
     ui.activateBossUI();
     ui.deactivateMap();
@@ -103,7 +115,7 @@ class Game {
     gameScene.scale(camera.zoom);
 
     // Disegna la mappa del livello corrente
-    currentLevel.display(); // renderizza il 4,6 % della mappa
+    currentLevel.display(gameScene); // renderizza il 4,6 % della mappa
 
     gameScene.endDraw();
 
@@ -122,7 +134,7 @@ class Game {
 
     spritesLayer.endDraw();
 
-
+    // se non ci troviamo nel livello finale mostra la maschera
     if (!isBossLevel) {
       maskLayer.beginDraw();
       maskLayer.background(0, 255);
@@ -144,7 +156,7 @@ class Game {
 
     image(gameScene, 0, 0);
     image(spritesLayer, 0, 0);
-    // if(!isBossLevel) image(maskLayer, 0, 0);
+    if(!isBossLevel) image(maskLayer, 0, 0);
   }
 
   void update() {
@@ -222,8 +234,8 @@ class Game {
   void handlePlayerMovement() {
     p1.update();
     p1.display(spritesLayer);
-    p1.attack();    // attacca i nemici
-    p1.usePotion(); // usa le pozioni
+    p1.attack(spritesLayer);    // attacca i nemici
+    p1.usePotion(spritesLayer); // usa le pozioni
   }
 
   // gestisce le azioni del nemico
@@ -411,7 +423,7 @@ class Game {
                     iterator.remove();
                   } else {
                     TextDisplay healthFull = new TextDisplay(p1.getPosition(), "Salute al massimo", color(255));
-                    healthFull.display();
+                    healthFull.display(spritesLayer);
                   }
                 }
               } else if (item instanceof Weapon) {

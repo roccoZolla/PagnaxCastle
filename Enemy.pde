@@ -1,7 +1,5 @@
 class Enemy extends Sprite implements Damageable {
-  // PVector spritePosition;
   float spriteSpeed = 0.1;
-  // PImage sprite;
 
   ConcreteDamageHandler damageTileHandler;
 
@@ -134,7 +132,7 @@ class Enemy extends Sprite implements Damageable {
 
       // fare in modo che rimanga un po piu di tempo a schermo
       TextDisplay damageHitText = new TextDisplay(p1.getPosition(), Integer.toString(damage), color(255, 0, 0));
-      damageHitText.display();
+      damageHitText.display(game.spritesLayer);
 
       first_attack = false;
     } else {
@@ -194,7 +192,7 @@ class Enemy extends Sprite implements Damageable {
 
     // testo danno subito dal nemico
     TextDisplay damageHitText = new TextDisplay(position, Integer.toString(damage), color(255, 0, 0));
-    damageHitText.display();
+    damageHitText.display(game.spritesLayer);
 
     if (enemyHP < 0) {
       enemyHP = 0;

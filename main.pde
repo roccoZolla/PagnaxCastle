@@ -95,10 +95,6 @@ PFont myFont;  // font del gioco
 
 Camera camera;
 
-PGraphics gameScene;
-PGraphics spritesLayer;
-PGraphics maskLayer;
-
 void setup() {
   // dimensioni schermo
   frameRate(60);
@@ -106,10 +102,6 @@ void setup() {
 
   ((PGraphicsOpenGL)g).textureSampling(2);
   noSmooth();
-
-  gameScene = createGraphics(width, height);
-  spritesLayer = createGraphics(width, height);
-  maskLayer = createGraphics(width, height);
 
   // load font
   myFont = createFont("data/font/minecraft.ttf", 30);

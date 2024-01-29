@@ -37,11 +37,11 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(36);
     optionLayer.textAlign(CENTER, CENTER);
-    optionLayer.text("OPTIONS", 100, 50);
+    optionLayer.text("OPTIONS", 135, 50);
 
     // linea che parte dalla scritta opzioni e chiudere la pagina
     optionLayer.stroke(255);
-    optionLayer.line(200, 50, width - 50, 50);
+    optionLayer.line(235, 50, width - 50, 50);
 
     // ----- AUDIO -----
     optionLayer.fill(255);
@@ -86,7 +86,7 @@ class Option {
 
     // linea che parte dal pulsante back a chiudere a la pagina
     optionLayer.stroke(255);
-    optionLayer.line(50, height - 100, width - 270, height - 100);
+    optionLayer.line(50, height - 100, width - 270, height - 100);    
 
     for (Button button : buttons) {
       if (button.isClicked()) {
@@ -159,6 +159,20 @@ class Option {
 
     optionLayer.endDraw();
     image(optionLayer, 0, 0);
+  }
+  
+  void updateScreen() {
+    optionLayer = createGraphics(width, height);
+    
+    // aggiorna posizione dei bottoni
+    buttons.get(0).updatePosition(width - 100, 150, 50, 50);  // effects up
+    buttons.get(1).updatePosition(width - 250, 150, 50, 50);  // effect down
+    buttons.get(2).updatePosition(width - 100, 210, 50, 50);  // music up
+    buttons.get(3).updatePosition(width - 250, 210, 50, 50);  // music down
+    buttons.get(4).updatePosition(width - 100, 280, 50, 50);  // difficulty right
+    buttons.get(5).updatePosition(width - 290, 280, 50, 50);  // difficulty left
+    buttons.get(6).updatePosition(100, 420, 200, 80);  // commands
+    buttons.get(7).updatePosition(width - 250, height - 150, 200, 80);  // back
   }
 
   void updateEffectsVolume(float volumeEffectsLevel) {
