@@ -17,7 +17,7 @@ class Room {
     // di base non c'è nessuna chest
     this.isChestPresent = false;
   }
-  
+
   // verifica dell'overlap con un'altra stanza
   boolean overlaps(int otherX, int otherY, int otherWidth, int otherHeight) {
     // Calcola la posizione del centro della stanza passata come argomento
@@ -46,11 +46,11 @@ class Room {
 
     return horizontalOverlap && verticalOverlap;
   }
-  
+
   boolean isChestPresent() {
     return isChestPresent;
   }
-  
+
   void setIsChestPresent(boolean isChestPresent) {
     this.isChestPresent = isChestPresent;
   }

@@ -64,7 +64,7 @@ class Game {
     p1.silver_keys = silver_key;
 
     camera = new Camera();
-    
+
     // raggio della maschera
     holeRadius = 70;
 
@@ -156,7 +156,7 @@ class Game {
 
     image(gameScene, 0, 0);
     image(spritesLayer, 0, 0);
-    if(!isBossLevel) image(maskLayer, 0, 0);
+    // if(!isBossLevel) image(maskLayer, 0, 0);
   }
 
   void update() {
@@ -234,6 +234,7 @@ class Game {
   void handlePlayerMovement() {
     p1.update();
     p1.display(spritesLayer);
+    p1.displayHitbox(spritesLayer);
     p1.attack(spritesLayer);    // attacca i nemici
     p1.usePotion(spritesLayer); // usa le pozioni
   }

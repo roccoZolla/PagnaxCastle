@@ -22,7 +22,7 @@ class Sprite {
   void updateSprite(PImage sprite) {
     this.sprite = sprite;
   }
-  
+
   // metodo che si occupa di mostrare lo sprite
   void display(PGraphics layer) {
     layer.noFill(); // Nessun riempimento
@@ -34,7 +34,7 @@ class Sprite {
     layer.imageMode(CENTER); // Imposta l'imageMode a center
     layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
-  
+
   void displayHitbox(PGraphics layer) {
     layer.noFill(); // Nessun riempimento
     layer.stroke(255); // Colore del bordo bianco

@@ -5,20 +5,40 @@ int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
 // gestione comandi
 void keyPressed() {
   if (screen_state == ScreenState.GAME_SCREEN) {
-    if (key == 'w' || key == 'W') {
+    switch(key) {
+    case 'w':
+    case 'W':
       p1.moveUP = true;
-    } else if (key == 's' || key == 'S') {
+      break;
+
+    case 's':
+    case 'S':
       p1.moveDOWN = true;
-    } else if (key == 'a' || key == 'A') {
+      break;
+    case 'a':
+    case 'A':
       p1.moveLEFT = true;
-    } else if (key == 'd' || key == 'D') {
+      break;
+
+    case 'd':
+    case 'D':
       p1.moveRIGHT = true;
-    } else if (key == 'j' || key == 'J') {
+      break;
+
+    case 'j':
+    case 'J':
       p1.moveATCK = true;
-    } else if (key == 'k' || key == 'K') {
+      break;
+
+    case 'k':
+    case 'K':
       p1.moveINTR = true;
-    } else if (key == 'l' || key == 'L') {
+      break;
+
+    case 'l':
+    case 'L':
       p1.moveUSE = true;
+      break;
     }
   } else {
     // premi qualsiasi tasto
@@ -50,20 +70,39 @@ void keyPressed() {
 
 void keyReleased() {
   if (screen_state == ScreenState.GAME_SCREEN) {
-    if (key == 'w' || key == 'W') {
+    switch(key) {
+    case 'w':
+    case 'W':
       p1.moveUP = false;
-    } else if (key == 's' || key == 'S') {
+      break;
+
+    case 's':
+    case 'S':
       p1.moveDOWN = false;
-    } else if (key == 'a' || key == 'A') {
+      break;
+    case 'a':
+    case 'A':
       p1.moveLEFT = false;
-    } else if (key == 'd' || key == 'D') {
+      break;
+
+    case 'd':
+    case 'D':
       p1.moveRIGHT = false;
-    } else if (key == 'j' || key == 'J') {
+
+    case 'j':
+    case 'J':
       p1.moveATCK = false;
-    } else if (key == 'k' || key == 'K') {
+      break;
+
+    case 'k':
+    case 'K':
       p1.moveINTR = false;
-    } else if (key == 'l' || key == 'L') {
+      break;
+
+    case 'l':
+    case 'L':
       p1.moveUSE = false;
+      break;
     }
   }
 }

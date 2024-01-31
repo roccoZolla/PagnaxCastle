@@ -1,7 +1,7 @@
 class UI {
   ArrayList<Button> buttons;
   PGraphics uiLayer;
-  
+
   // ----- CUORI BOSS -----
   boolean isBossBattle;  // indica se il giocatore si trova nel livello finale
 
@@ -11,7 +11,7 @@ class UI {
   PImage emptyHeart;
 
   int heartsToDisplay;
-  int heartX;  
+  int heartX;
   int heartY;
   int heartWidth = 20; // Larghezza di un cuore
   int heartHeight = 20; // Altezza di un cuore
@@ -43,13 +43,13 @@ class UI {
     miniMapSize = 200;
     miniMapX = 20;
     miniMapY = uiLayer.height - miniMapSize - 10;
-    
+
     isBossBattle = false;    // di base, false
     isMapActive = false;    // di base, false, si attiva con la minimappa trovata nei livelli
 
     buttons = new ArrayList();
 
-    buttons.add(new Button(width - 50, 20, 40, 40, "pause", "", "data/ui/Pause.png"));
+    buttons.add(new Button(width - 70, 20, 40, 40, "pause", "", "data/ui/Pause.png"));
   }
 
   void update() {
@@ -58,7 +58,7 @@ class UI {
   void display() {
     uiLayer.beginDraw();
     uiLayer.background(255, 0);
-    
+
     // nome del livello
     uiLayer.textFont(myFont);
     uiLayer.fill(255);
@@ -112,8 +112,8 @@ class UI {
     uiLayer.image(redPotion.sprite, 20, 110, 20, 20);
 
     // ------- MINIMAPPA ------
-    if(isMapActive) displayMinimap();
-    
+    if (isMapActive) displayMinimap();
+
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento
     uiLayer.stroke(255); // Colore del bordo bianco
@@ -127,28 +127,31 @@ class UI {
 
       float imgX = (uiLayer.width - 70) + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
       float imgY = uiLayer.height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
-      
+
       uiLayer.image(p1.weapon.sprite, imgX, imgY, imgWidth, imgHeight);
     }
-    
+
     uiLayer.fill(255);
     uiLayer.textSize(18);
     uiLayer.text(p1.weapon.name, width - 95, height - 40);
-    
+
+    uiLayer.fill(255);
+    uiLayer.textSize(18);
+    uiLayer.text("Danno: " + p1.weapon.getDamage(), width - 95, height - 20);
+
     // se il giocatore si trova nel livello del boss mostra i cuori del boss
-    if(isBossBattle) displayBossHearts();
-    
+    if (isBossBattle) displayBossHearts();
+
     // optionLayer.stroke(255);
     // optionLayer.line(50, height - 100, width - 270, height - 100);
-    
 
     uiLayer.endDraw();
-    
+
     image(uiLayer, 0, 0);
   }
-  
+
   void displayPlayerHearts() {
-     // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
+    // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
     heartsToDisplay = p1.playerHP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
     heartX = 20;
     heartY = 50;
@@ -170,15 +173,15 @@ class UI {
       uiLayer.image(emptyHeart, heartX + i * (heartWidth + 5), heartY, heartWidth, heartHeight);
     }
   }
-  
-  void activateBossUI(){
+
+  void activateBossUI() {
     isBossBattle = true;
   }
-  
+
   void deactivateBossUI() {
     isBossBattle = false;
   }
-  
+
   void displayBossHearts() {
     // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
     heartsToDisplay = game.boss.HP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
@@ -187,7 +190,7 @@ class UI {
     heartY = uiLayer.height - 100;
     maxHearts = game.boss.maxHP / 10;
     isHalfHeart = game.boss.HP % 10 >= 5; // Controlla se c'è un cuore a metà
-    
+
     // uiLayer.textFont(myFont);
     uiLayer.fill(255);
     // uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
@@ -209,11 +212,11 @@ class UI {
       uiLayer.image(emptyHeart, heartX + i * (heartWidth + 15), heartY, heartWidth + 10, heartHeight + 10);
     }
   }
-  
+
   void activateMap() {
     isMapActive = true;
   }
-  
+
   void deactivateMap() {
     isMapActive = false;
   }
@@ -222,7 +225,7 @@ class UI {
     // ------- MINIMAPPA ------
     // Disegna la minimappa nell'angolo in basso a sinistra
     uiLayer.noFill(); // Nessun riempimento
- 
+
     for (int x = 0; x < currentLevel.cols; x++) {
       for (int y = 0; y < currentLevel.rows; y++) {
         int tileType = currentLevel.map[x][y];
@@ -241,7 +244,7 @@ class UI {
           miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
           miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
 
-          uiLayer.noFill(); 
+          uiLayer.noFill();
           uiLayer.stroke(0, 127, 255);
           uiLayer.rect(miniMapTileX, miniMapTileY, miniMapSize / currentLevel.cols, miniMapSize / currentLevel.rows);
         }
@@ -266,10 +269,10 @@ class UI {
       uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
     }
   }
-  
+
   void updateScreen() {
     uiLayer = createGraphics(width, height);
-    
+
     // aggiorna posizione bottone
     buttons.get(0).updatePosition(width - 50, 20, 40, 40);  // pause
   }

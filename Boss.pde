@@ -7,7 +7,7 @@ class Boss extends Sprite {
   String name;
   int maxHP;
   int HP;
-  final float damage_resistence = 0.4; // capacita del boss di resistere ai danni
+  final float damage_resistence = 0.5; // capacita del boss di resistere ai danni
 
   Boss(PVector position, PImage sprite, float speed, String name, int HP, int maxHP) {
     super(position, sprite);
@@ -47,7 +47,7 @@ class Boss extends Sprite {
       }
 
       // verifica se il proiettile colpisce il boss
-      // se l'attacco non è stato eseguito e puo colpire il boss 
+      // se l'attacco non è stato eseguito e puo colpire il boss
       if (projectile.sprite_collision(this) && !projectile.attack_executed && projectile.canHitBoss) {
         takeDamage(projectile.damage);
         projectile.attack_executed = true;
@@ -55,9 +55,13 @@ class Boss extends Sprite {
       }
 
       // verifica se il giocatore colpisce con l'arma un proiettile
-      if (p1.isAttacking && projectile.sprite_collision(p1.weapon)) {
+      // il giocatore sta attaccando e l'attacco non è stato eseguito
+      // e il proiettile puo essere colpito
+      if (p1.isAttacking && !p1.attackExecuted && 
+          projectile.isHittable && projectile.sprite_collision(p1.weapon)) {
         projectile.reverseDirection();
         projectile.canHitBoss = true;
+        projectile.isHittable = false;
       }
     }
   }
@@ -99,16 +103,18 @@ class Boss extends Sprite {
 
 class Projectile extends Sprite {
   PVector velocity;
-  int damage;    // danni provocati dalla proiettile
+  int damage;    // danni provocati dal proiettile
   boolean attack_executed; // di base false
   boolean canHitBoss; // di base false, indica se il proiettile puo colpire il boss
+  boolean isHittable; // puo essere colpito, di base true
 
   Projectile(float x, float y, PVector direction) {
     super(new PVector(x, y), orb_sprite);
-    velocity = PVector.mult(direction, 4.0);  // Velocità dei proiettili, 5 di base
+    velocity = PVector.mult(direction, 4.5);  // Velocità dei proiettili, 5 di base
     damage = 10;
     attack_executed = false;
     canHitBoss = false;
+    isHittable = true;
   }
 
   void update() {

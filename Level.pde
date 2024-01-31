@@ -5,7 +5,7 @@ class Level {
   boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
   int numberOfRooms;
   boolean isFinalLevel;      // indica se è il livello finale, composto da una singola stanza, di base false
-  
+
   Sprite stairsNextFloor;
 
   int damagePeaks;      // danno delle trappole
@@ -97,7 +97,7 @@ class Level {
 
     // Collega le stanze con corridoi
     connectRooms();
-    
+
     stairsNextFloor = new Sprite(new PVector((rooms.get(endRoomIndex).roomPosition.x), rooms.get(endRoomIndex).roomPosition.y), stairsNextFloorImage);
 
     // da rimuovere
@@ -313,7 +313,7 @@ class Level {
       Coin coin = new Coin(new PVector(x, y), coin_sprite, coinValue);
       //coin.sprite = coin_sprite;
       //coin.spritePosition = new PVector(x, y);
-      
+
 
       // Aggiungi la moneta alla lista delle monete
       coins.add(coin);
@@ -388,7 +388,7 @@ class Level {
         // Imposta altri attributi della cassa comune
       } else {
         // Genera una cassa rara
-        chest = new Chest(new PVector(x, y), special_chest_close_sprite,"Cassa rara" + i);
+        chest = new Chest(new PVector(x, y), special_chest_close_sprite, "Cassa rara" + i);
         // chest.setId(i);
         chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
         chest.setIsRare(true);
@@ -442,7 +442,7 @@ class Level {
         ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();
 
         // creazione dell'entita nemico
-        Enemy enemy = new Enemy(new PVector(x, y), rat_enemy_sprite,ENEMY_HP, "rat", 5, damageTileHandler);
+        Enemy enemy = new Enemy(new PVector(x, y), rat_enemy_sprite, ENEMY_HP, "rat", 5, damageTileHandler);
 
         // Aggiungi il nemico alla lista
         enemies.add(enemy);

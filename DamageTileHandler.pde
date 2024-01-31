@@ -34,7 +34,7 @@ abstract class DamageHandler {
 
     //println("---- DANNO DA DAMAGE TILE ----");
     //println("posizione: " + damageable.getPosition());
-    
+
     // da rivedere
     game.spritesLayer.rectMode(CENTER);
     game.spritesLayer.fill(255, 0, 0); // nero

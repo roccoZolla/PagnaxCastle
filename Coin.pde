@@ -1,4 +1,4 @@
-class Coin extends Sprite{
+class Coin extends Sprite {
   int value;
   boolean collected;    // indica se la monete è stata raccolta
   int scoreValue;

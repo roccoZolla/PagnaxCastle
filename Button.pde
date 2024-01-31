@@ -24,7 +24,7 @@ class Button {
 
     this.w = w;
     this.h = h;
-    
+
     this.name = name;
     this.label = label;
 
@@ -36,7 +36,7 @@ class Button {
     buttonColor = color(0, 0, 255); // Colore predefinito del pulsante (provvisorio)
     if (!dataPath.isEmpty()) buttonImage = loadImage(dataPath);
   }
-  
+
   void update() {
     if (mousePressed == true && mouseButton == LEFT && pressed == false) {
       pressed = true;
@@ -47,17 +47,17 @@ class Button {
     } else {
       clicked = false;
     }
-    
-    if(mousePressed != true) {
+
+    if (mousePressed != true) {
       pressed = false;
     }
   }
-  
+
   // vero se il bottone è stato cliccato (pressed and released)
   boolean isClicked() {
     return clicked;
   }
-  
+
   // nel caso in cui dovessero cambiare le dimensioni della finestra
   // aggiorna la posizione del bottone
   void updatePosition(int x, int y, float w, float h) {

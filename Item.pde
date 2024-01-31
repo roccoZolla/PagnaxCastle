@@ -1,4 +1,4 @@
-class Item extends Sprite{
+class Item extends Sprite {
   // classe che rappresenta gli oggetti del gioco
 
   // cratteristiche
@@ -12,7 +12,7 @@ class Item extends Sprite{
     super(position, sprite);
     this.name = name;
   }
-  
+
   // methods
   String getName() {
     return name;

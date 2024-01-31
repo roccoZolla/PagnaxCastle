@@ -52,8 +52,8 @@ class Menu {
       button.display();
     }
   }
-  
-  // metodo che viene chiamato ogni qual volta la finestra 
+
+  // metodo che viene chiamato ogni qual volta la finestra
   // subisce cambiamenti nelle dimensioni
   void updateScreen() {
     buttons.get(0).updatePosition(width / 2 - 100, height / 2, 200, 80);  // start
