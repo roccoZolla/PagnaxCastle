@@ -40,9 +40,13 @@ class Sprite {
     layer.stroke(255); // Colore del bordo bianco
     layer.rectMode(CENTER);
     layer.rect(position.x * currentLevel.tileSize + (sprite.width/2), position.y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
+
+    layer.stroke(255, 0, 0);
+    layer.point(position.x * currentLevel.tileSize + (sprite.width), position.y * currentLevel.tileSize + sprite.height);
   }
 
-  // metodo che si occupa delle collisioni
+  // metodo che si occupa delle collisioni tra sprite
+  // da sistemare
   boolean sprite_collision(Sprite other) {
     PVector otherPosition = other.getPosition();
     PImage otherSprite = other.getSprite();
@@ -56,4 +60,20 @@ class Sprite {
 
     return false;
   }
+  
+  // metodo per gestire le collisioni 
+  // da sistemare
+  boolean wall_collision(PVector other_position) {
+    if(position.x * currentLevel.tileSize + (sprite.width / 2) >= (other_position.x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+      (position.x * currentLevel.tileSize) - (sprite.width / 2) <= other_position.x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+      position.y * currentLevel.tileSize + (sprite.height / 2) >= (other_position.y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+      (position.y * currentLevel.tileSize) - (sprite.height / 2) <= other_position.y * currentLevel.tileSize + (sprite.height / 2)) {
+        println("wall collsion rilevata...");
+      return true;
+    }
+    
+    return false;
+  }
+  
+  
 }

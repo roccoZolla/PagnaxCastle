@@ -253,6 +253,7 @@ class Game {
 
           // attacca solo se c'è collisione
           if (enemy.sprite_collision(p1)) {
+            enemy.displayHitbox(spritesLayer);
             enemy.attack(p1);
           } else {
             enemy.first_attack = true;
@@ -416,9 +417,8 @@ class Game {
                 } else {  // se è un cuore recupera la vita istantaneamente
                   if (p1.playerHP < p1.playerMaxHP) { // verifico che la salute del giocatore sia minore della salute massima
                     Healer healerItem = (Healer) item;
-                    p1.playerHP += healerItem.getBonusHp();
-
-                    if (p1.playerHP > p1.playerMaxHP) p1.playerHP = p1.playerMaxHP;
+                    
+                    p1.takeHP(healerItem.getBonusHp());
 
                     // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
                     iterator.remove();

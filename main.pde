@@ -272,7 +272,7 @@ void draw() {
 
     // show game screen
     game.display();
-    ui.display();
+    // ui.display();
     break;
 
   case WIN_SCREEN:
