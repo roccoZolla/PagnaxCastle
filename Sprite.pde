@@ -31,7 +31,7 @@ class Sprite {
     float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
     float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
 
-    layer.imageMode(CENTER); // Imposta l'imageMode a center
+    // layer.imageMode(CENTER); // Imposta l'imageMode a center
     layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
 
@@ -42,7 +42,7 @@ class Sprite {
     layer.rect(position.x * currentLevel.tileSize + (sprite.width/2), position.y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
 
     layer.stroke(255, 0, 0);
-    layer.point(position.x * currentLevel.tileSize + (sprite.width), position.y * currentLevel.tileSize + sprite.height);
+    layer.point(position.x * currentLevel.tileSize + (sprite.width / 2), position.y * currentLevel.tileSize + sprite.height / 2);
   }
 
   // metodo che si occupa delle collisioni tra sprite

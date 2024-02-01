@@ -27,6 +27,8 @@ class Game {
     // di default la difficolta del gioco è impostata su normale
     difficultyLevel = DifficultyLevel.NORMALE;
     isBossLevel = false;
+
+    camera = new Camera();
   }
 
   void updateScreen() {
@@ -62,8 +64,6 @@ class Game {
 
     p1.golden_keys = golden_key;
     p1.silver_keys = silver_key;
-
-    camera = new Camera();
 
     // raggio della maschera
     holeRadius = 70;
@@ -106,24 +106,40 @@ class Game {
   void display() {
     // aggiorna la camera
     camera.update();
+    
+    // disegna il game layer
+    drawGameLayer();
 
+    // disegna lo sprites layer
+    drawSpritesLayer();
+
+    // disegna il mask layer se non ci troviamo nel livello finale
+    // if (!isBossLevel) drawMaskLayer();
+  }
+
+  void drawGameLayer() {
     // disegna il game layer
     gameScene.beginDraw();
     gameScene.background(0);
     // Imposta la telecamera alla nuova posizione e applica il fattore di scala
     gameScene.translate(-camera.x, -camera.y);
     gameScene.scale(camera.zoom);
+    gameScene.imageMode(CENTER);  // imposto l'image mode a center
 
     // Disegna la mappa del livello corrente
     currentLevel.display(gameScene); // renderizza il 4,6 % della mappa
 
     gameScene.endDraw();
+    
+    image(gameScene, 0, 0);
+  }
 
-    // disegna lo sprites layer
+  void drawSpritesLayer() {
     spritesLayer.beginDraw();
     spritesLayer.background(255, 0);
     spritesLayer.translate(-camera.x, -camera.y);
     spritesLayer.scale(camera.zoom);
+    spritesLayer.imageMode(CENTER);
 
     // aggiorna lo stato corrente del gioco
     if (isBossLevel) {
@@ -133,30 +149,27 @@ class Game {
     }
 
     spritesLayer.endDraw();
-
-    // se non ci troviamo nel livello finale mostra la maschera
-    if (!isBossLevel) {
-      maskLayer.beginDraw();
-      maskLayer.background(0, 255);
-      maskLayer.blendMode(REPLACE);
-
-      maskLayer.translate(-camera.x, -camera.y);
-      maskLayer.scale(camera.zoom);
-
-      float centerX = p1.getPosition().x * currentLevel.tileSize + currentLevel.tileSize/ 2;
-      float centerY = p1.getPosition().y * currentLevel.tileSize + currentLevel.tileSize/ 2;
-
-      maskLayer.fill(255, 0);
-      maskLayer.ellipseMode(RADIUS);
-      maskLayer.ellipse(centerX, centerY, holeRadius, holeRadius);
-
-      maskLayer.endDraw();
-    }
-
-
-    image(gameScene, 0, 0);
     image(spritesLayer, 0, 0);
-    // if(!isBossLevel) image(maskLayer, 0, 0);
+  }
+
+  void drawMaskLayer() {
+    maskLayer.beginDraw();
+    maskLayer.background(0, 255);
+    maskLayer.blendMode(REPLACE);
+
+    maskLayer.translate(-camera.x, -camera.y);
+    maskLayer.scale(camera.zoom);
+
+    float centerX = p1.getPosition().x * currentLevel.tileSize + currentLevel.tileSize/ 2;
+    float centerY = p1.getPosition().y * currentLevel.tileSize + currentLevel.tileSize/ 2;
+
+    maskLayer.fill(255, 0);
+    maskLayer.ellipseMode(RADIUS);
+    maskLayer.ellipse(centerX, centerY, holeRadius, holeRadius);
+
+    maskLayer.endDraw();
+
+    image(maskLayer, 0, 0);
   }
 
   void update() {
@@ -289,7 +302,6 @@ class Game {
 
           float letterImageX = (chest.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
           float letterImageY = (chest.getPosition().y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-          spritesLayer.imageMode(CENTER);
           spritesLayer.image(letter_k, letterImageX, letterImageY);
 
           // se il giocatore preme il tasto interazione e la cassa non è stata aperta
@@ -314,7 +326,6 @@ class Game {
                 } else {
                   float crossImageX = (p1.getPosition().x * currentLevel.tileSize + (chest.sprite.width / 2));
                   float crossImageY = (p1.getPosition().y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-                  spritesLayer.imageMode(CENTER);
                   spritesLayer.image(cross_sprite, crossImageX, crossImageY);
                 }
               } else {  // se la cassa è normale
@@ -336,7 +347,6 @@ class Game {
                 } else {
                   float crossImageX = (p1.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
                   float crossImageY = (p1.getPosition().y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-                  spritesLayer.imageMode(CENTER);
                   spritesLayer.image(cross_sprite, crossImageX, crossImageY);
                 }
               }
@@ -387,7 +397,6 @@ class Game {
 
           float letterImageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2));
           float letterImageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-          spritesLayer.imageMode(CENTER);
           spritesLayer.image(letter_k, letterImageX, letterImageY);
 
           if (item instanceof Weapon) {
@@ -396,12 +405,10 @@ class Game {
             if (temp.damage > p1.weapon.damage) {
               float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
               float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-              spritesLayer.imageMode(CENTER);
               spritesLayer.image(up_buff, imageX, imageY);
             } else if (temp.damage < p1.weapon.damage) {
               float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
               float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-              spritesLayer.imageMode(CENTER);
               spritesLayer.image(down_buff, imageX, imageY);
             }
           }
@@ -417,7 +424,7 @@ class Game {
                 } else {  // se è un cuore recupera la vita istantaneamente
                   if (p1.playerHP < p1.playerMaxHP) { // verifico che la salute del giocatore sia minore della salute massima
                     Healer healerItem = (Healer) item;
-                    
+
                     p1.takeHP(healerItem.getBonusHp());
 
                     // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
@@ -435,11 +442,11 @@ class Game {
                 iterator.remove();
               } else if (item.isCollectible && item.name.equals("dropSilverKey")) {
                 // aumenta il numero delle chiavi d'argento
-                p1.numberOfSilverKeys++;
+                p1.takeSilverKey();
                 iterator.remove();
               } else if (item.isCollectible && item.name.equals("dropGoldenKey")) {
-                // aumenta il numero delle chiavi d'argento
-                p1.numberOfGoldenKeys++;
+                // aumenta il numero delle chiavi d'oro
+                p1.takeGoldenKey();
                 iterator.remove();
               } else if (item.isCollectible && item.name.equals("dropTorch")) {
                 // aumenta il raggio della maschera

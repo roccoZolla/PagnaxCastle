@@ -53,9 +53,6 @@ class UI {
   }
 
   void update() {
-  }
-
-  void display() {
     uiLayer.beginDraw();
     uiLayer.background(255, 0);
 
@@ -141,9 +138,6 @@ class UI {
 
     // se il giocatore si trova nel livello del boss mostra i cuori del boss
     if (isBossBattle) displayBossHearts();
-
-    // optionLayer.stroke(255);
-    // optionLayer.line(50, height - 100, width - 270, height - 100);
 
     uiLayer.endDraw();
 

@@ -470,6 +470,7 @@ class Level {
 
         float centerX = x * tileSize + tileSize / 2;
         float centerY = y * tileSize + tileSize / 2;
+        
 
         switch(tileType) {
         case BACKGROUND_TILE_TYPE:
@@ -478,44 +479,37 @@ class Level {
 
         case FLOOR_TILE_TYPE:
           // pavimento
-          layer.imageMode(CENTER);
           layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case START_ROOM_TILE_TYPE:
           // Imposta l'immagine per la stanza iniziale (nero)
-          layer.imageMode(CENTER);
           layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case STAIRS_TILE_TYPE:
           // scale per il piano successivo
-          layer.imageMode(CENTER);
           layer.image(stairsNextFloorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
-          layer.imageMode(CENTER);
           layer.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
           break;
 
         case HALLWAY_TILE_TYPE:
           // corridoio
-          layer.imageMode(CENTER);
           layer.image(hallwayImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case CHEST_TILE_TYPE:
           // ci sta tenerlo sono statiche le casse
           // tesori
-          layer.imageMode(CENTER);
           layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case PEAKS_TILE_TYPE:
           // peaks trap
-          layer.imageMode(CENTER);
           layer.image(peaksTrapImage, centerX, centerY, tileSize, tileSize);
           break;
         }

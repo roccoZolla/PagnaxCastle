@@ -56,8 +56,16 @@ class Player extends Sprite implements Damageable { //<>//
     this.moveLEFT = false;
   }
 
-  public void collectCoin() {
+  void collectCoin() {
     this.coins++;
+  }
+
+  void takeGoldenKey() {
+    this.numberOfGoldenKeys++;
+  }
+
+  void takeSilverKey() {
+    this.numberOfSilverKeys++;
   }
 
   void updateScore(int score) {
@@ -124,53 +132,120 @@ class Player extends Sprite implements Damageable { //<>//
   //}
 
   // aggiorna movimento del giocatore
+  //void update() {
+  //  // Ottengo il centro dello sprite
+  //  float x = position.x;
+  //  float y = position.y;
+
+  //  // println("player position: " + x + ", " + y);
+
+  //  if (moveUP && !check_collision_wall(round(x), round(y - 1))) {      // y - 1
+  //    y += -1 * spriteSpeed;
+  //    // println("new y value: " + y);
+  //  }
+
+  //  if (moveDOWN && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
+  //    y += 1 * spriteSpeed;
+  //    // println("new y value: " + y);
+  //  }
+
+  //  if (moveLEFT && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
+  //    x += -1 * spriteSpeed;
+  //    direction = DIRECTION_LEFT;
+  //    sprite = spriteLeft;
+  //    // println("new x value: " + x);
+  //  }
+
+  //  if (moveRIGHT && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
+  //    x += 1 * spriteSpeed;
+  //    direction = DIRECTION_RIGHT;
+  //    sprite = spriteRight;
+  //    // println("new x value: " + x);
+  //  }
+
+
+  //  updatePosition(new PVector(x, y));
+  //}
+
+  //boolean check_collision_wall(int x, int y) {
+  //  // se è un muro controlla la possibile collisione con lo sprite
+  //  // println("position: " + x + ", " + y);
+  //  if (isWall(x, y)) {
+  //    // println("è un muro...");
+  //    game.spritesLayer.noFill(); // Nessun riempimento
+  //    game.spritesLayer.stroke(255); // Colore del bordo bianco
+  //    game.spritesLayer.rectMode(CENTER);
+  //    game.spritesLayer.rect(x * currentLevel.tileSize + (sprite.width/2), y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
+
+  //    game.spritesLayer.stroke(255, 0, 0);
+  //    game.spritesLayer.point(x * currentLevel.tileSize, y * currentLevel.tileSize);
+
+  //    if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+  //      (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+  //      position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+  //      (position.y * currentLevel.tileSize) - (sprite.height / 2) <= y * currentLevel.tileSize + (sprite.height / 2)) {
+  //      // println("collisione rilevata...");
+  //      return true;
+  //    }
+  //  }
+
+  //  return false;
+  //}
+
   void update() {
-    // Ottengo il centro dello sprite
     float x = position.x;
     float y = position.y;
 
-    println("player position: " + x + ", " + y);
-
-    if (moveUP && !check_collision_wall(round(x),round(y - 1))) {
-      y += -1 * spriteSpeed;
-      println("new y value: " + y);
-    } 
-    
-    if (moveDOWN && !check_collision_wall(round(x), round(y + 1))) {
-      y += 1 * spriteSpeed;
-      println("new y value: " + y);
-    }
-    
-    if (moveLEFT && !check_collision_wall(round(x - 1), round(y))) {
-      x += -1 * spriteSpeed;
-      println("new x value: " + x);
-    }
-    
-    if (moveRIGHT && !check_collision_wall(round(x + 1), round(y))) {
-      x += 1 * spriteSpeed;
-      println("new x value: " + x);
+    if (moveUP && !checkCollision(x, y - spriteSpeed)) {
+      y -= spriteSpeed;
     }
 
+    if (moveDOWN && !checkCollision(x, y + spriteSpeed)) {
+      y += spriteSpeed;
+    }
+
+    if (moveLEFT && !checkCollision(x - spriteSpeed, y)) {
+      x -= spriteSpeed;
+      direction = DIRECTION_LEFT;
+      sprite = spriteLeft;
+    }
+
+    if (moveRIGHT && !checkCollision(x + spriteSpeed, y)) {
+      x += spriteSpeed;
+      direction = DIRECTION_RIGHT;
+      sprite = spriteRight;
+    }
 
     updatePosition(new PVector(x, y));
   }
 
-  boolean check_collision_wall(int x, int y) {
-    // se è un muro controlla la possibile collisione con lo sprite
-    println("position: " + x + ", " + y);
-    if (isWall(x, y)) {
-      println("è un muro...");
-      if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
-        (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
-        position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
-        (position.y * currentLevel.tileSize) - (sprite.height / 2) <= y * currentLevel.tileSize + (sprite.height / 2)) {
-        println("collisione rilevata...");
-        return true;
-      }
+  boolean checkCollision(float x, float y) {
+    // Ottieni le coordinate del bounding box
+    float bboxX = x * currentLevel.tileSize;
+    float bboxY = y * currentLevel.tileSize;
+
+    // Imposta le dimensioni del bounding box in base alle dimensioni dello sprite
+    float bboxWidth = sprite.width;
+    float bboxHeight = sprite.height;
+
+    if (isWall(round(x), round(y))) {
+      drawCollisionVisualization(bboxX, bboxY, bboxWidth, bboxHeight);
+      return true;
     }
 
     return false;
   }
+
+  void drawCollisionVisualization(float bboxX, float bboxY, float bboxWidth, float bboxHeight) {
+    game.spritesLayer.noFill();
+    game.spritesLayer.stroke(255);
+    // game.spritesLayer.rectMode(CENTER);
+    game.spritesLayer.rect(bboxX, bboxY, bboxWidth, bboxHeight);
+
+    game.spritesLayer.stroke(255, 0, 0);
+    game.spritesLayer.point(bboxX, bboxY);
+  }
+
 
 
 
@@ -179,56 +254,6 @@ class Player extends Sprite implements Damageable { //<>//
   //    float y = position.y;
 
   //    println("posizione player nella mappa: " + (int)x + ", " + (int) y);
-
-  //    game.spritesLayer.noFill(); // Nessun riempimento
-  //    game.spritesLayer.stroke(255, 30, 100); // Colore del bordo bianco
-  //    game.spritesLayer.rectMode(CENTER);
-  //    game.spritesLayer.rect(x * currentLevel.tileSize + sprite.width / 2, (y + 1) * currentLevel.tileSize + sprite.height / 2, sprite.width, sprite.height);
-
-  //    game.spritesLayer.noFill(); // Nessun riempimento
-  //    game.spritesLayer.stroke(255, 30, 100); // Colore del bordo bianco
-  //    game.spritesLayer.rectMode(CENTER);
-  //    game.spritesLayer.rect(x * currentLevel.tileSize + sprite.width / 2, (y-1) * currentLevel.tileSize + sprite.height / 2, sprite.width, sprite.height);
-
-  //    game.spritesLayer.noFill(); // Nessun riempimento
-  //    game.spritesLayer.stroke(255, 30, 100); // Colore del bordo bianco
-  //    game.spritesLayer.rectMode(CENTER);
-  //    game.spritesLayer.rect(x + 1 * currentLevel.tileSize + sprite.width / 2, y * currentLevel.tileSize + sprite.height / 2, sprite.width, sprite.height);
-
-  //    game.spritesLayer.noFill(); // Nessun riempimento
-  //    game.spritesLayer.stroke(255, 30, 100); // Colore del bordo bianco
-  //    game.spritesLayer.rectMode(CENTER);
-  //    game.spritesLayer.rect(x - 1  * currentLevel.tileSize + sprite.width / 2, y  * currentLevel.tileSize + sprite.height / 2, sprite.width, sprite.height);
-
-  ////
-
-  //    game.spritesLayer.noFill(); // Nessun riempimento
-  //    game.spritesLayer.stroke(255, 30, 100); // Colore del bordo bianco
-  //    game.spritesLayer.rectMode(CENTER);
-  //    game.spritesLayer.rect(x + sprite.width / 2, y + sprite.height / 2 + sprite.height, sprite.width, sprite.height);
-
-  //    game.spritesLayer.noFill(); // Nessun riempimento
-  //    game.spritesLayer.stroke(255, 30, 100); // Colore del bordo bianco
-  //    game.spritesLayer.rectMode(CENTER);
-  //    game.spritesLayer.rect(x + sprite.width / 2, y + sprite.height / 2 - sprite.height, sprite.width, sprite.height);
-
-  //    game.spritesLayer.noFill(); // Nessun riempimento
-  //    game.spritesLayer.stroke(255, 30, 100); // Colore del bordo bianco
-  //    game.spritesLayer.rectMode(CENTER);
-  //    game.spritesLayer.rect(x + sprite.width / 2 + sprite.width, y + sprite.height / 2, sprite.width, sprite.height);
-
-  //    game.spritesLayer.noFill(); // Nessun riempimento
-  //    game.spritesLayer.stroke(255, 30, 100); // Colore del bordo bianco
-  //    game.spritesLayer.rectMode(CENTER);
-  //    game.spritesLayer.rect(x + sprite.width / 2 - sprite.width, y  + sprite.height / 2, sprite.width, sprite.height);
-
-  //    game.spritesLayer.stroke(255); // Colore del bordo bianco
-  //    game.spritesLayer.point(x, y); // Colore del bordo bianco
-
-  //    game.spritesLayer.stroke(255); // Colore del bordo bianco
-  //    game.spritesLayer.point(x + sprite.width / 2, y + sprite.height / 2); // Colore del bordo bianco
-
-
 
   //    if (moveUP && isValidMove(round(x + sprite.width / 2), round(y + sprite.height / 2 + sprite.height))) {
   //      y -= spriteSpeed;

@@ -183,7 +183,6 @@ void setupImages() {
   master_sword_sprite = loadImage("data/master_sword.png");
 
   // healers
-  // redPotion.sprite = loadImage("data/object/red_potion.png");
   redPotion.updateSprite(loadImage("data/object/red_potion.png"));
 
   heart_sprite = loadImage("data/heartFull.png");
@@ -238,7 +237,7 @@ void draw() {
   switch(screen_state) {
   case MENU_SCREEN:
     // show menu
-    if (!isMenuBackgroundPlaying) {
+    if (!isMenuBackgroundPlaying && volumeMusicLevel > 0) {
       menu_background.play();
       isMenuBackgroundPlaying = true;
     }
@@ -262,7 +261,7 @@ void draw() {
     break;
 
   case GAME_SCREEN:
-    if (!isDungeonBackgroundPlaying) {
+    if (!isDungeonBackgroundPlaying && volumeMusicLevel > 0) {
       dungeon_background.play();
       isDungeonBackgroundPlaying = true;
     }
@@ -270,9 +269,18 @@ void draw() {
     // game.update();
     // ui.update();
 
+    long drawStart = 0;
+    drawStart = System.nanoTime();
+
     // show game screen
     game.display();
-    // ui.display();
+    ui.update();
+    
+    long drawEnd = System.nanoTime();
+    long passedTime = drawEnd - drawStart;
+    
+    println("passed time drawing: " + passedTime);
+
     break;
 
   case WIN_SCREEN:
