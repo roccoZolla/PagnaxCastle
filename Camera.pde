@@ -5,12 +5,12 @@ class Camera {
   float easing;
 
   void update() {
-    float targetCameraX = p1.spritePosition.x * currentLevel.tileSize * zoom - gameScene.width / 2;
-    float targetCameraY = p1.spritePosition.y * currentLevel.tileSize * zoom - gameScene.height / 2;
+    float targetCameraX = p1.getPosition().x * currentLevel.tileSize * zoom - width / 2;
+    float targetCameraY = p1.getPosition().y * currentLevel.tileSize * zoom - height / 2;
 
     // Limita la telecamera in modo che non esca dalla mappa
-    targetCameraX = constrain(targetCameraX, 0, currentLevel.cols * currentLevel.tileSize * zoom - gameScene.width);
-    targetCameraY = constrain(targetCameraY, 0, currentLevel.rows * currentLevel.tileSize * zoom - gameScene.height);
+    targetCameraX = constrain(targetCameraX, 0, currentLevel.cols * currentLevel.tileSize * zoom - width);
+    targetCameraY = constrain(targetCameraY, 0, currentLevel.rows * currentLevel.tileSize * zoom - height);
 
     // Interpolazione per rendere il movimento della camera più fluido
     x += (targetCameraX - x) * easing;
@@ -18,7 +18,7 @@ class Camera {
   }
 
   Camera() {
-    this.zoom = 1.0;
+    this.zoom = 5.0;
     this.easing = 0.7;
   }
 }

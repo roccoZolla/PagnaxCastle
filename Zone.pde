@@ -10,7 +10,7 @@ class Zone {
   int numLevels;
   int chests;
   int enemies;
-  
+
   // assets della zona
   PImage startFloorImage;
   PImage floorImage; // Immagine per il pavimento
@@ -32,10 +32,10 @@ class Zone {
     this.finalArea = false;
 
     createLevel(filesPath, numberOfRooms);
-    
+
     currentLevel = levels.get(0);
   }
-  
+
   void loadAssetsZone() {
     println("carico gli assets della zona...");
     floorImage = loadImage(filesPath + "floorTile.png");
@@ -46,7 +46,7 @@ class Zone {
     hallwayImage = loadImage(filesPath + "hallwayTile.png");
     stairsNextFloorImage = loadImage(filesPath + "stairsNextFloor.png");
   }
-  
+
   void createLevel(String filesPath, int numberOfRooms) {
     for (int i = 0; i < numLevels; i++) {
       Level level = new Level("Livello " + (i), i, filesPath, numberOfRooms);    // da modificare assegnazione stringa con i+1
@@ -54,7 +54,7 @@ class Zone {
       levels.add(level);
     }
   }
-  
+
   Level createBossLevel() {
     println("creazione del livello finale...");
     Level bossLevel = new Level("Livello finale", 0, filesPath, 1);

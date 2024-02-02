@@ -6,6 +6,8 @@ class Level {
   int numberOfRooms;
   boolean isFinalLevel;      // indica se è il livello finale, composto da una singola stanza, di base false
 
+  Sprite stairsNextFloor;
+
   int damagePeaks;      // danno delle trappole
 
   // rooms
@@ -96,6 +98,8 @@ class Level {
     // Collega le stanze con corridoi
     connectRooms();
 
+    stairsNextFloor = new Sprite(new PVector((rooms.get(endRoomIndex).roomPosition.x), rooms.get(endRoomIndex).roomPosition.y), stairsNextFloorImage);
+
     // da rimuovere
     map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
     map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = STAIRS_TILE_TYPE; // Stanza finale
@@ -166,8 +170,8 @@ class Level {
 
   // genera la stanza del boss finale
   private void generateBossRoom() {
-    int roomWidth = int(random(15, 30));
-    int roomHeight = int(random(15, 30));
+    int roomWidth = int(random(20, 35));
+    int roomHeight = int(random(20, 35));
 
     int roomX = int(random(1, cols - roomWidth - 1));
     int roomY = int(random(1, rows - roomHeight - 1));
@@ -184,6 +188,7 @@ class Level {
         } else {
           map[x][y] = FLOOR_TILE_TYPE;
           // spawn delle trappole all'interno delle stanze
+          // da generare solo per la modalita difficile
           if (random(1) <= TRAP_SPAWN_PROBABILITY) {
             map[x][y] = PEAKS_TILE_TYPE;
           }
@@ -305,9 +310,10 @@ class Level {
 
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
       int coinValue = (int) random(1, 10); // Esempio: valore casuale tra 1 e 10
-      Coin coin = new Coin(coinValue);
-      coin.sprite = coin_sprite;
-      coin.spritePosition = new PVector(x, y);
+      Coin coin = new Coin(new PVector(x, y), coin_sprite, coinValue);
+      //coin.sprite = coin_sprite;
+      //coin.spritePosition = new PVector(x, y);
+
 
       // Aggiungi la moneta alla lista delle monete
       coins.add(coin);
@@ -376,22 +382,19 @@ class Level {
       // isRare è impostato su false nel costruttore
       if (chestType < commonChestSpawnRate) {
         // Genera una cassa comune
-        chest = new Chest("Cassa comune" + i);
-        chest.sprite = chest_close_sprite;
-        chest.setId(i);
+        chest = new Chest(new PVector(x, y), chest_close_sprite, "Cassa comune" + i);
+        // chest.setId(i);
         chest.setOpenWith(silver_key);              // Specifica l'oggetto chiave necessario
         // Imposta altri attributi della cassa comune
       } else {
         // Genera una cassa rara
-        chest = new Chest("Cassa rara" + i);
-        chest.sprite = special_chest_close_sprite;
-        chest.setId(i);
+        chest = new Chest(new PVector(x, y), special_chest_close_sprite, "Cassa rara" + i);
+        // chest.setId(i);
         chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
         chest.setIsRare(true);
       }
 
       // Aggiungi la cassa alla lista delle casse
-      chest.spritePosition = new PVector(x, y);
       map[x][y] = CHEST_TILE_TYPE; // Imposta il tipo di tile corrispondente a una cassa
 
       treasures.add(chest);
@@ -439,9 +442,7 @@ class Level {
         ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();
 
         // creazione dell'entita nemico
-        Enemy enemy = new Enemy(ENEMY_HP, "rat", 5, damageTileHandler);
-        enemy.sprite = rat_enemy_sprite;
-        enemy.spritePosition = new PVector(x, y);
+        Enemy enemy = new Enemy(new PVector(x, y), rat_enemy_sprite, ENEMY_HP, "rat", 5, damageTileHandler);
 
         // Aggiungi il nemico alla lista
         enemies.add(enemy);
@@ -450,12 +451,12 @@ class Level {
   }
 
   // disegna solo cio che vede il giocatore
-  void display() {
+  void display(PGraphics layer) {
     // Calcola i limiti dello schermo visibile in termini di celle di mappa
     int startX = floor((camera.x / (tileSize * camera.zoom)));
     int startY = floor((camera.y / (tileSize * camera.zoom)));
-    int endX = ceil((camera.x + gameScene.width) / (tileSize * camera.zoom));
-    int endY = ceil((camera.y + gameScene.height) / (tileSize * camera.zoom));
+    int endX = ceil((camera.x + width) / (tileSize * camera.zoom));
+    int endY = ceil((camera.y + height) / (tileSize * camera.zoom));
 
     // Assicurati che i limiti siano all'interno dei limiti della mappa
     startX = constrain(startX, 0, cols - 1);
@@ -469,6 +470,7 @@ class Level {
 
         float centerX = x * tileSize + tileSize / 2;
         float centerY = y * tileSize + tileSize / 2;
+        
 
         switch(tileType) {
         case BACKGROUND_TILE_TYPE:
@@ -477,62 +479,41 @@ class Level {
 
         case FLOOR_TILE_TYPE:
           // pavimento
-          gameScene.imageMode(CENTER);
-          gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
+          layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case START_ROOM_TILE_TYPE:
           // Imposta l'immagine per la stanza iniziale (nero)
-          gameScene.imageMode(CENTER);
-          gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
+          layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case STAIRS_TILE_TYPE:
           // scale per il piano successivo
-          gameScene.imageMode(CENTER);
-          gameScene.image(stairsNextFloorImage, centerX, centerY, tileSize, tileSize);
+          layer.image(stairsNextFloorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
-          gameScene.imageMode(CENTER);
-          gameScene.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
+          layer.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
           break;
 
         case HALLWAY_TILE_TYPE:
           // corridoio
-          gameScene.imageMode(CENTER);
-          gameScene.image(hallwayImage, centerX, centerY, tileSize, tileSize);
+          layer.image(hallwayImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case CHEST_TILE_TYPE:
           // ci sta tenerlo sono statiche le casse
           // tesori
-          gameScene.imageMode(CENTER);
-          gameScene.image(floorImage, centerX, centerY, tileSize, tileSize);
+          layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
         case PEAKS_TILE_TYPE:
           // peaks trap
-          gameScene.imageMode(CENTER);
-          gameScene.image(peaksTrapImage, centerX, centerY, tileSize, tileSize);
+          layer.image(peaksTrapImage, centerX, centerY, tileSize, tileSize);
           break;
         }
       }
     }
-  }
-
-  // metodo per il rilevamento delle collisioni
-  // verifica collisione con le scale
-  // da sistemare
-  boolean playerCollide(Player aPlayer) {
-    if (aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize) - (tileSize / 2)  &&            // x1 + w1/2 > x2 - w2/2
-      (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= rooms.get(endRoomIndex).roomPosition.x * currentLevel.tileSize + (tileSize / 2) &&            // x1 - w1/2 < x2 + w2/2
-      aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize) - (tileSize / 2) &&           // y1 + h1/2 > y2 - h2/2
-      (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= rooms.get(endRoomIndex).roomPosition.y * currentLevel.tileSize + (tileSize/ 2)) {            // y1 - h1/2 < y2 + h2/2
-      return true;
-    }
-
-    return false;
   }
 }

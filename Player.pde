@@ -1,7 +1,5 @@
-class Player implements Damageable { //<>//
-  PVector spritePosition;
+class Player extends Sprite implements Damageable { //<>//
   float spriteSpeed = 0.2;
-  PImage sprite;
 
   // movements
   boolean moveUP;
@@ -18,6 +16,12 @@ class Player implements Damageable { //<>//
   boolean moveINTR;    // interazione k
   boolean moveUSE;     // utilizza l
 
+  boolean isMoving = false;
+  boolean isUsingPotion = false;
+  boolean isAttacking = false;
+  boolean attackExecuted = false;
+  boolean isInteracting = false;
+
   ConcreteDamageHandler damageTileHandler;
 
   // caratteristiche del player
@@ -33,7 +37,9 @@ class Player implements Damageable { //<>//
   int numberOfGoldenKeys;
   int numberOfPotion;
 
-  Player(int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
+  Player(PVector position, PImage sprite, int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
+    super(position, sprite);
+
     this.playerScore = 0;
     this.playerHP = playerHP;
     this.playerMaxHP = maxHP;
@@ -50,162 +56,183 @@ class Player implements Damageable { //<>//
     this.moveLEFT = false;
   }
 
-  public void collectCoin() {
+  void collectCoin() {
     this.coins++;
+  }
+
+  void takeGoldenKey() {
+    this.numberOfGoldenKeys++;
+  }
+
+  void takeSilverKey() {
+    this.numberOfSilverKeys++;
   }
 
   void updateScore(int score) {
     this.playerScore += score;
   }
 
-  // movimento del giocatore
-  void update() {
-    float newX = spritePosition.x;
-    float newY = spritePosition.y;
+  // aggiorna la vita del giocatore e
+  // riproduci suono
+  void takeHP(int HP) {
+    drinkPotion.play();
+    playerHP += HP;
 
-    int roundedX = 0, roundedY = 0;
-
-    if (moveUP) {
-      newY -= spriteSpeed;
-    }
-    if (moveDOWN) {
-      newY += spriteSpeed;
-    }
-    if (moveLEFT) {
-      p1.sprite = spriteLeft;
-      newX -= spriteSpeed;
-      direction = DIRECTION_LEFT;
-    }
-    if (moveRIGHT) {
-      p1.sprite = spriteRight;
-      newX += spriteSpeed;
-      direction = DIRECTION_RIGHT;
-    }
-
-    // Verifica se la nuova posizione è valida
-    roundedX = round(newX);
-    roundedY = round(newY);
-
-    if (isValidMove(roundedX, roundedY)) {
-      damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
-
-      spritePosition.x = newX;
-      spritePosition.y = newY;
-    }
-  }
-
-  // collisione tra arma e nemico
-  boolean collidesWith(Enemy enemy) {
-    // se l'arma collide con un nemico sottrai danno alla vita nemico
-
-    float offset = 16;
-
-    if (direction == DIRECTION_RIGHT) offset = 16;
-    else if (direction == DIRECTION_LEFT) offset = -16;
-
-    //println("giocatore: " + spritePosition);
-    //println("arma: " + weapon.spritePosition);
-
-    // da sistemare
-    if ((weapon.spritePosition.x * currentLevel.tileSize) + offset <= (enemy.spritePosition.x * currentLevel.tileSize) + enemy.sprite.width  &&
-      ((weapon.spritePosition.x * currentLevel.tileSize) + weapon.sprite.width) + offset >= enemy.spritePosition.x * currentLevel.tileSize &&
-      weapon.spritePosition.y * currentLevel.tileSize <= (enemy.spritePosition.y * currentLevel.tileSize) + enemy.sprite.height &&
-      (weapon.spritePosition.y * currentLevel.tileSize) + weapon.sprite.height >= enemy.spritePosition.y * currentLevel.tileSize) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // collision detection
-  boolean isValidMove(int roundedX, int roundedY) {
-    if (!isWithinMapBounds(roundedX, roundedY)) {
-      return false;
-    }
-
-    if (isCollisionTile(roundedX, roundedY) && isCollidingWithTile(roundedX, roundedY)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  boolean isCollidingWithTile(int roundedX, int roundedY) {
-    float playerRight = spritePosition.x * currentLevel.tileSize + (sprite.width / 2);
-    float playerLeft = spritePosition.x * currentLevel.tileSize - (sprite.width / 2);
-    float playerBottom = spritePosition.y * currentLevel.tileSize + (sprite.height / 2);
-    float playerTop = spritePosition.y * currentLevel.tileSize - (sprite.height / 2);
-
-    float tileRight = roundedX * currentLevel.tileSize + (currentLevel.tileSize / 2);
-    float tileLeft = roundedX * currentLevel.tileSize - (currentLevel.tileSize / 2);
-    float tileBottom = roundedY * currentLevel.tileSize + (currentLevel.tileSize / 2);
-    float tileTop = roundedY * currentLevel.tileSize - (currentLevel.tileSize / 2);
-
-    // Verifica delle collisioni
-    boolean collisionX = playerRight >= tileLeft && playerLeft <= tileRight;
-    boolean collisionY = playerBottom >= tileTop && playerTop <= tileBottom;
-
-    return collisionX && collisionY;
+    if (playerHP > playerMaxHP) playerHP = playerMaxHP;
   }
 
   // override dei metodi dell'interfaccia
   @Override
-    public void receiveDamage(int damage) {
+    public void takeDamage(int damage) {
     playerHP -= damage;
+
+    TextDisplay damageHitText = new TextDisplay(position, Integer.toString(damage), color(255, 0, 0));
+    damageHitText.display(game.spritesLayer);
+
+    hurt_sound.play();
+
     if (playerHP < 0) {
       playerHP = 0;
     }
   }
 
+  // aggiorna movimento del giocatore
+  void update() {
+    float x = position.x;
+    float y = position.y;
+
+    // cella superiore al giocatore
+    if (moveUP && isWithinMapBounds(round(x), round(y - 1)) && !check_collision_wall(round(x), round(y - 1))) {      // y - 1
+      y += -1 * spriteSpeed;
+    }
+
+    // cella inferiore al giocatore
+    if (moveDOWN && isWithinMapBounds(round(x), round(y + 1)) && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
+      y += 1 * spriteSpeed;
+    }
+
+    // cella a sinistra del giocatore
+    if (moveLEFT && isWithinMapBounds(round(x - 1), round(y)) && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
+      x += -1 * spriteSpeed;
+      direction = DIRECTION_LEFT;
+      sprite = spriteLeft;
+    }
+
+    // cella a destra del giocatore
+    if (moveRIGHT && isWithinMapBounds(round(x + 1), round(y)) && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
+      x += 1 * spriteSpeed;
+      direction = DIRECTION_RIGHT;
+      sprite = spriteRight;
+    }
+
+    updatePosition(new PVector(x, y));
+    damageTileHandler.handleDamageTiles(this, round(x), round(y));
+  }
+
+  boolean check_collision_wall(int x, int y) {
+    // se è un muro controlla la possibile collisione con lo sprite
+    if (isWall(x, y)) {
+      println("è un muro...");
+      game.spritesLayer.noFill(); // Nessun riempimento
+      game.spritesLayer.stroke(255); // Colore del bordo bianco
+      game.spritesLayer.rectMode(CENTER);
+      game.spritesLayer.rect(x * currentLevel.tileSize + (sprite.width/2), y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
+
+      game.spritesLayer.stroke(255, 0, 0);
+      game.spritesLayer.point(x * currentLevel.tileSize, y * currentLevel.tileSize);
+
+      if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+        (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+        position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+        (position.y * currentLevel.tileSize) - (sprite.height / 2) <= y * currentLevel.tileSize + (sprite.height / 2)) {
+        println("collisione rilevata...");
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // da fixare
+  void attack(PGraphics layer) {
+    if (moveATCK && (!moveUSE && !moveINTR)) {
+      // println("sta attaccando...");
+      isAttacking = true;
+      // se sta attaccando e l'attacco non è stato eseguito
+      if (isAttacking && !attackExecuted) {
+        // offset
+        PVector new_position = position.copy();
+
+        if (direction == DIRECTION_RIGHT)
+          new_position.x += 1;
+        else if (direction == DIRECTION_LEFT)
+          new_position.x -= 1;
+
+        weapon.updatePosition(new_position);
+        weapon.display(layer);
+
+        if (game.isBossLevel) {
+          if (weapon.sprite_collision(game.boss)) {
+            swordAttack.play();
+            game.boss.takeDamage(weapon.getDamage());
+            // l'attacco è stato eseguito non continuare ad attaccare
+            // println("attacco eseguito...");
+            attackExecuted = true;
+          }
+        } else {
+          for (Enemy enemy : currentLevel.enemies) {
+            if (weapon.sprite_collision(enemy)) {
+              swordAttack.play();
+              enemy.takeDamage(weapon.getDamage());
+              // l'attacco è stato eseguito non continuare ad attaccare
+              // println("attacco eseguito...");
+              attackExecuted = true;
+            }
+          }
+        }
+      }
+    } else {
+      // println("non sta piu attaccando...");
+      isAttacking = false;
+      attackExecuted = false;
+    }
+  }
+
+  void usePotion(PGraphics layer) {
+    if (moveUSE && (!moveATCK && !moveINTR)) {
+      if (!isUsingPotion) {
+        isUsingPotion = true;
+
+        // se il numero delle pozioni è maggiore di 0
+        if (numberOfPotion > 0) {
+          // se vita minore della vita massima
+          if (playerHP < playerMaxHP) {
+            takeHP(redPotion.getBonusHp());
+
+            // dimunuisci numero di pozioni del giocatore
+            numberOfPotion -= 1;
+          } else {
+            // stampa massaggio di salute al massimo
+            PVector text_position = p1.getPosition();
+            TextDisplay healthFull = new TextDisplay(text_position, "Salute al massimo", color(255));
+            healthFull.display(layer);
+          }
+        } else {
+          // stampa x per indicare che non hai piu pozioni
+          float crossImageX = (getPosition().x * currentLevel.tileSize + (sprite.width / 2));
+          float crossImageY = (getPosition().y * currentLevel.tileSize + (sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          layer.imageMode(CENTER);
+          layer.image(cross_sprite, crossImageX, crossImageY);
+        }
+      }
+    } else {
+      // resetta la variabile
+      isUsingPotion = false;
+    }
+  }
+
   @Override
     PVector getPosition() {
-    return spritePosition;
-  }
-
-  // metodo che si occupa di disegnare l'arma del giocatore
-  void drawPlayerWeapon() {
-    // aggiorna posizione dell'arma
-    weapon.spritePosition = spritePosition;
-
-    // offset
-    float offset = 16;
-
-    if (direction == DIRECTION_RIGHT)
-      offset = 16;
-    else if (direction == DIRECTION_LEFT)
-      offset = -16;
-
-    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
-
-    // hitbox arma
-    spritesLayer.rectMode(CENTER);
-    spritesLayer.noFill(); // Nessun riempimento
-    spritesLayer.stroke(255, 146, 240); // Colore del bordo bianco
-    spritesLayer.rect(centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
-
-    // arma
-    spritesLayer.imageMode(CENTER);
-    spritesLayer.image(weapon.sprite, centerX + offset, centerY, weapon.sprite.width, weapon.sprite.height);
-  }
-
-  void display() {
-    // hitbox giocatore
-    spritesLayer.noFill(); // Nessun riempimento
-    spritesLayer.stroke(255); // Colore del bordo bianco
-
-    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
-
-    // hitbox
-    //layer.rectMode(CENTER); // Imposta il rectMode a center
-    //layer.rect(centerX, centerY, sprite.width, sprite.height);
-
-    //layer.stroke(160);
-    //layer.strokeWeight(10);
-    //layer.point(centerX, centerY);
-
-    spritesLayer.imageMode(CENTER); // Imposta l'imageMode a center
-    spritesLayer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+    return position;
   }
 }

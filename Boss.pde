@@ -1,21 +1,20 @@
 // classe del boss
-class Boss {
-  PImage sprite;
-  PVector spritePosition;
+class Boss extends Sprite {
   PVector spriteVelocity;      // velocita corrente del boss
   float spriteSpeed;           // velocita desiderata a cui deve andare il boss
   ArrayList<Projectile> projectiles;    // proiettili
-  
+
   String name;
   int maxHP;
   int HP;
-  
-  Boss(float x, float y, float speed, String name, int HP, int maxHP) {
-    spritePosition = new PVector(x, y);
+  final float damage_resistence = 0.7; // capacita del boss di resistere ai danni
+
+  Boss(PVector position, PImage sprite, float speed, String name, int HP, int maxHP) {
+    super(position, sprite);
     spriteVelocity = PVector.random2D();
     this.spriteSpeed = speed;
     projectiles = new ArrayList<Projectile>();
-    
+
     this.name = name;
     this.HP = HP;
     this.maxHP = maxHP;
@@ -23,50 +22,108 @@ class Boss {
 
   void update(Player player) {
     // Calcola la direzione verso il giocatore
-    PVector direction = PVector.sub(player.spritePosition, spritePosition);
+    PVector direction = PVector.sub(player.getPosition(), position);
     direction.normalize();
 
     // Muovi il boss nella direzione del giocatore
     spriteVelocity = direction.mult(spriteSpeed);
-    spritePosition.add(spriteVelocity);
+
+    if (!sprite_collision(p1)) position.add(spriteVelocity);
 
     // Lancio di proiettili nella direzione del giocatore
     if (frameCount % 120 == 0) {  // Lanciare un proiettile ogni secondo
-      Projectile projectile = new Projectile(spritePosition.x, spritePosition.y, direction);
+      // costoso creare una nuova istanza di proiettile
+      Projectile projectile = new Projectile(position.x, position.y, direction);
       projectiles.add(projectile);
     }
 
     // Muovi i proiettili
-    for (Projectile projectile : projectiles) {
+    // Muovi i proiettili
+    Iterator<Projectile> iterator = projectiles.iterator();
+    while (iterator.hasNext()) {
+      Projectile projectile = iterator.next();
       projectile.update();
+
+      // verifica se il proiettile ha colpito il player
+      if (projectile.sprite_collision(p1) && !projectile.attack_executed) {
+        p1.takeDamage(projectile.damage);
+        projectile.attack_executed = true;
+      }
+
+      // verifica se il proiettile colpisce il boss
+      // se l'attacco non è stato eseguito e puo colpire il boss
+      if (projectile.sprite_collision(this) && !projectile.attack_executed && projectile.canHitBoss) {
+        takeDamage(projectile.damage);
+        projectile.attack_executed = true;
+        println("boss colpito...");
+      }
+
+      // verifica se il giocatore colpisce con l'arma un proiettile
+      // il giocatore sta attaccando e l'attacco non è stato eseguito
+      // e il proiettile puo essere colpito
+      if (p1.isAttacking && !p1.attackExecuted &&
+        projectile.isHittable && projectile.sprite_collision(p1.weapon)) {
+        projectile.reverseDirection();
+        projectile.canHitBoss = true;
+        projectile.isHittable = false;
+      }
+
+      // Rimuovi il proiettile se ha colpito il giocatore o il boss, o se è uscito dal campo di gioco
+      if (projectile.attack_executed || !isWithinMapBounds((int)projectile.getPosition().x, (int)projectile.getPosition().y)) {
+        iterator.remove();
+      }
     }
   }
+  
+  void takeDamage(int damage) {
+    int actual_damage = (int) (damage * (1 - damage_resistence));
+    HP -= actual_damage;
 
-  void display() {
+    hurt_sound.play();
+
+    TextDisplay damageHitText = new TextDisplay(position, Integer.toString(actual_damage), color(255, 0, 0));
+    damageHitText.display(game.spritesLayer);
+
+    if (HP < 0) {
+      HP = 0;
+    }
+    println("vita boss: " + HP);
+  }
+
+  @Override
+    void display(PGraphics layer) {
     // Disegna il boss
-    spritesLayer.noFill(); // Nessun riempimento
-    spritesLayer.stroke(255, 23, 23);
+    layer.noFill(); // Nessun riempimento
+    layer.stroke(255, 23, 23);
 
-    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
+    float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
 
-    spritesLayer.imageMode(CENTER); // Imposta l'imageMode a center
-    spritesLayer.image(sprite, centerX, centerY, sprite.width * 1.5, sprite.height * 1.5);
+    layer.imageMode(CENTER); // Imposta l'imageMode a center
+    layer.image(sprite, centerX, centerY, sprite.width * 1.5, sprite.height * 1.5);
 
     // Disegna i proiettili
     for (Projectile projectile : projectiles) {
-      projectile.display();
+      projectile.display(layer);
+      projectile.displayHitbox(layer);
     }
   }
 }
 
-class Projectile {
-  PVector position;
+class Projectile extends Sprite {
   PVector velocity;
+  int damage;    // danni provocati dal proiettile
+  boolean attack_executed; // di base false
+  boolean canHitBoss; // di base false, indica se il proiettile puo colpire il boss
+  boolean isHittable; // puo essere colpito, di base true
 
   Projectile(float x, float y, PVector direction) {
-    position = new PVector(x, y);
-    velocity = PVector.mult(direction, 5.0);  // Velocità dei proiettili
+    super(new PVector(x, y), orb_sprite);
+    velocity = PVector.mult(direction, 4.5);  // Velocità dei proiettili, 5 di base
+    damage = 10;
+    attack_executed = false;
+    canHitBoss = false;
+    isHittable = true;
   }
 
   void update() {
@@ -74,9 +131,7 @@ class Projectile {
     position.add(velocity);
   }
 
-  void display() {
-    // Disegna il proiettile
-    spritesLayer.fill(255, 22, 239);
-    spritesLayer.ellipse(position.x * currentLevel.tileSize, position.y * currentLevel.tileSize, 10, 10);
+  void reverseDirection() {
+    velocity.mult(-1);
   }
 }

@@ -50,7 +50,7 @@ class Pause {
 
           // torna al menu
           screen_state = ScreenState.MENU_SCREEN;
-          
+
           // stoppa la traccia di sottofondo
           dungeon_background.stop();
           isDungeonBackgroundPlaying = false;
@@ -64,5 +64,14 @@ class Pause {
 
     pauseLayer.endDraw();
     image(pauseLayer, 0, 0);
+  }
+
+  void updateScreen() {
+    pauseLayer = createGraphics(width, height);
+
+    // aggiorna posizione bottone
+    buttons.get(0).updatePosition(width / 2 - 100, height / 2, 200, 80);  // resume
+    buttons.get(1).updatePosition(width / 2 - 100, height / 2 + 100, 200, 80);  // option
+    buttons.get(2).updatePosition(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80);  // back to the menu
   }
 }

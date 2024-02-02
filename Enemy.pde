@@ -1,12 +1,13 @@
-class Enemy implements Damageable {
-  PVector spritePosition;
+class Enemy extends Sprite implements Damageable {
   float spriteSpeed = 0.1;
-  PImage sprite;
+  float currentDirection = random(4);
+  int framesInCurrentDirection = 0;
+  int maxFramesInSameDirection = 30;
 
   ConcreteDamageHandler damageTileHandler;
 
-  private static final long ATTACK_COOLDOWN = 2000; // Tempo di cooldown in millisecondi (3 secondi)
-  private long lastAttackTime = 0;
+  private final int attack_interval = 60; // Tempo di cooldown in millisecondi (3 secondi)
+  private long attack_timer = attack_interval;
   boolean first_attack;    // di base è true
 
   int enemyHP;
@@ -14,7 +15,8 @@ class Enemy implements Damageable {
   String name;
   int scoreValue;
 
-  Enemy(int enemyHP, String name, int damage, ConcreteDamageHandler damageTileHandler) {
+  Enemy(PVector position, PImage sprite, int enemyHP, String name, int damage, ConcreteDamageHandler damageTileHandler) {
+    super(position, sprite);
     this.enemyHP = enemyHP;
     this.name = name;
     this.damage = damage;
@@ -28,10 +30,10 @@ class Enemy implements Damageable {
   // gestisce il movimento del nemico
   void update() {
     // Ottieni la posizione del giocatore
-    PVector playerPosition = p1.spritePosition;
+    PVector playerPosition = p1.getPosition();
 
     // distanza tra il nemico e il giocatore
-    float distance = dist(spritePosition.x, spritePosition.y, playerPosition.x, playerPosition.y);
+    float distance = dist(position.x, position.y, playerPosition.x, playerPosition.y);
 
     // distanza minima
     float threshold = 4;
@@ -39,142 +41,104 @@ class Enemy implements Damageable {
     // Verifica se il giocatore è abbastanza vicino
     if (distance <= threshold) {
       // Calcola la direzione verso il giocatore
-      PVector direction = PVector.sub(playerPosition, spritePosition);
+      PVector direction = PVector.sub(playerPosition, position);
       direction.normalize();
 
       // Calcola il movimento in base alla direzione
-      float newX = spritePosition.x + direction.x * spriteSpeed;
-      float newY = spritePosition.y + direction.y * spriteSpeed;
+      float newX = position.x + direction.x * spriteSpeed;
+      float newY = position.y + direction.y * spriteSpeed;
 
-      int roundedX = 0, roundedY = 0;
-
-      roundedX = round(newX);
-      roundedY = round(newY);
-
-      if (isValidMove(roundedX, roundedY)) {
-        damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
-
-        // Aggiorna la posizione del nemico
-        this.spritePosition.x = newX;
-        this.spritePosition.y = newY;
+      if (isWithinMapBounds(round(newX), round(newY)) && !check_collision_wall(round(newX), round(newY)) && !sprite_collision(p1)) {
+        updatePosition(new PVector(newX, newY));
+        damageTileHandler.handleDamageTiles(this, round(newX), round(newY));
       }
     } else {
-      // Calcolo delle nuove coordinate
-      float newDirection = random(4);
-      float moveDistance = spriteSpeed;
+      // metodo leggermente migliore rispetto al metodo parkinson
+      float x = position.x;
+      float y = position.y;
 
-      float deltaX = 0;
-      float deltaY = 0;
+      // Incrementa il numero di frame nella direzione corrente
+      framesInCurrentDirection++;
 
-      if (newDirection < 1) {
-        deltaX = moveDistance;
-      } else if (newDirection < 2) {
-        deltaX = -moveDistance;
-      } else if (newDirection < 3) {
-        deltaY = moveDistance;
-      } else {
-        deltaY = -moveDistance;
+      // Cambia direzione se è il momento opportuno o se si incontra un ostacolo
+      if (framesInCurrentDirection >= maxFramesInSameDirection || check_collision_wall(round(x), round(y))) {
+        currentDirection = random(4);
+        framesInCurrentDirection = 0;
       }
 
-      float newX = spritePosition.x + deltaX;
-      float newY = spritePosition.y + deltaY;
+      // Sposta il nemico in base alla direzione corrente
+      if (currentDirection < 1 && isWithinMapBounds(round(x + 1), round(y)) && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
+        x += 1 * spriteSpeed;
+      } else if (currentDirection < 2 && isWithinMapBounds(round(x - 1), round(y)) && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
+        x += -1 * spriteSpeed;
+      } else if (currentDirection < 3 && isWithinMapBounds(round(x), round(y + 1)) && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
+        y += 1 * spriteSpeed;
+      } else {      // y - 1
+        if (isWithinMapBounds(round(x), round(y - 1)) && !check_collision_wall(round(x), round(y - 1))) {
+          y += -1 * spriteSpeed;
+        }
+      }
 
-      int roundedX = 0, roundedY = 0;
+      updatePosition(new PVector(x, y));
+      damageTileHandler.handleDamageTiles(this, round(x), round(y));
+    }
+  }
 
+  boolean check_collision_wall(int x, int y) {
+    // se è un muro controlla la possibile collisione con lo sprite
+    if (isWall(x, y)) {
+      println("è un muro...");
+      game.spritesLayer.noFill(); // Nessun riempimento
+      game.spritesLayer.stroke(255); // Colore del bordo bianco
+      game.spritesLayer.rectMode(CENTER);
+      game.spritesLayer.rect(x * currentLevel.tileSize + (sprite.width/2), y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
 
-      // Verifica se la nuova posizione è valida
-      roundedX = round(newX);
-      roundedY = round(newY);
+      game.spritesLayer.stroke(255, 0, 0);
+      game.spritesLayer.point(x * currentLevel.tileSize, y * currentLevel.tileSize);
 
-      if (isValidMove(roundedX, roundedY)) {
-        damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
-
-        // Aggiorna la posizione del nemico in modo casuale
-        this.spritePosition.x = newX;
-        this.spritePosition.y = newY;
+      if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+        (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+        position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+        (position.y * currentLevel.tileSize) - (sprite.height / 2) <= y * currentLevel.tileSize + (sprite.height / 2)) {
+        println("collisione rilevata...");
+        return true;
       }
     }
+
+    return false;
   }
-
-  // collision detection
-  boolean isValidMove(int roundedX, int roundedY) {
-    if (!isWithinMapBounds(roundedX, roundedY)) {
-      return false;
-    }
-
-    if (isCollisionTile(roundedX, roundedY) && isCollidingWithTile(roundedX, roundedY)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  boolean isCollidingWithTile(int roundedX, int roundedY) {
-    float playerRight = spritePosition.x * currentLevel.tileSize + (sprite.width / 2);
-    float playerLeft = spritePosition.x * currentLevel.tileSize - (sprite.width / 2);
-    float playerBottom = spritePosition.y * currentLevel.tileSize + (sprite.height / 2);
-    float playerTop = spritePosition.y * currentLevel.tileSize - (sprite.height / 2);
-
-    float tileRight = roundedX * currentLevel.tileSize + (sprite.width / 2);
-    float tileLeft = roundedX * currentLevel.tileSize - (sprite.width / 2);
-    float tileBottom = roundedY * currentLevel.tileSize + (sprite.height / 2);
-    float tileTop = roundedY * currentLevel.tileSize - (sprite.height / 2);
-
-    return playerRight >= tileLeft && playerLeft <= tileRight &&
-      playerBottom >= tileTop && playerTop <= tileBottom;
-  }
-
 
   // attacca il giocatore
-  // da migliorare
-  void handleAttack() {
+  void attack(Player player) {
     if (first_attack) {
-      attack();
-      first_attack = false;
-    }
-    periodicAttack();
-  }
-
-  void attack() {
-    // Esegui l'attacco
-    p1.playerHP -= damage;
-
-    // fare in modo che rimanga un po piu di tempo a schermo
-    TextDisplay damageHitText = new TextDisplay(p1.spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
-    damageHitText.display();
-
-    // playerHurt.play();
-
-    if (p1.playerHP < 0) {
-      p1.playerHP = 0;
-    }
-  }
-
-
-  void periodicAttack() {
-    long currentTime = System.currentTimeMillis();
-
-    // Verifica se è passato abbastanza tempo dall'ultimo attacco
-    if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
       // Esegui l'attacco
-      p1.playerHP -= damage;
+      player.takeDamage(damage);
 
       // fare in modo che rimanga un po piu di tempo a schermo
-      TextDisplay damageHitText = new TextDisplay(p1.spritePosition, Integer.toString(damage), color(255, 0, 0), 2000);
-      damageHitText.display();
+      TextDisplay damageHitText = new TextDisplay(p1.getPosition(), Integer.toString(damage), color(255, 0, 0));
+      damageHitText.display(game.spritesLayer);
 
-      // playerHurt.play();
+      first_attack = false;
+    } else {
+      // parte l'attacco periodico
+      attack_timer--;
 
-      if (p1.playerHP < 0) {
-        p1.playerHP = 0;
+      if (attack_timer <= 0) {
+        // Esegui l'attacco periodico
+        player.takeDamage(damage);
+
+        // Reimposta il timer per il prossimo attacco
+        attack_timer = attack_interval;
       }
-
-      // Aggiorna il tempo dell'ultimo attacco
-      lastAttackTime = currentTime;
     }
   }
 
-  void dropItem() {
+  void death() {
+    enemy_death_sound.play();
+    dropItem();
+  }
+
+  private void dropItem() {
     // numero casuale
     double randomValue = Math.random();
 
@@ -184,28 +148,22 @@ class Enemy implements Damageable {
     double dropHeartProbability = 0.3;          // 30 %
     double dropHalfHeartProbability = 0.3;      // 30 %
 
-    PVector dropPosition = spritePosition.copy();
+    PVector dropPosition = position.copy();
 
     if (randomValue <= dropNothingProbability) {
       // Nessun drop
     } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability) {
       // drop della chiave d'argento
-      Item dropSilverKey = new Item("dropSilverKey");
-      dropSilverKey.sprite = silver_key.sprite;
-      dropSilverKey.spritePosition = dropPosition;
+      Item dropSilverKey = new Item(dropPosition, silver_key.sprite, "dropSilverKey");
       dropSilverKey.isCollectible = true;
       currentLevel.dropItems.add(dropSilverKey);
     } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability) {
       // drop del cuore intero
-      Healer dropHeart = new Healer("dropHeart", 10);
-      dropHeart.sprite = heart_sprite;
-      dropHeart.spritePosition =dropPosition;
+      Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
       currentLevel.dropItems.add(dropHeart);
     } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability + dropHalfHeartProbability) {
       // drop del mezzocuore
-      Healer dropHalfHeart = new Healer("dropHalfHeart", 5);
-      dropHalfHeart.sprite = half_heart_sprite;
-      dropHalfHeart.spritePosition = dropPosition;
+      Healer dropHalfHeart = new Healer(dropPosition, half_heart_sprite, "dropHalfHeart", 5);
       currentLevel.dropItems.add(dropHalfHeart);
     }
   }
@@ -213,8 +171,13 @@ class Enemy implements Damageable {
 
   // override dei metodi dell'interfaccia
   @Override
-    public void receiveDamage(int damage) {
+    public void takeDamage(int damage) {
     enemyHP -= damage;
+
+    // testo danno subito dal nemico
+    TextDisplay damageHitText = new TextDisplay(position, Integer.toString(damage), color(255, 0, 0));
+    damageHitText.display(game.spritesLayer);
+
     if (enemyHP < 0) {
       enemyHP = 0;
     }
@@ -222,49 +185,6 @@ class Enemy implements Damageable {
 
   @Override
     PVector getPosition() {
-    return spritePosition;
-  }
-
-  void display() {
-    // hitbox giocatore
-
-    spritesLayer.noFill(); // Nessun riempimento
-    spritesLayer.stroke(255, 23, 23);
-
-    float centerX = spritePosition.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = spritePosition.y * currentLevel.tileSize + sprite.height / 2;
-
-    // hitbox
-    //layer.rectMode(CENTER); // Imposta il rectMode a center
-    //layer.rect(centerX, centerY, sprite.width, sprite.height);
-
-    //layer.stroke(60);
-    //layer.point(centerX, centerY);
-
-    spritesLayer.imageMode(CENTER); // Imposta l'imageMode a center
-    spritesLayer.image(sprite, centerX, centerY, sprite.width, sprite.height);
-
-    // layer.image(sprite, spritePosition.x * currentLevel.tileSize, spritePosition.y * currentLevel.tileSize, sprite.width, sprite.height);
-  }
-
-  void update(Player player) {
-    // Calcola la direzione verso il giocatore
-    PVector direction = PVector.sub(player.spritePosition, spritePosition);
-    direction.normalize();
-
-    // Muovi il boss nella direzione del giocatore
-    spritePosition.add(PVector.mult(direction, spriteSpeed));
-  }
-
-  // metodo per il rilevamento delle collisioni adattato alla rectmode CENTER
-  boolean playerCollide(Player aPlayer) {
-    if (aPlayer.spritePosition.x * currentLevel.tileSize + (aPlayer.sprite.width / 2) >= (spritePosition.x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
-      (aPlayer.spritePosition.x * currentLevel.tileSize) - (aPlayer.sprite.width / 2) <= spritePosition.x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
-      aPlayer.spritePosition.y * currentLevel.tileSize + (aPlayer.sprite.height / 2) >= (spritePosition.y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
-      (aPlayer.spritePosition.y * currentLevel.tileSize) - (aPlayer.sprite.height / 2) <= spritePosition.y * currentLevel.tileSize + (sprite.height / 2)) {                              // y1 - h1/2 < y2 + h2/2
-      return true;
-    }
-
-    return false;
+    return position;
   }
 }
