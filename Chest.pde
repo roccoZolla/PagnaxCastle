@@ -134,7 +134,7 @@ class Chest extends Item {
 
       dropPosition.add(xOffset, yOffset);
 
-      if (!isCollisionTile((int) dropPosition.x, (int) dropPosition.y)) {
+      if (!isWall((int) dropPosition.x, (int) dropPosition.y)) {
         break;
       } else {
         dropPosition = position.copy();

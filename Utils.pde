@@ -138,22 +138,10 @@ boolean isWithinMapBounds(int x, int y) {
   return x >= 0 && x < currentLevel.cols && y >= 0 && y < currentLevel.rows;
 }
 
-// verifica se è un tile di collisione
-boolean isCollisionTile(int x, int y) {
-  int[] collisionValues = {0, 4};
-
-  for (int value : collisionValues) {
-    if (currentLevel.map[x][y] == value) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // controlla se la posizione che si vuole raggiungere è un muro
 boolean isWall(int x, int y) {
   println("valore casella mappa: " + currentLevel.map[x][y]);
-  if(currentLevel.map[x][y] == 4 || currentLevel.map[x][y] == 0) {
+  if(currentLevel.map[x][y] == 4 || currentLevel.map[x][y] == 0 || currentLevel.map[x][y] == 6) {
     return true;
   } else {
     return false;

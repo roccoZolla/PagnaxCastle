@@ -55,7 +55,7 @@ class Game {
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
-    p1 = new Player(new PVector(0, 0), spriteRight, 100, 100, 0, 10, 10, damageTileHandler);
+    p1 = new Player(new PVector(0, 0), spriteRight, 100, 100, 10, 10, 10, damageTileHandler);
     p1.updatePosition(currentLevel.getStartPosition());
     p1.redPotion = redPotion;
 
@@ -66,7 +66,7 @@ class Game {
     p1.silver_keys = silver_key;
 
     // raggio della maschera
-    holeRadius = 70;
+    holeRadius = 60;
 
     isBossLevel = false;
 
@@ -75,7 +75,7 @@ class Game {
     isMasterSwordDropped = false;
 
     // reimposta lo stato della mappa, disattivo
-    ui.deactivateMap();
+    // ui.deactivateMap();
     ui.deactivateBossUI();
   }
 
@@ -97,7 +97,9 @@ class Game {
     // crea il boss
     PVector spawn_boss_position = new PVector(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y);
     // velocita di base boss 0.1
-    boss = new Boss(spawn_boss_position, boss_sprite, 0.05, "Stregone Pagnax", 100, 100);
+    boss = new Boss(spawn_boss_position, boss_sprite, 0.07, "Stregone Pagnax", 100, 100);
+    
+    ui.game_target = "Uccidi Pagnax!";
 
     ui.activateBossUI();
     ui.deactivateMap();

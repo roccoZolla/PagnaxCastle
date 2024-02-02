@@ -1,6 +1,8 @@
 class UI {
   ArrayList<Button> buttons;
   PGraphics uiLayer;
+  
+  String game_target;   // indica al giocatore l'obiettivo
 
   // ----- CUORI BOSS -----
   boolean isBossBattle;  // indica se il giocatore si trova nel livello finale
@@ -20,7 +22,8 @@ class UI {
 
   // ----- MINIMAPPA -----
   boolean isMapActive; // di base false
-  float miniMapSize;
+  float miniMapWidth;
+  float miniMapHeight;
   float miniMapX;
   float miniMapY;
 
@@ -30,8 +33,8 @@ class UI {
   float playerMiniMapX;
   float playerMiniMapY;
 
-  float enemyMiniMapX;
-  float enemyMiniMapY;
+  float chestMiniMapX;
+  float chestMiniMapY;
 
   UI() {
     uiLayer = createGraphics(width, height);
@@ -40,16 +43,19 @@ class UI {
     halfHeart = loadImage("data/halfHeart.png");
     emptyHeart = loadImage("data/emptyHeart.png");
 
-    miniMapSize = 200;
+    miniMapWidth = 230;
+    miniMapHeight = 210;
     miniMapX = 20;
-    miniMapY = uiLayer.height - miniMapSize - 10;
+    miniMapY = uiLayer.height - miniMapHeight;
 
     isBossBattle = false;    // di base, false
-    isMapActive = false;    // di base, false, si attiva con la minimappa trovata nei livelli
+    isMapActive = true;    // di base, false, si attiva con la minimappa trovata nei livelli
+    
+    game_target = "Trova le scale!";
 
     buttons = new ArrayList();
 
-    buttons.add(new Button(width - 70, 20, 40, 40, "pause", "", "data/ui/Pause.png"));
+    buttons.add(new Button(width - 70, 20, 50, 50, "pause", "", "data/ui/Pause.png"));
   }
 
   void update() {
@@ -62,6 +68,11 @@ class UI {
     uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(24);
     uiLayer.text(actualLevel, 20, 20);
+
+    uiLayer.fill(255);
+    uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(24);
+    uiLayer.text(game_target, width / 2, 20);
 
     // pause button
     if (buttons.get(0).isClicked()) {
@@ -77,8 +88,9 @@ class UI {
 
     // ------ SCORE GIOCATORE ------
     uiLayer.fill(255);
+    uiLayer.textAlign(RIGHT, TOP); // Allinea il testo a destra e in alto
     uiLayer.textSize(24);
-    uiLayer.text("Score: " + p1.playerScore, uiLayer.width - 200, 20);
+    uiLayer.text("Score: " + p1.playerScore, uiLayer.width - 80, 20); // vicino al pulsante pausa
 
     // ------ CHIAVI ARGENTO GIOCATORE ------
     uiLayer.fill(255);
@@ -114,7 +126,7 @@ class UI {
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento
     uiLayer.stroke(255); // Colore del bordo bianco
-    uiLayer.rect(width - 70, height - 100, 50, 50);
+    uiLayer.rect(width - 70, height - 70, 50, 50);
 
     float scaleFactor = 3.0;
 
@@ -123,18 +135,18 @@ class UI {
       float imgHeight = p1.weapon.sprite.height * scaleFactor;
 
       float imgX = (uiLayer.width - 70) + (50 - imgWidth) / 2;  // Calcola la posizione X dell'immagine al centro
-      float imgY = uiLayer.height - 100 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
+      float imgY = uiLayer.height - 70 + (50 - imgHeight) / 2; // Calcola la posizione Y dell'immagine al centro
 
       uiLayer.image(p1.weapon.sprite, imgX, imgY, imgWidth, imgHeight);
     }
 
-    uiLayer.fill(255);
-    uiLayer.textSize(18);
-    uiLayer.text(p1.weapon.name, width - 95, height - 40);
+    //uiLayer.fill(255);
+    //uiLayer.textSize(18);
+    //uiLayer.text(p1.weapon.name, width - 95, height - 40);
 
-    uiLayer.fill(255);
-    uiLayer.textSize(18);
-    uiLayer.text("Danno: " + p1.weapon.getDamage(), width - 95, height - 20);
+    //uiLayer.fill(255);
+    //uiLayer.textSize(18);
+    //uiLayer.text("Danno: " + p1.weapon.getDamage(), width - 95, height - 20);
 
     // se il giocatore si trova nel livello del boss mostra i cuori del boss
     if (isBossBattle) displayBossHearts();
@@ -227,27 +239,27 @@ class UI {
         // Controlla se il tile è una parete o un corridoio (bordo della stanza)
         if (tileType == 4 || tileType == 5) {
           // Mappa i tile della minimappa nel rettangolo
-          miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
-          miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+          miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
+          miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
 
           // Disegna il bordo della stanza sulla minimappa
           uiLayer.stroke(255); // Colore del bordo bianco
           uiLayer.point(miniMapTileX, miniMapTileY);
         } else if (tileType == 3) {
           // ----- SCALE QUADRATO AZZURO -----
-          miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
-          miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+          miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
+          miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
 
           uiLayer.noFill();
           uiLayer.stroke(0, 127, 255);
-          uiLayer.rect(miniMapTileX, miniMapTileY, miniMapSize / currentLevel.cols, miniMapSize / currentLevel.rows);
+          uiLayer.rect(miniMapTileX, miniMapTileY, miniMapWidth / currentLevel.cols, miniMapHeight / currentLevel.rows);
         }
       }
     }
 
     // ----- PLAYER PALLINO ROSSO -----
-    playerMiniMapX = map(p1.getPosition().x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
-    playerMiniMapY = map(p1.getPosition().y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
+    playerMiniMapX = map(p1.getPosition().x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
+    playerMiniMapY = map(p1.getPosition().y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
 
     uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
     uiLayer.noStroke();
@@ -257,17 +269,19 @@ class UI {
     uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
     uiLayer.noStroke();
 
-    for (Enemy enemy : currentLevel.enemies) {
-      enemyMiniMapX = map(enemy.position.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapSize);
-      enemyMiniMapY = map(enemy.position.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapSize);
-      uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
+    for (Chest chest : currentLevel.treasures) {
+      chestMiniMapX = map(chest.position.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
+      chestMiniMapY = map(chest.position.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
+      uiLayer.ellipse(chestMiniMapX, chestMiniMapY, 5, 5);
     }
   }
 
   void updateScreen() {
     uiLayer = createGraphics(width, height);
 
+    miniMapY = uiLayer.height - miniMapHeight;
+
     // aggiorna posizione bottone
-    buttons.get(0).updatePosition(width - 50, 20, 40, 40);  // pause
+    buttons.get(0).updatePosition(width - 70, 20, 50, 50);  // pause
   }
 }

@@ -7,7 +7,7 @@ class Boss extends Sprite {
   String name;
   int maxHP;
   int HP;
-  final float damage_resistence = 0.5; // capacita del boss di resistere ai danni
+  final float damage_resistence = 0.7; // capacita del boss di resistere ai danni
 
   Boss(PVector position, PImage sprite, float speed, String name, int HP, int maxHP) {
     super(position, sprite);
@@ -27,7 +27,8 @@ class Boss extends Sprite {
 
     // Muovi il boss nella direzione del giocatore
     spriteVelocity = direction.mult(spriteSpeed);
-    position.add(spriteVelocity);
+
+    if (!sprite_collision(p1)) position.add(spriteVelocity);
 
     // Lancio di proiettili nella direzione del giocatore
     if (frameCount % 120 == 0) {  // Lanciare un proiettile ogni secondo
@@ -37,7 +38,10 @@ class Boss extends Sprite {
     }
 
     // Muovi i proiettili
-    for (Projectile projectile : projectiles) {
+    // Muovi i proiettili
+    Iterator<Projectile> iterator = projectiles.iterator();
+    while (iterator.hasNext()) {
+      Projectile projectile = iterator.next();
       projectile.update();
 
       // verifica se il proiettile ha colpito il player
@@ -57,15 +61,20 @@ class Boss extends Sprite {
       // verifica se il giocatore colpisce con l'arma un proiettile
       // il giocatore sta attaccando e l'attacco non è stato eseguito
       // e il proiettile puo essere colpito
-      if (p1.isAttacking && !p1.attackExecuted && 
-          projectile.isHittable && projectile.sprite_collision(p1.weapon)) {
+      if (p1.isAttacking && !p1.attackExecuted &&
+        projectile.isHittable && projectile.sprite_collision(p1.weapon)) {
         projectile.reverseDirection();
         projectile.canHitBoss = true;
         projectile.isHittable = false;
       }
+
+      // Rimuovi il proiettile se ha colpito il giocatore o il boss, o se è uscito dal campo di gioco
+      if (projectile.attack_executed || !isWithinMapBounds((int)projectile.getPosition().x, (int)projectile.getPosition().y)) {
+        iterator.remove();
+      }
     }
   }
-
+  
   void takeDamage(int damage) {
     int actual_damage = (int) (damage * (1 - damage_resistence));
     HP -= actual_damage;

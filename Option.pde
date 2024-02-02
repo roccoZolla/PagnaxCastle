@@ -13,9 +13,9 @@ class Option {
     buttons = new ArrayList();
 
     buttons.add(new Button(width - 100, 150, 50, 50, "effectsUp", "+", ""));    // selettore effetti sonori
-    buttons.add(new Button(width - 250, 150, 50, 50, "effectsDown", "-", ""));
+    buttons.add(new Button(width - 290, 150, 50, 50, "effectsDown", "-", ""));    // (width - 290, 150
     buttons.add(new Button(width - 100, 210, 50, 50, "musicUp", "+", ""));   // selettore volume musica
-    buttons.add(new Button(width - 250, 210, 50, 50, "musicDown", "-", ""));
+    buttons.add(new Button(width - 290, 210, 50, 50, "musicDown", "-", ""));
     buttons.add(new Button(width - 100, 280, 50, 50, "difficultyRight", ">", ""));    // selettore difficolta
     buttons.add(new Button(width - 290, 280, 50, 50, "difficultyLeft", "<", ""));
     buttons.add(new Button(100, 420, 200, 80, "commands", "Comandi", ""));
@@ -59,7 +59,7 @@ class Option {
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
     effectsVolume = (int) (volumeEffectsLevel * 10);
-    optionLayer.text(effectsVolume, width - 160, 175);
+    optionLayer.text(effectsVolume, width - 180, 175);
 
     // ----- MUSICA -----
     optionLayer.fill(255);
@@ -71,7 +71,7 @@ class Option {
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
     int musicVolume = (int) (volumeMusicLevel * 10);
-    optionLayer.text(musicVolume, width - 160, 235);
+    optionLayer.text(musicVolume, width - 180, 235);
 
     // ----- DIFFICOLTA -----
     optionLayer.fill(255);
@@ -166,9 +166,9 @@ class Option {
 
     // aggiorna posizione dei bottoni
     buttons.get(0).updatePosition(width - 100, 150, 50, 50);  // effects up
-    buttons.get(1).updatePosition(width - 250, 150, 50, 50);  // effect down
+    buttons.get(1).updatePosition(width - 290, 150, 50, 50);  // effect down
     buttons.get(2).updatePosition(width - 100, 210, 50, 50);  // music up
-    buttons.get(3).updatePosition(width - 250, 210, 50, 50);  // music down
+    buttons.get(3).updatePosition(width - 290, 210, 50, 50);  // music down
     buttons.get(4).updatePosition(width - 100, 280, 50, 50);  // difficulty right
     buttons.get(5).updatePosition(width - 290, 280, 50, 50);  // difficulty left
     buttons.get(6).updatePosition(100, 420, 200, 80);  // commands

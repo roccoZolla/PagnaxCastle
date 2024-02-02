@@ -1,5 +1,8 @@
 class Enemy extends Sprite implements Damageable {
   float spriteSpeed = 0.1;
+  float currentDirection = random(4);
+  int framesInCurrentDirection = 0;
+  int maxFramesInSameDirection = 30;
 
   ConcreteDamageHandler damageTileHandler;
 
@@ -45,84 +48,65 @@ class Enemy extends Sprite implements Damageable {
       float newX = position.x + direction.x * spriteSpeed;
       float newY = position.y + direction.y * spriteSpeed;
 
-      int roundedX = 0, roundedY = 0;
-
-      roundedX = round(newX);
-      roundedY = round(newY);
-
-      if (isValidMove(roundedX, roundedY) && !sprite_collision(p1)) {
-        damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
-
-        // Aggiorna la posizione del nemico
-        this.position.x = newX;
-        this.position.y = newY;
+      if (isWithinMapBounds(round(newX), round(newY)) && !check_collision_wall(round(newX), round(newY)) && !sprite_collision(p1)) {
+        updatePosition(new PVector(newX, newY));
+        damageTileHandler.handleDamageTiles(this, round(newX), round(newY));
       }
     } else {
-      // Calcolo delle nuove coordinate
-      float newDirection = random(4);
-      float moveDistance = spriteSpeed;
+      // metodo leggermente migliore rispetto al metodo parkinson
+      float x = position.x;
+      float y = position.y;
 
-      float deltaX = 0;
-      float deltaY = 0;
+      // Incrementa il numero di frame nella direzione corrente
+      framesInCurrentDirection++;
 
-      if (newDirection < 1) {
-        deltaX = moveDistance;
-      } else if (newDirection < 2) {
-        deltaX = -moveDistance;
-      } else if (newDirection < 3) {
-        deltaY = moveDistance;
-      } else {
-        deltaY = -moveDistance;
+      // Cambia direzione se è il momento opportuno o se si incontra un ostacolo
+      if (framesInCurrentDirection >= maxFramesInSameDirection || check_collision_wall(round(x), round(y))) {
+        currentDirection = random(4);
+        framesInCurrentDirection = 0;
       }
 
-      float newX = position.x + deltaX;
-      float newY = position.y + deltaY;
+      // Sposta il nemico in base alla direzione corrente
+      if (currentDirection < 1 && isWithinMapBounds(round(x + 1), round(y)) && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
+        x += 1 * spriteSpeed;
+      } else if (currentDirection < 2 && isWithinMapBounds(round(x - 1), round(y)) && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
+        x += -1 * spriteSpeed;
+      } else if (currentDirection < 3 && isWithinMapBounds(round(x), round(y + 1)) && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
+        y += 1 * spriteSpeed;
+      } else {      // y - 1
+        if (isWithinMapBounds(round(x), round(y - 1)) && !check_collision_wall(round(x), round(y - 1))) {
+          y += -1 * spriteSpeed;
+        }
+      }
 
-      int roundedX = 0, roundedY = 0;
+      updatePosition(new PVector(x, y));
+      damageTileHandler.handleDamageTiles(this, round(x), round(y));
+    }
+  }
 
+  boolean check_collision_wall(int x, int y) {
+    // se è un muro controlla la possibile collisione con lo sprite
+    if (isWall(x, y)) {
+      println("è un muro...");
+      game.spritesLayer.noFill(); // Nessun riempimento
+      game.spritesLayer.stroke(255); // Colore del bordo bianco
+      game.spritesLayer.rectMode(CENTER);
+      game.spritesLayer.rect(x * currentLevel.tileSize + (sprite.width/2), y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
 
-      // Verifica se la nuova posizione è valida
-      roundedX = round(newX);
-      roundedY = round(newY);
+      game.spritesLayer.stroke(255, 0, 0);
+      game.spritesLayer.point(x * currentLevel.tileSize, y * currentLevel.tileSize);
 
-      if (isValidMove(roundedX, roundedY)) {
-        damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
-
-        // Aggiorna la posizione del nemico in modo casuale
-        this.position.x = newX;
-        this.position.y = newY;
+      if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+        (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+        position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+        (position.y * currentLevel.tileSize) - (sprite.height / 2) <= y * currentLevel.tileSize + (sprite.height / 2)) {
+        println("collisione rilevata...");
+        return true;
       }
     }
+
+    return false;
   }
-
-  // collision detection
-  boolean isValidMove(int roundedX, int roundedY) {
-    if (!isWithinMapBounds(roundedX, roundedY)) {
-      return false;
-    }
-
-    if (isCollisionTile(roundedX, roundedY) && isCollidingWithTile(roundedX, roundedY)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  boolean isCollidingWithTile(int roundedX, int roundedY) {
-    float playerRight = position.x * currentLevel.tileSize + (sprite.width / 2);
-    float playerLeft = position.x * currentLevel.tileSize - (sprite.width / 2);
-    float playerBottom = position.y * currentLevel.tileSize + (sprite.height / 2);
-    float playerTop = position.y * currentLevel.tileSize - (sprite.height / 2);
-
-    float tileRight = roundedX * currentLevel.tileSize + (sprite.width / 2);
-    float tileLeft = roundedX * currentLevel.tileSize - (sprite.width / 2);
-    float tileBottom = roundedY * currentLevel.tileSize + (sprite.height / 2);
-    float tileTop = roundedY * currentLevel.tileSize - (sprite.height / 2);
-
-    return playerRight >= tileLeft && playerLeft <= tileRight &&
-      playerBottom >= tileTop && playerTop <= tileBottom;
-  }
-
 
   // attacca il giocatore
   void attack(Player player) {

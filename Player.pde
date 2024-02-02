@@ -96,187 +96,62 @@ class Player extends Sprite implements Damageable { //<>//
     }
   }
 
-  // movimento del giocatore
-  //void update() {
-  //  float newX = position.x;
-  //  float newY = position.y;
-
-  //  int roundedX = 0, roundedY = 0;
-
-  //  if (moveUP) {
-  //    newY += -1 * spriteSpeed;
-  //  }
-  //  if (moveDOWN) {
-  //    newY += 1 * spriteSpeed;
-  //  }
-  //  if (moveLEFT) {
-  //    p1.sprite = spriteLeft;
-  //    newX += -1 * spriteSpeed;
-  //    direction = DIRECTION_LEFT;
-  //  }
-  //  if (moveRIGHT) {
-  //    p1.sprite = spriteRight;
-  //    newX += 1 * spriteSpeed;
-  //    direction = DIRECTION_RIGHT;
-  //  }
-
-  //  // Round the new position values
-  //  roundedX = round(newX);
-  //  roundedY = round(newY);
-
-  //  if (isValidMove(roundedX, roundedY)) {
-  //    damageTileHandler.handleDamageTiles(this, roundedX, roundedY);
-
-  //    updatePosition(new PVector(newX, newY));
-  //  }
-  //}
-
   // aggiorna movimento del giocatore
-  //void update() {
-  //  // Ottengo il centro dello sprite
-  //  float x = position.x;
-  //  float y = position.y;
-
-  //  // println("player position: " + x + ", " + y);
-
-  //  if (moveUP && !check_collision_wall(round(x), round(y - 1))) {      // y - 1
-  //    y += -1 * spriteSpeed;
-  //    // println("new y value: " + y);
-  //  }
-
-  //  if (moveDOWN && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
-  //    y += 1 * spriteSpeed;
-  //    // println("new y value: " + y);
-  //  }
-
-  //  if (moveLEFT && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
-  //    x += -1 * spriteSpeed;
-  //    direction = DIRECTION_LEFT;
-  //    sprite = spriteLeft;
-  //    // println("new x value: " + x);
-  //  }
-
-  //  if (moveRIGHT && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
-  //    x += 1 * spriteSpeed;
-  //    direction = DIRECTION_RIGHT;
-  //    sprite = spriteRight;
-  //    // println("new x value: " + x);
-  //  }
-
-
-  //  updatePosition(new PVector(x, y));
-  //}
-
-  //boolean check_collision_wall(int x, int y) {
-  //  // se è un muro controlla la possibile collisione con lo sprite
-  //  // println("position: " + x + ", " + y);
-  //  if (isWall(x, y)) {
-  //    // println("è un muro...");
-  //    game.spritesLayer.noFill(); // Nessun riempimento
-  //    game.spritesLayer.stroke(255); // Colore del bordo bianco
-  //    game.spritesLayer.rectMode(CENTER);
-  //    game.spritesLayer.rect(x * currentLevel.tileSize + (sprite.width/2), y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
-
-  //    game.spritesLayer.stroke(255, 0, 0);
-  //    game.spritesLayer.point(x * currentLevel.tileSize, y * currentLevel.tileSize);
-
-  //    if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
-  //      (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
-  //      position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
-  //      (position.y * currentLevel.tileSize) - (sprite.height / 2) <= y * currentLevel.tileSize + (sprite.height / 2)) {
-  //      // println("collisione rilevata...");
-  //      return true;
-  //    }
-  //  }
-
-  //  return false;
-  //}
-
   void update() {
     float x = position.x;
     float y = position.y;
 
-    if (moveUP && !checkCollision(x, y - spriteSpeed)) {
-      y -= spriteSpeed;
+    // cella superiore al giocatore
+    if (moveUP && isWithinMapBounds(round(x), round(y - 1)) && !check_collision_wall(round(x), round(y - 1))) {      // y - 1
+      y += -1 * spriteSpeed;
     }
 
-    if (moveDOWN && !checkCollision(x, y + spriteSpeed)) {
-      y += spriteSpeed;
+    // cella inferiore al giocatore
+    if (moveDOWN && isWithinMapBounds(round(x), round(y + 1)) && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
+      y += 1 * spriteSpeed;
     }
 
-    if (moveLEFT && !checkCollision(x - spriteSpeed, y)) {
-      x -= spriteSpeed;
+    // cella a sinistra del giocatore
+    if (moveLEFT && isWithinMapBounds(round(x - 1), round(y)) && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
+      x += -1 * spriteSpeed;
       direction = DIRECTION_LEFT;
       sprite = spriteLeft;
     }
 
-    if (moveRIGHT && !checkCollision(x + spriteSpeed, y)) {
-      x += spriteSpeed;
+    // cella a destra del giocatore
+    if (moveRIGHT && isWithinMapBounds(round(x + 1), round(y)) && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
+      x += 1 * spriteSpeed;
       direction = DIRECTION_RIGHT;
       sprite = spriteRight;
     }
 
     updatePosition(new PVector(x, y));
+    damageTileHandler.handleDamageTiles(this, round(x), round(y));
   }
 
-  boolean checkCollision(float x, float y) {
-    // Ottieni le coordinate del bounding box
-    float bboxX = x * currentLevel.tileSize;
-    float bboxY = y * currentLevel.tileSize;
+  boolean check_collision_wall(int x, int y) {
+    // se è un muro controlla la possibile collisione con lo sprite
+    if (isWall(x, y)) {
+      println("è un muro...");
+      game.spritesLayer.noFill(); // Nessun riempimento
+      game.spritesLayer.stroke(255); // Colore del bordo bianco
+      game.spritesLayer.rectMode(CENTER);
+      game.spritesLayer.rect(x * currentLevel.tileSize + (sprite.width/2), y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
 
-    // Imposta le dimensioni del bounding box in base alle dimensioni dello sprite
-    float bboxWidth = sprite.width;
-    float bboxHeight = sprite.height;
+      game.spritesLayer.stroke(255, 0, 0);
+      game.spritesLayer.point(x * currentLevel.tileSize, y * currentLevel.tileSize);
 
-    if (isWall(round(x), round(y))) {
-      drawCollisionVisualization(bboxX, bboxY, bboxWidth, bboxHeight);
-      return true;
+      if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+        (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+        position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+        (position.y * currentLevel.tileSize) - (sprite.height / 2) <= y * currentLevel.tileSize + (sprite.height / 2)) {
+        println("collisione rilevata...");
+        return true;
+      }
     }
 
     return false;
   }
-
-  void drawCollisionVisualization(float bboxX, float bboxY, float bboxWidth, float bboxHeight) {
-    game.spritesLayer.noFill();
-    game.spritesLayer.stroke(255);
-    // game.spritesLayer.rectMode(CENTER);
-    game.spritesLayer.rect(bboxX, bboxY, bboxWidth, bboxHeight);
-
-    game.spritesLayer.stroke(255, 0, 0);
-    game.spritesLayer.point(bboxX, bboxY);
-  }
-
-
-
-
-  //  void update() {
-  //    float x = position.x;
-  //    float y = position.y;
-
-  //    println("posizione player nella mappa: " + (int)x + ", " + (int) y);
-
-  //    if (moveUP && isValidMove(round(x + sprite.width / 2), round(y + sprite.height / 2 + sprite.height))) {
-  //      y -= spriteSpeed;
-  //    }
-
-  //    if (moveDOWN && isValidMove(round(x + sprite.width / 2), round((y + 1) + sprite.height / 2))) {
-  //      y += spriteSpeed;
-  //    }
-  //    if (moveLEFT && isValidMove(round((x - 1) + sprite.width / 2), round(y + sprite.height / 2))) {
-  //      sprite = spriteLeft;
-  //      x -= spriteSpeed;
-  //      direction = DIRECTION_LEFT;
-  //    }
-  //    if (moveRIGHT && isValidMove(round((x + 1) + sprite.width / 2), round(y + sprite.height / 2))) {
-  //      sprite = spriteRight;
-  //      x += spriteSpeed;
-  //      direction = DIRECTION_RIGHT;
-  //    }
-
-  //    // Update the position only if the move is valid
-  //    damageTileHandler.handleDamageTiles(this, round(x), round(y));
-  //    updatePosition(new PVector(x, y));
-  //  }
 
   // da fixare
   void attack(PGraphics layer) {
@@ -355,108 +230,6 @@ class Player extends Sprite implements Damageable { //<>//
       isUsingPotion = false;
     }
   }
-
-  // collision detection
-  boolean isValidMove(int roundedX, int roundedY) {
-    game.spritesLayer.noFill(); // Nessun riempimento
-    game.spritesLayer.stroke(0, 0, 255); // Colore del bordo bianco
-    game.spritesLayer.rectMode(CENTER);
-    game.spritesLayer.rect(roundedX * currentLevel.tileSize, roundedY * currentLevel.tileSize, sprite.width, sprite.height);
-
-    // esce fuori dalla mappa
-    if (!isWithinMapBounds(roundedX, roundedY)) {
-      return false;
-    }
-
-    //if (isCollisionTile(roundedX, roundedY) && isCollidingWithTile(roundedX, roundedY)) {
-    //  return false;
-    //}
-
-    // sta collidendo con un muro
-    if (isWall(roundedX, roundedY)) {
-      println("è un muro....");
-      return false;
-    }
-
-    //if (isCollidingWithTile(roundedX, roundedY)) {
-    //  println("sta collidendo con un tile");
-    //  return false;
-    //}
-
-    return true;
-  }
-
-  boolean isCollidingWithTile(int roundedX, int roundedY) {
-    float playerRight = position.x * currentLevel.tileSize + (sprite.width / 2);
-    float playerLeft = position.x * currentLevel.tileSize - (sprite.width / 2);
-    float playerBottom = position.y * currentLevel.tileSize + (sprite.height / 2);
-    float playerTop = position.y * currentLevel.tileSize - (sprite.height / 2);
-
-    float tileRight = roundedX * currentLevel.tileSize + (currentLevel.tileSize / 2);
-    float tileLeft = roundedX * currentLevel.tileSize - (currentLevel.tileSize / 2);
-    float tileBottom = roundedY * currentLevel.tileSize + (currentLevel.tileSize / 2);
-    float tileTop = roundedY * currentLevel.tileSize - (currentLevel.tileSize / 2);
-
-    // Verifica delle collisioni
-    boolean collisionX = playerRight >= tileLeft && playerLeft <= tileRight;
-    boolean collisionY = playerBottom >= tileTop && playerTop <= tileBottom;
-
-    return collisionX && collisionY;
-  }
-
-  //boolean isCollidingWithTile(int roundedX, int roundedY) {
-  //  float halfWidth = sprite.width / 2;
-  //  float halfHeight = sprite.height / 2;
-
-  //  // Calcola le coordinate dei quattro angoli del personaggio
-  //  float playerLeft = roundedX * currentLevel.tileSize - halfWidth;
-  //  float playerRight = roundedX * currentLevel.tileSize + halfWidth;
-  //  float playerTop = roundedY * currentLevel.tileSize - halfHeight;
-  //  float playerBottom = roundedY * currentLevel.tileSize + halfHeight;
-
-  //  // Controlla le collisioni per ogni angolo
-  //  boolean collisionTopLeft = isCollisionTile(round(playerLeft / currentLevel.tileSize), round(playerTop / currentLevel.tileSize));
-  //  boolean collisionTopRight = isCollisionTile(round(playerRight / currentLevel.tileSize), round(playerTop / currentLevel.tileSize));
-  //  boolean collisionBottomLeft = isCollisionTile(round(playerLeft / currentLevel.tileSize), round(playerBottom / currentLevel.tileSize));
-  //  boolean collisionBottomRight = isCollisionTile(round(playerRight / currentLevel.tileSize), round(playerBottom / currentLevel.tileSize));
-
-  //  return collisionTopLeft || collisionTopRight || collisionBottomLeft || collisionBottomRight;
-  //}
-
-
-
-
-  //boolean isValidMove(int roundedX, int roundedY) {
-  //  if (!isWithinMapBounds(roundedX, roundedY)) {
-  //    return false;
-  //  }
-
-  //  // Check for collisions at the four corners of the player sprite
-  //  float halfWidth = sprite.width / 2;
-  //  float halfHeight = sprite.height / 2;
-
-  //  float playerLeft = position.x * currentLevel.tileSize - halfWidth;
-  //  float playerRight = position.x * currentLevel.tileSize + halfWidth;
-  //  float playerTop = position.y * currentLevel.tileSize - halfHeight;
-  //  float playerBottom = position.y * currentLevel.tileSize + halfHeight;
-
-  //  if (isCollidingWithTileAt(playerLeft, playerTop) ||
-  //    isCollidingWithTileAt(playerRight, playerTop) ||
-  //    isCollidingWithTileAt(playerLeft, playerBottom) ||
-  //    isCollidingWithTileAt(playerRight, playerBottom)) {
-  //    return false;
-  //  }
-
-  //  return true;
-  //}
-
-  //boolean isCollidingWithTileAt(float x, float y) {
-  //  int tileX = round(x / currentLevel.tileSize);
-  //  int tileY = round(y / currentLevel.tileSize);
-
-  //  return isCollisionTile(tileX, tileY);
-  //}
-
 
   @Override
     PVector getPosition() {

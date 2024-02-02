@@ -60,20 +60,4 @@ class Sprite {
 
     return false;
   }
-  
-  // metodo per gestire le collisioni 
-  // da sistemare
-  boolean wall_collision(PVector other_position) {
-    if(position.x * currentLevel.tileSize + (sprite.width / 2) >= (other_position.x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
-      (position.x * currentLevel.tileSize) - (sprite.width / 2) <= other_position.x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
-      position.y * currentLevel.tileSize + (sprite.height / 2) >= (other_position.y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
-      (position.y * currentLevel.tileSize) - (sprite.height / 2) <= other_position.y * currentLevel.tileSize + (sprite.height / 2)) {
-        println("wall collsion rilevata...");
-      return true;
-    }
-    
-    return false;
-  }
-  
-  
 }
