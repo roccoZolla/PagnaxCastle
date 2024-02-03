@@ -52,7 +52,6 @@ PImage up_buff;
 PImage down_buff;
 
 // sound effect
-// float volumeMenuLevel;
 float volumeMusicLevel;
 float volumeEffectsLevel;    // oscilla tra 0.0 e 1.0
 
@@ -91,7 +90,7 @@ Level currentLevel;
 String actualLevel;
 
 // titolo del gioco
-String gameTitle = "rangeon game";
+String gameTitle = "Pagnax's Castle";
 PFont myFont;  // font del gioco
 
 Camera camera;
@@ -134,7 +133,7 @@ void setupItems() {
   silver_key = new Item(null, null, "silver_key");
 
   // oggetti per il giocatore
-  weapon = new Weapon(null, null, "little_sword", 10);
+  weapon = new Weapon(null, null, "Piccola Spada", 10);
 
   redPotion = new Healer(null, null, "red_potion", 20);
 }
@@ -172,9 +171,7 @@ void setupImages() {
 
   chela_sprite = loadImage("data/chela_sprite.png");
 
-  // golden_key.sprite = loadImage("data/golden_key.png");
   golden_key.updateSprite(loadImage("data/golden_key.png"));
-  // silver_key.sprite = loadImage("data/silver_key.png");
   silver_key.updateSprite(loadImage("data/silver_key.png"));
 
   //weapon.sprite = ;
@@ -198,8 +195,8 @@ void setupImages() {
 }
 
 void setupSounds() {
-  volumeMusicLevel = 0.0;
-  volumeEffectsLevel = 0.0;
+  volumeMusicLevel = 0.1;
+  volumeEffectsLevel = 0.3;
 
   click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
@@ -253,6 +250,7 @@ void draw() {
     }
 
     storyScreen(currentZone.storyText);
+    image(spriteRight, width / 2, height / 2 - 130, 64, 64);
     break;
 
   case TUTORIAL_SCREEN:
@@ -262,24 +260,21 @@ void draw() {
 
   case GAME_SCREEN:
     if (!isDungeonBackgroundPlaying && volumeMusicLevel > 0) {
-      dungeon_background.play();
+      dungeon_background.loop();
       isDungeonBackgroundPlaying = true;
     }
 
-    // game.update();
-    // ui.update();
-
-    long drawStart = 0;
-    drawStart = System.nanoTime();
+    //long drawStart = 0;
+    //drawStart = System.nanoTime();
 
     // show game screen
     game.display();
     ui.update();
-    
-    long drawEnd = System.nanoTime();
-    long passedTime = drawEnd - drawStart;
-    
-    println("passed time drawing: " + passedTime);
+
+    //long drawEnd = System.nanoTime();
+    //long passedTime = drawEnd - drawStart;
+
+    //println("passed time drawing: " + passedTime);
 
     break;
 
@@ -318,7 +313,7 @@ void winScreen() {
 
   // chiama la funzione
   writer("Finalmente lo stregone Pagnax e' stato sconfitto!\n" +
-    "La principessa Chela e' in salvo e il nostro coraggioso cavaliere e' ora l'eroe del Regno.\n" +
+    "La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.\n" +
     "Score totalizzato: " + p1.playerScore);
 
   image(spriteLeft, width / 2 + 50, height / 2 - 120, 64, 64);
@@ -336,8 +331,10 @@ void loseScreen() {
   }
 
   // chiama la funzione
-  writer("Hai perso!\n" +
+  writer("Sei stato sconfitto Cavaliere!\n" +
     "Score totalizzato: " + p1.playerScore);
+
+  image(boss_sprite, width / 2, height / 2 - 120, 64, 64);
 }
 
 void storyScreen(String storyText) {

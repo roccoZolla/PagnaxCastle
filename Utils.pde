@@ -140,7 +140,7 @@ boolean isWithinMapBounds(int x, int y) {
 
 // controlla se la posizione che si vuole raggiungere è un muro
 boolean isWall(int x, int y) {
-  println("valore casella mappa: " + currentLevel.map[x][y]);
+  // println("valore casella mappa: " + currentLevel.map[x][y]);
   if(currentLevel.map[x][y] == 4 || currentLevel.map[x][y] == 0 || currentLevel.map[x][y] == 6) {
     return true;
   } else {

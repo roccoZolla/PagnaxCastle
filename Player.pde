@@ -132,20 +132,13 @@ class Player extends Sprite implements Damageable { //<>//
   boolean check_collision_wall(int x, int y) {
     // se è un muro controlla la possibile collisione con lo sprite
     if (isWall(x, y)) {
-      println("è un muro...");
-      game.spritesLayer.noFill(); // Nessun riempimento
-      game.spritesLayer.stroke(255); // Colore del bordo bianco
-      game.spritesLayer.rectMode(CENTER);
-      game.spritesLayer.rect(x * currentLevel.tileSize + (sprite.width/2), y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
-
-      game.spritesLayer.stroke(255, 0, 0);
-      game.spritesLayer.point(x * currentLevel.tileSize, y * currentLevel.tileSize);
-
+      //println("è un muro...");
+      
       if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
         (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
         position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
         (position.y * currentLevel.tileSize) - (sprite.height / 2) <= y * currentLevel.tileSize + (sprite.height / 2)) {
-        println("collisione rilevata...");
+        // println("collisione rilevata...");
         return true;
       }
     }

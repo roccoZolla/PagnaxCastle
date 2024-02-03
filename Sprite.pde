@@ -31,7 +31,7 @@ class Sprite {
     float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
     float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
 
-    // layer.imageMode(CENTER); // Imposta l'imageMode a center
+    // layer.imageMode(CENTER); // Imposta l'imageMode a center, viene impostata nel codice principale in game
     layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
   }
 

@@ -37,7 +37,7 @@ class Zone {
   }
 
   void loadAssetsZone() {
-    println("carico gli assets della zona...");
+    // println("carico gli assets della zona...");
     floorImage = loadImage(filesPath + "floorTile.png");
     wallImageNorth = loadImage(filesPath + "northWallTop.png");
     hallwayImage = loadImage(filesPath + "hallwayTile.png");
@@ -49,14 +49,14 @@ class Zone {
 
   void createLevel(String filesPath, int numberOfRooms) {
     for (int i = 0; i < numLevels; i++) {
-      Level level = new Level("Livello " + (i), i, filesPath, numberOfRooms);    // da modificare assegnazione stringa con i+1
-      println("Level index: " + level.levelIndex);
+      Level level = new Level("Livello " + (i + 1), i, filesPath, numberOfRooms);    // da modificare assegnazione stringa con i+1
+      // println("Level index: " + level.levelIndex);
       levels.add(level);
     }
   }
 
   Level createBossLevel() {
-    println("creazione del livello finale...");
+    // println("creazione del livello finale...");
     Level bossLevel = new Level("Livello finale", 0, filesPath, 1);
     return bossLevel;
   }

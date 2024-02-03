@@ -31,7 +31,6 @@ class Menu {
 
           // far partire di qua la creazione dei livelli
           screen_state = ScreenState.STORY_SCREEN;
-          // screen_state = TUTORIAL_SCREEN;
           break;
 
         case "option":

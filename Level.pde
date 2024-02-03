@@ -8,8 +8,6 @@ class Level {
 
   Sprite stairsNextFloor;
 
-  int damagePeaks;      // danno delle trappole
-
   // rooms
   int tileSize = 16;
   int cols, rows;
@@ -30,6 +28,9 @@ class Level {
 
   // probabilita di spawn delle trappole all'interno del livello
   final double TRAP_SPAWN_PROBABILITY = 0.03;
+
+  // danno delle trappole
+  final int DAMAGE_PEAKS = 5;
 
   // vita dei nemici
   final int ENEMY_HP = 30;
@@ -65,13 +66,12 @@ class Level {
     this.levelIndex = levelIndex;
     this.dataPath = dataPath;
     this.numberOfRooms = numberOfRooms;
-    this.damagePeaks = 5;
 
     this.isFinalLevel = false;
   }
 
   void loadAssetsLevel() {
-    println("carico gli assets del livello...");
+    // println("carico gli assets del livello...");
     floorImage = currentZone.floorImage;
     wallImageNorth = currentZone.wallImageNorth;
     hallwayImage = currentZone.hallwayImage;
@@ -83,7 +83,7 @@ class Level {
 
   void init() {
     // inizializzo il livello
-    println("inizializzo il livello...");
+    // println("inizializzo il livello...");
 
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
@@ -120,7 +120,7 @@ class Level {
   }
 
   void initBossLevel() {
-    println("inizializzo il livello finale...");
+    // println("inizializzo il livello finale...");
 
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
@@ -138,11 +138,11 @@ class Level {
     // da rimuovere
     map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
 
-    println("----- BOSS ROOM -----");
-    println("start room index: " + startRoomIndex);
-    println("end room index: " + endRoomIndex);
-    println("start position END LEVEL: " + getStartPosition());
-    println("end position END LEVEL: " + getEndRoomPosition());
+    //println("----- BOSS ROOM -----");
+    //println("start room index: " + startRoomIndex);
+    //println("end room index: " + endRoomIndex);
+    //println("start position END LEVEL: " + getStartPosition());
+    //println("end position END LEVEL: " + getEndRoomPosition());
     // genera il boss
   }
 
@@ -160,7 +160,7 @@ class Level {
     } while (positionOccupied);
 
     PVector randomPosition = new PVector(randomX, randomY);
-    println("start position: " + randomPosition);
+    // println("start position: " + randomPosition);
     return randomPosition;
   }
 
@@ -199,7 +199,7 @@ class Level {
 
   // metodi per la generazione delle stanze
   private void generateRooms() {
-    println("genero lo stanze...");
+    // println("genero lo stanze...");
     for (int i = 0; i < numberOfRooms; i++) {
       generateRandomRoom();
     }
@@ -208,7 +208,7 @@ class Level {
     startRoomIndex = int(random(rooms.size()));
 
     do {
-      println("assegnazione posizione finale...");
+      // println("assegnazione posizione finale...");
       endRoomIndex = int(random(rooms.size()));
     } while (endRoomIndex == startRoomIndex && !isFinalLevel);
 
@@ -254,7 +254,7 @@ class Level {
   }
 
   private boolean checkRoomOverlap(int x, int y, int roomWidth, int roomHeight) {
-    println("room overlap...");
+    // println("room overlap...");
     for (Room room : rooms) {
       // Verifica se la stanza attuale si sovrappone con la nuova stanza
       if (room.overlaps(x, y, roomWidth, roomHeight)) {
@@ -265,7 +265,7 @@ class Level {
   }
 
   private void connectRooms() {
-    println("collego le stanze...");
+    // println("collego le stanze...");
     for (int i = 0; i < rooms.size() - 1; i++) {
       PVector room1 = rooms.get(i).roomPosition.copy();
       PVector room2 = rooms.get(i + 1).roomPosition.copy();
@@ -291,7 +291,7 @@ class Level {
 
   // generatore di monete casuale
   private void generateRandomCoins() {
-    println("genero le monete...");
+    // println("genero le monete...");
     coins = new ArrayList<>();
     boolean positionOccupied;
     int totalCoins = 20; // Modifica il numero di monete da generare come preferisci
@@ -311,30 +311,26 @@ class Level {
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
       int coinValue = (int) random(1, 10); // Esempio: valore casuale tra 1 e 10
       Coin coin = new Coin(new PVector(x, y), coin_sprite, coinValue);
-      //coin.sprite = coin_sprite;
-      //coin.spritePosition = new PVector(x, y);
-
-
-      // Aggiungi la moneta alla lista delle monete
       coins.add(coin);
     }
   }
 
   // da sistemare ma decente
   private void generateRandomChests() {
-    println("genero le chest...");
-    int spawnLevel = 3; // Livello di spawn delle chest
+    // println("genero le chest...");
+    int spawnLevel = 3; // Livello di spawn delle chest, tre chest per livello
     treasures = new ArrayList<Chest>();
     boolean positionOccupied;
     Chest chest;
     Room room;
-    float commonChestSpawnRate = 0.7; // Tasso di spawn per le casse comuni (70%)
+    // la somma dei due tassi deve essere 1
+    float commonChestSpawnRate = 0.7; // tasso di spawn per le casse comuni 70%
     float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza
 
     for (int i = 0; i < spawnLevel; i++) {
       // se tutte le stanze sono occupate non creare la chest
       if (areAllRoomsOccupied()) {
-        println("tutte le stanze sono occupate!");
+        // println("tutte le stanze sono occupate!");
         break;
       }
 
@@ -342,7 +338,7 @@ class Level {
       // e verifica se nella stanza sono gia presenti casse
       do {
         room = rooms.get((int) random(rooms.size()));
-        println("check chest in the room...");
+        // println("check chest in the room...");
       } while (room.isChestPresent());
 
       room.setIsChestPresent(true);
@@ -364,8 +360,8 @@ class Level {
 
         // Verifica se la posizione non è il pavimento
         positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
-        println("check position for the chest...");
-        println(positionOccupied);
+        //println("check position for the chest...");
+        //println(positionOccupied);
 
         attempt++;
 
@@ -385,13 +381,19 @@ class Level {
         chest = new Chest(new PVector(x, y), chest_close_sprite, "Cassa comune" + i);
         // chest.setId(i);
         chest.setOpenWith(silver_key);              // Specifica l'oggetto chiave necessario
-        // Imposta altri attributi della cassa comune
       } else {
         // Genera una cassa rara
-        chest = new Chest(new PVector(x, y), special_chest_close_sprite, "Cassa rara" + i);
-        // chest.setId(i);
-        chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
-        chest.setIsRare(true);
+        // verifica che non siano stati gia droppati i drop della cassa rara
+        if (!game.isTorchDropped || !game.isMapDropped || !game.isMasterSwordDropped) {
+          chest = new Chest(new PVector(x, y), special_chest_close_sprite, "Cassa rara" + i);
+          // chest.setId(i);
+          chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
+          chest.setIsRare(true);
+        } else { // altrimenti genera una cassa normale
+          chest = new Chest(new PVector(x, y), chest_close_sprite, "Cassa comune" + i);
+          // chest.setId(i);
+          chest.setOpenWith(silver_key);
+        }
       }
 
       // Aggiungi la cassa alla lista delle casse
@@ -414,7 +416,7 @@ class Level {
   // spawner aggiornato
   // genera nemici in ogni stanza in maniera casuale
   private void generateEnemies() {
-    println("genero i nemici...");
+    // println("genero i nemici...");
     enemies = new ArrayList<Enemy>();
     boolean positionOccupied;
 
@@ -470,7 +472,7 @@ class Level {
 
         float centerX = x * tileSize + tileSize / 2;
         float centerY = y * tileSize + tileSize / 2;
-        
+
 
         switch(tileType) {
         case BACKGROUND_TILE_TYPE:

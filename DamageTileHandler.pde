@@ -27,8 +27,8 @@ abstract class DamageHandler {
   }
 
   private void performPeriodicAttack(Damageable damageable, long currentTime) {
-    damageable.takeDamage(currentLevel.damagePeaks);
-    TextDisplay damageHitText = new TextDisplay(damageable.getPosition(), Integer.toString(currentLevel.damagePeaks), color(255, 0, 0));
+    damageable.takeDamage(currentLevel.DAMAGE_PEAKS);
+    TextDisplay damageHitText = new TextDisplay(damageable.getPosition(), Integer.toString(currentLevel.DAMAGE_PEAKS), color(255, 0, 0));
     damageHitText.display(game.spritesLayer);
     playHurtSound();
 

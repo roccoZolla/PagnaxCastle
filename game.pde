@@ -14,9 +14,9 @@ class Game {
   Boss boss;    // boss del gioco
   boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
   float holeRadius; // raggio della maschera
-  boolean isTorchDropped;       // indica se la torcia è stata droppata
-  boolean isMapDropped;         // indica se la mappa è stata droppata
-  boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata
+  boolean isTorchDropped;       // indica se la torcia è stata droppata, di base false
+  boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
+  boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
   ConcreteDamageHandler damageTileHandler;
 
   Game() {
@@ -26,7 +26,15 @@ class Game {
 
     // di default la difficolta del gioco è impostata su normale
     difficultyLevel = DifficultyLevel.NORMALE;
+
     isBossLevel = false;
+
+    isTorchDropped = false;
+    isMapDropped = false;
+    isMasterSwordDropped = false;
+
+    // raggio della maschera
+    holeRadius = 60;
 
     camera = new Camera();
   }
@@ -35,6 +43,19 @@ class Game {
     gameScene = createGraphics(width, height);
     spritesLayer = createGraphics(width, height);
     maskLayer = createGraphics(width, height);
+  }
+
+  // reimposta le variabili di gioco
+  void resetGame() {
+    isBossLevel = false;
+
+    isTorchDropped = false;
+    isMapDropped = false;
+    isMasterSwordDropped = false;
+    
+    // reimposta lo stato della mappa, disattivo
+    ui.deactivateMap();
+    ui.deactivateBossUI();
   }
 
   void init() {
@@ -55,7 +76,8 @@ class Game {
 
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
-    p1 = new Player(new PVector(0, 0), spriteRight, 100, 100, 10, 10, 10, damageTileHandler);
+    // inizializza il player
+    p1 = new Player(new PVector(0, 0), spriteRight, 100, 100, 1, 0, 3, damageTileHandler);
     p1.updatePosition(currentLevel.getStartPosition());
     p1.redPotion = redPotion;
 
@@ -64,19 +86,8 @@ class Game {
 
     p1.golden_keys = golden_key;
     p1.silver_keys = silver_key;
-
-    // raggio della maschera
-    holeRadius = 60;
-
-    isBossLevel = false;
-
-    isTorchDropped = false;
-    isMapDropped = false;
-    isMasterSwordDropped = false;
-
-    // reimposta lo stato della mappa, disattivo
-    // ui.deactivateMap();
-    ui.deactivateBossUI();
+    
+    resetGame();
   }
 
   void initBossBattle() {
@@ -98,8 +109,8 @@ class Game {
     PVector spawn_boss_position = new PVector(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y);
     // velocita di base boss 0.1
     boss = new Boss(spawn_boss_position, boss_sprite, 0.07, "Stregone Pagnax", 100, 100);
-    
-    ui.game_target = "Uccidi Pagnax!";
+
+    ui.game_target = "Sconfiggi Pagnax!";
 
     ui.activateBossUI();
     ui.deactivateMap();
@@ -108,7 +119,7 @@ class Game {
   void display() {
     // aggiorna la camera
     camera.update();
-    
+
     // disegna il game layer
     drawGameLayer();
 
@@ -116,7 +127,7 @@ class Game {
     drawSpritesLayer();
 
     // disegna il mask layer se non ci troviamo nel livello finale
-    // if (!isBossLevel) drawMaskLayer();
+    if (!isBossLevel) drawMaskLayer();
   }
 
   void drawGameLayer() {
@@ -132,7 +143,7 @@ class Game {
     currentLevel.display(gameScene); // renderizza il 4,6 % della mappa
 
     gameScene.endDraw();
-    
+
     image(gameScene, 0, 0);
   }
 
@@ -175,7 +186,7 @@ class Game {
   }
 
   void update() {
-    // handlePlayerDeath();
+    handlePlayerDeath();
     handlePlayerMovement();
     handleEnemyActions();
     handleChest();
@@ -186,7 +197,7 @@ class Game {
 
   void updateBossBattle() {
     handlePlayerVictory();
-    // handlePlayerDeath();
+    handlePlayerDeath();
     handlePlayerMovement();
     handleBossActions();    // gestisce il boss
   }
@@ -249,7 +260,7 @@ class Game {
   void handlePlayerMovement() {
     p1.update();
     p1.display(spritesLayer);
-    p1.displayHitbox(spritesLayer);
+    // p1.displayHitbox(spritesLayer);
     p1.attack(spritesLayer);    // attacca i nemici
     p1.usePotion(spritesLayer); // usa le pozioni
   }
@@ -268,7 +279,7 @@ class Game {
 
           // attacca solo se c'è collisione
           if (enemy.sprite_collision(p1)) {
-            enemy.displayHitbox(spritesLayer);
+            // enemy.displayHitbox(spritesLayer);
             enemy.attack(p1);
           } else {
             enemy.first_attack = true;
@@ -286,7 +297,7 @@ class Game {
   void handleBossActions() {
     boss.update(p1);
     boss.display(spritesLayer);
-    boss.displayHitbox(spritesLayer);
+    // boss.displayHitbox(spritesLayer);
   }
 
   // gestione delle chest
@@ -455,6 +466,7 @@ class Game {
                 holeRadius += 50;
                 iterator.remove();
               } else if (item.isCollectible && item.name.equals("dropMap")) {
+                // attiva la minimappa per tutti i livelli
                 ui.activateMap();
                 iterator.remove();
               }

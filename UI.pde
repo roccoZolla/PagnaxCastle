@@ -1,7 +1,7 @@
 class UI {
   ArrayList<Button> buttons;
   PGraphics uiLayer;
-  
+
   String game_target;   // indica al giocatore l'obiettivo
 
   // ----- CUORI BOSS -----
@@ -49,8 +49,8 @@ class UI {
     miniMapY = uiLayer.height - miniMapHeight;
 
     isBossBattle = false;    // di base, false
-    isMapActive = true;    // di base, false, si attiva con la minimappa trovata nei livelli
-    
+    isMapActive = false;    // di base, false, si attiva con la minimappa trovata nei livelli
+
     game_target = "Trova le scale!";
 
     buttons = new ArrayList();
@@ -140,13 +140,11 @@ class UI {
       uiLayer.image(p1.weapon.sprite, imgX, imgY, imgWidth, imgHeight);
     }
 
-    //uiLayer.fill(255);
-    //uiLayer.textSize(18);
-    //uiLayer.text(p1.weapon.name, width - 95, height - 40);
-
-    //uiLayer.fill(255);
-    //uiLayer.textSize(18);
-    //uiLayer.text("Danno: " + p1.weapon.getDamage(), width - 95, height - 20);
+    uiLayer.fill(255);
+    uiLayer.textAlign(LEFT, LEFT); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(20);
+    float offset = uiLayer.textWidth(p1.weapon.name);
+    uiLayer.text(p1.weapon.name, width - offset - 80, height - 20);
 
     // se il giocatore si trova nel livello del boss mostra i cuori del boss
     if (isBossBattle) displayBossHearts();

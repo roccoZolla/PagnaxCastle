@@ -38,7 +38,6 @@ class Boss extends Sprite {
     }
 
     // Muovi i proiettili
-    // Muovi i proiettili
     Iterator<Projectile> iterator = projectiles.iterator();
     while (iterator.hasNext()) {
       Projectile projectile = iterator.next();
@@ -55,7 +54,7 @@ class Boss extends Sprite {
       if (projectile.sprite_collision(this) && !projectile.attack_executed && projectile.canHitBoss) {
         takeDamage(projectile.damage);
         projectile.attack_executed = true;
-        println("boss colpito...");
+        // println("boss colpito...");
       }
 
       // verifica se il giocatore colpisce con l'arma un proiettile
@@ -87,7 +86,7 @@ class Boss extends Sprite {
     if (HP < 0) {
       HP = 0;
     }
-    println("vita boss: " + HP);
+    // println("vita boss: " + HP);
   }
 
   @Override
@@ -105,7 +104,7 @@ class Boss extends Sprite {
     // Disegna i proiettili
     for (Projectile projectile : projectiles) {
       projectile.display(layer);
-      projectile.displayHitbox(layer);
+      // projectile.displayHitbox(layer);
     }
   }
 }

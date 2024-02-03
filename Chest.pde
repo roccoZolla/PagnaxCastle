@@ -67,7 +67,7 @@ class Chest extends Item {
     } else if (randomValue > dropHeartProbability && randomValue <= dropHeartProbability + dropSwordProbability) {
       println("spada droppata");
       // drop della spada
-      Weapon dropSword = new Weapon(dropPosition, sword_sprite, "dropSword", 20); // Assumendo che una spada valga 20 danni
+      Weapon dropSword = new Weapon(dropPosition, sword_sprite, "Spada", 20); // Assumendo che una spada valga 20 danni
       currentLevel.dropItems.add(dropSword);
     } else if (randomValue > dropHeartProbability + dropSwordProbability && randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability) {
       println("chiave oro droppata");
@@ -117,7 +117,7 @@ class Chest extends Item {
       && !game.isMasterSwordDropped) {
       println("super spada droppata");
       // drop della super spada
-      Weapon dropMasterSword = new Weapon(dropPosition, master_sword_sprite, "masterSword", 50); // Assumendo che una super spada valga 50 danni
+      Weapon dropMasterSword = new Weapon(dropPosition, master_sword_sprite, "Spada del Maestro", 50); // Assumendo che una super spada valga 50 danni
       currentLevel.dropItems.add(dropMasterSword);
       game.isMasterSwordDropped = true;
     }
