@@ -1,33 +1,63 @@
-public abstract class Sprite {
-  private PVector spritePosition;
-  int id;
-  String dataPath;
-  PImage img;
+class Sprite {
+  PVector position;
+  PImage sprite;
 
-  // metodi 
-  void display() {
-    image(img, spritePosition.x, spritePosition.y);
+  Sprite(PVector position, PImage sprite) {
+    this.position = position;
+    this.sprite = sprite;
   }
-  
-  void display(int tileSize) {
-    image(img, spritePosition.x * tileSize, spritePosition.y * tileSize, img.width, img.height);
+
+  PVector getPosition() {
+    return position;
   }
-  
-  // imposta la posizione dello sprite nella mappa
-  void setPosition(PVector spritePosition){
-    this.spritePosition = spritePosition;
-  }  
-  
-  // ottieni la posizione dello sprite mnella mappa
-  PVector getPosition(){
-    return spritePosition;
+
+  PImage getSprite() {
+    return sprite;
   }
-  
-  PImage getSprite(){
-    return img;
+
+  void updatePosition(PVector position) {
+    this.position = position;
   }
-  
-  void setSprite(PImage img) {
-    this.img = img;
+
+  void updateSprite(PImage sprite) {
+    this.sprite = sprite;
+  }
+
+  // metodo che si occupa di mostrare lo sprite
+  void display(PGraphics layer) {
+    layer.noFill(); // Nessun riempimento
+    layer.stroke(255); // Colore del bordo bianco
+
+    float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
+
+    // layer.imageMode(CENTER); // Imposta l'imageMode a center, viene impostata nel codice principale in game
+    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+  }
+
+  void displayHitbox(PGraphics layer) {
+    layer.noFill(); // Nessun riempimento
+    layer.stroke(255); // Colore del bordo bianco
+    layer.rectMode(CENTER);
+    layer.rect(position.x * currentLevel.tileSize + (sprite.width/2), position.y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
+
+    layer.stroke(255, 0, 0);
+    layer.point(position.x * currentLevel.tileSize + (sprite.width / 2), position.y * currentLevel.tileSize + sprite.height / 2);
+  }
+
+  // metodo che si occupa delle collisioni tra sprite
+  // da sistemare
+  boolean sprite_collision(Sprite other) {
+    PVector otherPosition = other.getPosition();
+    PImage otherSprite = other.getSprite();
+
+    if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (otherPosition.x * currentLevel.tileSize) - (otherSprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
+      (position.x * currentLevel.tileSize) - (sprite.width / 2) <= otherPosition.x * currentLevel.tileSize + (otherSprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
+      position.y * currentLevel.tileSize + (sprite.height / 2) >= (otherPosition.y * currentLevel.tileSize) - (otherSprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
+      (position.y * currentLevel.tileSize) - (sprite.height / 2) <= otherPosition.y * currentLevel.tileSize + (otherSprite.height / 2)) {                              // y1 - h1/2 < y2 + h2/2
+      return true;
+    }
+
+    return false;
   }
 }

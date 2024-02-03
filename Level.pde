@@ -1,172 +1,274 @@
 class Level {
-  private String levelName;
-  private int levelIndex;
-  private String dataPath;
-  private boolean completed = false;
+  String levelName;
+  int levelIndex;
+  String dataPath;
+  boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
+  int numberOfRooms;
+  boolean isFinalLevel;      // indica se è il livello finale, composto da una singola stanza, di base false
+
+  Sprite stairsNextFloor;
+
+  // rooms
+  int tileSize = 16;
+  int cols, rows;
+  int[][] map;
+  ArrayList<Room> rooms;
+
+  int startRoomIndex;
+  int endRoomIndex;
+
+  final int BACKGROUND_TILE_TYPE = 0;
+  final int FLOOR_TILE_TYPE = 1;
+  final int START_ROOM_TILE_TYPE = 2;
+  final int STAIRS_TILE_TYPE = 3;
+  final int WALL_PERIMETER_TILE_TYPE = 4;
+  final int HALLWAY_TILE_TYPE = 5;
+  final int CHEST_TILE_TYPE = 6;
+  final int PEAKS_TILE_TYPE = 7;
+
+  // probabilita di spawn delle trappole all'interno del livello
+  final double TRAP_SPAWN_PROBABILITY = 0.03;
+
+  // danno delle trappole
+  final int DAMAGE_PEAKS = 5;
+
+  // vita dei nemici
+  final int ENEMY_HP = 30;
 
   // attributi
-  private PImage floorImage; // Immagine per il pavimento
-  private PImage wallImage;  // Immagine per le pareti
-  private PImage roomOutlineImage; // immagine per i contorni delle stanze
-  private PImage hallwayImage;      // immagine per i corridoi
+  PImage startFloorImage;
+  PImage floorImage; // Immagine per il pavimento
+  // private PImage wallImage;  // Immagine per sfondo
+  // pareti delle stanze
+  PImage wallImageNorth;
+  // private PImage wallImageNorthTop;
+  // private PImage wallImageNorthBottom;
+  // private PImage wallImageSouth;
+  // private PImage wallImageEast;
+  // private PImage wallImageWest;
+  PImage hallwayImage;         // immagine per i corridoi
+  PImage peaksTrapImage;
+  PImage stairsNextFloorImage; // scale per accedere al livello successivo
 
-  private int spawnLevel = 3; // Livello di spawn (puoi impostarlo come desideri)
-  private ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
+  ArrayList<Coin> coins;      // contiene le monete presenti nel livello
 
-  private PImage finalFloorImage;
+  // chest che puoi trovare nel livello
+  ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
 
-  private int tileSize = 16;
-  private int cols, rows;
-  private int[][] map;
-  private ArrayList<PVector> rooms; // Memorizza le posizioni delle stanze
+  // nemici che puoi trovare nel livello
+  ArrayList<Enemy> enemies; // Lista dei nemici
 
-  PVector finalRoomPosition;
-  PVector nextLevelStartRoomPosition;
+  ArrayList<Item> dropItems; // lista degli oggetti caduti a terra
 
-  private int numberOfEnemies = 20;  // livello di spawn dei nemici
-  private ArrayList<Enemy> enemies; // Lista dei nemici
-
-  private int startRoomIndex;
-  private int endRoomIndex;
-
-  Level(String levelName, int levelIndex, String dataPath) {
+  Level(String levelName, int levelIndex, String dataPath, int numberOfRooms) {
     this.levelName = levelName;
     this.completed = false;
     this.levelIndex = levelIndex;
     this.dataPath = dataPath;
-    //finalRoomPosition = new PVector(int(random(width)), int(random(height)));
-    //nextLevelStartRoomPosition = new PVector(int(random(width)), int(random(height)));
+    this.numberOfRooms = numberOfRooms;
+
+    this.isFinalLevel = false;
+  }
+
+  void loadAssetsLevel() {
+    // println("carico gli assets del livello...");
+    floorImage = currentZone.floorImage;
+    wallImageNorth = currentZone.wallImageNorth;
+    hallwayImage = currentZone.hallwayImage;
+    stairsNextFloorImage = currentZone.stairsNextFloorImage;
+    peaksTrapImage = currentZone.peaksTrapImage;
+    hallwayImage = currentZone.hallwayImage;
+    stairsNextFloorImage = currentZone.stairsNextFloorImage;
   }
 
   void init() {
+    // inizializzo il livello
+    // println("inizializzo il livello...");
+
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
     rows = height / tileSize;
-    map = new int[cols][rows];
-    rooms = new ArrayList<PVector>();
-    treasures = new ArrayList<Chest>(); // Inizializza l'arraylist qui
 
-    floorImage = loadImage(dataPath + "floorTile.png");
-    wallImage = loadImage(dataPath + "wallTile.png");
-    roomOutlineImage = loadImage(dataPath + "roomOutlineTile.png");
-    hallwayImage = loadImage(dataPath + "hallwayTile.png");
-    finalFloorImage = loadImage(dataPath + "finalFloorTile.png");
-    
+    map = new int[cols][rows];
+    rooms = new ArrayList<Room>();
+
     // Genera stanze
     generateRooms();
 
     // Collega le stanze con corridoi
     connectRooms();
 
-    // da rimuovere
-    map[int(rooms.get(startRoomIndex).x)][int(rooms.get(startRoomIndex).y)] = 2; // Stanza iniziale
-    map[int(rooms.get(endRoomIndex).x)][int(rooms.get(endRoomIndex).y)] = 3; // Stanza finale
+    stairsNextFloor = new Sprite(new PVector((rooms.get(endRoomIndex).roomPosition.x), rooms.get(endRoomIndex).roomPosition.y), stairsNextFloorImage);
 
-     // aggiungi i nemici
+    // da rimuovere
+    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
+    map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = STAIRS_TILE_TYPE; // Stanza finale
+
+    // inizializza l'array dei drop items
+    // inizialmente è vuoto
+    dropItems = new ArrayList<>();
+
+    // genera le chest
+    generateRandomChests();
+
+    // aggiungi i nemici
+    // da chiamare quando il giocatore entra nella stanza
     generateEnemies();
 
-    // genera i loot
-    // generateTreasures();
-    generateRandomChests();
+    // genera le monete
+    generateRandomCoins();
   }
 
-  int getTileSize() {
-    return tileSize;
+  void initBossLevel() {
+    // println("inizializzo il livello finale...");
+
+    // logica per la creazione del livello (mappa del livello)
+    cols = width / tileSize;
+    rows = height / tileSize;
+
+    println("cols: " + cols);
+    println("rows: " + rows);
+
+    map = new int[cols][rows];
+    rooms = new ArrayList<Room>();
+
+    // Genera stanze
+    generateBossRoom();
+
+    // da rimuovere
+    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
+
+    //println("----- BOSS ROOM -----");
+    //println("start room index: " + startRoomIndex);
+    //println("end room index: " + endRoomIndex);
+    //println("start position END LEVEL: " + getStartPosition());
+    //println("end position END LEVEL: " + getEndRoomPosition());
+    // genera il boss
   }
 
-  int getCols() {
-    return cols;
-  }
+  PVector getStartPosition() {
+    Room startRoom = rooms.get(startRoomIndex);
+    int randomX, randomY;
+    boolean positionOccupied;
 
-  int getRows() {
-    return rows;
-  }
+    do {
+      randomX = (int) (startRoom.roomPosition.x + random(-2, 2));
+      randomY = (int) (startRoom.roomPosition.y + random(-2, 2));
 
-  int[][] getMap() {
-    return map;
-  }
+      // Verifica se la posizione è già occupata da un muro, una parete o un'altra entità
+      positionOccupied = (map[randomX][randomY] != FLOOR_TILE_TYPE);
+    } while (positionOccupied);
 
-  PVector getNextLevelStartRoomPosition() {
-    return nextLevelStartRoomPosition;
-  }
-
-  int getLevelIndex() {
-    return levelIndex;
-  }
-
-  String getName() {
-    return levelName;
-  }
-
-  PVector getStartRoom() {
-    return rooms.get(startRoomIndex);
+    PVector randomPosition = new PVector(randomX, randomY);
+    // println("start position: " + randomPosition);
+    return randomPosition;
   }
 
   PVector getEndRoomPosition() {
-    return rooms.get(endRoomIndex);
+    return rooms.get(endRoomIndex).roomPosition;
   }
 
-  // metodi per la generazione delle stanze
-  private void generateRooms() {
-    for (int i = 0; i < 8; i++) {
-      generateRandomRoom();
-    }
+  // genera la stanza del boss finale
+  private void generateBossRoom() {
+    int roomWidth = int(random(20, 35));
+    int roomHeight = int(random(20, 35));
 
-    // Scegli la stanza iniziale e finale
-    startRoomIndex = int(random(rooms.size()));
-    endRoomIndex = int(random(rooms.size()));
+    int roomX = int(random(1, cols - roomWidth - 1));
+    int roomY = int(random(1, rows - roomHeight - 1));
 
-    while (endRoomIndex == startRoomIndex) {
-      endRoomIndex = int(random(rooms.size()));
-    }
-  }
-
-  private void generateRandomRoom() {
-    int roomWidth = int(random(5, 20));
-    int roomHeight = int(random(5, 20));
-    int roomX, roomY;
-
-    boolean roomOverlap;
-    do {
-      roomX = int(random(1, cols - roomWidth - 1));
-      roomY = int(random(1, rows - roomHeight - 1));
-      roomOverlap = checkRoomOverlap(roomX, roomY, roomWidth, roomHeight);
-    } while (roomOverlap);
+    PVector roomPosition = new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2);
+    Room room = new Room(roomWidth, roomHeight, roomPosition);
+    rooms.add(room);
 
     // Estrai i muri dell'immagine dei muri delle stanze
     for (int x = roomX; x < roomX + roomWidth; x++) {
       for (int y = roomY; y < roomY + roomHeight; y++) {
         if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
-          // Questi sono i bordi della stanza, quindi imposta il tile come tileType 3
-          map[x][y] = 4; // Imposta il tile come muro del perimetro
+          map[x][y] = WALL_PERIMETER_TILE_TYPE;
         } else {
-          map[x][y] = 1; // Imposta il tile come pavimento
+          map[x][y] = FLOOR_TILE_TYPE;
+          // spawn delle trappole all'interno delle stanze
+          // da generare solo per la modalita difficile
+          if (random(1) <= TRAP_SPAWN_PROBABILITY) {
+            map[x][y] = PEAKS_TILE_TYPE;
+          }
         }
       }
     }
-
-    // Memorizza la posizione della stanza
-    rooms.add(new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2));
   }
 
+  // metodi per la generazione delle stanze
+  private void generateRooms() {
+    // println("genero lo stanze...");
+    for (int i = 0; i < numberOfRooms; i++) {
+      generateRandomRoom();
+    }
 
-  private boolean checkRoomOverlap(int x, int y, int width, int height) {
-    for (int i = x - 1; i < x + width + 1; i++) {
-      for (int j = y - 1; j < y + height + 1; j++) {
-        // Verifica se il tile è già occupato (1 rappresenta il pavimento)
-        if (map[i][j] == 1) {
-          return true;
+    // stanza iniziale e finale scelte casualmente
+    startRoomIndex = int(random(rooms.size()));
+
+    do {
+      // println("assegnazione posizione finale...");
+      endRoomIndex = int(random(rooms.size()));
+    } while (endRoomIndex == startRoomIndex && !isFinalLevel);
+
+    rooms.get(startRoomIndex).startRoom = true;
+    rooms.get(endRoomIndex).endRoom = true;
+  }
+
+  private void generateRandomRoom() {
+    int roomWidth = int(random(8, 20));
+    int roomHeight = int(random(8, 20));
+    int maxAttempts = 100;
+
+    for (int attempt = 0; attempt < maxAttempts; attempt++) {
+      int roomX = int(random(1, cols - roomWidth - 1));
+      int roomY = int(random(1, rows - roomHeight - 1));
+
+      // Verifica l'overlapping solo con le stanze già generate
+      if (!checkRoomOverlap(roomX, roomY, roomWidth, roomHeight)) {
+        // Crea e aggiungi la nuova stanza alla lista delle stanze
+        PVector roomPosition = new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2);
+        Room room = new Room(roomWidth, roomHeight, roomPosition);
+        rooms.add(room);
+
+        // Estrai i muri dell'immagine dei muri delle stanze
+        for (int x = roomX; x < roomX + roomWidth; x++) {
+          for (int y = roomY; y < roomY + roomHeight; y++) {
+            if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
+              map[x][y] = WALL_PERIMETER_TILE_TYPE;
+            } else {
+              map[x][y] = FLOOR_TILE_TYPE;
+              // spawn delle trappole all'interno delle stanze
+              if (random(1) <= TRAP_SPAWN_PROBABILITY) {
+                map[x][y] = PEAKS_TILE_TYPE;
+              }
+            }
+          }
         }
+
+        // Esci dal ciclo una volta generata e posizionata con successo la stanza
+        break;
+      }
+    }
+  }
+
+  private boolean checkRoomOverlap(int x, int y, int roomWidth, int roomHeight) {
+    // println("room overlap...");
+    for (Room room : rooms) {
+      // Verifica se la stanza attuale si sovrappone con la nuova stanza
+      if (room.overlaps(x, y, roomWidth, roomHeight)) {
+        return true;
       }
     }
     return false;
   }
 
-
   private void connectRooms() {
+    // println("collego le stanze...");
     for (int i = 0; i < rooms.size() - 1; i++) {
-      PVector room1 = rooms.get(i);
-      PVector room2 = rooms.get(i + 1);
+      PVector room1 = rooms.get(i).roomPosition.copy();
+      PVector room2 = rooms.get(i + 1).roomPosition.copy();
 
       int x1 = int(room1.x);
       int y1 = int(room1.y);
@@ -187,130 +289,230 @@ class Level {
     }
   }
 
-  private void generateRandomChests() {
-    for (int i = 0; i < spawnLevel; i++) {
+  // generatore di monete casuale
+  private void generateRandomCoins() {
+    // println("genero le monete...");
+    coins = new ArrayList<>();
+    boolean positionOccupied;
+    int totalCoins = 20; // Modifica il numero di monete da generare come preferisci
+
+    for (int i = 0; i < totalCoins; i++) {
       int x, y;
-      boolean positionOccupied;
 
       do {
         // Scegli una posizione casuale sulla mappa
-        x = int(random(cols));
-        y = int(random(rows));
+        x = (int) random(cols);
+        y = (int) random(rows);
 
-        // Verifica se la posizione è già occupata da un muro o parete
-        positionOccupied = map[x][y] == 0 || map[x][y] == 4 || map[x][y] == 5;
+        // Verifica se la posizione non è pavimento
+        positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
       } while (positionOccupied);
 
-      // Crea una nuova cassa e imposta le sue proprietà
-      Chest chest = new Chest("data/object/tile_0089.png");
-      chest.setName("cassa di merda");
-      chest.setIsOpen(random(1) < 0.5); // Casualemente aperta o chiusa
-      chest.setOpenWith(new Item("key")); // Imposta un oggetto necessario per aprirla
+      // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
+      int coinValue = (int) random(1, 10); // Esempio: valore casuale tra 1 e 10
+      Coin coin = new Coin(new PVector(x, y), coin_sprite, coinValue);
+      coins.add(coin);
+    }
+  }
+
+  // da sistemare ma decente
+  private void generateRandomChests() {
+    // println("genero le chest...");
+    int spawnLevel = 3; // Livello di spawn delle chest, tre chest per livello
+    treasures = new ArrayList<Chest>();
+    boolean positionOccupied;
+    Chest chest;
+    Room room;
+    // la somma dei due tassi deve essere 1
+    float commonChestSpawnRate = 0.7; // tasso di spawn per le casse comuni 70%
+    float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza
+
+    for (int i = 0; i < spawnLevel; i++) {
+      // se tutte le stanze sono occupate non creare la chest
+      if (areAllRoomsOccupied()) {
+        // println("tutte le stanze sono occupate!");
+        break;
+      }
+
+      // stanza selezionata casualmente
+      // e verifica se nella stanza sono gia presenti casse
+      do {
+        room = rooms.get((int) random(rooms.size()));
+        // println("check chest in the room...");
+      } while (room.isChestPresent());
+
+      room.setIsChestPresent(true);
+
+      // offset rispetto al centro della stanza
+      // potrebbe generare un offset uguale a 0 e quindi la posizione coinciderebbe
+      // con coordinate del punto centrale della stanza
+      float offsetX = random(-spawnRadius, spawnRadius);
+      float offsetY = random(-spawnRadius, spawnRadius);
+
+      int x, y;
+      int attempt = 0;
+      int maxAttempts = 100;
+
+      do {
+        // posizione casuale intorno al centro della stanza selezionata casualmente
+        x = (int) (room.roomPosition.x + offsetX) + 1;
+        y = (int) (room.roomPosition.y + offsetY) + 1;
+
+        // Verifica se la posizione non è il pavimento
+        positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
+        //println("check position for the chest...");
+        //println(positionOccupied);
+
+        attempt++;
+
+        if (attempt >= maxAttempts) {
+          break;
+        }
+      } while (positionOccupied);
+
+      // Genera un numero casuale tra 0 e 1 per determinare il tipo di cassa
+      float chestType = random(1);
+
+      // di base le casse sono chiuse e non sono rare
+      // isOpen è impostato su false nel costruttore
+      // isRare è impostato su false nel costruttore
+      if (chestType < commonChestSpawnRate) {
+        // Genera una cassa comune
+        chest = new Chest(new PVector(x, y), chest_close_sprite, "Cassa comune" + i);
+        // chest.setId(i);
+        chest.setOpenWith(silver_key);              // Specifica l'oggetto chiave necessario
+      } else {
+        // Genera una cassa rara
+        // verifica che non siano stati gia droppati i drop della cassa rara
+        if (!game.isTorchDropped || !game.isMapDropped || !game.isMasterSwordDropped) {
+          chest = new Chest(new PVector(x, y), special_chest_close_sprite, "Cassa rara" + i);
+          // chest.setId(i);
+          chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
+          chest.setIsRare(true);
+        } else { // altrimenti genera una cassa normale
+          chest = new Chest(new PVector(x, y), chest_close_sprite, "Cassa comune" + i);
+          // chest.setId(i);
+          chest.setOpenWith(silver_key);
+        }
+      }
 
       // Aggiungi la cassa alla lista delle casse
-      // E imposta la posizione sulla mappa
-      chest.setPosition(new PVector(x, y));
-      map[(int) chest.getPosition().x][(int) chest.getPosition().y] = 6;
+      map[x][y] = CHEST_TILE_TYPE; // Imposta il tipo di tile corrispondente a una cassa
+
       treasures.add(chest);
     }
   }
 
+  private boolean areAllRoomsOccupied() {
+    for (Room room : rooms) {
+      if (!room.isChestPresent()) {
+        return false;
+      }
+    }
 
-  // spawner basilare di nemici
+    return true;
+  }
+
+  // spawner aggiornato
+  // genera nemici in ogni stanza in maniera casuale
   private void generateEnemies() {
+    // println("genero i nemici...");
     enemies = new ArrayList<Enemy>();
+    boolean positionOccupied;
 
-    for (int i = 0; i < numberOfEnemies; i++) {
-      // Scegli una stanza casuale
-      int roomIndex = int(random(rooms.size()));
-      PVector roomPosition = rooms.get(roomIndex);
+    for (Room room : rooms) {
+      PVector roomPosition = room.roomPosition.copy();
+      int roomWidth = room.roomWidth;
+      int roomHeight = room.roomHeight;
 
-      // Genera una posizione casuale all'interno della stanza
-      int x = (int) roomPosition.x;
-      int y = (int) roomPosition.y;
+      // Genera un numero casuale di nemici in ogni stanza
+      // AGGIUNGI LOGICA DI DIFFICOLTA
+      int numEnemiesInRoom = floor(random(3, 5));
 
-      // Crea un nemico con valori casuali di HP e un'immagine casuale
-      int enemyHP = 30;
+      for (int i = 0; i < numEnemiesInRoom; i++) {
+        int x, y;
 
-      Enemy enemy = new Enemy(i, enemyHP, "nemico", "data/npc/tile_0109.png");
-      enemy.setPosition(new PVector(x, y));
+        // spawn causale dei nemici all'interno della mappa
+        do {
+          x = int(random(roomPosition.x - roomWidth / 2, roomPosition.x + roomWidth / 2));
+          y = int(random(roomPosition.y - roomHeight / 2, roomPosition.y + roomHeight / 2));
 
-      if (map[x][y] == 1) map[x][y] = 7;
+          // Verifica se la posizione non è il pavimento
+          positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
+        } while (positionOccupied);
 
-      // Aggiungi il nemico alla lista
-      enemies.add(enemy);
+        ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();
+
+        // creazione dell'entita nemico
+        Enemy enemy = new Enemy(new PVector(x, y), rat_enemy_sprite, ENEMY_HP, "rat", 5, damageTileHandler);
+
+        // Aggiungi il nemico alla lista
+        enemies.add(enemy);
+      }
     }
   }
 
-  public String getObjectAtCell(int x, int y) {
-    int tileType = map[x][y];
-    if (tileType == 6) {
-      for (Chest treasure : treasures) {
-        if (treasure.getPosition().x == x && treasure.getPosition().y == y) {
-          return treasure.getName();
-        }
-      }
-    } else if (tileType == 7) {
-      // La cella contiene un nemico, restituisci l'oggetto Nemico
-      for (Enemy enemy : enemies) {
-        if (enemy.getPosition().x == x && enemy.getPosition().y == y) {
-          return enemy.getName();
-        }
-      }
-    }
-    return null; // Non c'è nessun oggetto nella cella
-  }
+  // disegna solo cio che vede il giocatore
+  void display(PGraphics layer) {
+    // Calcola i limiti dello schermo visibile in termini di celle di mappa
+    int startX = floor((camera.x / (tileSize * camera.zoom)));
+    int startY = floor((camera.y / (tileSize * camera.zoom)));
+    int endX = ceil((camera.x + width) / (tileSize * camera.zoom));
+    int endY = ceil((camera.y + height) / (tileSize * camera.zoom));
 
-  void display() {
-    for (int x = 0; x < cols; x++) {
-      for (int y = 0; y < rows; y++) {
+    // Assicurati che i limiti siano all'interno dei limiti della mappa
+    startX = constrain(startX, 0, cols - 1);
+    startY = constrain(startY, 0, rows - 1);
+    endX = constrain(endX, 0, cols);
+    endY = constrain(endY, 0, rows);
+
+    for (int x = startX; x < endX; x++) {
+      for (int y = startY; y < endY; y++) {
         int tileType = map[x][y];
 
+        float centerX = x * tileSize + tileSize / 2;
+        float centerY = y * tileSize + tileSize / 2;
+
+
         switch(tileType) {
-        case 0:
+        case BACKGROUND_TILE_TYPE:
           // sfondo
-          image(wallImage, x * tileSize, y * tileSize, tileSize, tileSize);
           break;
 
-        case 1:
+        case FLOOR_TILE_TYPE:
           // pavimento
-          image(floorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case 2:
+        case START_ROOM_TILE_TYPE:
           // Imposta l'immagine per la stanza iniziale (nero)
-          fill(0); // nero
-          noStroke();
-          rect(x * tileSize, y * tileSize, tileSize, tileSize);
+          layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case 3:
-          // pavimento stanza finale
-          image(finalFloorImage, x * tileSize, y * tileSize, tileSize, tileSize);
+        case STAIRS_TILE_TYPE:
+          // scale per il piano successivo
+          layer.image(stairsNextFloorImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case 4:
+        case WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
-          image(roomOutlineImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          layer.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
           break;
 
-        case 5:
+        case HALLWAY_TILE_TYPE:
           // corridoio
-          image(hallwayImage, x * tileSize, y * tileSize, tileSize, tileSize);
+          layer.image(hallwayImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case 6:
+        case CHEST_TILE_TYPE:
+          // ci sta tenerlo sono statiche le casse
           // tesori
-          for(Chest chest : treasures) {
-            image(chest.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
-          }
+          layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case 7:
-          // nemici
-          for (Enemy enemy : enemies) {
-            image(enemy.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize);
-          }
+        case PEAKS_TILE_TYPE:
+          // peaks trap
+          layer.image(peaksTrapImage, centerX, centerY, tileSize, tileSize);
           break;
         }
       }

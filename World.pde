@@ -1,35 +1,21 @@
 // classe che si occupa della generazione del mondo
 class World {
-  private ArrayList<Macroarea> macroareas = new ArrayList<>(); // lista delle aree che compongono il gioco
-  private Macroarea currentMacroarea;
-  
-  World() {
-   System.out.println("Creazione del mondo...");
-    Macroarea cellar = new Macroarea(0, "Cellar", 1, "data/zone_1/");
-    cellar.setStory("La principessa Chela è in pericolo. È stata rapita da un cattivone.\n" +
-    "Vai al castello del cattivone ma vieni subito scoperto e mandato nelle cantine del castello.\n" +
-    "Devi risalire il castello fino alle sale reali per sconfiggere il cattivone di turno.\n");
-    
-    Macroarea piano_base = new Macroarea(1, "piano_base", 1, "data/zone_2/");
-    piano_base.setStory("Sei arrivato al piano base daje roma daje!\n");   
-    
-    macroareas.add(cellar);
-    macroareas.add(piano_base);
-    
-    currentMacroarea = cellar;
-    
-    //Macroarea finalArea = new Macroarea(2, "Royal halls", 1, "data/zone_3/");
-    //finalArea.setStory("Area finale yuppi yeah!");
-    //finalArea.setFinalArea(true);
-    //macroareas.add(finalArea);
-  }
-  
-  Macroarea getCurrentMacroarea() {
-    return currentMacroarea;
-  }
-  
-  ArrayList<Macroarea> getMacroareas() {
-    return macroareas;
-  }
+  ArrayList<Zone> zones = new ArrayList<>(); // lista delle aree che compongono il gioco
+  Zone currentZone;
 
+  World() {
+    // System.out.println("Creazione del mondo...");
+    // 5 livelli da massimo 8 stanze ciascuno
+    Zone cellar = new Zone(0, "Castle", 5, "data/zone_1/", 8);
+    cellar.storyText = "Nel lontano Regno di Lontano la principessa Chela e' stata rapita dallo stregone Pagnax.\n" +
+      "Sei stato mandato al castello dello stregone pazzo dove si dice che ogni piano cambi in continuazione.\n" +
+      "Devi salvare la principessa e sconfiggere Pagnax, che la casualita' ti aiuti Cavaliere.\n";
+
+    cellar.setFinalArea(true);
+
+    //println("numero di livello: " + cellar.numLevels);
+    //println("size levels: " + cellar.levels.size());
+
+    currentZone = cellar;
+  }
 }
