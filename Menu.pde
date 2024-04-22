@@ -1,5 +1,6 @@
 class Menu {
   ArrayList<Button> buttons;
+  String info_studio;
 
   Menu() {
     // menu
@@ -8,6 +9,8 @@ class Menu {
     buttons.add(new Button(width / 2 - 100, height / 2, 200, 80, "start", "Start", ""));
     buttons.add(new Button(width / 2 - 100, height / 2 + 100, 200, 80, "option", "Option", ""));
     buttons.add(new Button(width / 2 - 100, height / 2 + 200, 200, 80, "exit", "Exit", ""));
+    
+    info_studio = "Studio Ocarina ©, 2024";
   }
 
   void display() {
@@ -18,6 +21,12 @@ class Menu {
     textSize(80);
     textAlign(CENTER, CENTER);
     text(gameTitle, width / 2, height / 2 - 100);
+    
+    // draw 
+    fill(255);
+    textSize(30);
+    textAlign(LEFT, LEFT);
+    text(info_studio, width - 340, height - 10);
 
     for (Button button : buttons) {
       if (button.isClicked()) {

@@ -41,6 +41,7 @@ class Game {
     camera = new Camera();
   }
 
+  // aggiorna la finestra di gioco con le nuove dimensioni 
   void updateScreen() {
     gameScene = createGraphics(width, height);
     spritesLayer = createGraphics(width, height);
@@ -139,31 +140,33 @@ class Game {
 
     // disegna il mask layer se non ci troviamo nel livello finale
     // maschera
-    // if (!isBossLevel) drawMaskLayer();
+    if (!isBossLevel) drawMaskLayer();
   }
 
   // funzione che gestisce tutti gli eventi in input relativi al giocatore
   // e alle altre entita
   void handleEvents() {
-    // gestione livello successivo
-    handleNextLevel();
-
     // gestione controlli player
     // handlePlayerDeath();
     p1.update();
+    // p1.attack();
+    // p1.usePotion();
 
-    // gestione azione nemici
-    handleEnemyActions();
+    if (!isBossLevel) {
+      // gestione livello successivo
+      handleNextLevel();
+    
+      // gestione azione nemici
+      handleEnemyActions();
 
-    // gestione casse
-    handleChest();
+      // gestione casse
+      handleChest();
 
-    // gestione monete
-    handleCoin();
-
-    // gestione azioni boss
-    if (isBossLevel) {
+      // gestione monete
+      handleCoin();
+    } else {
       handlePlayerVictory();
+      // gestione azioni boss
       boss.update(p1);
     }
   }
@@ -197,11 +200,14 @@ class Game {
     update();
 
     p1.display(spritesLayer);
-    displayEnemies();
-    displayChests();
-    displayCoins();
 
-    if (isBossLevel) boss.display(spritesLayer);
+    if (!isBossLevel) {
+      displayEnemies();
+      displayChests();
+      displayCoins();
+    } else {
+      boss.display(spritesLayer);
+    }
 
     spritesLayer.endDraw();
     image(spritesLayer, 0, 0);
@@ -284,16 +290,6 @@ class Game {
         p1.updateScore(100);
       }
     }
-  }
-
-  // gestisce il movimento del player
-  void handlePlayerMovement() {
-    p1.update();
-    p1.display(spritesLayer);
-    // p1.displayHitbox(spritesLayer);
-    // fare in modo di integrarli nel metodo update
-    p1.attack(spritesLayer);    // attacca i nemici
-    p1.usePotion(spritesLayer); // usa le pozioni
   }
 
   // gestisce le azioni del nemico

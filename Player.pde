@@ -179,7 +179,8 @@ class Player extends Sprite implements Damageable { //<>//
           new_position.x += 1;
         else if (direction == DIRECTION_LEFT)
           new_position.x -= 1;
-
+        
+        // non deve stare qui
         weapon.updatePosition(new_position);
         weapon.display(layer);
 
@@ -224,12 +225,14 @@ class Player extends Sprite implements Damageable { //<>//
             // dimunuisci numero di pozioni del giocatore
             numberOfPotion -= 1;
           } else {
+            // non deve stare qui
             // stampa massaggio di salute al massimo
             PVector text_position = p1.getPosition();
             TextDisplay healthFull = new TextDisplay(text_position, "Salute al massimo", color(255));
             healthFull.display(layer);
           }
         } else {
+          // non deve stare qui
           // stampa x per indicare che non hai piu pozioni
           float crossImageX = (getPosition().x * currentLevel.tileSize + (sprite.width / 2));
           float crossImageY = (getPosition().y * currentLevel.tileSize + (sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento

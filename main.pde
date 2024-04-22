@@ -20,6 +20,9 @@ Tutorial tutorial;
 UI ui;
 Game game;
 
+// logo screen
+PImage studio_logo;
+
 // ui
 PImage letter_w;
 PImage letter_a;
@@ -91,8 +94,11 @@ boolean isDungeonBackgroundPlaying;
 //float avg_fps = 0;
 //float avg_trate = 0;
 
+long logoScreenStartTime = 0;
+
 enum ScreenState {
-  MENU_SCREEN,
+  LOGO_SCREEN,
+    MENU_SCREEN,
     GAME_SCREEN,
     STORY_SCREEN,
     WIN_SCREEN,
@@ -136,7 +142,7 @@ void setup() {
   textFont(myFont);
 
   // schermata iniziale
-  screen_state = ScreenState.MENU_SCREEN;    // menu screen
+  screen_state = ScreenState.LOGO_SCREEN;    // menu screen
   previous_state = screen_state;
 
   menu = new Menu();
@@ -158,12 +164,13 @@ void setup() {
 
   // setup sound
   setupSounds();
+  
+  logoScreenStartTime = millis();
 }
 
 void setupImages() {
-  // sprites player
-  // spriteRight = loadImage("data/playerRIGHT.png");
-  // spriteLeft = loadImage("data/playerLEFT.png");
+  // studio logo
+  studio_logo = loadImage("data/studio_logo.jpeg");
 
   // movimento
   letter_w = loadImage("data/letter_w.png");
@@ -264,6 +271,18 @@ void draw() {
   surface.setTitle("Dungeon Game - " + String.format("%.1f", frameRate));
 
   switch(screen_state) {
+    // da sistemare
+    // si deve vedere per qualche secondo
+    // aggiungere effetto blurrato
+  case LOGO_SCREEN:
+    background(0);
+    // da centrarlo meglio 
+    image(studio_logo, width / 2 - 200, height / 2 - 200);
+    if (millis() - logoScreenStartTime >= 1500) {
+      screen_state = ScreenState.MENU_SCREEN;
+    }
+    break;
+
   case MENU_SCREEN:
     // show menu
     if (!isMenuBackgroundPlaying && volumeMusicLevel > 0) {
@@ -282,7 +301,7 @@ void draw() {
     }
 
     storyScreen(currentZone.storyText);
-    // image(spriteRight, width / 2, height / 2 - 130, 64, 64);
+    image(p1.right_side, width / 2, height / 2 - 130, 64, 64);
     break;
 
   case TUTORIAL_SCREEN:
@@ -325,8 +344,8 @@ void draw() {
     // cercare di ridurre il numero di chiamate
     game.handleEvents();
     game.display();
-    
-    // after all, updates ui 
+
+    // after all, updates ui
     ui.update();
 
     //long drawEnd = System.nanoTime();
