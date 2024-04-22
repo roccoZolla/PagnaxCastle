@@ -1,5 +1,8 @@
 class Player extends Sprite implements Damageable { //<>//
   float spriteSpeed = 0.2;
+  
+  PImage left_side;  // lato sinistro dello sprite del giocatore
+  PImage right_side; // lato destro dello sprite del giocatore
 
   // movements
   boolean moveUP;
@@ -30,15 +33,15 @@ class Player extends Sprite implements Damageable { //<>//
   int playerScore;
   int coins;      // numero di monete che ha il giocatore
   Weapon weapon;
-  Healer redPotion;  // restituisce due - tre cuori
-  Item golden_keys;
-  Item silver_keys;
+  Healer potion;  // pozione generale
+  Item golden_key;
+  Item silver_key;
   int numberOfSilverKeys;
   int numberOfGoldenKeys;
   int numberOfPotion;
 
-  Player(PVector position, PImage sprite, int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
-    super(position, sprite);
+  Player(PVector position, int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {    
+    super(position);
 
     this.playerScore = 0;
     this.playerHP = playerHP;
@@ -49,7 +52,23 @@ class Player extends Sprite implements Damageable { //<>//
     this.numberOfPotion = numberOfPotion;
 
     this.damageTileHandler = damageTileHandler;
-
+    
+    this.golden_key = new Item(null, null, "golden_key");
+    this.silver_key = new Item(null, null, "silver_key");
+    this.weapon = new Weapon(null, null, "Piccola Spada", 10);
+    this.potion = new Healer(null, null, "red_potion", 20);
+    
+    // carica lo sprite dell'arma e del giocatore
+    weapon.updateSprite(small_sword_sprite);
+    
+    right_side = loadImage("data/playerRIGHT.png");
+    left_side = loadImage("data/playerLEFT.png");
+    
+    this.sprite = right_side;
+    
+    // aggiorna lo posizione dell'arma
+    weapon.updatePosition(position);
+  
     this.moveUP = false;
     this.moveDOWN = false;
     this.moveRIGHT = false;
@@ -115,14 +134,14 @@ class Player extends Sprite implements Damageable { //<>//
     if (moveLEFT && isWithinMapBounds(round(x - 1), round(y)) && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
       x += -1 * spriteSpeed;
       direction = DIRECTION_LEFT;
-      sprite = spriteLeft;
+      sprite = left_side;
     }
 
     // cella a destra del giocatore
     if (moveRIGHT && isWithinMapBounds(round(x + 1), round(y)) && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
       x += 1 * spriteSpeed;
       direction = DIRECTION_RIGHT;
-      sprite = spriteRight;
+      sprite = right_side;
     }
 
     updatePosition(new PVector(x, y));
@@ -133,7 +152,7 @@ class Player extends Sprite implements Damageable { //<>//
     // se è un muro controlla la possibile collisione con lo sprite
     if (isWall(x, y)) {
       //println("è un muro...");
-      
+
       if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
         (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
         position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
@@ -200,7 +219,7 @@ class Player extends Sprite implements Damageable { //<>//
         if (numberOfPotion > 0) {
           // se vita minore della vita massima
           if (playerHP < playerMaxHP) {
-            takeHP(redPotion.getBonusHp());
+            takeHP(potion.getBonusHp());
 
             // dimunuisci numero di pozioni del giocatore
             numberOfPotion -= 1;

@@ -36,6 +36,7 @@ class Zone {
     currentLevel = levels.get(0);
   }
 
+// da sistemare poco efficiente
   void loadAssetsZone() {
     // println("carico gli assets della zona...");
     floorImage = loadImage(filesPath + "floorTile.png");

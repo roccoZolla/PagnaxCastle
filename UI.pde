@@ -72,8 +72,8 @@ class UI {
     uiLayer.fill(255);
     uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(24);
-    uiLayer.text(game_target, width / 2, 20);
-
+    uiLayer.text(game_target, width / 2, 20);    
+    
     // pause button
     if (buttons.get(0).isClicked()) {
       screen_state = ScreenState.PAUSE_SCREEN;
@@ -97,14 +97,14 @@ class UI {
     uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(18);
     uiLayer.text(p1.numberOfSilverKeys, 50, 80);
-    uiLayer.image(silver_key.sprite, 20, 80, 20, 20);
+    uiLayer.image(silver_key_sprite, 20, 80, 20, 20);
 
     // ------ CHIAVI ORO GIOCATORE ------
     uiLayer.fill(255);
     uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(18);
     uiLayer.text(p1.numberOfGoldenKeys, 100, 80);
-    uiLayer.image(golden_key.sprite, 70, 80, 20, 20);
+    uiLayer.image(golden_key_sprite, 70, 80, 20, 20);
 
     // ------ MONETE GIOCATORE ------
     uiLayer.fill(255);
@@ -118,7 +118,7 @@ class UI {
     uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(18);
     uiLayer.text(p1.numberOfPotion, 50, 110);
-    uiLayer.image(redPotion.sprite, 20, 110, 20, 20);
+    uiLayer.image(red_potion_sprite, 20, 110, 20, 20);
 
     // ------- MINIMAPPA ------
     if (isMapActive) displayMinimap();

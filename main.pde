@@ -1,13 +1,16 @@
+// per gestione del controller
+//import net.java.games.input.*;
+//import org.gamecontrolplus.*;
+//import org.gamecontrolplus.gui.*;
+
 import processing.sound.*;
 import java.util.Iterator;
 
 Player p1;
-PImage spriteRight;
-PImage spriteLeft;
-Weapon weapon;
+
+// trovare una soluzione
 Item silver_key;
 Item golden_key;
-Healer redPotion;
 
 //
 Menu menu;
@@ -28,6 +31,7 @@ PImage letter_l;
 
 PImage cross_sprite;
 
+// items
 PImage coin_sprite;
 PImage torch_sprite;
 PImage dungeon_map_sprite;
@@ -35,12 +39,19 @@ PImage chest_close_sprite;
 PImage chest_open_sprite;
 PImage special_chest_close_sprite;
 PImage special_chest_open_sprite;
+PImage golden_key_sprite;
+PImage silver_key_sprite;
+PImage red_potion_sprite;
+
 PImage rat_enemy_sprite;
-PImage boss_sprite;
+
 PImage orb_sprite;
+
+PImage boss_sprite;
 PImage chela_sprite;
 
 // weapons image
+PImage small_sword_sprite;
 PImage sword_sprite;
 PImage master_sword_sprite;
 
@@ -68,6 +79,18 @@ boolean isMenuBackgroundPlaying;
 SoundFile dungeon_background;
 boolean isDungeonBackgroundPlaying;
 
+// test
+//Timer fps_timer;
+//Timer tick_timer;
+
+//Timer fps_clock;
+//Timer tick_clock;
+
+//int counted_frames = 0;
+//int counted_ticks = 0;
+//float avg_fps = 0;
+//float avg_trate = 0;
+
 enum ScreenState {
   MENU_SCREEN,
     GAME_SCREEN,
@@ -83,11 +106,16 @@ enum ScreenState {
 ScreenState screen_state;
 ScreenState previous_state;  // salva lo stato precedente
 
+// da spostare nella classe game
 World castle;
 Zone currentZone;
 Level currentLevel;
 
 String actualLevel;
+
+// for the writer function
+int letterIndex = 0; // Indice della lettera corrente
+boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
 
 // titolo del gioco
 String gameTitle = "Pagnax's Castle";
@@ -118,8 +146,12 @@ void setup() {
   tutorial = new Tutorial();
   ui = new UI();
 
-  // setup items (PROVVISORIO)
-  setupItems();
+  // test
+  //fps_timer = new Timer();
+  //tick_timer = new Timer();
+
+  //fps_clock = new Timer();
+  //tick_clock = new Timer();
 
   // setup image
   setupImages();
@@ -128,20 +160,10 @@ void setup() {
   setupSounds();
 }
 
-void setupItems() {
-  golden_key = new Item(null, null, "golden_key");
-  silver_key = new Item(null, null, "silver_key");
-
-  // oggetti per il giocatore
-  weapon = new Weapon(null, null, "Piccola Spada", 10);
-
-  redPotion = new Healer(null, null, "red_potion", 20);
-}
-
 void setupImages() {
   // sprites player
-  spriteRight = loadImage("data/playerRIGHT.png");
-  spriteLeft = loadImage("data/playerLEFT.png");
+  // spriteRight = loadImage("data/playerRIGHT.png");
+  // spriteLeft = loadImage("data/playerLEFT.png");
 
   // movimento
   letter_w = loadImage("data/letter_w.png");
@@ -171,16 +193,16 @@ void setupImages() {
 
   chela_sprite = loadImage("data/chela_sprite.png");
 
-  golden_key.updateSprite(loadImage("data/golden_key.png"));
-  silver_key.updateSprite(loadImage("data/silver_key.png"));
+  golden_key_sprite = loadImage("data/golden_key.png");
+  silver_key_sprite = loadImage("data/silver_key.png");
 
   //weapon.sprite = ;
-  weapon.updateSprite(loadImage("data/little_sword.png"));
+  small_sword_sprite = (loadImage("data/little_sword.png"));
   sword_sprite = loadImage("data/sword.png");
   master_sword_sprite = loadImage("data/master_sword.png");
 
   // healers
-  redPotion.updateSprite(loadImage("data/object/red_potion.png"));
+  red_potion_sprite = loadImage("data/object/red_potion.png");
 
   heart_sprite = loadImage("data/heartFull.png");
   half_heart_sprite = loadImage("data/halfHeart.png");
@@ -227,6 +249,16 @@ void setupSounds() {
   dungeon_background.amp(volumeMusicLevel);
 }
 
+//void renderStats() {
+//  if (counted_frames >= 10) {
+//    avg_fps = counted_frames / (fps_timer.getTicks() / 1000.f);
+//    counted_frames = 0;
+//    fps_timer.timerReset();
+//  }
+
+//  ++counted_frames;
+//}
+
 void draw() {
   // cambia il titolo della finestra e mostra il framerate
   surface.setTitle("Dungeon Game - " + String.format("%.1f", frameRate));
@@ -250,7 +282,7 @@ void draw() {
     }
 
     storyScreen(currentZone.storyText);
-    image(spriteRight, width / 2, height / 2 - 130, 64, 64);
+    // image(spriteRight, width / 2, height / 2 - 130, 64, 64);
     break;
 
   case TUTORIAL_SCREEN:
@@ -264,11 +296,37 @@ void draw() {
       isDungeonBackgroundPlaying = true;
     }
 
+    // tick_rate -> gestione degli input
+    // game.update
+    // viene aggiornato ogni elemento del game
+
+    // fps_rate -> gestione del render
+    // game.render
+    // viene aggiornato lo schermo
+
+    // verifica se è il momento di eseguire il rendering della scena
+    // render loop
+    // CONSTANTS::SCREEN_FPS_CAP 240
+    //if (fps_clock.getTicks() > 1000.f / 240) {
+    //  // aggiornamento del sistema fisico
+    //  // mCollisionSystem->update();
+    //  // mFisicoSystem->update(fps_clock.getTicks());
+    //  count_display++;
+    //  game.display();
+    //  ui.update();
+    //  renderStats();
+    //  fps_clock.timerReset();
+    //}
+
     //long drawStart = 0;
     //drawStart = System.nanoTime();
 
     // show game screen
+    // cercare di ridurre il numero di chiamate
+    game.handleEvents();
     game.display();
+    
+    // after all, updates ui 
     ui.update();
 
     //long drawEnd = System.nanoTime();
@@ -316,7 +374,7 @@ void winScreen() {
     "La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.\n" +
     "Score totalizzato: " + p1.playerScore);
 
-  image(spriteLeft, width / 2 + 50, height / 2 - 120, 64, 64);
+  image(p1.left_side, width / 2 + 50, height / 2 - 120, 64, 64);
   image(chela_sprite, width / 2 - 50, height / 2 - 120, 64, 64);
 }
 
@@ -357,7 +415,7 @@ void writer(String txt) {
 
   if (isTyping) {
     // Continua a scrivere il testo
-    if (frameCount % typingSpeed == 0) {
+    if (frameCount % Utils.typingSpeed == 0) {
       if (letterIndex < txt.length()) {
         letterIndex++;
       } else {

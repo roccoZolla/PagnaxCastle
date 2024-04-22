@@ -147,7 +147,7 @@ class Enemy extends Sprite implements Damageable {
       // Nessun drop
     } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability) {
       // drop della chiave d'argento
-      Item dropSilverKey = new Item(dropPosition, silver_key.sprite, "dropSilverKey");
+      Item dropSilverKey = new Item(dropPosition, silver_key_sprite, "dropSilverKey");
       dropSilverKey.isCollectible = true;
       currentLevel.dropItems.add(dropSilverKey);
     } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability) {

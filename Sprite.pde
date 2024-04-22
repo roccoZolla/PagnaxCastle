@@ -1,6 +1,10 @@
 class Sprite {
   PVector position;
   PImage sprite;
+  
+  Sprite(PVector position) {
+    this.position = position;
+  }
 
   Sprite(PVector position, PImage sprite) {
     this.position = position;

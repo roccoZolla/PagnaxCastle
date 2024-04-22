@@ -17,14 +17,14 @@ class Level {
   int startRoomIndex;
   int endRoomIndex;
 
-  final int BACKGROUND_TILE_TYPE = 0;
-  final int FLOOR_TILE_TYPE = 1;
-  final int START_ROOM_TILE_TYPE = 2;
-  final int STAIRS_TILE_TYPE = 3;
-  final int WALL_PERIMETER_TILE_TYPE = 4;
-  final int HALLWAY_TILE_TYPE = 5;
-  final int CHEST_TILE_TYPE = 6;
-  final int PEAKS_TILE_TYPE = 7;
+  // final int BACKGROUND_TILE_TYPE = 0;
+  // final int FLOOR_TILE_TYPE = 1;
+  //final int START_ROOM_TILE_TYPE = 2;
+  //final int STAIRS_TILE_TYPE = 3;
+  //final int WALL_PERIMETER_TILE_TYPE = 4;
+  //final int HALLWAY_TILE_TYPE = 5;
+  //final int CHEST_TILE_TYPE = 6;
+  //final int PEAKS_TILE_TYPE = 7;
 
   // probabilita di spawn delle trappole all'interno del livello
   final double TRAP_SPAWN_PROBABILITY = 0.03;
@@ -70,6 +70,7 @@ class Level {
     this.isFinalLevel = false;
   }
 
+  // da sistemare poco efficiente 
   void loadAssetsLevel() {
     // println("carico gli assets del livello...");
     floorImage = currentZone.floorImage;
@@ -101,8 +102,8 @@ class Level {
     stairsNextFloor = new Sprite(new PVector((rooms.get(endRoomIndex).roomPosition.x), rooms.get(endRoomIndex).roomPosition.y), stairsNextFloorImage);
 
     // da rimuovere
-    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
-    map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = STAIRS_TILE_TYPE; // Stanza finale
+    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = Utils.START_ROOM_TILE_TYPE; // Stanza iniziale
+    map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = Utils.STAIRS_TILE_TYPE; // Stanza finale
 
     // inizializza l'array dei drop items
     // inizialmente è vuoto
@@ -136,7 +137,7 @@ class Level {
     generateBossRoom();
 
     // da rimuovere
-    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = START_ROOM_TILE_TYPE; // Stanza iniziale
+    map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = Utils.START_ROOM_TILE_TYPE; // Stanza iniziale
 
     //println("----- BOSS ROOM -----");
     //println("start room index: " + startRoomIndex);
@@ -156,7 +157,7 @@ class Level {
       randomY = (int) (startRoom.roomPosition.y + random(-2, 2));
 
       // Verifica se la posizione è già occupata da un muro, una parete o un'altra entità
-      positionOccupied = (map[randomX][randomY] != FLOOR_TILE_TYPE);
+      positionOccupied = (map[randomX][randomY] != Utils.FLOOR_TILE_TYPE);
     } while (positionOccupied);
 
     PVector randomPosition = new PVector(randomX, randomY);
@@ -184,13 +185,13 @@ class Level {
     for (int x = roomX; x < roomX + roomWidth; x++) {
       for (int y = roomY; y < roomY + roomHeight; y++) {
         if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
-          map[x][y] = WALL_PERIMETER_TILE_TYPE;
+          map[x][y] = Utils.WALL_PERIMETER_TILE_TYPE;
         } else {
-          map[x][y] = FLOOR_TILE_TYPE;
+          map[x][y] = Utils.FLOOR_TILE_TYPE;
           // spawn delle trappole all'interno delle stanze
           // da generare solo per la modalita difficile
           if (random(1) <= TRAP_SPAWN_PROBABILITY) {
-            map[x][y] = PEAKS_TILE_TYPE;
+            map[x][y] = Utils.PEAKS_TILE_TYPE;
           }
         }
       }
@@ -236,12 +237,12 @@ class Level {
         for (int x = roomX; x < roomX + roomWidth; x++) {
           for (int y = roomY; y < roomY + roomHeight; y++) {
             if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
-              map[x][y] = WALL_PERIMETER_TILE_TYPE;
+              map[x][y] = Utils.WALL_PERIMETER_TILE_TYPE;
             } else {
-              map[x][y] = FLOOR_TILE_TYPE;
+              map[x][y] = Utils.FLOOR_TILE_TYPE;
               // spawn delle trappole all'interno delle stanze
               if (random(1) <= TRAP_SPAWN_PROBABILITY) {
-                map[x][y] = PEAKS_TILE_TYPE;
+                map[x][y] = Utils.PEAKS_TILE_TYPE;
               }
             }
           }
@@ -305,7 +306,7 @@ class Level {
         y = (int) random(rows);
 
         // Verifica se la posizione non è pavimento
-        positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
+        positionOccupied = (map[x][y] != Utils.FLOOR_TILE_TYPE);
       } while (positionOccupied);
 
       // Crea una moneta con un valore casuale (puoi personalizzare il valore come preferisci)
@@ -359,7 +360,7 @@ class Level {
         y = (int) (room.roomPosition.y + offsetY) + 1;
 
         // Verifica se la posizione non è il pavimento
-        positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
+        positionOccupied = (map[x][y] != Utils.FLOOR_TILE_TYPE);
         //println("check position for the chest...");
         //println(positionOccupied);
 
@@ -397,7 +398,7 @@ class Level {
       }
 
       // Aggiungi la cassa alla lista delle casse
-      map[x][y] = CHEST_TILE_TYPE; // Imposta il tipo di tile corrispondente a una cassa
+      map[x][y] = Utils.CHEST_TILE_TYPE; // Imposta il tipo di tile corrispondente a una cassa
 
       treasures.add(chest);
     }
@@ -438,7 +439,7 @@ class Level {
           y = int(random(roomPosition.y - roomHeight / 2, roomPosition.y + roomHeight / 2));
 
           // Verifica se la posizione non è il pavimento
-          positionOccupied = (map[x][y] != FLOOR_TILE_TYPE);
+          positionOccupied = (map[x][y] != Utils.FLOOR_TILE_TYPE);
         } while (positionOccupied);
 
         ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();
@@ -475,42 +476,42 @@ class Level {
 
 
         switch(tileType) {
-        case BACKGROUND_TILE_TYPE:
+        case Utils.BACKGROUND_TILE_TYPE:
           // sfondo
           break;
 
-        case FLOOR_TILE_TYPE:
+        case Utils.FLOOR_TILE_TYPE:
           // pavimento
           layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case START_ROOM_TILE_TYPE:
+        case Utils.START_ROOM_TILE_TYPE:
           // Imposta l'immagine per la stanza iniziale (nero)
           layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case STAIRS_TILE_TYPE:
+        case Utils.STAIRS_TILE_TYPE:
           // scale per il piano successivo
           layer.image(stairsNextFloorImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case WALL_PERIMETER_TILE_TYPE:
+        case Utils.WALL_PERIMETER_TILE_TYPE:
           // muri perimetrali
           layer.image(wallImageNorth, centerX, centerY, tileSize, tileSize);
           break;
 
-        case HALLWAY_TILE_TYPE:
+        case Utils.HALLWAY_TILE_TYPE:
           // corridoio
           layer.image(hallwayImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case CHEST_TILE_TYPE:
+        case Utils.CHEST_TILE_TYPE:
           // ci sta tenerlo sono statiche le casse
           // tesori
           layer.image(floorImage, centerX, centerY, tileSize, tileSize);
           break;
 
-        case PEAKS_TILE_TYPE:
+        case Utils.PEAKS_TILE_TYPE:
           // peaks trap
           layer.image(peaksTrapImage, centerX, centerY, tileSize, tileSize);
           break;

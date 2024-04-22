@@ -60,26 +60,22 @@ class Chest extends Item {
     PVector dropPosition = calculateDropPosition();
 
     if (randomValue <= dropHeartProbability) {
-      println("cuore droppato");
       // drop del cuore
       Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
       currentLevel.dropItems.add(dropHeart);
     } else if (randomValue > dropHeartProbability && randomValue <= dropHeartProbability + dropSwordProbability) {
-      println("spada droppata");
       // drop della spada
       Weapon dropSword = new Weapon(dropPosition, sword_sprite, "Spada", 20); // Assumendo che una spada valga 20 danni
       currentLevel.dropItems.add(dropSword);
     } else if (randomValue > dropHeartProbability + dropSwordProbability && randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability) {
-      println("chiave oro droppata");
       // drop della chiave d'oro
-      Item dropGoldenKey = new Item(dropPosition, golden_key.sprite, "dropGoldenKey");
+      Item dropGoldenKey = new Item(dropPosition, golden_key_sprite, "dropGoldenKey");
       dropGoldenKey.isCollectible = true;
       currentLevel.dropItems.add(dropGoldenKey);
     } else if (randomValue > dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability &&
       randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability + dropPotionProbability) {
-      println("pozione droppata");
       // drop della pozione
-      Healer dropPotion = new Healer(dropPosition, redPotion.sprite, "dropPotion", 20);
+      Healer dropPotion = new Healer(dropPosition, red_potion_sprite, "dropPotion", 20);
       dropPotion.isCollectible = true;
       currentLevel.dropItems.add(dropPotion);
     }
@@ -97,7 +93,6 @@ class Chest extends Item {
     PVector dropPosition = calculateDropPosition();
 
     if (randomValue <= dropTorchProbability && !game.isTorchDropped) {
-      println("torcia droppata");
       // drop della torcia
       Item dropTorch = new Item(dropPosition, torch_sprite, "dropTorch");
       dropTorch.isCollectible = true;
@@ -106,7 +101,6 @@ class Chest extends Item {
     } else if (randomValue > dropTorchProbability
       && randomValue <= dropTorchProbability + dropMapProbability
       && !game.isMapDropped) {
-      println("mappa droppata");
       // drop della mappa
       Item dropMap = new Item(dropPosition, dungeon_map_sprite, "dropMap");
       dropMap.isCollectible = true;
@@ -115,7 +109,6 @@ class Chest extends Item {
     } else if (randomValue > dropTorchProbability + dropMapProbability
       && randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability
       && !game.isMasterSwordDropped) {
-      println("super spada droppata");
       // drop della super spada
       Weapon dropMasterSword = new Weapon(dropPosition, master_sword_sprite, "Spada del Maestro", 50); // Assumendo che una super spada valga 50 danni
       currentLevel.dropItems.add(dropMasterSword);

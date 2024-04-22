@@ -5,3 +5,9 @@ TO DO:
 [ ] - sistemare il frame rate
 [ ] - gestione animazioni
 [ ] - migliorare collision system
+[ ] - migliorare organizzazione delle classi
+ [ ] - classe Game
+ [ ] - classe Player
+ [ ] - World, Zone, Level
+[ ] - generazione livelli (perimetro stanze) 
+[ ] - migliorare nemici

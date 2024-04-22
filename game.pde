@@ -14,9 +14,11 @@ class Game {
   Boss boss;    // boss del gioco
   boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
   float holeRadius; // raggio della maschera
+
   boolean isTorchDropped;       // indica se la torcia è stata droppata, di base false
   boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
+
   ConcreteDamageHandler damageTileHandler;
 
   Game() {
@@ -52,13 +54,17 @@ class Game {
     isTorchDropped = false;
     isMapDropped = false;
     isMasterSwordDropped = false;
-    
+
     // reimposta lo stato della mappa, disattivo
     ui.deactivateMap();
     ui.deactivateBossUI();
   }
 
   void init() {
+    // da togliere di qua
+    golden_key = new Item(null, null, "golden_key");
+    silver_key = new Item(null, null, "silver_key");
+
     // create world
     castle = new World();
 
@@ -77,17 +83,20 @@ class Game {
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
     // inizializza il player
-    p1 = new Player(new PVector(0, 0), spriteRight, 100, 100, 1, 0, 3, damageTileHandler);
+    p1 = new Player(new PVector(0, 0), 100, 100, 1, 0, 3, damageTileHandler);
     p1.updatePosition(currentLevel.getStartPosition());
-    p1.redPotion = redPotion;
 
-    p1.weapon = weapon;
-    p1.weapon.updatePosition(p1.getPosition());
+    p1.golden_key = golden_key;
+    p1.silver_key = silver_key;
 
-    p1.golden_keys = golden_key;
-    p1.silver_keys = silver_key;
-    
     resetGame();
+
+    // avvia i timer
+    //fps_timer.timerStart();
+    //tick_timer.timerStart();
+
+    //fps_clock.timerStart();
+    //tick_clock.timerStart();
   }
 
   void initBossBattle() {
@@ -121,13 +130,42 @@ class Game {
     camera.update();
 
     // disegna il game layer
+    // mappa di gioco
     drawGameLayer();
 
     // disegna lo sprites layer
+    // giocatore, nemici, casse
     drawSpritesLayer();
 
     // disegna il mask layer se non ci troviamo nel livello finale
-    if (!isBossLevel) drawMaskLayer();
+    // maschera
+    // if (!isBossLevel) drawMaskLayer();
+  }
+
+  // funzione che gestisce tutti gli eventi in input relativi al giocatore
+  // e alle altre entita
+  void handleEvents() {
+    // gestione livello successivo
+    handleNextLevel();
+
+    // gestione controlli player
+    // handlePlayerDeath();
+    p1.update();
+
+    // gestione azione nemici
+    handleEnemyActions();
+
+    // gestione casse
+    handleChest();
+
+    // gestione monete
+    handleCoin();
+
+    // gestione azioni boss
+    if (isBossLevel) {
+      handlePlayerVictory();
+      boss.update(p1);
+    }
   }
 
   void drawGameLayer() {
@@ -155,11 +193,15 @@ class Game {
     spritesLayer.imageMode(CENTER);
 
     // aggiorna lo stato corrente del gioco
-    if (isBossLevel) {
-      updateBossBattle();
-    } else {
-      update();
-    }
+    // non deve trovarsi qui
+    update();
+
+    p1.display(spritesLayer);
+    displayEnemies();
+    displayChests();
+    displayCoins();
+
+    if (isBossLevel) boss.display(spritesLayer);
 
     spritesLayer.endDraw();
     image(spritesLayer, 0, 0);
@@ -186,20 +228,8 @@ class Game {
   }
 
   void update() {
-    handlePlayerDeath();
-    handlePlayerMovement();
-    handleEnemyActions();
-    handleChest();
-    handleCoin();
+    // da sistemare
     handleDropItems();
-    handleNextLevel();    // gestisce il passaggio al livello successivo
-  }
-
-  void updateBossBattle() {
-    handlePlayerVictory();
-    handlePlayerDeath();
-    handlePlayerMovement();
-    handleBossActions();    // gestisce il boss
   }
 
   // gestisce la vittoria del giocatore
@@ -261,6 +291,7 @@ class Game {
     p1.update();
     p1.display(spritesLayer);
     // p1.displayHitbox(spritesLayer);
+    // fare in modo di integrarli nel metodo update
     p1.attack(spritesLayer);    // attacca i nemici
     p1.usePotion(spritesLayer); // usa le pozioni
   }
@@ -275,7 +306,7 @@ class Game {
       if (isInVisibleArea(enemy.getPosition())) {
         if (enemy.enemyHP > 0) {
           enemy.update();
-          enemy.display(spritesLayer);
+          // enemy.display(spritesLayer);
 
           // attacca solo se c'è collisione
           if (enemy.sprite_collision(p1)) {
@@ -293,22 +324,27 @@ class Game {
     }
   }
 
-  // gestione del boss finale di gioco
-  void handleBossActions() {
-    boss.update(p1);
-    boss.display(spritesLayer);
-    // boss.displayHitbox(spritesLayer);
+  void displayEnemies() {
+    Iterator<Enemy> iterator = currentLevel.enemies.iterator();
+
+    while (iterator.hasNext()) {
+      Enemy enemy = iterator.next();
+
+      if (isInVisibleArea(enemy.getPosition())) {
+        if (enemy.enemyHP > 0) {
+          enemy.display(spritesLayer);
+        }
+      }
+    }
   }
 
   // gestione delle chest
+  // da migliorare
   void handleChest() {
     // ----- CHEST -----
     // disegna solo le chest visibili
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.getPosition())) {
-        // mostra le chest nell'area visibile
-        chest.display(spritesLayer);
-
         if (chest.sprite_collision(p1) && !chest.isOpen()) {
           // println("collsione cassa giocatore");
           chest.displayHitbox(spritesLayer);
@@ -324,7 +360,7 @@ class Game {
               if (chest.isRare()) {    // se la cassa è rara
                 // CASSA RARA
                 if (p1.numberOfGoldenKeys > 0) {
-                  if (chest.getOpenWith().equals(p1.golden_keys)) {
+                  if (chest.getOpenWith().equals(p1.golden_key)) {
                     // imposta la cassa come aperta
                     chest.setIsOpen(true);
                     chest_open.play();
@@ -344,7 +380,7 @@ class Game {
               } else {  // se la cassa è normale
                 // CASSA NORMALE
                 if (p1.numberOfSilverKeys > 0) {
-                  if (chest.getOpenWith().equals(p1.silver_keys)) {
+                  if (chest.getOpenWith().equals(p1.silver_key)) {
                     // imposta la cassa come aperta
                     chest.setIsOpen(true);
                     chest_open.play();
@@ -373,21 +409,39 @@ class Game {
     }
   }
 
+  void displayChests() {
+    for (Chest chest : currentLevel.treasures) {
+      if (isInVisibleArea(chest.getPosition())) {
+        // mostra le chest nell'area visibile
+        chest.display(spritesLayer);
+      }
+    }
+  }
+
   // gestisce le monete
   void handleCoin() {
     // ----- COIN -----
     for (Coin coin : currentLevel.coins) {
       if (isInVisibleArea(coin.getPosition())) {
         // mostra le monete nell'area visibile
-        if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
-          coin.display(spritesLayer);
-
+        if (!coin.isCollected()) {
           if (coin.sprite_collision(p1)) {
             coin.collect();  // raccogli la moneta
             p1.collectCoin();
             pickupCoin.play();
             p1.updateScore(coin.scoreValue);
           }
+        }
+      }
+    }
+  }
+
+  void displayCoins() {
+    for (Coin coin : currentLevel.coins) {
+      if (isInVisibleArea(coin.getPosition())) {
+        // mostra le monete nell'area visibile
+        if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
+          coin.display(spritesLayer);
         }
       }
     }
