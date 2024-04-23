@@ -18,7 +18,7 @@ class Camera {
   }
 
   Camera() {
-    this.zoom = 5.0;
+    this.zoom = 3.0;
     this.easing = 0.7;
   }
 }

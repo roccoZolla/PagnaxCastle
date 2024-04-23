@@ -17,15 +17,6 @@ class Level {
   int startRoomIndex;
   int endRoomIndex;
 
-  // final int BACKGROUND_TILE_TYPE = 0;
-  // final int FLOOR_TILE_TYPE = 1;
-  //final int START_ROOM_TILE_TYPE = 2;
-  //final int STAIRS_TILE_TYPE = 3;
-  //final int WALL_PERIMETER_TILE_TYPE = 4;
-  //final int HALLWAY_TILE_TYPE = 5;
-  //final int CHEST_TILE_TYPE = 6;
-  //final int PEAKS_TILE_TYPE = 7;
-
   // probabilita di spawn delle trappole all'interno del livello
   final double TRAP_SPAWN_PROBABILITY = 0.03;
 

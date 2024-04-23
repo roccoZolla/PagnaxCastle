@@ -1,8 +1,9 @@
 // classe per la gestione del timer
 
 class Timer {
-  int startTicks;  // clock time quando il timer parte
-  int pauseTicks;  // clock timer quando il timer viene messo in pausa
+  long startTicks;  // clock time quando il timer parte
+  long pauseTicks;  // clock timer quando il timer viene messo in pausa
+  
   // variabili di stato
   boolean isStarted;
   boolean isPaused;
@@ -68,9 +69,9 @@ class Timer {
     start();
   }
   
-  int getTicks() {
+  long getTicks() {
     //The actual timer time
-    int time = 0;
+    long time = 0;
 
     // If the timer is running
     if (isStarted) {

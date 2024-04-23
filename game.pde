@@ -19,6 +19,8 @@ class Game {
   boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
 
+  boolean canOpenChest;        // trigger che attiva il disegno della x quando non si puo aprire una chest
+
   ConcreteDamageHandler damageTileHandler;
 
   Game() {
@@ -35,13 +37,15 @@ class Game {
     isMapDropped = false;
     isMasterSwordDropped = false;
 
+    canOpenChest = false;
+
     // raggio della maschera
     holeRadius = 60;
 
     camera = new Camera();
   }
 
-  // aggiorna la finestra di gioco con le nuove dimensioni 
+  // aggiorna la finestra di gioco con le nuove dimensioni
   void updateScreen() {
     gameScene = createGraphics(width, height);
     spritesLayer = createGraphics(width, height);
@@ -93,11 +97,11 @@ class Game {
     resetGame();
 
     // avvia i timer
-    //fps_timer.timerStart();
-    //tick_timer.timerStart();
+    fps_timer.timerStart();
+    tick_timer.timerStart();
 
-    //fps_clock.timerStart();
-    //tick_clock.timerStart();
+    fps_clock.timerStart();
+    tick_clock.timerStart();
   }
 
   void initBossBattle() {
@@ -140,7 +144,7 @@ class Game {
 
     // disegna il mask layer se non ci troviamo nel livello finale
     // maschera
-    if (!isBossLevel) drawMaskLayer();
+    // if (!isBossLevel) drawMaskLayer();
   }
 
   // funzione che gestisce tutti gli eventi in input relativi al giocatore
@@ -149,13 +153,13 @@ class Game {
     // gestione controlli player
     // handlePlayerDeath();
     p1.update();
-    // p1.attack();
-    // p1.usePotion();
+    //p1.attack(spritesLayer);
+    //p1.usePotion(spritesLayer);
 
     if (!isBossLevel) {
       // gestione livello successivo
       handleNextLevel();
-    
+
       // gestione azione nemici
       handleEnemyActions();
 
@@ -260,7 +264,6 @@ class Game {
     if (currentLevel.stairsNextFloor.sprite_collision(p1)) {
       // se il livello dell'area è l'ultimo passa alla prossima area
       if (currentLevel.levelIndex == currentZone.levels.size() - 1) {
-        println("E' L'ULTIMO LIVELLO DELLA ZONA...");
         // controlla se è l'area finale
         if (currentZone.isFinal()) {
           initBossBattle();
@@ -302,11 +305,9 @@ class Game {
       if (isInVisibleArea(enemy.getPosition())) {
         if (enemy.enemyHP > 0) {
           enemy.update();
-          // enemy.display(spritesLayer);
 
           // attacca solo se c'è collisione
           if (enemy.sprite_collision(p1)) {
-            // enemy.displayHitbox(spritesLayer);
             enemy.attack(p1);
           } else {
             enemy.first_attack = true;
@@ -343,20 +344,19 @@ class Game {
       if (isInVisibleArea(chest.getPosition())) {
         if (chest.sprite_collision(p1) && !chest.isOpen()) {
           // println("collsione cassa giocatore");
-          chest.displayHitbox(spritesLayer);
-
-          float letterImageX = (chest.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
-          float letterImageY = (chest.getPosition().y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-          spritesLayer.image(letter_k, letterImageX, letterImageY);
+          canOpenChest = true;
 
           // se il giocatore preme il tasto interazione e la cassa non è stata aperta
           if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
             if (!p1.isInteracting) {
               p1.isInteracting = true;
-              if (chest.isRare()) {    // se la cassa è rara
+              if (chest.isRare())
+              {    // se la cassa è rara
                 // CASSA RARA
-                if (p1.numberOfGoldenKeys > 0) {
-                  if (chest.getOpenWith().equals(p1.golden_key)) {
+                if (p1.numberOfGoldenKeys > 0)
+                {
+                  if (chest.getOpenWith().equals(p1.golden_key))
+                  {
                     // imposta la cassa come aperta
                     chest.setIsOpen(true);
                     chest_open.play();
@@ -368,15 +368,17 @@ class Game {
 
                     chest.dropItemSpecialChest();
                   }
-                } else {
-                  float crossImageX = (p1.getPosition().x * currentLevel.tileSize + (chest.sprite.width / 2));
-                  float crossImageY = (p1.getPosition().y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-                  spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+                } else
+                {
+                  canOpenChest = false;
                 }
-              } else {  // se la cassa è normale
+              } else
+              {  // se la cassa è normale
                 // CASSA NORMALE
-                if (p1.numberOfSilverKeys > 0) {
-                  if (chest.getOpenWith().equals(p1.silver_key)) {
+                if (p1.numberOfSilverKeys > 0)
+                {
+                  if (chest.getOpenWith().equals(p1.silver_key))
+                  {
                     // imposta la cassa come aperta
                     chest.setIsOpen(true);
                     chest_open.play();
@@ -389,14 +391,14 @@ class Game {
                     // metodo per drop item casuale
                     chest.dropItemNormalChest();
                   }
-                } else {
-                  float crossImageX = (p1.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
-                  float crossImageY = (p1.getPosition().y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-                  spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+                } else
+                {
+                  canOpenChest = false;
                 }
               }
             }
-          } else {
+          } else
+          {
             // resettta la variabile
             p1.isInteracting = false;
           }
@@ -407,9 +409,27 @@ class Game {
 
   void displayChests() {
     for (Chest chest : currentLevel.treasures) {
-      if (isInVisibleArea(chest.getPosition())) {
+      if (isInVisibleArea(chest.getPosition()))
+      {
         // mostra le chest nell'area visibile
         chest.display(spritesLayer);
+
+        if (chest.sprite_collision(p1) && !chest.isOpen())
+        {
+          chest.displayHitbox(spritesLayer);
+
+          // disegna la lettera che indica il tasto per aprire la cassa
+          float letterImageX = (chest.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
+          float letterImageY = (chest.getPosition().y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          spritesLayer.image(letter_k, letterImageX, letterImageY);
+
+          if (!canOpenChest)
+          {
+            float crossImageX = (p1.getPosition().x * currentLevel.tileSize + (chest.sprite.width / 2));
+            float crossImageY = (p1.getPosition().y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+            spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+          }
+        }
       }
     }
   }
@@ -444,6 +464,7 @@ class Game {
   }
 
   // gestisce gli oggetti rilasciati dai nemici e dalle casse
+  // da riscrivere completamente
   void handleDropItems() {
     // ----- DROP ITEMS -----
     Iterator<Item> iterator = currentLevel.dropItems.iterator();
@@ -452,76 +473,103 @@ class Game {
       Item item = iterator.next();
 
       // controlla che gli elementi droppati siano visibili
-      if (isInVisibleArea(item.getPosition())) {
+      if (isInVisibleArea(item.getPosition()))
+      {
         item.display(spritesLayer);
 
-        if (item.sprite_collision(p1)) {
+        if (item.sprite_collision(p1))
+        {
           item.displayHitbox(spritesLayer);
 
           float letterImageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2));
           float letterImageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
           spritesLayer.image(letter_k, letterImageX, letterImageY);
 
-          if (item instanceof Weapon) {
-            Weapon temp = (Weapon) item;
+          // if (item instanceof Weapon)
+          if (item.isWeapon)
+          {
+            // Weapon temp = (Weapon) item;
+            Item temp = item;
 
-            if (temp.damage > p1.weapon.damage) {
+            // mostra se un'arma è piu forte o debole rispetto a quella del giocatore
+            if (temp.damage > p1.weapon.damage)
+            {
               float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
               float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
               spritesLayer.image(up_buff, imageX, imageY);
-            } else if (temp.damage < p1.weapon.damage) {
+            } else if (temp.damage < p1.weapon.damage)
+            {
               float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
               float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
               spritesLayer.image(down_buff, imageX, imageY);
             }
           }
 
-          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
-            if (!p1.isInteracting) {
+          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK))
+          {
+            if (!p1.isInteracting)
+            {
               p1.isInteracting = true;
 
-              if (item instanceof Healer) { // verifico prima che sia un oggetto curativo
-                if (item.name.equals("dropPotion")) {  // se è un pozione aggiungila
+              // if (item instanceof Healer)
+              if (item.isHealer)
+              { // verifico prima che sia un oggetto curativo
+                if (item.name.equals("dropPotion"))
+                {  // se è un pozione aggiungila
                   p1.numberOfPotion++;
                   iterator.remove();
-                } else {  // se è un cuore recupera la vita istantaneamente
-                  if (p1.playerHP < p1.playerMaxHP) { // verifico che la salute del giocatore sia minore della salute massima
-                    Healer healerItem = (Healer) item;
+                } else
+                {  // se è un cuore recupera la vita istantaneamente
+                  if (p1.playerHP < p1.playerMaxHP)
+                  { // verifico che la salute del giocatore sia minore della salute massima
+                    // Healer healerItem = (Healer) item;
+                    Item healerItem = item;
 
                     p1.takeHP(healerItem.getBonusHp());
 
                     // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
                     iterator.remove();
-                  } else {
+                  } else
+                  {
                     TextDisplay healthFull = new TextDisplay(p1.getPosition(), "Salute al massimo", color(255));
                     healthFull.display(spritesLayer);
                   }
                 }
-              } else if (item instanceof Weapon) {
+              }
+
+              // else if (item instanceof Weapon)
+              else if (item.isWeapon)
+              {
                 // una volta scambiata l'arma non è piu possibile recuperare quella vecchia
                 // assegna arma a terra al giocatore
-                p1.weapon = (Weapon) item;
+                // p1.weapon = (Weapon) item;
+                p1.weapon = item;
                 // rimuovi l'oggetto droppato a terra
                 iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropSilverKey")) {
+              } else if (item.isCollectible && item.name.equals("dropSilverKey"))
+              {
                 // aumenta il numero delle chiavi d'argento
                 p1.takeSilverKey();
                 iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropGoldenKey")) {
+              } else if (item.isCollectible && item.name.equals("dropGoldenKey"))
+              {
                 // aumenta il numero delle chiavi d'oro
                 p1.takeGoldenKey();
                 iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropTorch")) {
+              } else if (item.isCollectible && item.name.equals("dropTorch"))
+              {
                 // aumenta il raggio della maschera
                 holeRadius += 50;
                 iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropMap")) {
+              } else if (item.isCollectible && item.name.equals("dropMap"))
+              {
                 // attiva la minimappa per tutti i livelli
                 ui.activateMap();
                 iterator.remove();
               }
             }
-          } else {
+          } else
+          {
             // resetta la variabile di stato
             p1.isInteracting = false;
           }

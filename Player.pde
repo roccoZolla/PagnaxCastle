@@ -1,6 +1,6 @@
 class Player extends Sprite implements Damageable { //<>//
   float spriteSpeed = 0.2;
-  
+
   PImage left_side;  // lato sinistro dello sprite del giocatore
   PImage right_side; // lato destro dello sprite del giocatore
 
@@ -32,15 +32,17 @@ class Player extends Sprite implements Damageable { //<>//
   int playerHP;
   int playerScore;
   int coins;      // numero di monete che ha il giocatore
-  Weapon weapon;
-  Healer potion;  // pozione generale
+  // Weapon weapon;
+  Item weapon;
+  Item potion;
+  // Healer potion;  // pozione generale
   Item golden_key;
   Item silver_key;
   int numberOfSilverKeys;
   int numberOfGoldenKeys;
   int numberOfPotion;
 
-  Player(PVector position, int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {    
+  Player(PVector position, int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
     super(position);
 
     this.playerScore = 0;
@@ -52,23 +54,25 @@ class Player extends Sprite implements Damageable { //<>//
     this.numberOfPotion = numberOfPotion;
 
     this.damageTileHandler = damageTileHandler;
-    
+
     this.golden_key = new Item(null, null, "golden_key");
     this.silver_key = new Item(null, null, "silver_key");
-    this.weapon = new Weapon(null, null, "Piccola Spada", 10);
-    this.potion = new Healer(null, null, "red_potion", 20);
-    
+    // this.weapon = new Weapon(null, null, "Piccola Spada", 10);
+    this.weapon = new Item(null, small_sword_sprite, "Piccola Spada", false, 0, true, 10);
+    this.potion = new Item(null, null, "red_potion", true, 20, false, 0);
+    // this.potion = new Healer(null, null, "red_potion", 20);
+
     // carica lo sprite dell'arma e del giocatore
     weapon.updateSprite(small_sword_sprite);
-    
+
     right_side = loadImage("data/playerRIGHT.png");
     left_side = loadImage("data/playerLEFT.png");
-    
+
     this.sprite = right_side;
-    
+
     // aggiorna lo posizione dell'arma
     weapon.updatePosition(position);
-  
+
     this.moveUP = false;
     this.moveDOWN = false;
     this.moveRIGHT = false;
@@ -166,12 +170,15 @@ class Player extends Sprite implements Damageable { //<>//
   }
 
   // da fixare
-  void attack(PGraphics layer) {
-    if (moveATCK && (!moveUSE && !moveINTR)) {
+  void attack(PGraphics layer)
+  {
+    if (moveATCK && (!moveUSE && !moveINTR))
+    {
       // println("sta attaccando...");
       isAttacking = true;
       // se sta attaccando e l'attacco non è stato eseguito
-      if (isAttacking && !attackExecuted) {
+      if (isAttacking && !attackExecuted)
+      {
         // offset
         PVector new_position = position.copy();
 
@@ -179,13 +186,15 @@ class Player extends Sprite implements Damageable { //<>//
           new_position.x += 1;
         else if (direction == DIRECTION_LEFT)
           new_position.x -= 1;
-        
+
         // non deve stare qui
         weapon.updatePosition(new_position);
         weapon.display(layer);
 
-        if (game.isBossLevel) {
-          if (weapon.sprite_collision(game.boss)) {
+        if (game.isBossLevel)
+        {
+          if (weapon.sprite_collision(game.boss))
+          {
             swordAttack.play();
             game.boss.takeDamage(weapon.getDamage());
             // l'attacco è stato eseguito non continuare ad attaccare
@@ -194,7 +203,8 @@ class Player extends Sprite implements Damageable { //<>//
           }
         } else {
           for (Enemy enemy : currentLevel.enemies) {
-            if (weapon.sprite_collision(enemy)) {
+            if (weapon.sprite_collision(enemy))
+            {
               swordAttack.play();
               enemy.takeDamage(weapon.getDamage());
               // l'attacco è stato eseguito non continuare ad attaccare
@@ -204,7 +214,8 @@ class Player extends Sprite implements Damageable { //<>//
           }
         }
       }
-    } else {
+    } else
+    {
       // println("non sta piu attaccando...");
       isAttacking = false;
       attackExecuted = false;

@@ -83,16 +83,16 @@ SoundFile dungeon_background;
 boolean isDungeonBackgroundPlaying;
 
 // test
-//Timer fps_timer;
-//Timer tick_timer;
+Timer fps_timer;
+Timer tick_timer;
 
-//Timer fps_clock;
-//Timer tick_clock;
+Timer fps_clock;
+Timer tick_clock;
 
-//int counted_frames = 0;
-//int counted_ticks = 0;
-//float avg_fps = 0;
-//float avg_trate = 0;
+int counted_frames = 0;
+int counted_ticks = 0;
+float avg_fps = 0;
+float avg_trate = 0;
 
 long logoScreenStartTime = 0;
 
@@ -153,18 +153,18 @@ void setup() {
   ui = new UI();
 
   // test
-  //fps_timer = new Timer();
-  //tick_timer = new Timer();
+  fps_timer = new Timer();
+  tick_timer = new Timer();
 
-  //fps_clock = new Timer();
-  //tick_clock = new Timer();
+  fps_clock = new Timer();
+  tick_clock = new Timer();
 
   // setup image
   setupImages();
 
   // setup sound
   setupSounds();
-  
+
   logoScreenStartTime = millis();
 }
 
@@ -256,19 +256,29 @@ void setupSounds() {
   dungeon_background.amp(volumeMusicLevel);
 }
 
-//void renderStats() {
-//  if (counted_frames >= 10) {
-//    avg_fps = counted_frames / (fps_timer.getTicks() / 1000.f);
-//    counted_frames = 0;
-//    fps_timer.timerReset();
-//  }
+void tickStats() {
+  if (counted_ticks >= 20) {
+    avg_trate = counted_ticks / (tick_timer.getTicks() / 1000.f);
+    counted_ticks = 0;
+    tick_timer.timerStart();
+  }
 
-//  ++counted_frames;
-//}
+  ++counted_ticks;
+}
+
+void renderStats() {
+  if (counted_frames >= 10) {
+    avg_fps = counted_frames / (fps_timer.getTicks() / 1000.f);
+    counted_frames = 0;
+    fps_timer.timerReset();
+  }
+
+  ++counted_frames;
+}
 
 void draw() {
   // cambia il titolo della finestra e mostra il framerate
-  surface.setTitle("Dungeon Game - " + String.format("%.1f", frameRate));
+  surface.setTitle("Pagnax's Castle - " + String.format("%.1f", frameRate));
 
   switch(screen_state) {
     // da sistemare
@@ -276,8 +286,8 @@ void draw() {
     // aggiungere effetto blurrato
   case LOGO_SCREEN:
     background(0);
-    // da centrarlo meglio 
-    image(studio_logo, width / 2 - 200, height / 2 - 200);
+    // da centrarlo meglio
+    image(studio_logo, width / 2, height / 2);
     if (millis() - logoScreenStartTime >= 1500) {
       screen_state = ScreenState.MENU_SCREEN;
     }
@@ -314,45 +324,27 @@ void draw() {
       dungeon_background.loop();
       isDungeonBackgroundPlaying = true;
     }
-
-    // tick_rate -> gestione degli input
-    // game.update
-    // viene aggiornato ogni elemento del game
-
-    // fps_rate -> gestione del render
-    // game.render
-    // viene aggiornato lo schermo
+    
+    // cercare altre soluzioni
+    // show game screen
+    // cercare di ridurre il numero di chiamate
+    // tick_rate: 70
+    if (tick_clock.getTicks() > 1000.f / 70) {
+      // tick(tick_clock.getTicks());
+      game.handleEvents();
+      tick_clock.timerReset();
+      tickStats();
+    }
 
     // verifica se è il momento di eseguire il rendering della scena
     // render loop
     // CONSTANTS::SCREEN_FPS_CAP 240
-    //if (fps_clock.getTicks() > 1000.f / 240) {
-    //  // aggiornamento del sistema fisico
-    //  // mCollisionSystem->update();
-    //  // mFisicoSystem->update(fps_clock.getTicks());
-    //  count_display++;
-    //  game.display();
-    //  ui.update();
-    //  renderStats();
-    //  fps_clock.timerReset();
-    //}
-
-    //long drawStart = 0;
-    //drawStart = System.nanoTime();
-
-    // show game screen
-    // cercare di ridurre il numero di chiamate
-    game.handleEvents();
-    game.display();
-
-    // after all, updates ui
-    ui.update();
-
-    //long drawEnd = System.nanoTime();
-    //long passedTime = drawEnd - drawStart;
-
-    //println("passed time drawing: " + passedTime);
-
+    if (fps_clock.getTicks() > 1000.f / 360) {
+      game.display();
+      ui.update();
+      renderStats();
+      fps_clock.timerReset();
+    }
     break;
 
   case WIN_SCREEN:

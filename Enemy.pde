@@ -28,6 +28,7 @@ class Enemy extends Sprite implements Damageable {
   }
 
   // gestisce il movimento del nemico
+  // da migliorare
   void update() {
     // Ottieni la posizione del giocatore
     PVector playerPosition = p1.getPosition();
@@ -143,20 +144,31 @@ class Enemy extends Sprite implements Damageable {
 
     PVector dropPosition = position.copy();
 
-    if (randomValue <= dropNothingProbability) {
+    if (randomValue <= dropNothingProbability) 
+    {
       // Nessun drop
-    } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability) {
+    } 
+    
+    else if (randomValue <= dropNothingProbability + dropSilverKeyProbability) 
+    {
       // drop della chiave d'argento
       Item dropSilverKey = new Item(dropPosition, silver_key_sprite, "dropSilverKey");
-      dropSilverKey.isCollectible = true;
       currentLevel.dropItems.add(dropSilverKey);
-    } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability) {
+    } 
+    
+    else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability) 
+    {
       // drop del cuore intero
-      Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
+      // Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
+      Item dropHeart = new Item(dropPosition, heart_sprite, "dropHeart", true, 10, false, 0);
       currentLevel.dropItems.add(dropHeart);
-    } else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability + dropHalfHeartProbability) {
+    } 
+    
+    else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability + dropHalfHeartProbability) 
+    {
       // drop del mezzocuore
-      Healer dropHalfHeart = new Healer(dropPosition, half_heart_sprite, "dropHalfHeart", 5);
+      // Healer dropHalfHeart = new Healer(dropPosition, half_heart_sprite, "dropHalfHeart", 5);
+      Item dropHalfHeart = new Item(dropPosition, half_heart_sprite, "dropHalfHeart", true, 5, false, 0);
       currentLevel.dropItems.add(dropHalfHeart);
     }
   }
