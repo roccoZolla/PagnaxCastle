@@ -120,37 +120,67 @@ class Player extends Sprite implements Damageable { //<>//
   }
 
   // aggiorna movimento del giocatore
+  // metodo piu veloce e meno costoso in termini di risorse
   void update() {
-    float x = position.x;
-    float y = position.y;
-
-    // cella superiore al giocatore
-    if (moveUP && isWithinMapBounds(round(x), round(y - 1)) && !check_collision_wall(round(x), round(y - 1))) {      // y - 1
-      y += -1 * spriteSpeed;
-    }
-
-    // cella inferiore al giocatore
-    if (moveDOWN && isWithinMapBounds(round(x), round(y + 1)) && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
-      y += 1 * spriteSpeed;
-    }
-
-    // cella a sinistra del giocatore
-    if (moveLEFT && isWithinMapBounds(round(x - 1), round(y)) && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
-      x += -1 * spriteSpeed;
+    if (moveUP)
+    {
+      position.y += -1 * spriteSpeed;
+    } 
+    
+    if (moveDOWN)
+    {
+      position.y += 1 * spriteSpeed;
+    } 
+    
+    if (moveLEFT)
+    {
+      position.x += -1 * spriteSpeed;
       direction = DIRECTION_LEFT;
       sprite = left_side;
-    }
-
-    // cella a destra del giocatore
-    if (moveRIGHT && isWithinMapBounds(round(x + 1), round(y)) && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
-      x += 1 * spriteSpeed;
+    } 
+    
+    if (moveRIGHT)
+    {
+      position.x += 1 * spriteSpeed;
       direction = DIRECTION_RIGHT;
       sprite = right_side;
     }
-
-    updatePosition(new PVector(x, y));
-    damageTileHandler.handleDamageTiles(this, round(x), round(y));
+    
+    // da mettere da un'altra parte
+    damageTileHandler.handleDamageTiles(this, round(position.x), round(position.y));
   }
+
+  //void update() {
+  //  float x = position.x;
+  //  float y = position.y;
+
+  //  // cella superiore al giocatore
+  //  if (moveUP && isWithinMapBounds(round(x), round(y - 1)) && !check_collision_wall(round(x), round(y - 1))) {      // y - 1
+  //    y += -1 * spriteSpeed;
+  //  }
+
+  //  // cella inferiore al giocatore
+  //  if (moveDOWN && isWithinMapBounds(round(x), round(y + 1)) && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
+  //    y += 1 * spriteSpeed;
+  //  }
+
+  //  // cella a sinistra del giocatore
+  //  if (moveLEFT && isWithinMapBounds(round(x - 1), round(y)) && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
+  //    x += -1 * spriteSpeed;
+  //    direction = DIRECTION_LEFT;
+  //    sprite = left_side;
+  //  }
+
+  //  // cella a destra del giocatore
+  //  if (moveRIGHT && isWithinMapBounds(round(x + 1), round(y)) && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
+  //    x += 1 * spriteSpeed;
+  //    direction = DIRECTION_RIGHT;
+  //    sprite = right_side;
+  //  }
+
+  //  updatePosition(new PVector(x, y));
+  //  damageTileHandler.handleDamageTiles(this, round(x), round(y));
+  //}
 
   boolean check_collision_wall(int x, int y) {
     // se è un muro controlla la possibile collisione con lo sprite

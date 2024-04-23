@@ -45,6 +45,14 @@ class Item extends Sprite {
   int getDamage() {
     return damage;
   }
+  
+  boolean isWeapon() {
+    return isWeapon;
+  }
+  
+  boolean isHealer() {
+    return isHealer;
+  }
 
   // metodo per il rilevamento delle collisioni ereditato da sprite
 }

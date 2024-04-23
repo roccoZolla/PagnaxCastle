@@ -1,5 +1,4 @@
 // classe per la gestione del timer
-
 class Timer {
   long startTicks;  // clock time quando il timer parte
   long pauseTicks;  // clock timer quando il timer viene messo in pausa
@@ -65,8 +64,8 @@ class Timer {
   }
   
   void timerReset() {
-    stop();
-    start();
+    timerStop();
+    timerStart();
   }
   
   long getTicks() {

@@ -72,7 +72,17 @@ class UI {
     uiLayer.fill(255);
     uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(24);
-    uiLayer.text(game_target, width / 2, 20);    
+    uiLayer.text(game_target, width / 2, 20);     
+    
+    uiLayer.fill(255);
+    uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(24);
+    uiLayer.text("fps timer: " + fps_timer.getTicks(), width / 2, 40);        
+    
+    uiLayer.fill(255);
+    uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(24);
+    uiLayer.text("tick timer: " + tick_timer.getTicks(), width / 2, 60);    
     
     // pause button
     if (buttons.get(0).isClicked()) {

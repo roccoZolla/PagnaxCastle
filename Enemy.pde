@@ -53,7 +53,10 @@ class Enemy extends Sprite implements Damageable {
         updatePosition(new PVector(newX, newY));
         damageTileHandler.handleDamageTiles(this, round(newX), round(newY));
       }
-    } else {
+    } 
+    
+    else 
+    {
       // metodo leggermente migliore rispetto al metodo parkinson
       float x = position.x;
       float y = position.y;

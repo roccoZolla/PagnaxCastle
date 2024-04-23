@@ -19,7 +19,13 @@ class Game {
   boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
 
-  boolean canOpenChest;        // trigger che attiva il disegno della x quando non si puo aprire una chest
+  boolean canOpenChest;        // trigger che attiva il disegno della k quando non si puo aprire una chest
+
+  // trigger che attiva o disattiva il disegno del buff dell'item a terra
+  boolean drawUpBuff;
+  boolean drawDownBuff;
+
+  boolean drawInteractableLetter;  // trigger che attiva il disegno della lettera di interazione
 
   ConcreteDamageHandler damageTileHandler;
 
@@ -38,6 +44,10 @@ class Game {
     isMasterSwordDropped = false;
 
     canOpenChest = false;
+    drawUpBuff = false;
+    drawDownBuff = false;
+
+    drawInteractableLetter = false;
 
     // raggio della maschera
     holeRadius = 60;
@@ -165,6 +175,9 @@ class Game {
 
       // gestione casse
       handleChest();
+      
+      // gestion drop items
+      handleDropItems();
 
       // gestione monete
       handleCoin();
@@ -201,14 +214,16 @@ class Game {
 
     // aggiorna lo stato corrente del gioco
     // non deve trovarsi qui
-    update();
+    // update();
 
+    // metodo che gestisce le collisioni del player e di ogni altra entita
     p1.display(spritesLayer);
 
     if (!isBossLevel) {
       displayEnemies();
       displayChests();
       displayCoins();
+      displayDropItems();
     } else {
       boss.display(spritesLayer);
     }
@@ -239,7 +254,7 @@ class Game {
 
   void update() {
     // da sistemare
-    handleDropItems();
+    // handleDropItems();
   }
 
   // gestisce la vittoria del giocatore
@@ -477,31 +492,26 @@ class Game {
       {
         item.display(spritesLayer);
 
+        drawInteractableLetter = false;
+
         if (item.sprite_collision(p1))
         {
-          item.displayHitbox(spritesLayer);
+          drawInteractableLetter = true;
 
-          float letterImageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2));
-          float letterImageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-          spritesLayer.image(letter_k, letterImageX, letterImageY);
-
-          // if (item instanceof Weapon)
-          if (item.isWeapon)
+          if (item.isWeapon())
           {
-            // Weapon temp = (Weapon) item;
+            drawUpBuff = false;
+            drawDownBuff = false;
+
             Item temp = item;
 
             // mostra se un'arma è piu forte o debole rispetto a quella del giocatore
             if (temp.damage > p1.weapon.damage)
             {
-              float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
-              float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-              spritesLayer.image(up_buff, imageX, imageY);
+              drawUpBuff = true;
             } else if (temp.damage < p1.weapon.damage)
             {
-              float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
-              float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-              spritesLayer.image(down_buff, imageX, imageY);
+              drawDownBuff = true;
             }
           }
 
@@ -512,7 +522,7 @@ class Game {
               p1.isInteracting = true;
 
               // if (item instanceof Healer)
-              if (item.isHealer)
+              if (item.isHealer())
               { // verifico prima che sia un oggetto curativo
                 if (item.name.equals("dropPotion"))
                 {  // se è un pozione aggiungila
@@ -531,6 +541,7 @@ class Game {
                     iterator.remove();
                   } else
                   {
+                    // da togliere di qua e mettere nel metodo di render
                     TextDisplay healthFull = new TextDisplay(p1.getPosition(), "Salute al massimo", color(255));
                     healthFull.display(spritesLayer);
                   }
@@ -538,7 +549,7 @@ class Game {
               }
 
               // else if (item instanceof Weapon)
-              else if (item.isWeapon)
+              else if (item.isWeapon())
               {
                 // una volta scambiata l'arma non è piu possibile recuperare quella vecchia
                 // assegna arma a terra al giocatore
@@ -572,6 +583,47 @@ class Game {
           {
             // resetta la variabile di stato
             p1.isInteracting = false;
+          }
+        }
+      }
+    }
+  }
+
+  void displayDropItems() {
+    Iterator<Item> iterator = currentLevel.dropItems.iterator();
+
+    while (iterator.hasNext()) {
+      Item item = iterator.next();
+
+      // controlla che gli elementi droppati siano visibili
+      if (isInVisibleArea(item.getPosition()))
+      {
+        item.display(spritesLayer);
+
+        if (item.sprite_collision(p1))
+        {
+          item.displayHitbox(spritesLayer);
+
+          if (drawInteractableLetter)
+          {
+            // disegna la lettera ch eindica il tasto per interagire con l'item
+            float letterImageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2));
+            float letterImageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+            spritesLayer.image(letter_k, letterImageX, letterImageY);
+          }
+          
+          if (item.isWeapon) {
+            if(drawUpBuff) 
+            {
+              float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+              float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+              spritesLayer.image(up_buff, imageX, imageY);
+            } else if (drawDownBuff)
+            {
+              float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+              float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+              spritesLayer.image(down_buff, imageX, imageY);
+            }
           }
         }
       }

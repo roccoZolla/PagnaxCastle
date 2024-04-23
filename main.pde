@@ -285,9 +285,9 @@ void draw() {
     // si deve vedere per qualche secondo
     // aggiungere effetto blurrato
   case LOGO_SCREEN:
-    background(0);
+    background(241, 233, 220, 255);
     // da centrarlo meglio
-    image(studio_logo, width / 2, height / 2);
+    image(studio_logo, width / 2 - studio_logo.width/2 , height / 2 - studio_logo.height/2);
     if (millis() - logoScreenStartTime >= 1500) {
       screen_state = ScreenState.MENU_SCREEN;
     }
@@ -339,7 +339,7 @@ void draw() {
     // verifica se è il momento di eseguire il rendering della scena
     // render loop
     // CONSTANTS::SCREEN_FPS_CAP 240
-    if (fps_clock.getTicks() > 1000.f / 360) {
+    if (fps_clock.getTicks() > 1000.f / 240) {
       game.display();
       ui.update();
       renderStats();
