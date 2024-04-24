@@ -12,3 +12,4 @@ TO DO:
 [ ] - generazione livelli (perimetro stanze) 
 [ ] - migliorare nemici
 [ ] - aggiungere logo screen
+[ ] - ricordarti di togliere game.render.spriteslayer

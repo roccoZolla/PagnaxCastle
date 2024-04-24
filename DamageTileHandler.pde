@@ -29,17 +29,17 @@ abstract class DamageHandler {
   private void performPeriodicAttack(Damageable damageable, long currentTime) {
     damageable.takeDamage(currentLevel.DAMAGE_PEAKS);
     TextDisplay damageHitText = new TextDisplay(damageable.getPosition(), Integer.toString(currentLevel.DAMAGE_PEAKS), color(255, 0, 0));
-    damageHitText.display(game.spritesLayer);
+    damageHitText.display(render.spritesLayer);    // ASSOLUTAMENTE DA TOGLIERE STO SCHIFO
     playHurtSound();
 
     //println("---- DANNO DA DAMAGE TILE ----");
     //println("posizione: " + damageable.getPosition());
 
     // da rivedere
-    game.spritesLayer.rectMode(CENTER);
-    game.spritesLayer.fill(255, 0, 0); // nero
-    game.spritesLayer.stroke(255);
-    game.spritesLayer.rect(damageable.getPosition().x * currentLevel.tileSize + currentLevel.tileSize / 2, damageable.getPosition().y * currentLevel.tileSize + currentLevel.tileSize / 2, currentLevel.tileSize, currentLevel.tileSize);
+    render.spritesLayer.rectMode(CENTER);
+    render.spritesLayer.fill(255, 0, 0); // nero
+    render.spritesLayer.stroke(255);
+    render.spritesLayer.rect(damageable.getPosition().x * currentLevel.tileSize + currentLevel.tileSize / 2, damageable.getPosition().y * currentLevel.tileSize + currentLevel.tileSize / 2, currentLevel.tileSize, currentLevel.tileSize);
 
     lastAttackTime = currentTime;
     firstTimeDamageTile = false;

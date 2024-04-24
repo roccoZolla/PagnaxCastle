@@ -5,36 +5,19 @@ enum DifficultyLevel {
 }
 
 class Game {
-  // layer della scena di gioco
-  PGraphics gameScene;
-  PGraphics spritesLayer;
-  PGraphics maskLayer;
-
   DifficultyLevel difficultyLevel; // livello di difficolta del gioco
   Boss boss;    // boss del gioco
   boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
-  float holeRadius; // raggio della maschera
 
   boolean isTorchDropped;       // indica se la torcia è stata droppata, di base false
   boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
 
-  boolean canOpenChest;        // trigger che attiva il disegno della k quando non si puo aprire una chest
-
-  // trigger che attiva o disattiva il disegno del buff dell'item a terra
-  boolean drawUpBuff;
-  boolean drawDownBuff;
-
-  boolean drawInteractableLetter;  // trigger che attiva il disegno della lettera di interazione
-
   ConcreteDamageHandler damageTileHandler;
 
-  Game() {
-    gameScene = createGraphics(width, height);
-    spritesLayer = createGraphics(width, height);
-    maskLayer = createGraphics(width, height);
+  Game() {}
 
-    // di default la difficolta del gioco è impostata su normale
+  void init() {
     difficultyLevel = DifficultyLevel.NORMALE;
 
     isBossLevel = false;
@@ -42,40 +25,7 @@ class Game {
     isTorchDropped = false;
     isMapDropped = false;
     isMasterSwordDropped = false;
-
-    canOpenChest = false;
-    drawUpBuff = false;
-    drawDownBuff = false;
-
-    drawInteractableLetter = false;
-
-    // raggio della maschera
-    holeRadius = 60;
-
-    camera = new Camera();
-  }
-
-  // aggiorna la finestra di gioco con le nuove dimensioni
-  void updateScreen() {
-    gameScene = createGraphics(width, height);
-    spritesLayer = createGraphics(width, height);
-    maskLayer = createGraphics(width, height);
-  }
-
-  // reimposta le variabili di gioco
-  void resetGame() {
-    isBossLevel = false;
-
-    isTorchDropped = false;
-    isMapDropped = false;
-    isMasterSwordDropped = false;
-
-    // reimposta lo stato della mappa, disattivo
-    ui.deactivateMap();
-    ui.deactivateBossUI();
-  }
-
-  void init() {
+    
     // da togliere di qua
     golden_key = new Item(null, null, "golden_key");
     silver_key = new Item(null, null, "silver_key");
@@ -139,27 +89,23 @@ class Game {
     ui.activateBossUI();
     ui.deactivateMap();
   }
+  
+  // reimposta le variabili di gioco
+  void resetGame() {
+    isBossLevel = false;
 
-  void display() {
-    // aggiorna la camera
-    camera.update();
+    isTorchDropped = false;
+    isMapDropped = false;
+    isMasterSwordDropped = false;
 
-    // disegna il game layer
-    // mappa di gioco
-    drawGameLayer();
-
-    // disegna lo sprites layer
-    // giocatore, nemici, casse
-    drawSpritesLayer();
-
-    // disegna il mask layer se non ci troviamo nel livello finale
-    // maschera
-    // if (!isBossLevel) drawMaskLayer();
+    // reimposta lo stato della mappa, disattivo
+    ui.deactivateMap();
+    ui.deactivateBossUI();
   }
-
+  
   // funzione che gestisce tutti gli eventi in input relativi al giocatore
   // e alle altre entita
-  void handleEvents() {
+  void update() {
     // gestione controlli player
     // handlePlayerDeath();
     p1.update();
@@ -187,77 +133,8 @@ class Game {
       boss.update(p1);
     }
   }
-
-  void drawGameLayer() {
-    // disegna il game layer
-    gameScene.beginDraw();
-    gameScene.background(0);
-    // Imposta la telecamera alla nuova posizione e applica il fattore di scala
-    gameScene.translate(-camera.x, -camera.y);
-    gameScene.scale(camera.zoom);
-    gameScene.imageMode(CENTER);  // imposto l'image mode a center
-
-    // Disegna la mappa del livello corrente
-    currentLevel.display(gameScene); // renderizza il 4,6 % della mappa
-
-    gameScene.endDraw();
-
-    image(gameScene, 0, 0);
-  }
-
-  void drawSpritesLayer() {
-    spritesLayer.beginDraw();
-    spritesLayer.background(255, 0);
-    spritesLayer.translate(-camera.x, -camera.y);
-    spritesLayer.scale(camera.zoom);
-    spritesLayer.imageMode(CENTER);
-
-    // aggiorna lo stato corrente del gioco
-    // non deve trovarsi qui
-    // update();
-
-    // metodo che gestisce le collisioni del player e di ogni altra entita
-    p1.display(spritesLayer);
-
-    if (!isBossLevel) {
-      displayEnemies();
-      displayChests();
-      displayCoins();
-      displayDropItems();
-    } else {
-      boss.display(spritesLayer);
-    }
-
-    spritesLayer.endDraw();
-    image(spritesLayer, 0, 0);
-  }
-
-  void drawMaskLayer() {
-    maskLayer.beginDraw();
-    maskLayer.background(0, 255);
-    maskLayer.blendMode(REPLACE);
-
-    maskLayer.translate(-camera.x, -camera.y);
-    maskLayer.scale(camera.zoom);
-
-    float centerX = p1.getPosition().x * currentLevel.tileSize + currentLevel.tileSize/ 2;
-    float centerY = p1.getPosition().y * currentLevel.tileSize + currentLevel.tileSize/ 2;
-
-    maskLayer.fill(255, 0);
-    maskLayer.ellipseMode(RADIUS);
-    maskLayer.ellipse(centerX, centerY, holeRadius, holeRadius);
-
-    maskLayer.endDraw();
-
-    image(maskLayer, 0, 0);
-  }
-
-  void update() {
-    // da sistemare
-    // handleDropItems();
-  }
-
-  // gestisce la vittoria del giocatore
+  
+  // gestisce la vittoria del giocatore - OK 
   void handlePlayerVictory() {
     if (boss.HP <= 0) {
       p1.updateScore(1000);
@@ -265,14 +142,14 @@ class Game {
     }
   }
 
-  // gestisce la morte del giocatore
+  // gestisce la morte del giocatore - OK 
   void handlePlayerDeath() {
     if (p1.playerHP <= 0) {
       screen_state = ScreenState.LOSE_SCREEN;
     }
   }
 
-  // gestisce il passaggio al livello successivo
+  // gestisce il passaggio al livello successivo - DA SISTEMARE
   void handleNextLevel() {
     // passa al livello successivo
     // aggiungere collider
@@ -310,7 +187,7 @@ class Game {
     }
   }
 
-  // gestisce le azioni del nemico
+  // gestisce le azioni del nemico - DA RIVEDERE
   void handleEnemyActions() {
     Iterator<Enemy> iterator = currentLevel.enemies.iterator();
 
@@ -336,21 +213,7 @@ class Game {
     }
   }
 
-  void displayEnemies() {
-    Iterator<Enemy> iterator = currentLevel.enemies.iterator();
-
-    while (iterator.hasNext()) {
-      Enemy enemy = iterator.next();
-
-      if (isInVisibleArea(enemy.getPosition())) {
-        if (enemy.enemyHP > 0) {
-          enemy.display(spritesLayer);
-        }
-      }
-    }
-  }
-
-  // gestione delle chest
+  // gestione delle chest - DA SISTEMARE
   // da migliorare
   void handleChest() {
     // ----- CHEST -----
@@ -359,7 +222,7 @@ class Game {
       if (isInVisibleArea(chest.getPosition())) {
         if (chest.sprite_collision(p1) && !chest.isOpen()) {
           // println("collsione cassa giocatore");
-          canOpenChest = true;
+          render.canOpenChest = true;
 
           // se il giocatore preme il tasto interazione e la cassa non è stata aperta
           if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
@@ -385,7 +248,7 @@ class Game {
                   }
                 } else
                 {
-                  canOpenChest = false;
+                  render.canOpenChest = false;
                 }
               } else
               {  // se la cassa è normale
@@ -408,7 +271,7 @@ class Game {
                   }
                 } else
                 {
-                  canOpenChest = false;
+                  render.canOpenChest = false;
                 }
               }
             }
@@ -422,34 +285,7 @@ class Game {
     }
   }
 
-  void displayChests() {
-    for (Chest chest : currentLevel.treasures) {
-      if (isInVisibleArea(chest.getPosition()))
-      {
-        // mostra le chest nell'area visibile
-        chest.display(spritesLayer);
-
-        if (chest.sprite_collision(p1) && !chest.isOpen())
-        {
-          chest.displayHitbox(spritesLayer);
-
-          // disegna la lettera che indica il tasto per aprire la cassa
-          float letterImageX = (chest.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
-          float letterImageY = (chest.getPosition().y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-          spritesLayer.image(letter_k, letterImageX, letterImageY);
-
-          if (!canOpenChest)
-          {
-            float crossImageX = (p1.getPosition().x * currentLevel.tileSize + (chest.sprite.width / 2));
-            float crossImageY = (p1.getPosition().y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-            spritesLayer.image(cross_sprite, crossImageX, crossImageY);
-          }
-        }
-      }
-    }
-  }
-
-  // gestisce le monete
+  // gestisce le monete - OK ???
   void handleCoin() {
     // ----- COIN -----
     for (Coin coin : currentLevel.coins) {
@@ -467,17 +303,6 @@ class Game {
     }
   }
 
-  void displayCoins() {
-    for (Coin coin : currentLevel.coins) {
-      if (isInVisibleArea(coin.getPosition())) {
-        // mostra le monete nell'area visibile
-        if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
-          coin.display(spritesLayer);
-        }
-      }
-    }
-  }
-
   // gestisce gli oggetti rilasciati dai nemici e dalle casse
   // da riscrivere completamente
   void handleDropItems() {
@@ -490,28 +315,28 @@ class Game {
       // controlla che gli elementi droppati siano visibili
       if (isInVisibleArea(item.getPosition()))
       {
-        item.display(spritesLayer);
+        // item.display(spritesLayer);
 
-        drawInteractableLetter = false;
+        render.drawInteractableLetter = false;
 
         if (item.sprite_collision(p1))
         {
-          drawInteractableLetter = true;
+          render.drawInteractableLetter = true;
 
           if (item.isWeapon())
           {
-            drawUpBuff = false;
-            drawDownBuff = false;
+            render.drawUpBuff = false;
+            render.drawDownBuff = false;
 
             Item temp = item;
 
             // mostra se un'arma è piu forte o debole rispetto a quella del giocatore
             if (temp.damage > p1.weapon.damage)
             {
-              drawUpBuff = true;
+              render.drawUpBuff = true;
             } else if (temp.damage < p1.weapon.damage)
             {
-              drawDownBuff = true;
+              render.drawDownBuff = true;
             }
           }
 
@@ -542,8 +367,8 @@ class Game {
                   } else
                   {
                     // da togliere di qua e mettere nel metodo di render
-                    TextDisplay healthFull = new TextDisplay(p1.getPosition(), "Salute al massimo", color(255));
-                    healthFull.display(spritesLayer);
+                    // TextDisplay healthFull = new TextDisplay(p1.getPosition(), "Salute al massimo", color(255));
+                    // healthFull.display(spritesLayer);
                   }
                 }
               }
@@ -570,7 +395,7 @@ class Game {
               } else if (item.isCollectible && item.name.equals("dropTorch"))
               {
                 // aumenta il raggio della maschera
-                holeRadius += 50;
+                // holeRadius += 50;
                 iterator.remove();
               } else if (item.isCollectible && item.name.equals("dropMap"))
               {
@@ -583,47 +408,6 @@ class Game {
           {
             // resetta la variabile di stato
             p1.isInteracting = false;
-          }
-        }
-      }
-    }
-  }
-
-  void displayDropItems() {
-    Iterator<Item> iterator = currentLevel.dropItems.iterator();
-
-    while (iterator.hasNext()) {
-      Item item = iterator.next();
-
-      // controlla che gli elementi droppati siano visibili
-      if (isInVisibleArea(item.getPosition()))
-      {
-        item.display(spritesLayer);
-
-        if (item.sprite_collision(p1))
-        {
-          item.displayHitbox(spritesLayer);
-
-          if (drawInteractableLetter)
-          {
-            // disegna la lettera ch eindica il tasto per interagire con l'item
-            float letterImageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2));
-            float letterImageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-            spritesLayer.image(letter_k, letterImageX, letterImageY);
-          }
-          
-          if (item.isWeapon) {
-            if(drawUpBuff) 
-            {
-              float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
-              float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-              spritesLayer.image(up_buff, imageX, imageY);
-            } else if (drawDownBuff)
-            {
-              float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
-              float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-              spritesLayer.image(down_buff, imageX, imageY);
-            }
           }
         }
       }

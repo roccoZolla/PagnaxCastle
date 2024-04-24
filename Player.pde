@@ -110,7 +110,7 @@ class Player extends Sprite implements Damageable { //<>//
     playerHP -= damage;
 
     TextDisplay damageHitText = new TextDisplay(position, Integer.toString(damage), color(255, 0, 0));
-    damageHitText.display(game.spritesLayer);
+    damageHitText.display(render.spritesLayer);
 
     hurt_sound.play();
 

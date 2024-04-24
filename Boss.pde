@@ -81,7 +81,7 @@ class Boss extends Sprite {
     hurt_sound.play();
 
     TextDisplay damageHitText = new TextDisplay(position, Integer.toString(actual_damage), color(255, 0, 0));
-    damageHitText.display(game.spritesLayer);
+    damageHitText.display(render.spritesLayer);
 
     if (HP < 0) {
       HP = 0;

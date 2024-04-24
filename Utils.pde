@@ -107,7 +107,7 @@ void keyReleased() {
 // un proprio layer di cui si devono aggiornare le dimensioni
 void windowResized() {
   menu.updateScreen();
-  game.updateScreen();
+  render.updateWindowsScreen();
   ui.updateScreen();
   pauseMenu.updateScreen();
   optionMenu.updateScreen();

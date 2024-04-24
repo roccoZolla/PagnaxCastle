@@ -113,7 +113,7 @@ class Enemy extends Sprite implements Damageable {
 
       // fare in modo che rimanga un po piu di tempo a schermo
       TextDisplay damageHitText = new TextDisplay(p1.getPosition(), Integer.toString(damage), color(255, 0, 0));
-      damageHitText.display(game.spritesLayer);
+      damageHitText.display(render.spritesLayer);
 
       first_attack = false;
     } else {
@@ -184,7 +184,7 @@ class Enemy extends Sprite implements Damageable {
 
     // testo danno subito dal nemico
     TextDisplay damageHitText = new TextDisplay(position, Integer.toString(damage), color(255, 0, 0));
-    damageHitText.display(game.spritesLayer);
+    damageHitText.display(render.spritesLayer);
 
     if (enemyHP < 0) {
       enemyHP = 0;

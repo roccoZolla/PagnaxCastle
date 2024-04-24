@@ -19,6 +19,7 @@ Option optionMenu;
 Tutorial tutorial;
 UI ui;
 Game game;
+RenderSystem render;
 
 // logo screen
 PImage studio_logo;
@@ -144,14 +145,16 @@ void setup() {
   // schermata iniziale
   screen_state = ScreenState.LOGO_SCREEN;    // menu screen
   previous_state = screen_state;
+  
+  game = new Game();
+  render = new RenderSystem();
 
   menu = new Menu();
-  game = new Game();
   pauseMenu = new Pause();
   optionMenu = new Option();
   tutorial = new Tutorial();
   ui = new UI();
-
+  
   // test
   fps_timer = new Timer();
   tick_timer = new Timer();
@@ -286,7 +289,6 @@ void draw() {
     // aggiungere effetto blurrato
   case LOGO_SCREEN:
     background(241, 233, 220, 255);
-    // da centrarlo meglio
     image(studio_logo, width / 2 - studio_logo.width/2 , height / 2 - studio_logo.height/2);
     if (millis() - logoScreenStartTime >= 1500) {
       screen_state = ScreenState.MENU_SCREEN;
@@ -331,7 +333,7 @@ void draw() {
     // tick_rate: 70
     if (tick_clock.getTicks() > 1000.f / 70) {
       // tick(tick_clock.getTicks());
-      game.handleEvents();
+      game.update();
       tick_clock.timerReset();
       tickStats();
     }
@@ -340,7 +342,8 @@ void draw() {
     // render loop
     // CONSTANTS::SCREEN_FPS_CAP 240
     if (fps_clock.getTicks() > 1000.f / 240) {
-      game.display();
+      // game.display();
+      render.update();
       ui.update();
       renderStats();
       fps_clock.timerReset();

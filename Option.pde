@@ -3,7 +3,7 @@ class Option {
   ArrayList<Button> buttons;
   PGraphics optionLayer;
 
-  String difficultyLevel;
+  String difficultyLevel = "vacante";
 
   int effectsVolume;
   int musicVolume;
@@ -21,7 +21,7 @@ class Option {
     buttons.add(new Button(100, 420, 200, 80, "commands", "Comandi", ""));
     buttons.add(new Button(width - 250, height - 150, 200, 80, "back", "Back", ""));
 
-    updateDifficultyText();
+    // updateDifficultyText();
 
     effectsVolume = 0;
     musicVolume = 0;
@@ -123,11 +123,11 @@ class Option {
           break;
 
         case "difficultyRight":
-          changeDifficulty(true);
+          // changeDifficulty(true);
           break;
 
         case "difficultyLeft":
-          changeDifficulty(false);
+          // changeDifficulty(false);
           break;
 
         case "commands":
