@@ -40,6 +40,9 @@ class Menu {
           
           // inizializza il render system
           render.init();
+          
+          // inizializza il collision system
+          collision.init();
 
           // far partire di qua la creazione dei livelli
           screen_state = ScreenState.STORY_SCREEN;

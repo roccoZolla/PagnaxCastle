@@ -1,10 +1,10 @@
 // tutorial screen
-class Tutorial {
+class CommandScreen {
   ArrayList<Button> buttons;
   int imageWidth;
   int imageHeight;
 
-  Tutorial() {
+  CommandScreen() {
     // menu
     buttons = new ArrayList();
 

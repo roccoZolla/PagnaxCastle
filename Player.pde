@@ -1,4 +1,4 @@
-class Player extends Sprite implements Damageable { //<>//
+class Player extends Sprite implements Damageable { //<>// //<>//
   float spriteSpeed = 0.2;
 
   PImage left_side;  // lato sinistro dello sprite del giocatore
@@ -24,6 +24,8 @@ class Player extends Sprite implements Damageable { //<>//
   boolean isAttacking = false;
   boolean attackExecuted = false;
   boolean isInteracting = false;
+
+  boolean displayAttack = false;
 
   ConcreteDamageHandler damageTileHandler;
 
@@ -125,27 +127,27 @@ class Player extends Sprite implements Damageable { //<>//
     if (moveUP)
     {
       position.y += -1 * spriteSpeed;
-    } 
-    
+    }
+
     if (moveDOWN)
     {
       position.y += 1 * spriteSpeed;
-    } 
-    
+    }
+
     if (moveLEFT)
     {
       position.x += -1 * spriteSpeed;
       direction = DIRECTION_LEFT;
       sprite = left_side;
-    } 
-    
+    }
+
     if (moveRIGHT)
     {
       position.x += 1 * spriteSpeed;
       direction = DIRECTION_RIGHT;
       sprite = right_side;
     }
-    
+
     // da mettere da un'altra parte
     damageTileHandler.handleDamageTiles(this, round(position.x), round(position.y));
   }
@@ -181,7 +183,8 @@ class Player extends Sprite implements Damageable { //<>//
   //  updatePosition(new PVector(x, y));
   //  damageTileHandler.handleDamageTiles(this, round(x), round(y));
   //}
-
+  
+  // controlla le celle circostanti e al giocatore e verifica che non siano muri
   boolean check_collision_wall(int x, int y) {
     // se è un muro controlla la possibile collisione con lo sprite
     if (isWall(x, y)) {
@@ -200,7 +203,7 @@ class Player extends Sprite implements Damageable { //<>//
   }
 
   // da fixare
-  void attack(PGraphics layer)
+  void attack()
   {
     if (moveATCK && (!moveUSE && !moveINTR))
     {
@@ -209,21 +212,12 @@ class Player extends Sprite implements Damageable { //<>//
       // se sta attaccando e l'attacco non è stato eseguito
       if (isAttacking && !attackExecuted)
       {
-        // offset
-        PVector new_position = position.copy();
-
-        if (direction == DIRECTION_RIGHT)
-          new_position.x += 1;
-        else if (direction == DIRECTION_LEFT)
-          new_position.x -= 1;
-
-        // non deve stare qui
-        weapon.updatePosition(new_position);
-        weapon.display(layer);
+        displayAttack = true;
 
         if (game.isBossLevel)
         {
-          if (weapon.sprite_collision(game.boss))
+          // da rivedere
+          if (collision.sprite_collision(weapon, game.boss))
           {
             swordAttack.play();
             game.boss.takeDamage(weapon.getDamage());
@@ -232,8 +226,9 @@ class Player extends Sprite implements Damageable { //<>//
             attackExecuted = true;
           }
         } else {
-          for (Enemy enemy : currentLevel.enemies) {
-            if (weapon.sprite_collision(enemy))
+          for (Enemy enemy : currentLevel.enemies)
+          {
+            if (collision.sprite_collision(weapon ,enemy))
             {
               swordAttack.play();
               enemy.takeDamage(weapon.getDamage());
@@ -249,6 +244,23 @@ class Player extends Sprite implements Damageable { //<>//
       // println("non sta piu attaccando...");
       isAttacking = false;
       attackExecuted = false;
+      displayAttack = false;
+    }
+  }
+  
+  // da migliorare
+  void displayWeapon(PGraphics layer) {
+    if (displayAttack)
+    {
+      PVector new_position = position.copy();
+
+      if (direction == DIRECTION_RIGHT)
+        new_position.x += 1;
+      else if (direction == DIRECTION_LEFT)
+        new_position.x -= 1;
+
+      weapon.updatePosition(new_position);
+      weapon.display(layer);
     }
   }
 
@@ -276,7 +288,7 @@ class Player extends Sprite implements Damageable { //<>//
           // non deve stare qui
           // stampa x per indicare che non hai piu pozioni
           float crossImageX = (getPosition().x * currentLevel.tileSize + (sprite.width / 2));
-          float crossImageY = (getPosition().y * currentLevel.tileSize + (sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          float crossImageY = (getPosition().y * currentLevel.tileSize + (sprite.height / 2)) - 20; 
           layer.imageMode(CENTER);
           layer.image(cross_sprite, crossImageX, crossImageY);
         }

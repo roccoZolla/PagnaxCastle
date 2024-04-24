@@ -49,7 +49,7 @@ class Enemy extends Sprite implements Damageable {
       float newX = position.x + direction.x * spriteSpeed;
       float newY = position.y + direction.y * spriteSpeed;
 
-      if (isWithinMapBounds(round(newX), round(newY)) && !check_collision_wall(round(newX), round(newY)) && !sprite_collision(p1)) {
+      if (isWithinMapBounds(round(newX), round(newY)) && !check_collision_wall(round(newX), round(newY)) && !collision.sprite_collision(this, p1)) {
         updatePosition(new PVector(newX, newY));
         damageTileHandler.handleDamageTiles(this, round(newX), round(newY));
       }

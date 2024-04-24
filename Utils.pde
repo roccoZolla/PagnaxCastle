@@ -111,7 +111,7 @@ void windowResized() {
   ui.updateScreen();
   pauseMenu.updateScreen();
   optionMenu.updateScreen();
-  tutorial.updateScreen();
+  commandScreen.updateScreen();
 }
 
 
@@ -158,4 +158,10 @@ class Utils {
 
   // for the writer function
   static final int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
+  
+  // fps rate 
+  static final int SCREEN_FPS_CAP = 240;
+  
+  // tick rate
+  static final int TICK_RATE = 70;
 }

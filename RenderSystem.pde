@@ -27,6 +27,8 @@ class RenderSystem {
     camera = new Camera();
 
     maskRadius = 60;
+    
+    println("renderSystem inizializzato correttamente!");
   }
 
   // metodo display della classe game
@@ -73,21 +75,24 @@ class RenderSystem {
 
     // metodo che gestisce le collisioni del player e di ogni altra entita
     p1.display(spritesLayer);
+    p1.displayWeapon(spritesLayer);
+    
+    // aggiungere logica per cui quando si è nel livello del boss
+    // non vengono eseguite
+    //displayEnemies();
+    //displayChests();
+    //displayCoins();
+    //displayDropItems();
 
-    displayEnemies();
-    displayChests();
-    displayCoins();
-    displayDropItems();
 
-
-    //if (!isBossLevel) {
-    //  displayEnemies();
-    //  displayChests();
-    //  displayCoins();
-    //  displayDropItems();
-    //} else {
-    //  boss.display(spritesLayer);
-    //}
+    if (!game.isBossLevel) {
+      displayEnemies();
+      displayChests();
+      displayCoins();
+      displayDropItems();
+    } else {
+      game.boss.display(spritesLayer);
+    }
 
     spritesLayer.endDraw();
     image(spritesLayer, 0, 0);
@@ -143,7 +148,7 @@ class RenderSystem {
         // mostra le chest nell'area visibile
         chest.display(spritesLayer);
 
-        if (chest.sprite_collision(p1) && !chest.isOpen())
+        if (collision.sprite_collision(chest, p1) && !chest.isOpen())
         {
           chest.displayHitbox(spritesLayer);
 
@@ -185,7 +190,7 @@ class RenderSystem {
       {
         item.display(spritesLayer);
 
-        if (item.sprite_collision(p1))
+        if (collision.sprite_collision(item, p1))
         {
           item.displayHitbox(spritesLayer);
 

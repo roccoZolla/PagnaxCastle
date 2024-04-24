@@ -19,7 +19,8 @@ class Boss extends Sprite {
     this.HP = HP;
     this.maxHP = maxHP;
   }
-
+  
+  // da rivedere completamente 
   void update(Player player) {
     // Calcola la direzione verso il giocatore
     PVector direction = PVector.sub(player.getPosition(), position);
@@ -28,7 +29,7 @@ class Boss extends Sprite {
     // Muovi il boss nella direzione del giocatore
     spriteVelocity = direction.mult(spriteSpeed);
 
-    if (!sprite_collision(p1)) position.add(spriteVelocity);
+    if (!collision.sprite_collision(this, p1)) position.add(spriteVelocity);
 
     // Lancio di proiettili nella direzione del giocatore
     if (frameCount % 120 == 0) {  // Lanciare un proiettile ogni secondo
@@ -44,14 +45,14 @@ class Boss extends Sprite {
       projectile.update();
 
       // verifica se il proiettile ha colpito il player
-      if (projectile.sprite_collision(p1) && !projectile.attack_executed) {
+      if (collision.sprite_collision(projectile, p1) && !projectile.attack_executed) {
         p1.takeDamage(projectile.damage);
         projectile.attack_executed = true;
       }
 
       // verifica se il proiettile colpisce il boss
       // se l'attacco non è stato eseguito e puo colpire il boss
-      if (projectile.sprite_collision(this) && !projectile.attack_executed && projectile.canHitBoss) {
+      if (collision.sprite_collision(projectile, this) && !projectile.attack_executed && projectile.canHitBoss) {
         takeDamage(projectile.damage);
         projectile.attack_executed = true;
         // println("boss colpito...");
@@ -61,7 +62,7 @@ class Boss extends Sprite {
       // il giocatore sta attaccando e l'attacco non è stato eseguito
       // e il proiettile puo essere colpito
       if (p1.isAttacking && !p1.attackExecuted &&
-        projectile.isHittable && projectile.sprite_collision(p1.weapon)) {
+        projectile.isHittable && collision.sprite_collision(projectile, p1.weapon)) {
         projectile.reverseDirection();
         projectile.canHitBoss = true;
         projectile.isHittable = false;

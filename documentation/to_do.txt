@@ -11,5 +11,14 @@ TO DO:
  [ ] - World, Zone, Level
 [ ] - generazione livelli (perimetro stanze) 
 [ ] - migliorare nemici
-[ ] - aggiungere logo screen
-[ ] - ricordarti di togliere game.render.spriteslayer
+ [ ] - ia piu efficiente
+[ 🗸 ] - aggiungere logo screen
+[ 🗸 ] - ricordarti di togliere game.render.spriteslayer
+[ ] - rivedere completamente la classe del Boss
+
+Idee game design:
+
+[ ] - aggiungere timer per vedere in quanto tempo il giocatore completa la run
+ [ ] - obiettivo (run in 10 min ad esempio) sblocca qualcosa
+[ ] - aggiungere il negozio dove il player puo acquistare potenziamenti
+ [ ] - prima di entrare nel game o nel menu

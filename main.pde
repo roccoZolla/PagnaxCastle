@@ -16,10 +16,13 @@ Item golden_key;
 Menu menu;
 Pause pauseMenu;
 Option optionMenu;
-Tutorial tutorial;
+CommandScreen commandScreen;
 UI ui;
+
+// gioco, render e collision logic
 Game game;
 RenderSystem render;
+CollisionSystem collision;
 
 // logo screen
 PImage studio_logo;
@@ -106,7 +109,7 @@ enum ScreenState {
     LOSE_SCREEN,
     PAUSE_SCREEN,
     OPTION_SCREEN,
-    TUTORIAL_SCREEN
+    COMMAND_SCREEN
 }
 
 // stato dello schermo
@@ -145,17 +148,18 @@ void setup() {
   // schermata iniziale
   screen_state = ScreenState.LOGO_SCREEN;    // menu screen
   previous_state = screen_state;
-  
+
   game = new Game();
   render = new RenderSystem();
+  collision = new CollisionSystem();
 
   menu = new Menu();
   pauseMenu = new Pause();
   optionMenu = new Option();
-  tutorial = new Tutorial();
+  commandScreen = new CommandScreen();
   ui = new UI();
-  
-  // test
+
+  // crea gli oggetti relativi ai timer
   fps_timer = new Timer();
   tick_timer = new Timer();
 
@@ -259,26 +263,6 @@ void setupSounds() {
   dungeon_background.amp(volumeMusicLevel);
 }
 
-void tickStats() {
-  if (counted_ticks >= 20) {
-    avg_trate = counted_ticks / (tick_timer.getTicks() / 1000.f);
-    counted_ticks = 0;
-    tick_timer.timerStart();
-  }
-
-  ++counted_ticks;
-}
-
-void renderStats() {
-  if (counted_frames >= 10) {
-    avg_fps = counted_frames / (fps_timer.getTicks() / 1000.f);
-    counted_frames = 0;
-    fps_timer.timerReset();
-  }
-
-  ++counted_frames;
-}
-
 void draw() {
   // cambia il titolo della finestra e mostra il framerate
   surface.setTitle("Pagnax's Castle - " + String.format("%.1f", frameRate));
@@ -289,7 +273,7 @@ void draw() {
     // aggiungere effetto blurrato
   case LOGO_SCREEN:
     background(241, 233, 220, 255);
-    image(studio_logo, width / 2 - studio_logo.width/2 , height / 2 - studio_logo.height/2);
+    image(studio_logo, width / 2 - studio_logo.width/2, height / 2 - studio_logo.height/2);
     if (millis() - logoScreenStartTime >= 1500) {
       screen_state = ScreenState.MENU_SCREEN;
     }
@@ -316,9 +300,9 @@ void draw() {
     image(p1.right_side, width / 2, height / 2 - 130, 64, 64);
     break;
 
-  case TUTORIAL_SCREEN:
+  case COMMAND_SCREEN:
     // show tutorial
-    tutorial.display();
+    commandScreen.display();
     break;
 
   case GAME_SCREEN:
@@ -326,25 +310,25 @@ void draw() {
       dungeon_background.loop();
       isDungeonBackgroundPlaying = true;
     }
-    
+
     // cercare altre soluzioni
     // show game screen
     // cercare di ridurre il numero di chiamate
-    // tick_rate: 70
-    if (tick_clock.getTicks() > 1000.f / 70) {
+    if (tick_clock.getTicks() > 1000.f / Utils.TICK_RATE) {
       // tick(tick_clock.getTicks());
       game.update();
+      
       tick_clock.timerReset();
       tickStats();
     }
 
     // verifica se è il momento di eseguire il rendering della scena
     // render loop
-    // CONSTANTS::SCREEN_FPS_CAP 240
-    if (fps_clock.getTicks() > 1000.f / 240) {
-      // game.display();
+    if (fps_clock.getTicks() > 1000.f / Utils.SCREEN_FPS_CAP) {
+      collision.update();
       render.update();
       ui.update();
+      
       renderStats();
       fps_clock.timerReset();
     }
@@ -415,6 +399,26 @@ void storyScreen(String storyText) {
 
   // chiama il writer
   writer(storyText);
+}
+
+void tickStats() {
+  if (counted_ticks >= 20) {
+    avg_trate = counted_ticks / (tick_timer.getTicks() / 1000.f);
+    counted_ticks = 0;
+    tick_timer.timerStart();
+  }
+
+  ++counted_ticks;
+}
+
+void renderStats() {
+  if (counted_frames >= 10) {
+    avg_fps = counted_frames / (fps_timer.getTicks() / 1000.f);
+    counted_frames = 0;
+    fps_timer.timerReset();
+  }
+
+  ++counted_frames;
 }
 
 void writer(String txt) {

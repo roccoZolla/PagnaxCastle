@@ -132,7 +132,7 @@ class Option {
 
         case "commands":
           // previous_state = screen_state;
-          screen_state = ScreenState.TUTORIAL_SCREEN;
+          screen_state = ScreenState.COMMAND_SCREEN;
           break;
 
         case "back":
