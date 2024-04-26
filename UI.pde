@@ -39,9 +39,9 @@ class UI {
   UI() {
     uiLayer = createGraphics(width, height);
 
-    heartFull = loadImage("data/heartFull.png");
-    halfHeart = loadImage("data/halfHeart.png");
-    emptyHeart = loadImage("data/emptyHeart.png");
+    heartFull = loadImage("data/ui/heartFull.png");
+    halfHeart = loadImage("data/ui/halfHeart.png");
+    emptyHeart = loadImage("data/ui/emptyHeart.png");
 
     miniMapWidth = 230;
     miniMapHeight = 210;

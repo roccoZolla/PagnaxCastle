@@ -29,6 +29,8 @@ RenderSystem render;
 CollisionSystem collision;
 FisicoSystem fisico;
 
+LanguageSystem languageSystem;
+
 // logo screen
 PImage studio_logo;
 
@@ -129,7 +131,14 @@ boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
 
 PFont myFont;  // font del gioco
 
+// NON DEFINITIVO
+String victory = "";
+String defeat = "";
+String pressButton = "";
+
 Language language;
+Controller controller;
+Difficulty difficulty;
 
 Camera camera;
 
@@ -151,6 +160,12 @@ void setup() {
 
   // lingua di default
   language = Language.ITALIAN;
+  
+  // controller di default
+  controller = Controller.KEYPAD;
+  
+  // difficolta di defualt
+  difficulty = Difficulty.NORMALE;
 
   bundleITA = loadJSONObject("data/language/it_game.json");
   bundleENG = loadJSONObject("data/language/en_game.json");
@@ -159,6 +174,9 @@ void setup() {
   render = new RenderSystem();
   collision = new CollisionSystem();
   fisico = new FisicoSystem();
+  
+  languageSystem = new LanguageSystem();
+  languageSystem.init();
 
   menu = new Menu();
   pauseMenu = new Pause();
@@ -181,10 +199,7 @@ void setup() {
 
   logoScreenStartTime = millis();
   
-  menu.updateLanguage(language);
-  pauseMenu.updateLanguage(language);
-  optionMenu.updateLanguage(language);
-  commandScreen.updateLanguage(language);
+  languageSystem.update();
 }
 
 void setupImages() {
@@ -192,21 +207,21 @@ void setupImages() {
   studio_logo = loadImage("data/studio_logo.jpeg");
 
   // movimento
-  letter_w = loadImage("data/letter_w.png");
-  letter_a = loadImage("data/letter_a.png");
-  letter_s = loadImage("data/letter_s.png");
-  letter_d = loadImage("data/letter_d.png");
+  letter_w = loadImage("data/ui/letter_w.png");
+  letter_a = loadImage("data/ui/letter_a.png");
+  letter_s = loadImage("data/ui/letter_s.png");
+  letter_d = loadImage("data/ui/letter_d.png");
 
   // interazione oggetti
-  letter_k = loadImage("data/letter_k.png");
+  letter_k = loadImage("data/ui/letter_k.png");
 
   // attcca
-  letter_j = loadImage("data/letter_j.png");
+  letter_j = loadImage("data/ui/letter_j.png");
 
   // utilizza oggetti
-  letter_l = loadImage("data/letter_l.png");
+  letter_l = loadImage("data/ui/letter_l.png");
 
-  coin_sprite = loadImage("data/coin.png");
+  coin_sprite = loadImage("data/object/coin.png");
 
   chest_close_sprite = loadImage("data/object/chest_close.png");
   chest_open_sprite = loadImage("data/object/chest_open.png");
@@ -219,27 +234,27 @@ void setupImages() {
 
   chela_sprite = loadImage("data/chela_sprite.png");
 
-  golden_key_sprite = loadImage("data/golden_key.png");
-  silver_key_sprite = loadImage("data/silver_key.png");
+  golden_key_sprite = loadImage("data/object/golden_key.png");
+  silver_key_sprite = loadImage("data/object/silver_key.png");
 
   //weapon.sprite = ;
-  small_sword_sprite = (loadImage("data/little_sword.png"));
-  sword_sprite = loadImage("data/sword.png");
-  master_sword_sprite = loadImage("data/master_sword.png");
+  small_sword_sprite = (loadImage("data/object/weapon/little_sword.png"));
+  sword_sprite = loadImage("data/object/weapon/sword.png");
+  master_sword_sprite = loadImage("data/object/weapon/master_sword.png");
 
   // healers
   red_potion_sprite = loadImage("data/object/red_potion.png");
 
-  heart_sprite = loadImage("data/heartFull.png");
-  half_heart_sprite = loadImage("data/halfHeart.png");
-  empty_heart_sprite = loadImage("data/emptyHeart.png");
+  heart_sprite = loadImage("data/ui/heartFull.png");
+  half_heart_sprite = loadImage("data/ui/halfHeart.png");
+  empty_heart_sprite = loadImage("data/ui/emptyHeart.png");
 
-  torch_sprite = loadImage("data/torch.png");
-  dungeon_map_sprite = loadImage("data/dungeon_map.png");
+  torch_sprite = loadImage("data/object/torch.png");
+  dungeon_map_sprite = loadImage("data/object/dungeon_map.png");
 
-  up_buff = loadImage("data/up_buff.png");
-  down_buff = loadImage("data/down_buff.png");
-  cross_sprite = loadImage("data/cross.png");
+  up_buff = loadImage("data/ui/up_buff.png");
+  down_buff = loadImage("data/ui/down_buff.png");
+  cross_sprite = loadImage("data/ui/cross.png");
 }
 
 void setupSounds() {
@@ -381,6 +396,7 @@ void winScreen() {
   }
 
   // chiama la funzione
+  // mettere variabile victory
   writer("Finalmente lo stregone Pagnax e' stato sconfitto!\n" +
     "La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.\n" +
     "Score totalizzato: " + p1.playerScore);
@@ -400,6 +416,7 @@ void loseScreen() {
   }
 
   // chiama la funzione
+  // variabile defeat
   writer("Sei stato sconfitto Cavaliere!\n" +
     "Score totalizzato: " + p1.playerScore);
 

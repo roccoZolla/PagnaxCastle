@@ -18,7 +18,8 @@ TO DO:
 [ ] - rivedere completamente la classe del Boss
 [ ] - aggiungere effetto di cura
 [ ] - a volte non viene caricato il font 
-[ ] - aggiungere supporto lingua inglese
+[ 🗸 ] - aggiungere supporto lingua inglese
+ [ ] - rendere piu efficiente il language system
 
 Idee game design:
 

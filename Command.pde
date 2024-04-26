@@ -95,16 +95,28 @@ class CommandScreen {
     buttons.get(0).updatePosition(width - 250, height - 120, 200, 80);
   }
 
+  // da mettere nel language system
   void updateLanguage(Language language) {
     if (language == Language.ITALIAN)
     {
       title = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("title");
-      
+
       playerMovement = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("playerMovement");
       attack = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("attack");
       interact = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("interact");
       use = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("use");
-      
+
+      back = bundleITA.getJSONObject("menu").getJSONObject("options").getString("back");
+      buttons.get(0).setLabel(back);
+    } else if (language == Language.ENGLISH)
+    {
+      title = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("title");
+
+      playerMovement = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("playerMovement");
+      attack = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("attack");
+      interact = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("interact");
+      use = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("use");
+
       back = bundleENG.getJSONObject("menu").getJSONObject("options").getString("back");
       buttons.get(0).setLabel(back);
     }

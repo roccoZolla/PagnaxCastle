@@ -82,7 +82,8 @@ class Menu {
     buttons.get(1).updatePosition(width / 2 - 100, height / 2 + 100, 200, 80);  // option
     buttons.get(2).updatePosition(width / 2 - 100, height / 2 + 200, 200, 80);  // exit
   }
-
+  
+  // da togliere di qua
   void updateLanguage(Language language) {
     if (language == Language.ITALIAN)
     {

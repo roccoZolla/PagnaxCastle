@@ -80,6 +80,7 @@ class Pause {
     buttons.get(2).updatePosition(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80);  // back to the menu
   }
 
+  // da mettere nel language system
   void updateLanguage(Language language) {
     if (language == Language.ITALIAN)
     {

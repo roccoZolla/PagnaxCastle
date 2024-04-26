@@ -3,6 +3,17 @@ enum Language {
     ENGLISH
 }
 
+enum Controller {
+  KEYPAD,
+    GAMEPAD
+}
+
+enum Difficulty {
+  FACILE,
+    NORMALE,
+    DIFFICILE
+}
+
 // option screen
 class Option {
   ArrayList<Button> buttons;
@@ -16,11 +27,11 @@ class Option {
   String sound_effects = "";
   String music = "";
 
-  String difficulty = "";
+  String difficultyText = "";
 
   String languageText = "";
 
-  String controller = "";
+  String controllerText = "";
 
   String commands = "";
 
@@ -28,9 +39,9 @@ class Option {
 
 
   // da togliere
-  String difficultyLevel = "Normale";
-  String typeController = "Tastiera";
-  String languageTe = "Italiano";
+  String difficultyLevel = "";
+  String typeController = "";
+  String languageType = "";
 
   int effectsVolume = 0;
   int musicVolume = 0;
@@ -56,7 +67,7 @@ class Option {
     buttons.add(new Button(width - 100, 420, 50, 50, "languageRight", ">", ""));
     buttons.add(new Button(width - 290, 420, 50, 50, "languageLeft", "<", ""));
 
-    buttons.add(new Button(100, 540, 200, 80, "commands", "Comandi", ""));
+    buttons.add(new Button(100, 540, 200, 80, "commands", commands, ""));
 
     buttons.add(new Button(width - 250, height - 120, 200, 80, "back", back, ""));  // back button
 
@@ -113,7 +124,7 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text(difficulty + ": ", 100, 290);
+    optionLayer.text(difficultyText + ": ", 100, 290);
 
     optionLayer.fill(255);
     optionLayer.textSize(30);
@@ -124,7 +135,7 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text(controller + ": ", 100, 360);
+    optionLayer.text(controllerText + ": ", 100, 360);
 
     optionLayer.fill(255);
     optionLayer.textSize(30);
@@ -141,7 +152,7 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text(languageTe, width - 230, 445);  // da cambiare
+    optionLayer.text(languageType, width - 230, 445);  // da cambiare
 
     // linea che parte dal pulsante back a chiudere a la pagina
     optionLayer.stroke(255);
@@ -181,29 +192,32 @@ class Option {
           updateMusicVolume(volumeMusicLevel);
           break;
 
-
           // difficolta
         case "difficultyRight":
-          println("tasto difficolta destro");
-          // changeDifficulty(true);
+          // println("tasto difficolta destro");
+          changeDifficulty(true);
           break;
 
         case "difficultyLeft":
-          // changeDifficulty(false);
+          changeDifficulty(false);
           break;
 
           // controlli
         case "controllerRight":
+          changeController(true);
           break;
 
         case "controllerLeft":
+          changeController(false);
           break;
 
           // lingua
         case "languageRight":
+          changeLanguage(true);
           break;
 
         case "languageLeft":
+          changeLanguage(false);
           break;
 
         case "commands":
@@ -271,41 +285,122 @@ class Option {
   }
 
   // aggiorna il testo da mostrare in base alla difficolta corrente
-  private void updateDifficultyText() {
-    switch(game.difficultyLevel) {
-    case FACILE:
-      difficultyLevel = "Facile";
-      break;
+  //private void updateDifficultyText() {
+  //  switch(game.difficultyLevel) {
+  //  case FACILE:
+  //    difficultyLevel = "Facile";
+  //    break;
 
-    case NORMALE:
-      difficultyLevel = "Normale";
-      break;
+  //  case NORMALE:
+  //    difficultyLevel = "Normale";
+  //    break;
 
-    case DIFFICILE:
-      difficultyLevel = "Difficile";
-      break;
-    }
-  }
+  //  case DIFFICILE:
+  //    difficultyLevel = "Difficile";
+  //    break;
+  //  }
+  //}
 
   // incrementa o decrementa il livello di difficolta
   private void changeDifficulty(boolean increases) {
-    if (game.difficultyLevel == DifficultyLevel.DIFFICILE && increases) {
+    if (difficulty == Difficulty.DIFFICILE && increases) {
       // se il livello di difficolta è massimo non fare niente
       return;
-    } else if (game.difficultyLevel == DifficultyLevel.FACILE && !increases) {
+    } else if (difficulty == Difficulty.FACILE && !increases) {
       // se il livello di difficolta è il minimo non fare niente
       return;
     }
 
     if (increases) {
-      game.difficultyLevel = DifficultyLevel.values()[(game.difficultyLevel.ordinal() + 1) % DifficultyLevel.values().length];
+      difficulty = Difficulty.values()[(difficulty.ordinal() + 1) % Difficulty.values().length];
     } else {
-      game.difficultyLevel = DifficultyLevel.values()[(game.difficultyLevel.ordinal() - 1 + DifficultyLevel.values().length) % DifficultyLevel.values().length];
+      difficulty = Difficulty.values()[(difficulty.ordinal() - 1 + Difficulty.values().length) % Difficulty.values().length];
     }
 
     updateDifficultyText();
+
+    // udpate della difficolta di gioco
   }
 
+  private void updateDifficultyText() {
+    switch(difficulty)
+    {
+    case FACILE:
+      if (language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
+      else if (language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("easy");
+      break;
+
+    case NORMALE:
+      if (language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("normal");
+      else if (language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("normal");
+      break;
+
+    case DIFFICILE:
+      if (language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("hard");
+      else if (language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("hard");
+      break;
+    }
+  }
+
+  private void changeLanguage(boolean increases) {
+    if (language == Language.ITALIAN && increases)
+    {
+      // se il livello di difficolta è massimo non fare niente
+      return;
+    } else if (language == Language.ENGLISH && !increases)
+    {
+      // se il livello di difficolta è il minimo non fare niente
+      return;
+    }
+
+    if (increases) {
+      language = Language.values()[(language.ordinal() + 1) % Language.values().length];
+    } else {
+      language = Language.values()[(language.ordinal() - 1 + Language.values().length) % Language.values().length];
+    }
+
+    // fare in modo che la modifica della lingua si propaghi su tutte le altre schermate
+    languageSystem.setLanguage(language);
+    languageSystem.update();
+  }
+
+  private void changeController(boolean increases) {
+    if (controller == Controller.KEYPAD && increases)
+    {
+      // se il livello di difficolta è massimo non fare niente
+      return;
+    } else if (controller == Controller.GAMEPAD && !increases)
+    {
+      // se il livello di difficolta è il minimo non fare niente
+      return;
+    }
+
+    if (increases)
+    {
+      controller = Controller.values()[(controller.ordinal() + 1) % Controller.values().length];
+    } else {
+      controller = Controller.values()[(controller.ordinal() - 1 + Controller.values().length) % Controller.values().length];
+    }
+
+    // update controlli di gioco
+    updateControllerText();
+  }
+
+  private void updateControllerText() {
+    switch(controller) {
+    case KEYPAD:
+      if (language == Language.ITALIAN) typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("keypad");
+      else if (language == Language.ENGLISH) typeController = bundleENG.getJSONObject("menu").getJSONObject("options").getString("keypad");
+      break;
+
+    case GAMEPAD:
+      if (language == Language.ITALIAN) typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("gamepad");
+      else if (language == Language.ENGLISH) typeController = bundleENG.getJSONObject("menu").getJSONObject("options").getString("gamepad");
+      break;
+    }
+  }
+  
+  // da mettere nel languafge system
   void updateLanguage(Language language) {
     if (language == Language.ITALIAN)
     {
@@ -315,11 +410,38 @@ class Option {
       sound_effects = bundleITA.getJSONObject("menu").getJSONObject("options").getString("soundEffect");
       music = bundleITA.getJSONObject("menu").getJSONObject("options").getString("music");
 
-      difficulty = bundleITA.getJSONObject("menu").getJSONObject("options").getString("difficulty");
-      controller = bundleITA.getJSONObject("menu").getJSONObject("options").getString("controller");
+      difficultyText = bundleITA.getJSONObject("menu").getJSONObject("options").getString("difficulty");
+      switch(difficulty)
+      {
+      case DIFFICILE:
+        difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("hard");
+        break;
+
+      case NORMALE:
+        difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("normal");
+        break;
+
+      case FACILE:
+        difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
+        break;
+      }
+
+
+      controllerText = bundleITA.getJSONObject("menu").getJSONObject("options").getString("controller");
+      if (controller == Controller.KEYPAD)
+      {
+        typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("keypad");
+      } else if (controller == Controller.GAMEPAD)
+      {
+        typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("gamepad");
+      }
+
       languageText = bundleITA.getJSONObject("menu").getJSONObject("options").getString("language");
+      languageType = bundleITA.getJSONObject("menu").getJSONObject("options").getString("italian");
 
       commands = bundleITA.getJSONObject("menu").getJSONObject("options").getString("commands");
+      buttons.get(10).setLabel(commands);
+
       back = bundleITA.getJSONObject("menu").getJSONObject("options").getString("back");
       buttons.get(11).setLabel(back);
     } else if (language == Language.ENGLISH)
@@ -330,11 +452,38 @@ class Option {
       sound_effects = bundleENG.getJSONObject("menu").getJSONObject("options").getString("soundEffect");
       music = bundleENG.getJSONObject("menu").getJSONObject("options").getString("music");
 
-      difficulty = bundleENG.getJSONObject("menu").getJSONObject("options").getString("difficulty");
-      controller = bundleENG.getJSONObject("menu").getJSONObject("options").getString("controller");
+      difficultyText = bundleENG.getJSONObject("menu").getJSONObject("options").getString("difficulty");
+      switch(difficulty)
+      {
+      case DIFFICILE:
+        difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("hard");
+        break;
+
+      case NORMALE:
+        difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("normal");
+        break;
+
+      case FACILE:
+        difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("easy");
+        break;
+      }
+
+      controllerText = bundleENG.getJSONObject("menu").getJSONObject("options").getString("controller");
+      if (controller == Controller.KEYPAD)
+      {
+        typeController = bundleENG.getJSONObject("menu").getJSONObject("options").getString("keypad");
+      } else if (controller == Controller.GAMEPAD)
+      {
+        typeController = bundleENG.getJSONObject("menu").getJSONObject("options").getString("gamepad");
+      }
+
+
       languageText = bundleENG.getJSONObject("menu").getJSONObject("options").getString("language");
+      languageType = bundleENG.getJSONObject("menu").getJSONObject("options").getString("english");
 
       commands = bundleENG.getJSONObject("menu").getJSONObject("options").getString("commands");
+      buttons.get(10).setLabel(commands);
+
       back = bundleENG.getJSONObject("menu").getJSONObject("options").getString("back");
       buttons.get(11).setLabel(back);
     }

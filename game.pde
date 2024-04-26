@@ -1,9 +1,3 @@
-enum DifficultyLevel {
-  FACILE,
-    NORMALE,
-    DIFFICILE
-}
-
 // da spostare nella classe game
 World castle;
 Zone currentZone;
@@ -11,7 +5,7 @@ Level currentLevel;
 
 // contiene le logiche di gioco
 class Game {
-  DifficultyLevel difficultyLevel; // livello di difficolta del gioco
+  // DifficultyLevel difficultyLevel; // livello di difficolta del gioco
   Boss boss;    // boss del gioco
 
   boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
@@ -25,7 +19,7 @@ class Game {
   }
 
   void init() {
-    difficultyLevel = DifficultyLevel.NORMALE;
+    // difficultyLevel = DifficultyLevel.NORMALE;
 
     isBossLevel = false;
 
