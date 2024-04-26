@@ -284,23 +284,6 @@ class Option {
     dungeon_background.amp(volumeMusicLevel);
   }
 
-  // aggiorna il testo da mostrare in base alla difficolta corrente
-  //private void updateDifficultyText() {
-  //  switch(game.difficultyLevel) {
-  //  case FACILE:
-  //    difficultyLevel = "Facile";
-  //    break;
-
-  //  case NORMALE:
-  //    difficultyLevel = "Normale";
-  //    break;
-
-  //  case DIFFICILE:
-  //    difficultyLevel = "Difficile";
-  //    break;
-  //  }
-  //}
-
   // incrementa o decrementa il livello di difficolta
   private void changeDifficulty(boolean increases) {
     if (difficulty == Difficulty.DIFFICILE && increases) {
@@ -325,24 +308,27 @@ class Option {
   private void updateDifficultyText() {
     switch(difficulty)
     {
+      // DA RIVEDERE 
     case FACILE:
-      if (language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
-      else if (language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("easy");
+      if (languageSystem.language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
+      else if (languageSystem.language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("easy");
       break;
 
     case NORMALE:
-      if (language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("normal");
-      else if (language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("normal");
+      if (languageSystem.language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("normal");
+      else if (languageSystem.language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("normal");
       break;
 
     case DIFFICILE:
-      if (language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("hard");
-      else if (language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("hard");
+      if (languageSystem.language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("hard");
+      else if (languageSystem.language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("hard");
       break;
     }
   }
 
   private void changeLanguage(boolean increases) {
+    Language language = languageSystem.language;
+    
     if (language == Language.ITALIAN && increases)
     {
       // se il livello di difficolta è massimo non fare niente
@@ -387,6 +373,8 @@ class Option {
   }
 
   private void updateControllerText() {
+    Language language = languageSystem.language;
+    
     switch(controller) {
     case KEYPAD:
       if (language == Language.ITALIAN) typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("keypad");

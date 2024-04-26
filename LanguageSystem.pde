@@ -19,5 +19,6 @@ class LanguageSystem {
     pauseMenu.updateLanguage(language);
     optionMenu.updateLanguage(language);
     commandScreen.updateLanguage(language);
+    ui.updateLanguage(language);
   }
 }

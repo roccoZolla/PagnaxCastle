@@ -136,7 +136,6 @@ String victory = "";
 String defeat = "";
 String pressButton = "";
 
-Language language;
 Controller controller;
 Difficulty difficulty;
 
@@ -157,9 +156,6 @@ void setup() {
   // schermata iniziale
   screen_state = ScreenState.LOGO_SCREEN;    // menu screen
   previous_state = screen_state;
-
-  // lingua di default
-  language = Language.ITALIAN;
   
   // controller di default
   controller = Controller.KEYPAD;

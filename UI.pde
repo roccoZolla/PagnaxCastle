@@ -2,7 +2,8 @@ class UI {
   ArrayList<Button> buttons;
   PGraphics uiLayer;
 
-  String game_target;   // indica al giocatore l'obiettivo
+  String scoreText = "";
+  String game_target = "";   // indica al giocatore l'obiettivo
 
   // ----- CUORI BOSS -----
   boolean isBossBattle;  // indica se il giocatore si trova nel livello finale
@@ -50,8 +51,6 @@ class UI {
 
     isBossBattle = false;    // di base, false
     isMapActive = true;    // di base, false, si attiva con la minimappa trovata nei livelli
-
-    game_target = "Trova le scale!";
 
     buttons = new ArrayList();
 
@@ -128,7 +127,7 @@ class UI {
     uiLayer.fill(255);
     uiLayer.textAlign(RIGHT, TOP); // Allinea il testo a destra e in alto
     uiLayer.textSize(24);
-    uiLayer.text("Score: " + p1.playerScore, uiLayer.width - 80, 20); // vicino al pulsante pausa
+    uiLayer.text(scoreText + ": " + p1.playerScore, uiLayer.width - 80, 20); // vicino al pulsante pausa
 
     // ------ CHIAVI ARGENTO GIOCATORE ------
     uiLayer.fill(255);
@@ -319,5 +318,17 @@ class UI {
 
     // aggiorna posizione bottone
     buttons.get(0).updatePosition(width - 70, 20, 50, 50);  // pause
+  }
+  
+  void updateLanguage(Language language) {
+     if (language == Language.ITALIAN)
+    {
+      scoreText = bundleITA.getJSONObject("game").getString("score");
+      game_target = bundleITA.getJSONObject("game").getString("gametarget");
+    } else if (language == Language.ENGLISH)
+    {
+      scoreText = bundleENG.getJSONObject("game").getString("score");
+      game_target = bundleENG.getJSONObject("game").getString("gametarget");
+    }
   }
 }
