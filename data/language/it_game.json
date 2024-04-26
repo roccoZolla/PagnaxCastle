@@ -1,0 +1,64 @@
+{
+  "menu": {
+    "main": {
+      "title": "Il Castello di Pagnax",
+      "play": "Avvia il gioco",
+      "options": "Opzioni",
+      "quit": "Esci"
+    },
+    "options": {
+      "title": "Opzioni",
+      "audio": "Audio",
+      "soundEffect": "Effetti Sonori",
+      "music": "Musica",
+      "difficulty": "Difficolta",
+      "easy": "Facile",
+      "normal": "Normale",
+      "hard": "Difficile",
+      "controller": "Controlli di gioco",
+      "keypad": "Tastiera",
+      "gamepad": "Gamepad",
+      "language": "Lingua",
+      "italian": "Italiano",
+      "english": "Inglese",
+      "commands": "Comandi",
+      "back": "Indietro"
+    },
+    "pause": {
+      "pause": "Pausa",
+      "resume": "Riprendi",
+      "option": "Opzioni",
+      "backtomenu": "Torna al menu"
+    },
+    "commands": {
+      "title": "Comandi",
+      "playerMovement": "Muovi il giocatore",
+      "attack": "Attacca i nemici",
+      "interact": "Interagisci con gli oggetti",
+      "use": "Usa le pozioni"
+    }
+  },
+  "game": {
+    "story": {
+      "storyBegins": "Nel lontano Regno di Lontano la principessa Chela e' stata rapita dallo stregone Pagnax. Sei stato mandato al castello dello stregone pazzo dove si dice che ogni piano cambi in continuazione. Devi salvare la principessa e sconfiggere Pagnax, che la casualita' ti aiuti Cavaliere.",
+      "victory": "Finalmente lo stregone Pagnax e' stato sconfitto! La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.",
+      "defeat": "Sei stato sconfitto Cavaliere!",
+      "pressButton": "Premi un tasto qualsiasi per continuare"
+    },
+    "score": "Punteggio",
+    "zone": {
+      "castle": "Castello",
+      "level": "Livello"
+    },
+    "boss": {
+      "name": "Stregone Pagnax"
+    },
+    "gametarget": "Trova le scale!",
+    "gametargetboss": "Sconfiggi Pagnax!",
+    "weapon": {
+      "smallSword": "Piccola spada",
+      "sword": "Spada",
+      "masterSword": "Spada Maestra"
+    }
+  }
+}

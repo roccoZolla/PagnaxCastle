@@ -1,11 +1,36 @@
+enum Language {
+  ITALIAN,
+    ENGLISH
+}
+
 // option screen
 class Option {
   ArrayList<Button> buttons;
   PGraphics optionLayer;
 
+  // title
+  String title = "";
+
+  // audio
+  String audio = "";
+  String sound_effects = "";
+  String music = "";
+
+  String difficulty = "";
+
+  String languageText = "";
+
+  String controller = "";
+
+  String commands = "";
+
+  String back = "";
+
+
+  // da togliere
   String difficultyLevel = "Normale";
   String typeController = "Tastiera";
-  String language = "Italiano";
+  String languageTe = "Italiano";
 
   int effectsVolume = 0;
   int musicVolume = 0;
@@ -32,8 +57,8 @@ class Option {
     buttons.add(new Button(width - 290, 420, 50, 50, "languageLeft", "<", ""));
 
     buttons.add(new Button(100, 540, 200, 80, "commands", "Comandi", ""));
-    
-    buttons.add(new Button(width - 250, height - 120, 200, 80, "back", "Back", ""));  // back button
+
+    buttons.add(new Button(width - 250, height - 120, 200, 80, "back", back, ""));  // back button
 
     // updateDifficultyText();
   }
@@ -48,7 +73,7 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(36);
     optionLayer.textAlign(CENTER, CENTER);
-    optionLayer.text("OPTIONS", 135, 50);
+    optionLayer.text(title, 135, 50);
 
     // linea che parte dalla scritta opzioni e chiudere la pagina
     optionLayer.stroke(255);
@@ -58,13 +83,13 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Audio: ", 100, 100);
+    optionLayer.text(audio + ": ", 100, 100);
 
     // ----- EFFETTI SONORI -----
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Effetti sonori: ", 200, 160);
+    optionLayer.text(sound_effects + ": ", 200, 160);
 
     optionLayer.fill(255);
     optionLayer.textSize(30);
@@ -76,7 +101,7 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Musica: ", 200, 220);
+    optionLayer.text(music + ": ", 200, 220);
 
     optionLayer.fill(255);
     optionLayer.textSize(30);
@@ -88,7 +113,7 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Difficolta: ", 100, 290);
+    optionLayer.text(difficulty + ": ", 100, 290);
 
     optionLayer.fill(255);
     optionLayer.textSize(30);
@@ -99,7 +124,7 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Controller: ", 100, 360);
+    optionLayer.text(controller + ": ", 100, 360);
 
     optionLayer.fill(255);
     optionLayer.textSize(30);
@@ -111,12 +136,12 @@ class Option {
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text("Lingua: ", 100, 430);
+    optionLayer.text(languageText + ": ", 100, 430);
 
     optionLayer.fill(255);
     optionLayer.textSize(30);
     optionLayer.textAlign(LEFT, CENTER);
-    optionLayer.text(language, width - 230, 445);
+    optionLayer.text(languageTe, width - 230, 445);  // da cambiare
 
     // linea che parte dal pulsante back a chiudere a la pagina
     optionLayer.stroke(255);
@@ -156,6 +181,8 @@ class Option {
           updateMusicVolume(volumeMusicLevel);
           break;
 
+
+          // difficolta
         case "difficultyRight":
           println("tasto difficolta destro");
           // changeDifficulty(true);
@@ -163,6 +190,20 @@ class Option {
 
         case "difficultyLeft":
           // changeDifficulty(false);
+          break;
+
+          // controlli
+        case "controllerRight":
+          break;
+
+        case "controllerLeft":
+          break;
+
+          // lingua
+        case "languageRight":
+          break;
+
+        case "languageLeft":
           break;
 
         case "commands":
@@ -214,7 +255,7 @@ class Option {
     buttons.get(11).updatePosition(width - 250, height - 120, 200, 80);  // back
   }
 
-  void updateEffectsVolume(float volumeEffectsLevel) {
+  private void updateEffectsVolume(float volumeEffectsLevel) {
     click.amp(volumeEffectsLevel);
     pickupCoin.amp(volumeEffectsLevel);
     chest_open.amp(volumeEffectsLevel);
@@ -224,13 +265,13 @@ class Option {
     enemy_death_sound.amp(volumeEffectsLevel);
   }
 
-  void updateMusicVolume(float volumeMusicLevel) {
+  private void updateMusicVolume(float volumeMusicLevel) {
     menu_background.amp(volumeMusicLevel);
     dungeon_background.amp(volumeMusicLevel);
   }
 
   // aggiorna il testo da mostrare in base alla difficolta corrente
-  void updateDifficultyText() {
+  private void updateDifficultyText() {
     switch(game.difficultyLevel) {
     case FACILE:
       difficultyLevel = "Facile";
@@ -247,7 +288,7 @@ class Option {
   }
 
   // incrementa o decrementa il livello di difficolta
-  void changeDifficulty(boolean increases) {
+  private void changeDifficulty(boolean increases) {
     if (game.difficultyLevel == DifficultyLevel.DIFFICILE && increases) {
       // se il livello di difficolta è massimo non fare niente
       return;
@@ -263,5 +304,39 @@ class Option {
     }
 
     updateDifficultyText();
+  }
+
+  void updateLanguage(Language language) {
+    if (language == Language.ITALIAN)
+    {
+      title = bundleITA.getJSONObject("menu").getJSONObject("options").getString("title");
+
+      audio = bundleITA.getJSONObject("menu").getJSONObject("options").getString("audio");
+      sound_effects = bundleITA.getJSONObject("menu").getJSONObject("options").getString("soundEffect");
+      music = bundleITA.getJSONObject("menu").getJSONObject("options").getString("music");
+
+      difficulty = bundleITA.getJSONObject("menu").getJSONObject("options").getString("difficulty");
+      controller = bundleITA.getJSONObject("menu").getJSONObject("options").getString("controller");
+      languageText = bundleITA.getJSONObject("menu").getJSONObject("options").getString("language");
+
+      commands = bundleITA.getJSONObject("menu").getJSONObject("options").getString("commands");
+      back = bundleITA.getJSONObject("menu").getJSONObject("options").getString("back");
+      buttons.get(11).setLabel(back);
+    } else if (language == Language.ENGLISH)
+    {
+      title = bundleENG.getJSONObject("menu").getJSONObject("options").getString("title");
+
+      audio = bundleENG.getJSONObject("menu").getJSONObject("options").getString("audio");
+      sound_effects = bundleENG.getJSONObject("menu").getJSONObject("options").getString("soundEffect");
+      music = bundleENG.getJSONObject("menu").getJSONObject("options").getString("music");
+
+      difficulty = bundleENG.getJSONObject("menu").getJSONObject("options").getString("difficulty");
+      controller = bundleENG.getJSONObject("menu").getJSONObject("options").getString("controller");
+      languageText = bundleENG.getJSONObject("menu").getJSONObject("options").getString("language");
+
+      commands = bundleENG.getJSONObject("menu").getJSONObject("options").getString("commands");
+      back = bundleENG.getJSONObject("menu").getJSONObject("options").getString("back");
+      buttons.get(11).setLabel(back);
+    }
   }
 }

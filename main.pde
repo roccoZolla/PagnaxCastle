@@ -12,6 +12,10 @@ Player p1;
 Item silver_key;
 Item golden_key;
 
+// lingue di gioco
+JSONObject bundleITA;
+JSONObject bundleENG;
+
 //
 Menu menu;
 Pause pauseMenu;
@@ -117,17 +121,15 @@ enum ScreenState {
 ScreenState screen_state;
 ScreenState previous_state;  // salva lo stato precedente
 
-
-
 String actualLevel;
 
 // for the writer function
 int letterIndex = 0; // Indice della lettera corrente
 boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
 
-// titolo del gioco
-String gameTitle = "Pagnax's Castle";
 PFont myFont;  // font del gioco
+
+Language language;
 
 Camera camera;
 
@@ -146,6 +148,12 @@ void setup() {
   // schermata iniziale
   screen_state = ScreenState.LOGO_SCREEN;    // menu screen
   previous_state = screen_state;
+
+  // lingua di default
+  language = Language.ITALIAN;
+
+  bundleITA = loadJSONObject("data/language/it_game.json");
+  bundleENG = loadJSONObject("data/language/en_game.json");
 
   game = new Game();
   render = new RenderSystem();
@@ -172,6 +180,11 @@ void setup() {
   setupSounds();
 
   logoScreenStartTime = millis();
+  
+  menu.updateLanguage(language);
+  pauseMenu.updateLanguage(language);
+  optionMenu.updateLanguage(language);
+  commandScreen.updateLanguage(language);
 }
 
 void setupImages() {
@@ -316,7 +329,7 @@ void draw() {
     if (tick_clock.getTicks() > 1000.f / Utils.TICK_RATE) {
       // tick(tick_clock.getTicks());
       game.update();
-      
+
       tick_clock.timerReset();
       tickStats();
     }
@@ -328,7 +341,7 @@ void draw() {
       fisico.update();
       render.update();
       ui.update();
-      
+
       renderStats();
       fps_clock.timerReset();
     }
