@@ -1,5 +1,18 @@
-class Player extends Sprite implements Damageable { //<>// //<>//
-  float spriteSpeed = 0.2;
+// da mettere nelle utilities
+enum Direction {
+  SINISTRA,
+    DESTRA,
+    SOPRA,
+    GIU
+}
+
+class Player extends Sprite implements Damageable { //<>//
+  // componente velocita  del player
+  // non definitivo
+  float velocity_x = 0;
+  float velocity_y = 0;
+
+  float speed = 0.2f;
 
   PImage left_side;  // lato sinistro dello sprite del giocatore
   PImage right_side; // lato destro dello sprite del giocatore
@@ -9,11 +22,13 @@ class Player extends Sprite implements Damageable { //<>// //<>//
   boolean moveDOWN;
   boolean moveRIGHT;
   boolean moveLEFT;
+  
+  boolean canMoveUP;
+  boolean canMoveDOWN;
+  boolean canMoveRIGHT;
+  boolean canMoveLEFT;
 
-  int direction;
-
-  final int DIRECTION_LEFT = 0;
-  final int DIRECTION_RIGHT = 1;
+  Direction direction;
 
   boolean moveATCK;    // attacco j
   boolean moveINTR;    // interazione k
@@ -46,6 +61,8 @@ class Player extends Sprite implements Damageable { //<>// //<>//
 
   Player(PVector position, int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
     super(position);
+    
+    this.direction = Direction.DESTRA;
 
     this.playerScore = 0;
     this.playerHP = playerHP;
@@ -79,6 +96,11 @@ class Player extends Sprite implements Damageable { //<>// //<>//
     this.moveDOWN = false;
     this.moveRIGHT = false;
     this.moveLEFT = false;
+    
+    this.canMoveUP = true;
+    this.canMoveRIGHT = true;
+    this.canMoveDOWN = true;
+    this.canMoveLEFT = true;
   }
 
   void collectCoin() {
@@ -124,27 +146,29 @@ class Player extends Sprite implements Damageable { //<>// //<>//
   // aggiorna movimento del giocatore
   // metodo piu veloce e meno costoso in termini di risorse
   void update() {
-    if (moveUP)
+    if (moveUP && canMoveUP)
     {
-      position.y += -1 * spriteSpeed;
+      velocity_y += -1 * speed;
+      direction = Direction.SOPRA;
     }
 
-    if (moveDOWN)
+    if (moveDOWN && canMoveDOWN)
     {
-      position.y += 1 * spriteSpeed;
+      velocity_y += 1 * speed;
+      direction = Direction.GIU;
     }
 
-    if (moveLEFT)
+    if (moveLEFT && canMoveLEFT)
     {
-      position.x += -1 * spriteSpeed;
-      direction = DIRECTION_LEFT;
+      velocity_x += -1 * speed;
+      direction = Direction.SINISTRA;
       sprite = left_side;
     }
 
-    if (moveRIGHT)
+    if (moveRIGHT && canMoveRIGHT)
     {
-      position.x += 1 * spriteSpeed;
-      direction = DIRECTION_RIGHT;
+      velocity_x += 1 * speed;
+      direction = Direction.DESTRA;
       sprite = right_side;
     }
 
@@ -183,7 +207,7 @@ class Player extends Sprite implements Damageable { //<>// //<>//
   //  updatePosition(new PVector(x, y));
   //  damageTileHandler.handleDamageTiles(this, round(x), round(y));
   //}
-  
+
   // controlla le celle circostanti e al giocatore e verifica che non siano muri
   boolean check_collision_wall(int x, int y) {
     // se è un muro controlla la possibile collisione con lo sprite
@@ -228,7 +252,7 @@ class Player extends Sprite implements Damageable { //<>// //<>//
         } else {
           for (Enemy enemy : currentLevel.enemies)
           {
-            if (collision.sprite_collision(weapon ,enemy))
+            if (collision.sprite_collision(weapon, enemy))
             {
               swordAttack.play();
               enemy.takeDamage(weapon.getDamage());
@@ -247,17 +271,31 @@ class Player extends Sprite implements Damageable { //<>// //<>//
       displayAttack = false;
     }
   }
-  
+
   // da migliorare
   void displayWeapon(PGraphics layer) {
     if (displayAttack)
     {
       PVector new_position = position.copy();
 
-      if (direction == DIRECTION_RIGHT)
+      switch(direction)
+      {
+        case SOPRA:
+        new_position.y -= 1;
+        break;
+        
+        case GIU:
+        new_position.y += 1;
+        break;
+        
+        case DESTRA:
         new_position.x += 1;
-      else if (direction == DIRECTION_LEFT)
-        new_position.x -= 1;
+        break;
+        
+        case SINISTRA:
+         new_position.x -= 1;
+        break;
+      }
 
       weapon.updatePosition(new_position);
       weapon.display(layer);
@@ -288,7 +326,7 @@ class Player extends Sprite implements Damageable { //<>// //<>//
           // non deve stare qui
           // stampa x per indicare che non hai piu pozioni
           float crossImageX = (getPosition().x * currentLevel.tileSize + (sprite.width / 2));
-          float crossImageY = (getPosition().y * currentLevel.tileSize + (sprite.height / 2)) - 20; 
+          float crossImageY = (getPosition().y * currentLevel.tileSize + (sprite.height / 2)) - 20;
           layer.imageMode(CENTER);
           layer.image(cross_sprite, crossImageX, crossImageY);
         }

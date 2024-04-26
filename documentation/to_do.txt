@@ -13,8 +13,12 @@ TO DO:
 [ ] - migliorare nemici
  [ ] - ia piu efficiente
 [ 🗸 ] - aggiungere logo screen
+[ ] - aggiungere suono di boot up
 [ 🗸 ] - ricordarti di togliere game.render.spriteslayer
 [ ] - rivedere completamente la classe del Boss
+[ ] - aggiungere effetto di cura
+[ ] - a volte non viene caricato il font 
+[ ] - aggiungere supporto lingua inglese
 
 Idee game design:
 

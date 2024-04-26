@@ -23,6 +23,7 @@ UI ui;
 Game game;
 RenderSystem render;
 CollisionSystem collision;
+FisicoSystem fisico;
 
 // logo screen
 PImage studio_logo;
@@ -116,10 +117,7 @@ enum ScreenState {
 ScreenState screen_state;
 ScreenState previous_state;  // salva lo stato precedente
 
-// da spostare nella classe game
-World castle;
-Zone currentZone;
-Level currentLevel;
+
 
 String actualLevel;
 
@@ -152,6 +150,7 @@ void setup() {
   game = new Game();
   render = new RenderSystem();
   collision = new CollisionSystem();
+  fisico = new FisicoSystem();
 
   menu = new Menu();
   pauseMenu = new Pause();
@@ -326,6 +325,7 @@ void draw() {
     // render loop
     if (fps_clock.getTicks() > 1000.f / Utils.SCREEN_FPS_CAP) {
       collision.update();
+      fisico.update();
       render.update();
       ui.update();
       

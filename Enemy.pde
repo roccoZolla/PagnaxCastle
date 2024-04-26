@@ -1,5 +1,10 @@
 class Enemy extends Sprite implements Damageable {
-  float spriteSpeed = 0.1;
+  // componente velocita dei nemici
+  float velocity_x = 0;
+  float velocity_y = 0;
+  
+  float speed = 0.1f;
+  
   float currentDirection = random(4);
   int framesInCurrentDirection = 0;
   int maxFramesInSameDirection = 30;
@@ -46,8 +51,8 @@ class Enemy extends Sprite implements Damageable {
       direction.normalize();
 
       // Calcola il movimento in base alla direzione
-      float newX = position.x + direction.x * spriteSpeed;
-      float newY = position.y + direction.y * spriteSpeed;
+      float newX = position.x + direction.x * speed;
+      float newY = position.y + direction.y * speed;
 
       if (isWithinMapBounds(round(newX), round(newY)) && !check_collision_wall(round(newX), round(newY)) && !collision.sprite_collision(this, p1)) {
         updatePosition(new PVector(newX, newY));
@@ -72,14 +77,14 @@ class Enemy extends Sprite implements Damageable {
 
       // Sposta il nemico in base alla direzione corrente
       if (currentDirection < 1 && isWithinMapBounds(round(x + 1), round(y)) && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
-        x += 1 * spriteSpeed;
+        x += 1 * speed;
       } else if (currentDirection < 2 && isWithinMapBounds(round(x - 1), round(y)) && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
-        x += -1 * spriteSpeed;
+        x += -1 * speed;
       } else if (currentDirection < 3 && isWithinMapBounds(round(x), round(y + 1)) && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
-        y += 1 * spriteSpeed;
+        y += 1 * speed;
       } else {      // y - 1
         if (isWithinMapBounds(round(x), round(y - 1)) && !check_collision_wall(round(x), round(y - 1))) {
-          y += -1 * spriteSpeed;
+          y += -1 * speed;
         }
       }
 

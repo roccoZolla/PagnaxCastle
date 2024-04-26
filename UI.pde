@@ -49,7 +49,7 @@ class UI {
     miniMapY = uiLayer.height - miniMapHeight;
 
     isBossBattle = false;    // di base, false
-    isMapActive = false;    // di base, false, si attiva con la minimappa trovata nei livelli
+    isMapActive = true;    // di base, false, si attiva con la minimappa trovata nei livelli
 
     game_target = "Trova le scale!";
 
@@ -72,18 +72,46 @@ class UI {
     uiLayer.fill(255);
     uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(24);
-    uiLayer.text(game_target, width / 2, 20);     
-    
+    uiLayer.text(game_target, width / 2, 20);
+
     uiLayer.fill(255);
     uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(24);
-    uiLayer.text("fps timer: " + fps_timer.getTicks(), width / 2, 40);        
-    
+    uiLayer.text("fps timer: " + fps_timer.getTicks(), width / 2, 40);
+
     uiLayer.fill(255);
     uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(24);
-    uiLayer.text("tick timer: " + tick_timer.getTicks(), width / 2, 60);    
+    uiLayer.text("tick timer: " + tick_timer.getTicks(), width / 2, 60);
     
+    // DEBUG 
+    uiLayer.fill(255);
+    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(24);
+    uiLayer.text("Posizione: " + p1.position, 10, height / 2 + 80);
+    
+    uiLayer.fill(255);
+    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(24);
+    uiLayer.text("canMoveUP: " + p1.canMoveUP, 10, height / 2 + 100);    
+    
+    uiLayer.fill(255);
+    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(24);
+    uiLayer.text("canMoveDOWN: " + p1.canMoveDOWN, 10, height / 2 + 120);    
+    
+    uiLayer.fill(255);
+    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(24);
+    uiLayer.text("canMoveRIGHT: " + p1.canMoveRIGHT, 10, height / 2 + 140);    
+    
+    uiLayer.fill(255);
+    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    uiLayer.textSize(24);
+    uiLayer.text("canMoveLEFT: " + p1.canMoveLEFT, 10, height / 2 + 160);
+    
+    /////
+
     // pause button
     if (buttons.get(0).isClicked()) {
       screen_state = ScreenState.PAUSE_SCREEN;

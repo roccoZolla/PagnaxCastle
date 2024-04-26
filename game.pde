@@ -4,6 +4,11 @@ enum DifficultyLevel {
     DIFFICILE
 }
 
+// da spostare nella classe game
+World castle;
+Zone currentZone;
+Level currentLevel;
+
 // contiene le logiche di gioco
 class Game {
   DifficultyLevel difficultyLevel; // livello di difficolta del gioco
@@ -56,7 +61,7 @@ class Game {
     p1.golden_key = golden_key;
     p1.silver_key = silver_key;
 
-    resetGame();
+    // resetGame();
 
     // avvia i timer
     fps_timer.timerStart();
@@ -118,7 +123,7 @@ class Game {
 
     if (!isBossLevel) {
       // gestione azione nemici
-      handleEnemyActions();
+      // handleEnemyActions();
 
       // gestione casse
       handleChest();
@@ -128,7 +133,7 @@ class Game {
 
       // gestione monete
       handleCoin();
-      
+
       // gestione livello successivo
       handleNextLevel();
     } else {
@@ -158,7 +163,7 @@ class Game {
     // passa al livello successivo
     // aggiungere collider
     // if (currentLevel.stairsNextFloor.sprite_collision(p1))
-    if(collision.sprite_collision(currentLevel.stairsNextFloor, p1)) 
+    if (collision.sprite_collision(currentLevel.stairsNextFloor, p1))
     {
       // se il livello dell'area è l'ultimo passa alla prossima area
       if (currentLevel.levelIndex == currentZone.levels.size() - 1) {
@@ -205,8 +210,8 @@ class Game {
           enemy.update();
 
           // attacca solo se c'è collisione
-          // if (enemy.sprite_collision(p1)) 
-          if(collision.sprite_collision(enemy, p1)) {
+          // if (enemy.sprite_collision(p1))
+          if (collision.sprite_collision(enemy, p1)) {
             enemy.attack(p1);
           } else {
             enemy.first_attack = true;
@@ -227,8 +232,8 @@ class Game {
     // disegna solo le chest visibili
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.getPosition())) {
-        // if (chest.sprite_collision(p1) && !chest.isOpen()) 
-        if(collision.sprite_collision(chest, p1) && !chest.isOpen()) 
+        // if (chest.sprite_collision(p1) && !chest.isOpen())
+        if (collision.sprite_collision(chest, p1) && !chest.isOpen())
         {
           // println("collsione cassa giocatore");
           render.canOpenChest = true;
@@ -302,7 +307,7 @@ class Game {
         // mostra le monete nell'area visibile
         if (!coin.isCollected()) {
           // if (coin.sprite_collision(p1))
-          if (collision.sprite_collision(coin, p1)) 
+          if (collision.sprite_collision(coin, p1))
           {
             coin.collect();  // raccogli la moneta
             p1.collectCoin();
@@ -331,7 +336,7 @@ class Game {
         render.drawInteractableLetter = false;
 
         // if (item.sprite_collision(p1))
-        if (collision.sprite_collision(item, p1)) 
+        if (collision.sprite_collision(item, p1))
         {
           render.drawInteractableLetter = true;
 

@@ -445,6 +445,7 @@ class Level {
   }
 
   // disegna solo cio che vede il giocatore
+  // da spostare nel render system
   void display(PGraphics layer) {
     // Calcola i limiti dello schermo visibile in termini di celle di mappa
     int startX = floor((camera.x / (tileSize * camera.zoom)));

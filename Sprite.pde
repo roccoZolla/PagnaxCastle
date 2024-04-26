@@ -1,7 +1,7 @@
 class Sprite {
   PVector position;
   PImage sprite;
-  
+
   Sprite(PVector position) {
     this.position = position;
   }
@@ -40,12 +40,15 @@ class Sprite {
   }
 
   void displayHitbox(PGraphics layer) {
+    float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
+    float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
+
     layer.noFill(); // Nessun riempimento
     layer.stroke(255); // Colore del bordo bianco
     layer.rectMode(CENTER);
-    layer.rect(position.x * currentLevel.tileSize + (sprite.width/2), position.y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
+    layer.rect(centerX, centerY, sprite.width, sprite.height);
 
     layer.stroke(255, 0, 0);
-    layer.point(position.x * currentLevel.tileSize + (sprite.width / 2), position.y * currentLevel.tileSize + sprite.height / 2);
+    layer.point(centerX, centerY);
   }
 }

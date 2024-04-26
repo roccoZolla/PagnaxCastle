@@ -3,10 +3,12 @@ class Option {
   ArrayList<Button> buttons;
   PGraphics optionLayer;
 
-  String difficultyLevel = "vacante";
+  String difficultyLevel = "Normale";
+  String typeController = "Tastiera";
+  String language = "Italiano";
 
-  int effectsVolume;
-  int musicVolume;
+  int effectsVolume = 0;
+  int musicVolume = 0;
 
   Option() {
     optionLayer = createGraphics(width, height);
@@ -14,17 +16,26 @@ class Option {
 
     buttons.add(new Button(width - 100, 150, 50, 50, "effectsUp", "+", ""));    // selettore effetti sonori
     buttons.add(new Button(width - 290, 150, 50, 50, "effectsDown", "-", ""));    // (width - 290, 150
+
     buttons.add(new Button(width - 100, 210, 50, 50, "musicUp", "+", ""));   // selettore volume musica
     buttons.add(new Button(width - 290, 210, 50, 50, "musicDown", "-", ""));
+
     buttons.add(new Button(width - 100, 280, 50, 50, "difficultyRight", ">", ""));    // selettore difficolta
     buttons.add(new Button(width - 290, 280, 50, 50, "difficultyLeft", "<", ""));
-    buttons.add(new Button(100, 420, 200, 80, "commands", "Comandi", ""));
-    buttons.add(new Button(width - 250, height - 150, 200, 80, "back", "Back", ""));
+
+    // selettore tipo comandi
+    buttons.add(new Button(width - 100, 350, 50, 50, "controllerRight", ">", ""));
+    buttons.add(new Button(width - 290, 350, 50, 50, "controllerLeft", "<", ""));
+
+    // selettore lingua
+    buttons.add(new Button(width - 100, 420, 50, 50, "languageRight", ">", ""));
+    buttons.add(new Button(width - 290, 420, 50, 50, "languageLeft", "<", ""));
+
+    buttons.add(new Button(100, 540, 200, 80, "commands", "Comandi", ""));
+    
+    buttons.add(new Button(width - 250, height - 120, 200, 80, "back", "Back", ""));  // back button
 
     // updateDifficultyText();
-
-    effectsVolume = 0;
-    musicVolume = 0;
   }
 
   void display() {
@@ -84,9 +95,32 @@ class Option {
     optionLayer.textAlign(LEFT, CENTER);
     optionLayer.text(difficultyLevel, width - 230, 305);
 
+    // ----- CONTROLLER -----
+    optionLayer.fill(255);
+    optionLayer.textSize(30);
+    optionLayer.textAlign(LEFT, CENTER);
+    optionLayer.text("Controller: ", 100, 360);
+
+    optionLayer.fill(255);
+    optionLayer.textSize(30);
+    optionLayer.textAlign(LEFT, CENTER);
+    optionLayer.text(typeController, width - 230, 375);
+
+
+    // ----- LINGUA -----
+    optionLayer.fill(255);
+    optionLayer.textSize(30);
+    optionLayer.textAlign(LEFT, CENTER);
+    optionLayer.text("Lingua: ", 100, 430);
+
+    optionLayer.fill(255);
+    optionLayer.textSize(30);
+    optionLayer.textAlign(LEFT, CENTER);
+    optionLayer.text(language, width - 230, 445);
+
     // linea che parte dal pulsante back a chiudere a la pagina
     optionLayer.stroke(255);
-    optionLayer.line(50, height - 100, width - 270, height - 100);
+    optionLayer.line(50, height - 80, width - 270, height - 80);
 
     for (Button button : buttons) {
       if (button.isClicked()) {
@@ -123,6 +157,7 @@ class Option {
           break;
 
         case "difficultyRight":
+          println("tasto difficolta destro");
           // changeDifficulty(true);
           break;
 
@@ -171,8 +206,12 @@ class Option {
     buttons.get(3).updatePosition(width - 290, 210, 50, 50);  // music down
     buttons.get(4).updatePosition(width - 100, 280, 50, 50);  // difficulty right
     buttons.get(5).updatePosition(width - 290, 280, 50, 50);  // difficulty left
-    buttons.get(6).updatePosition(100, 420, 200, 80);  // commands
-    buttons.get(7).updatePosition(width - 250, height - 150, 200, 80);  // back
+    buttons.get(6).updatePosition(width - 100, 350, 50, 50);  // controller right
+    buttons.get(7).updatePosition(width - 290, 350, 50, 50);  // controller left
+    buttons.get(8).updatePosition(width - 100, 420, 50, 50);  // language right
+    buttons.get(9).updatePosition(width - 290, 420, 50, 50);  // language left
+    buttons.get(10).updatePosition(100, 490, 200, 80);  // commands
+    buttons.get(11).updatePosition(width - 250, height - 120, 200, 80);  // back
   }
 
   void updateEffectsVolume(float volumeEffectsLevel) {

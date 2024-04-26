@@ -75,6 +75,7 @@ class RenderSystem {
 
     // metodo che gestisce le collisioni del player e di ogni altra entita
     p1.display(spritesLayer);
+    p1.displayHitbox(spritesLayer);
     p1.displayWeapon(spritesLayer);
     
     // aggiungere logica per cui quando si è nel livello del boss

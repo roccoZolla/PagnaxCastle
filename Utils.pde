@@ -1,4 +1,4 @@
-// gestione comandi
+// gestione comandi //<>//
 void keyPressed() {
   if (screen_state == ScreenState.GAME_SCREEN) {
     switch(key) {
@@ -136,9 +136,12 @@ boolean isWithinMapBounds(int x, int y) {
 }
 
 // controlla se la posizione che si vuole raggiungere è un muro
+// da sistemare
 boolean isWall(int x, int y) {
-  // println("valore casella mappa: " + currentLevel.map[x][y]);
-  if (currentLevel.map[x][y] == 4 || currentLevel.map[x][y] == 0 || currentLevel.map[x][y] == 6) {
+  if (currentLevel.map[x][y] == Utils.WALL_PERIMETER_TILE_TYPE ||
+    currentLevel.map[x][y] == Utils.BACKGROUND_TILE_TYPE ||
+    currentLevel.map[x][y] == Utils.CHEST_TILE_TYPE)
+  {
     return true;
   } else {
     return false;
@@ -158,10 +161,10 @@ class Utils {
 
   // for the writer function
   static final int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
-  
-  // fps rate 
+
+  // fps rate
   static final int SCREEN_FPS_CAP = 240;
-  
+
   // tick rate
   static final int TICK_RATE = 70;
 }
