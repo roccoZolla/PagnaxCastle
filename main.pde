@@ -89,9 +89,7 @@ SoundFile hurt_sound;
 SoundFile enemy_death_sound;
 
 SoundFile menu_background;
-boolean isMenuBackgroundPlaying;
 SoundFile dungeon_background;
-boolean isDungeonBackgroundPlaying;
 
 // test
 Timer fps_timer;
@@ -156,10 +154,10 @@ void setup() {
   // schermata iniziale
   screen_state = ScreenState.LOGO_SCREEN;    // menu screen
   previous_state = screen_state;
-  
+
   // controller di default
   controller = Controller.KEYPAD;
-  
+
   // difficolta di defualt
   difficulty = Difficulty.NORMALE;
 
@@ -170,7 +168,7 @@ void setup() {
   render = new RenderSystem();
   collision = new CollisionSystem();
   fisico = new FisicoSystem();
-  
+
   languageSystem = new LanguageSystem();
   languageSystem.init();
 
@@ -194,7 +192,7 @@ void setup() {
   setupSounds();
 
   logoScreenStartTime = millis();
-  
+
   languageSystem.update();
 }
 
@@ -268,10 +266,9 @@ void setupSounds() {
   enemy_death_sound = new SoundFile(this, "data/sound/enemy_death.wav");
 
   menu_background = new SoundFile(this, "data/sound/background/menu_background.wav");
-  isMenuBackgroundPlaying = false;
 
   dungeon_background = new SoundFile(this, "data/sound/background/dungeon_background.wav");
-  isDungeonBackgroundPlaying = false;
+  // isDungeonBackgroundPlaying = false;
 
   click.amp(volumeEffectsLevel);
 
@@ -304,9 +301,8 @@ void draw() {
 
   case MENU_SCREEN:
     // show menu
-    if (!isMenuBackgroundPlaying && volumeMusicLevel > 0) {
+    if (!menu_background.isPlaying()) {
       menu_background.play();
-      isMenuBackgroundPlaying = true;
     }
 
     menu.display();
@@ -314,9 +310,8 @@ void draw() {
 
   case STORY_SCREEN:
     // show story
-    if (isMenuBackgroundPlaying) {
+    if (menu_background.isPlaying()) {
       menu_background.stop();
-      isMenuBackgroundPlaying = false;
     }
 
     storyScreen(currentZone.storyText);
@@ -329,9 +324,9 @@ void draw() {
     break;
 
   case GAME_SCREEN:
-    if (!isDungeonBackgroundPlaying && volumeMusicLevel > 0) {
+    if (!dungeon_background.isPlaying())
+    {
       dungeon_background.loop();
-      isDungeonBackgroundPlaying = true;
     }
 
     // cercare altre soluzioni
@@ -386,10 +381,12 @@ void winScreen() {
   previous_state = screen_state;
 
   // stoppa la soundtrack
-  if (isDungeonBackgroundPlaying) {
+  if (dungeon_background.isPlaying())
+  {
     dungeon_background.stop();
-    isDungeonBackgroundPlaying = false;
   }
+
+  // canzone della vittoria
 
   // chiama la funzione
   // mettere variabile victory
@@ -406,10 +403,12 @@ void loseScreen() {
   previous_state = screen_state;
 
   // stoppa la soundtrack
-  if (isDungeonBackgroundPlaying) {
+  if (dungeon_background.isPlaying())
+  {
     dungeon_background.stop();
-    isDungeonBackgroundPlaying = false;
   }
+  
+  // canzone della sconfitta 
 
   // chiama la funzione
   // variabile defeat

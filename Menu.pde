@@ -1,6 +1,8 @@
 class Menu {
   ArrayList<Button> buttons;
 
+  HashMap<String, String> strings;
+
   String gameTitle = "";
   String play = "";
   String option = "";
@@ -82,33 +84,36 @@ class Menu {
     buttons.get(1).updatePosition(width / 2 - 100, height / 2 + 100, 200, 80);  // option
     buttons.get(2).updatePosition(width / 2 - 100, height / 2 + 200, 200, 80);  // exit
   }
-  
-  // da togliere di qua
+
+  // metodo migliore rispetto al mio
+  // piu rapido e modulare
   void updateLanguage(Language language) {
-    if (language == Language.ITALIAN)
-    {
-      gameTitle = bundleITA.getJSONObject("menu").getJSONObject("main").getString("title");
+    strings = getStringsForLanguage(language);
+    updateUI();
+  }
 
-      play = bundleITA.getJSONObject("menu").getJSONObject("main").getString("play");
-      buttons.get(0).setLabel(play);
+  void updateUI() {
+    gameTitle = strings.get("title");
+    play = strings.get("play");
+    buttons.get(0).setLabel(play);
+    option = strings.get("options");
+    buttons.get(1).setLabel(option);
+    exit = strings.get("quit");
+    buttons.get(2).setLabel(exit);
+  }
 
-      option = bundleITA.getJSONObject("menu").getJSONObject("main").getString("options");
-      buttons.get(1).setLabel(option);
-
-      exit = bundleITA.getJSONObject("menu").getJSONObject("main").getString("quit");
-      buttons.get(2).setLabel(exit);
-    } else if (language == Language.ENGLISH)
-    {
-      gameTitle = bundleENG.getJSONObject("menu").getJSONObject("main").getString("title");
-
-      play = bundleENG.getJSONObject("menu").getJSONObject("main").getString("play");
-      buttons.get(0).setLabel(play);
-
-      option = bundleENG.getJSONObject("menu").getJSONObject("main").getString("options");
-      buttons.get(1).setLabel(option);
-
-      exit = bundleENG.getJSONObject("menu").getJSONObject("main").getString("quit");
-      buttons.get(2).setLabel(exit);
+  HashMap<String, String> getStringsForLanguage(Language language) {
+    HashMap<String, String> languageStrings = new HashMap<String, String>();
+    JSONObject bundle = null;
+    if (language == Language.ITALIAN) {
+      bundle = bundleITA.getJSONObject("menu").getJSONObject("main");
+    } else if (language == Language.ENGLISH) {
+      bundle = bundleENG.getJSONObject("menu").getJSONObject("main");
     }
+    languageStrings.put("title", bundle.getString("title"));
+    languageStrings.put("play", bundle.getString("play"));
+    languageStrings.put("options", bundle.getString("options"));
+    languageStrings.put("quit", bundle.getString("quit"));
+    return languageStrings;
   }
 }

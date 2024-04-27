@@ -6,7 +6,7 @@ class RenderSystem {
 
   // raggio maschera
   float maskRadius;
-  
+
   // triggers
   boolean canOpenChest;        // trigger che attiva il disegno della k quando non si puo aprire una chest
   boolean drawUpBuff;
@@ -14,7 +14,8 @@ class RenderSystem {
   boolean drawInteractableLetter;  // trigger che attiva il disegno della lettera di interazione
   boolean maxHpTrigger;  // attiva la scritta "salute al massimo"
 
-  RenderSystem() {}
+  RenderSystem() {
+  }
 
   // inizializza i layer
   void init() {
@@ -27,7 +28,7 @@ class RenderSystem {
     camera = new Camera();
 
     maskRadius = 60;
-    
+
     println("renderSystem inizializzato correttamente!");
   }
 
@@ -47,7 +48,7 @@ class RenderSystem {
     // disegna il mask layer se non ci troviamo nel livello finale
     // maschera
     // if (!isBossLevel) drawMaskLayer();
-    // updateMaskLayer();
+    //updateMaskLayer();
   }
 
   private void updateGameLayer() {
@@ -77,7 +78,7 @@ class RenderSystem {
     p1.display(spritesLayer);
     p1.displayHitbox(spritesLayer);
     p1.displayWeapon(spritesLayer);
-    
+
     // aggiungere logica per cui quando si è nel livello del boss
     // non vengono eseguite
     //displayEnemies();
@@ -220,7 +221,4 @@ class RenderSystem {
       }
     }
   }
-  
-  
-  
 }

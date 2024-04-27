@@ -1,4 +1,5 @@
 // classe che si occupa della generazione del mondo
+// da spostare nella classe game
 class World {
   ArrayList<Zone> zones = new ArrayList<>(); // lista delle aree che compongono il gioco
   Zone currentZone;

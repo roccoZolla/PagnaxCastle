@@ -55,7 +55,7 @@ class Game {
     p1.golden_key = golden_key;
     p1.silver_key = silver_key;
 
-    // resetGame();
+    resetGame();
 
     // avvia i timer
     fps_timer.timerStart();
@@ -117,7 +117,7 @@ class Game {
 
     if (!isBossLevel) {
       // gestione azione nemici
-      // handleEnemyActions();
+      handleEnemyActions();
 
       // gestione casse
       handleChest();

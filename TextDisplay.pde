@@ -1,3 +1,4 @@
+// da sistemare
 class TextDisplay {
   PVector text_position;
   String text;

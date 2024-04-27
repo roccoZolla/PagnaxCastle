@@ -50,7 +50,7 @@ class UI {
     miniMapY = uiLayer.height - miniMapHeight;
 
     isBossBattle = false;    // di base, false
-    isMapActive = true;    // di base, false, si attiva con la minimappa trovata nei livelli
+    isMapActive = false;    // di base, false, si attiva con la minimappa trovata nei livelli
 
     buttons = new ArrayList();
 

@@ -58,7 +58,6 @@ class Pause {
 
           // stoppa la traccia di sottofondo
           dungeon_background.stop();
-          isDungeonBackgroundPlaying = false;
           break;
         }
       }
