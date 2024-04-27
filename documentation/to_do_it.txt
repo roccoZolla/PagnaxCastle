@@ -20,8 +20,11 @@ TO DO:
 [ ] - a volte non viene caricato il font 
 [ 🗸 ] - aggiungere supporto lingua inglese
  [ ] - rendere piu efficiente il language system
-[ ] - nelle opzioni sistemare il fatto che l'inglese viene prima dell'italiano
-[ ] - nelle opzioni sistemare il fatto che il gamepad viene prima della tastiera
+[ ] - fare in modo che il tasto risulti disattivo quando non ci sono piu opzioni
+ [ ] - nelle opzioni sistemare il fatto che l'inglese viene prima dell'italiano
+ [ ] - nelle opzioni sistemare il fatto che il gamepad viene prima della tastiera
+[ ] - capita ancora che le chest vengano generate nello stesso punto delle scale
+[ ] - quando la sound track del menu finisce non riparte
 
 Idee game design:
 
