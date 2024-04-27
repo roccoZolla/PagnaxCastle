@@ -6,12 +6,16 @@ In the documentation folder, you can find the to-do list containing bugs and imp
 
 ## Main Menu
 
-![Can't load image](main_menu.png)
+![Can't load image](documentation/main_menu.png)
 
 ## Option Menu
 
-![Can't load image](option_menu.png)
+![Can't load image](documentation/option_menu.png)
 
 ## Command Menu
 
-![Can't load image](command_menu.png)
+![Can't load image](documentation/command_screen.png)
+
+## In-Game screen
+
+![Can't load image](documentation/in-game_screen_1.png)
