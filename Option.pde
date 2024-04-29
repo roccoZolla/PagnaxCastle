@@ -35,6 +35,8 @@ class Option {
 
   String commands = "";
 
+  String credits = "";
+
   String back = "";
 
 
@@ -68,6 +70,8 @@ class Option {
     buttons.add(new Button(width - 290, 420, 50, 50, "languageLeft", "<", ""));
 
     buttons.add(new Button(100, 540, 200, 80, "commands", commands, ""));
+
+    buttons.add(new Button(200, 540, 200, 80, "credits", credits, ""));
 
     buttons.add(new Button(width - 250, height - 120, 200, 80, "back", back, ""));  // back button
 
@@ -225,6 +229,10 @@ class Option {
           screen_state = ScreenState.COMMAND_SCREEN;
           break;
 
+        case "credits":
+          screen_state = ScreenState.CREDIT_SCREEN;
+          break;
+
         case "back":
           if (previous_state == ScreenState.MENU_SCREEN) {
             // salva lo stato
@@ -266,7 +274,8 @@ class Option {
     buttons.get(8).updatePosition(width - 100, 420, 50, 50);  // language right
     buttons.get(9).updatePosition(width - 290, 420, 50, 50);  // language left
     buttons.get(10).updatePosition(100, 490, 200, 80);  // commands
-    buttons.get(11).updatePosition(width - 250, height - 120, 200, 80);  // back
+    buttons.get(11).updatePosition(400, 490, 200, 80);  // credits
+    buttons.get(12).updatePosition(width - 250, height - 120, 200, 80);  // back
   }
 
   private void updateEffectsVolume(float volumeEffectsLevel) {
@@ -308,7 +317,7 @@ class Option {
   private void updateDifficultyText() {
     switch(difficulty)
     {
-      // DA RIVEDERE 
+      // DA RIVEDERE
     case FACILE:
       if (languageSystem.language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
       else if (languageSystem.language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("easy");
@@ -328,7 +337,7 @@ class Option {
 
   private void changeLanguage(boolean increases) {
     Language language = languageSystem.language;
-    
+
     if (language == Language.ITALIAN && increases)
     {
       // se il livello di difficolta è massimo non fare niente
@@ -374,7 +383,7 @@ class Option {
 
   private void updateControllerText() {
     Language language = languageSystem.language;
-    
+
     switch(controller) {
     case KEYPAD:
       if (language == Language.ITALIAN) typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("keypad");
@@ -387,7 +396,7 @@ class Option {
       break;
     }
   }
-  
+
   // da mettere nel languafge system
   void updateLanguage(Language language) {
     if (language == Language.ITALIAN)
@@ -430,8 +439,11 @@ class Option {
       commands = bundleITA.getJSONObject("menu").getJSONObject("options").getString("commands");
       buttons.get(10).setLabel(commands);
 
+      credits = bundleITA.getJSONObject("menu").getJSONObject("options").getString("credits");
+      buttons.get(11).setLabel(credits);
+
       back = bundleITA.getJSONObject("menu").getJSONObject("options").getString("back");
-      buttons.get(11).setLabel(back);
+      buttons.get(12).setLabel(back);
     } else if (language == Language.ENGLISH)
     {
       title = bundleENG.getJSONObject("menu").getJSONObject("options").getString("title");
@@ -472,8 +484,11 @@ class Option {
       commands = bundleENG.getJSONObject("menu").getJSONObject("options").getString("commands");
       buttons.get(10).setLabel(commands);
 
+      credits = bundleENG.getJSONObject("menu").getJSONObject("options").getString("credits");
+      buttons.get(11).setLabel(credits);
+
       back = bundleENG.getJSONObject("menu").getJSONObject("options").getString("back");
-      buttons.get(11).setLabel(back);
+      buttons.get(12).setLabel(back);
     }
   }
 }

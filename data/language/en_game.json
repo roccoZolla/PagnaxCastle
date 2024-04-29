@@ -22,6 +22,7 @@
       "italian": "Italian",
       "english": "English",
       "commands": "Commands",
+      "credits": "Credits",
       "back": "Back"
     },
     "pause": {
@@ -36,6 +37,12 @@
       "attack": "Attack enemies",
       "interact": "Interact with objects",
       "use": "Use potions"
+    },
+    "credits": {
+      "credits": "Credits",
+      "studioName": "Studio Ocarina",
+      "description": "",
+      "back": "Back"
     }
   },
   "game": {

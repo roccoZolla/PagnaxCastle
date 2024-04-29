@@ -21,6 +21,7 @@ Menu menu;
 Pause pauseMenu;
 Option optionMenu;
 CommandScreen commandScreen;
+CreditScreen creditScreen;
 UI ui;
 
 // gioco, render e collision logic
@@ -114,7 +115,8 @@ enum ScreenState {
     LOSE_SCREEN,
     PAUSE_SCREEN,
     OPTION_SCREEN,
-    COMMAND_SCREEN
+    COMMAND_SCREEN,
+    CREDIT_SCREEN
 }
 
 // stato dello schermo
@@ -176,6 +178,7 @@ void setup() {
   pauseMenu = new Pause();
   optionMenu = new Option();
   commandScreen = new CommandScreen();
+  creditScreen = new CreditScreen();
   ui = new UI();
 
   // crea gli oggetti relativi ai timer
@@ -323,6 +326,11 @@ void draw() {
     commandScreen.display();
     break;
 
+  case CREDIT_SCREEN:
+    // show tutorial
+    creditScreen.display();
+    break;
+
   case GAME_SCREEN:
     if (!dungeon_background.isPlaying())
     {
@@ -407,8 +415,8 @@ void loseScreen() {
   {
     dungeon_background.stop();
   }
-  
-  // canzone della sconfitta 
+
+  // canzone della sconfitta
 
   // chiama la funzione
   // variabile defeat

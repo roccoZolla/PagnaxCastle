@@ -26,7 +26,7 @@ class CommandScreen {
     // salva lo stato precedente
     background(0);
 
-    // scritta tutorial
+    // scritta comandi
     textFont(myFont);
     fill(255);
     textSize(36);

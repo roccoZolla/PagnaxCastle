@@ -112,6 +112,7 @@ void windowResized() {
   pauseMenu.updateScreen();
   optionMenu.updateScreen();
   commandScreen.updateScreen();
+  creditScreen.updateScreen();
 }
 
 

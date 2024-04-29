@@ -25,6 +25,7 @@ TO DO:
  [ ] - nelle opzioni sistemare il fatto che il gamepad viene prima della tastiera
 [ ] - capita ancora che le chest vengano generate nello stesso punto delle scale
 [ 🗸 ] - quando la sound track del menu finisce non riparte
+[ 🗸 ] - aggiungere schermata dei crediti
 
 Idee game design:
 
