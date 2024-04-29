@@ -119,7 +119,7 @@ class CommandScreen {
     if (language == Language.ITALIAN) {
       bundle = bundleITA.getJSONObject("menu").getJSONObject("commands");
     } else if (language == Language.ENGLISH) {
-      bundle = bundleENG.getJSONObject("menu").getJSONObject("commands  ");
+      bundle = bundleENG.getJSONObject("menu").getJSONObject("commands");
     }
 
     languageStrings.put("title", bundle.getString("title"));

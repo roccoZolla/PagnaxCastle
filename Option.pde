@@ -415,153 +415,90 @@ class Option {
     }
   }
 
-  // da mettere nel languafge system
-  void updateLanguage(Language language) {
-    if (language == Language.ITALIAN)
-    {
-      title = bundleITA.getJSONObject("menu").getJSONObject("options").getString("title");
-
-      audio = bundleITA.getJSONObject("menu").getJSONObject("options").getString("audio");
-      sound_effects = bundleITA.getJSONObject("menu").getJSONObject("options").getString("soundEffect");
-      music = bundleITA.getJSONObject("menu").getJSONObject("options").getString("music");
-
-      difficultyText = bundleITA.getJSONObject("menu").getJSONObject("options").getString("difficulty");
-      switch(difficulty)
-      {
-      case DIFFICILE:
-        difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("hard");
-        break;
-
-      case NORMALE:
-        difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("normal");
-        break;
-
-      case FACILE:
-        difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
-        break;
-      }
-
-
-      controllerText = bundleITA.getJSONObject("menu").getJSONObject("options").getString("controller");
-      if (controller == Controller.KEYPAD)
-      {
-        typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("keypad");
-      } else if (controller == Controller.GAMEPAD)
-      {
-        typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("gamepad");
-      }
-
-      languageText = bundleITA.getJSONObject("menu").getJSONObject("options").getString("language");
-      languageType = bundleITA.getJSONObject("menu").getJSONObject("options").getString("italian");
-
-      commands = bundleITA.getJSONObject("menu").getJSONObject("options").getString("commands");
-      buttons.get(10).setLabel(commands);
-
-      credits = bundleITA.getJSONObject("menu").getJSONObject("options").getString("credits");
-      buttons.get(11).setLabel(credits);
-
-      back = bundleITA.getJSONObject("menu").getJSONObject("options").getString("back");
-      buttons.get(12).setLabel(back);
-    } else if (language == Language.ENGLISH)
-    {
-      title = bundleENG.getJSONObject("menu").getJSONObject("options").getString("title");
-
-      audio = bundleENG.getJSONObject("menu").getJSONObject("options").getString("audio");
-      sound_effects = bundleENG.getJSONObject("menu").getJSONObject("options").getString("soundEffect");
-      music = bundleENG.getJSONObject("menu").getJSONObject("options").getString("music");
-
-      difficultyText = bundleENG.getJSONObject("menu").getJSONObject("options").getString("difficulty");
-      switch(difficulty)
-      {
-      case DIFFICILE:
-        difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("hard");
-        break;
-
-      case NORMALE:
-        difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("normal");
-        break;
-
-      case FACILE:
-        difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("easy");
-        break;
-      }
-
-      controllerText = bundleENG.getJSONObject("menu").getJSONObject("options").getString("controller");
-      if (controller == Controller.KEYPAD)
-      {
-        typeController = bundleENG.getJSONObject("menu").getJSONObject("options").getString("keypad");
-      } else if (controller == Controller.GAMEPAD)
-      {
-        typeController = bundleENG.getJSONObject("menu").getJSONObject("options").getString("gamepad");
-      }
-
-
-      languageText = bundleENG.getJSONObject("menu").getJSONObject("options").getString("language");
-      languageType = bundleENG.getJSONObject("menu").getJSONObject("options").getString("english");
-
-      commands = bundleENG.getJSONObject("menu").getJSONObject("options").getString("commands");
-      buttons.get(10).setLabel(commands);
-
-      credits = bundleENG.getJSONObject("menu").getJSONObject("options").getString("credits");
-      buttons.get(11).setLabel(credits);
-
-      back = bundleENG.getJSONObject("menu").getJSONObject("options").getString("back");
-      buttons.get(12).setLabel(back);
-    }
-  }
-
   // metodo migliore rispetto al mio
   // piu rapido e modulare
-  //void updateLanguage(Language language) {
-  //  strings = getStringsForLanguage(language);
-  //  updateUI();
-  //}
+  void updateLanguage(Language language) {
+    strings = getStringsForLanguage(language);
+    updateUI();
+  }
 
-  //void updateUI() {
-  //  gameTitle = strings.get("title");
-  //  play = strings.get("play");
-  //  buttons.get(0).setLabel(play);
-  //  option = strings.get("options");
-  //  buttons.get(1).setLabel(option);
-  //  exit = strings.get("quit");
-  //  buttons.get(2).setLabel(exit);
-  //}
+  void updateUI() {
+    title = strings.get("title");
 
-  //  HashMap<String, String> getStringsForLanguage(Language language) {
-  //  HashMap<String, String> languageStrings = new HashMap<String, String>();
-  //  JSONObject bundle = null;
-  //  if (language == Language.ITALIAN) {
-  //    bundle = bundleITA.getJSONObject("menu").getJSONObject("option");
-  //  } else if (language == Language.ENGLISH) {
-  //    bundle = bundleENG.getJSONObject("menu").getJSONObject("option");
-  //  }
+    audio = strings.get("audio");
+    sound_effects = strings.get("soundEffect");
+    music = strings.get("music");
 
-  //  languageStrings.put("title", bundle.getString("title")); // rimane invariato
+    difficultyText = strings.get("difficulty");
+    difficultyLevel = strings.get("difficultyLevel");
+    controllerText = strings.get("controller");
+    typeController = strings.get("typeController");
+    languageText = strings.get("language");
+    languageType = strings.get("languageType");
+    commands = strings.get("commands");
+    buttons.get(10).setLabel(commands);
+    credits = strings.get("credits");
+    buttons.get(11).setLabel(credits);
+    back = strings.get("back");
+    buttons.get(12).setLabel(back);
+  }
 
-  //languageStrings.put("title", bundle.getString("audio"));
-  //languageStrings.put("title", bundle.getString("soundEffect"));
-  //languageStrings.put("title", bundle.getString("music"));
+  HashMap<String, String> getStringsForLanguage(Language language) {
+    HashMap<String, String> languageStrings = new HashMap<String, String>();
+    JSONObject bundle = null;
+    if (language == Language.ITALIAN) {
+      bundle = bundleITA.getJSONObject("menu").getJSONObject("options");
+    } else if (language == Language.ENGLISH) {
+      bundle = bundleENG.getJSONObject("menu").getJSONObject("options");
+    }
 
-  //difficultyText = bundleITA.getJSONObject("menu").getJSONObject("options").getString("difficulty");
-  //    switch(difficulty)
-  //    {
-  //    case DIFFICILE:
-  //      difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("hard");
-  //      break;
+    languageStrings.put("title", bundle.getString("title")); // rimane invariato
 
-  //    case NORMALE:
-  //      difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("normal");
-  //      break;
+    languageStrings.put("audio", bundle.getString("audio"));
+    languageStrings.put("soundEffect", bundle.getString("soundEffect"));
+    languageStrings.put("music", bundle.getString("music"));
 
-  //    case FACILE:
-  //      difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
-  //      break;
-  //    }
+    languageStrings.put("difficulty", bundle.getString("difficulty"));
+    switch(difficulty)
+    {
+    case DIFFICILE:
+      languageStrings.put("difficultyLevel", bundle.getString("hard"));
+      break;
 
+    case NORMALE:
+      languageStrings.put("difficultyLevel", bundle.getString("normal"));
+      break;
 
-  //  languageStrings.put("play", bundle.getString("play"));
-  //  languageStrings.put("options", bundle.getString("options"));
-  //  languageStrings.put("quit", bundle.getString("quit"));
-  //  return languageStrings;
-  //}
+    case FACILE:
+      languageStrings.put("difficultyLevel", bundle.getString("easy"));
+      break;
+    }
+
+    languageStrings.put("controller", bundle.getString("controller"));
+    if (controller == Controller.KEYPAD)
+    {
+      languageStrings.put("typeController", bundle.getString("keypad"));
+    } else if (controller == Controller.GAMEPAD)
+    {
+      languageStrings.put("typeController", bundle.getString("gamepad"));
+    }
+
+    languageStrings.put("language", bundle.getString("language"));
+    switch(language)
+    {
+    case ITALIAN:
+      languageStrings.put("languageType", bundle.getString("italian"));
+      break;
+
+    case ENGLISH:
+      languageStrings.put("languageType", bundle.getString("english"));
+      break;
+    }
+
+    languageStrings.put("commands", bundle.getString("commands"));
+    languageStrings.put("credits", bundle.getString("credits"));
+    languageStrings.put("back", bundle.getString("back"));
+
+    return languageStrings;
+  }
 }
