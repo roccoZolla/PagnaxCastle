@@ -14,10 +14,28 @@ enum Difficulty {
     DIFFICILE
 }
 
+//enum TypeButton {
+//  EFFECTSUP,
+//    EFFECTSDOWN,
+//    MUSICUP,
+//    MUSICDOWN,
+//    DIFFICULTYRIGHT,
+//    DIFFICULTYLEFT,
+//    CONTROLLERRIGHT,
+//    CONTROLLERLEFT,
+//    LANGUAGERIGHT,
+//    LANGUAGELEFT,
+//    COMMANDS,
+//    CREDITS,
+//    BACK
+//}
+
 // option screen
 class Option {
   ArrayList<Button> buttons;
   PGraphics optionLayer;
+
+  HashMap<String, String> strings;
 
   // title
   String title = "";
@@ -491,4 +509,59 @@ class Option {
       buttons.get(12).setLabel(back);
     }
   }
+
+  // metodo migliore rispetto al mio
+  // piu rapido e modulare
+  //void updateLanguage(Language language) {
+  //  strings = getStringsForLanguage(language);
+  //  updateUI();
+  //}
+
+  //void updateUI() {
+  //  gameTitle = strings.get("title");
+  //  play = strings.get("play");
+  //  buttons.get(0).setLabel(play);
+  //  option = strings.get("options");
+  //  buttons.get(1).setLabel(option);
+  //  exit = strings.get("quit");
+  //  buttons.get(2).setLabel(exit);
+  //}
+
+  //  HashMap<String, String> getStringsForLanguage(Language language) {
+  //  HashMap<String, String> languageStrings = new HashMap<String, String>();
+  //  JSONObject bundle = null;
+  //  if (language == Language.ITALIAN) {
+  //    bundle = bundleITA.getJSONObject("menu").getJSONObject("option");
+  //  } else if (language == Language.ENGLISH) {
+  //    bundle = bundleENG.getJSONObject("menu").getJSONObject("option");
+  //  }
+
+  //  languageStrings.put("title", bundle.getString("title")); // rimane invariato
+
+  //languageStrings.put("title", bundle.getString("audio"));
+  //languageStrings.put("title", bundle.getString("soundEffect"));
+  //languageStrings.put("title", bundle.getString("music"));
+
+  //difficultyText = bundleITA.getJSONObject("menu").getJSONObject("options").getString("difficulty");
+  //    switch(difficulty)
+  //    {
+  //    case DIFFICILE:
+  //      difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("hard");
+  //      break;
+
+  //    case NORMALE:
+  //      difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("normal");
+  //      break;
+
+  //    case FACILE:
+  //      difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
+  //      break;
+  //    }
+
+
+  //  languageStrings.put("play", bundle.getString("play"));
+  //  languageStrings.put("options", bundle.getString("options"));
+  //  languageStrings.put("quit", bundle.getString("quit"));
+  //  return languageStrings;
+  //}
 }

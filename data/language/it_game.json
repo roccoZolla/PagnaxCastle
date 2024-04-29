@@ -36,7 +36,8 @@
       "playerMovement": "Muovi il giocatore",
       "attack": "Attacca i nemici",
       "interact": "Interagisci con gli oggetti",
-      "use": "Usa le pozioni"
+      "use": "Usa le pozioni",
+      "back": "Indietro"
     },
     "credits": {
       "credits": "Crediti",

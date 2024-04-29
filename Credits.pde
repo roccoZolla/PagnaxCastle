@@ -1,8 +1,10 @@
 class CreditScreen {
   ArrayList<Button> buttons;
 
-  String credits = "Crediti";
-  String studio_name = "Studio Ocarina";
+  HashMap<String, String> strings;
+
+  String credits = "";
+  String studio_name = "";
   String code_link = "https://github.com/roccoZolla/PagnaxCastle";
   String description = "";
   String back = "";
@@ -12,8 +14,6 @@ class CreditScreen {
 
     buttons.add(new Button(width - 250, height - 120, 200, 80, "back", back, ""));
     buttons.add(new Button(100, 170, textWidth(code_link), 80, "code", code_link, ""));
-
-    println(credits.length());
   }
 
   void display() {
@@ -69,26 +69,35 @@ class CreditScreen {
     buttons.get(0).updatePosition(width - 250, height - 120, 200, 80);
   }
 
-  void updateLanguage(Language language)
-  {
-    if (language == Language.ITALIAN)
-    {
-      credits = bundleITA.getJSONObject("menu").getJSONObject("credits").getString("credits");
+  // metodo migliore rispetto al mio
+  // piu rapido e modulare
+  void updateLanguage(Language language) {
+    strings = getStringsForLanguage(language);
+    updateUI();
+  }
 
-      studio_name = bundleITA.getJSONObject("menu").getJSONObject("credits").getString("studioName");
-      description = bundleITA.getJSONObject("menu").getJSONObject("credits").getString("description");
+  void updateUI() {
+    credits = strings.get("credits");
+    studio_name = strings.get("studioName");
+    description = strings.get("description");
+    back = strings.get("back");
+    buttons.get(0).setLabel(back);
+  }
 
-      back = bundleITA.getJSONObject("menu").getJSONObject("options").getString("back");
-      buttons.get(0).setLabel(back);
-    } else if (language == Language.ENGLISH)
-    {
-      credits = bundleENG.getJSONObject("menu").getJSONObject("credits").getString("credits");
-
-      studio_name = bundleENG.getJSONObject("menu").getJSONObject("credits").getString("studioName");
-      description = bundleENG.getJSONObject("menu").getJSONObject("credits").getString("description");
-
-      back = bundleENG.getJSONObject("menu").getJSONObject("options").getString("back");
-      buttons.get(0).setLabel(back);
+  HashMap<String, String> getStringsForLanguage(Language language) {
+    HashMap<String, String> languageStrings = new HashMap<String, String>();
+    JSONObject bundle = null;
+    if (language == Language.ITALIAN) {
+      bundle = bundleITA.getJSONObject("menu").getJSONObject("credits");
+    } else if (language == Language.ENGLISH) {
+      bundle = bundleENG.getJSONObject("menu").getJSONObject("credits");
     }
+
+    languageStrings.put("credits", bundle.getString("credits"));
+    languageStrings.put("studioName", bundle.getString("studioName"));
+    languageStrings.put("description", bundle.getString("description"));
+    languageStrings.put("back", bundle.getString("back"));
+
+    return languageStrings;
   }
 }

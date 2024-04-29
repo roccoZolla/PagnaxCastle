@@ -36,7 +36,8 @@
       "playerMovement": "Player's movement",
       "attack": "Attack enemies",
       "interact": "Interact with objects",
-      "use": "Use potions"
+      "use": "Use potions",
+      "back": "Back"
     },
     "credits": {
       "credits": "Credits",

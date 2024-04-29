@@ -3,9 +3,10 @@ class CommandScreen {
   ArrayList<Button> buttons;
   int imageWidth;
   int imageHeight;
+  
+  HashMap<String, String> strings;
 
   String title = "";
-  String movepPlayer = "";
   String playerMovement = "";
   String attack = "";
   String interact = "";
@@ -35,7 +36,7 @@ class CommandScreen {
 
     // linea che parte dalla scritta comandi a chiudere la pagina
     stroke(255);
-    line(235, 50, width - 50, 50);
+    line(textWidth(title) + 50, 50, width - 50, 50);
 
     // ----- MOVIMENTO -----
     fill(255);
@@ -95,30 +96,39 @@ class CommandScreen {
     buttons.get(0).updatePosition(width - 250, height - 120, 200, 80);
   }
 
-  // da mettere nel language system
+  // metodo migliore rispetto al mio
+  // piu rapido e modulare
   void updateLanguage(Language language) {
-    if (language == Language.ITALIAN)
-    {
-      title = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("title");
+    strings = getStringsForLanguage(language);
+    updateUI();
+  }
 
-      playerMovement = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("playerMovement");
-      attack = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("attack");
-      interact = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("interact");
-      use = bundleITA.getJSONObject("menu").getJSONObject("commands").getString("use");
+  void updateUI() {
+    title = strings.get("title");
+    playerMovement = strings.get("playerMovement");
+    attack = strings.get("attack");
+    interact = strings.get("interact");
+    use = strings.get("use");
+    back = strings.get("back");
+    buttons.get(0).setLabel(back);
+  }
 
-      back = bundleITA.getJSONObject("menu").getJSONObject("options").getString("back");
-      buttons.get(0).setLabel(back);
-    } else if (language == Language.ENGLISH)
-    {
-      title = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("title");
-
-      playerMovement = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("playerMovement");
-      attack = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("attack");
-      interact = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("interact");
-      use = bundleENG.getJSONObject("menu").getJSONObject("commands").getString("use");
-
-      back = bundleENG.getJSONObject("menu").getJSONObject("options").getString("back");
-      buttons.get(0).setLabel(back);
+  HashMap<String, String> getStringsForLanguage(Language language) {
+    HashMap<String, String> languageStrings = new HashMap<String, String>();
+    JSONObject bundle = null;
+    if (language == Language.ITALIAN) {
+      bundle = bundleITA.getJSONObject("menu").getJSONObject("commands");
+    } else if (language == Language.ENGLISH) {
+      bundle = bundleENG.getJSONObject("menu").getJSONObject("commands  ");
     }
+
+    languageStrings.put("title", bundle.getString("title"));
+    languageStrings.put("playerMovement", bundle.getString("playerMovement"));
+    languageStrings.put("attack", bundle.getString("attack"));
+    languageStrings.put("interact", bundle.getString("interact"));
+    languageStrings.put("use", bundle.getString("use"));
+    languageStrings.put("back", bundle.getString("back"));
+
+    return languageStrings;
   }
 }
