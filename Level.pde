@@ -392,6 +392,7 @@ class Level {
       map[x][y] = Utils.CHEST_TILE_TYPE; // Imposta il tipo di tile corrispondente a una cassa
 
       treasures.add(chest);
+      game.entities.add(chest);
     }
   }
 
@@ -440,6 +441,7 @@ class Level {
 
         // Aggiungi il nemico alla lista
         enemies.add(enemy);
+        game.entities.add(enemy);
       }
     }
   }

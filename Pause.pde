@@ -2,6 +2,8 @@ class Pause {
   ArrayList<Button> buttons;
   PGraphics pauseLayer;
 
+  HashMap<String, String> strings;
+
   String title = "";
   String resume = "";
   String options = "";
@@ -80,31 +82,46 @@ class Pause {
   }
 
   // da mettere nel language system
+  // metodo migliore rispetto al mio
+  // piu rapido e modulare
   void updateLanguage(Language language) {
-    if (language == Language.ITALIAN)
-    {
-      title = bundleITA.getJSONObject("menu").getJSONObject("pause").getString("pause");
+    strings = getStringsForLanguage(language);
+    updateUI();
+  }
 
-      resume = bundleITA.getJSONObject("menu").getJSONObject("pause").getString("resume");
-      buttons.get(0).setLabel(resume);
+  void updateUI() {
+    title = strings.get("pause");
+    resume = strings.get("resume");
+    buttons.get(0).setLabel(resume);
+    options = strings.get("options");
+    buttons.get(1).setLabel(options);
+    back = strings.get("backtomenu");
+    buttons.get(2).setLabel(back);
+  }
 
-      options = bundleITA.getJSONObject("menu").getJSONObject("pause").getString("option");
-      buttons.get(1).setLabel(options);
+  HashMap<String, String> getStringsForLanguage(Language language) {
+    HashMap<String, String> languageStrings = new HashMap<String, String>();
+    JSONObject bundle = null;
 
-      back = bundleITA.getJSONObject("menu").getJSONObject("pause").getString("backtomenu");
-      buttons.get(2).setLabel(back);
-    } else if (language == Language.ENGLISH)
-    {
-      title = bundleENG.getJSONObject("menu").getJSONObject("pause").getString("pause");
+    switch(language) {
+    case ITALIAN:
+      bundle = bundleITA.getJSONObject("menu").getJSONObject("pause");
+      break;
 
-      resume = bundleENG.getJSONObject("menu").getJSONObject("pause").getString("resume");
-      buttons.get(0).setLabel(resume);
+    case ENGLISH:
+      bundle = bundleENG.getJSONObject("menu").getJSONObject("pause");
+      break;
 
-      options = bundleENG.getJSONObject("menu").getJSONObject("pause").getString("option");
-      buttons.get(1).setLabel(options);
-
-      back = bundleENG.getJSONObject("menu").getJSONObject("pause").getString("backtomenu");
-      buttons.get(2).setLabel(back);
+    case SPANISH:
+      bundle = bundleESP.getJSONObject("menu").getJSONObject("pause");
+      break;
     }
+
+    languageStrings.put("pause", bundle.getString("pause"));
+    languageStrings.put("resume", bundle.getString("resume"));
+    languageStrings.put("options", bundle.getString("option"));
+    languageStrings.put("backtomenu", bundle.getString("backtomenu"));
+
+    return languageStrings;
   }
 }

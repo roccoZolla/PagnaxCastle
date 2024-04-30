@@ -241,7 +241,7 @@ class Player extends Sprite implements Damageable { //<>//
         if (game.isBossLevel)
         {
           // da rivedere
-          if (collision.sprite_collision(weapon, game.boss))
+          if (collision.check_collision(weapon, game.boss))
           {
             swordAttack.play();
             game.boss.takeDamage(weapon.getDamage());
@@ -252,7 +252,7 @@ class Player extends Sprite implements Damageable { //<>//
         } else {
           for (Enemy enemy : currentLevel.enemies)
           {
-            if (collision.sprite_collision(weapon, enemy))
+            if (collision.check_collision(weapon, enemy))
             {
               swordAttack.play();
               enemy.takeDamage(weapon.getDamage());

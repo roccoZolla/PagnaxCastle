@@ -1,3 +1,9 @@
+public enum Language {
+  ITALIAN,
+    ENGLISH,
+    SPANISH
+}
+
 // gestisce le lingue
 class LanguageSystem {
   Language language;

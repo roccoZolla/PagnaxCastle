@@ -15,6 +15,7 @@ Item golden_key;
 // lingue di gioco
 JSONObject bundleITA;
 JSONObject bundleENG;
+JSONObject bundleESP;
 
 //
 Menu menu;
@@ -165,6 +166,7 @@ void setup() {
 
   bundleITA = loadJSONObject("data/language/it_game.json");
   bundleENG = loadJSONObject("data/language/en_game.json");
+  bundleESP = loadJSONObject("data/language/es_game.json"); //<>//
 
   game = new Game();
   render = new RenderSystem();

@@ -1,8 +1,3 @@
-enum Language {
-  ITALIAN,
-    ENGLISH
-}
-
 enum Controller {
   KEYPAD,
     GAMEPAD
@@ -333,22 +328,27 @@ class Option {
   }
 
   private void updateDifficultyText() {
+    Language language = languageSystem.language;
+    
     switch(difficulty)
     {
       // DA RIVEDERE
     case FACILE:
-      if (languageSystem.language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
-      else if (languageSystem.language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("easy");
+      if (language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("easy");
+      else if (language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("easy");
+      else if (language == Language.SPANISH) difficultyLevel = bundleESP.getJSONObject("menu").getJSONObject("options").getString("easy");
       break;
 
     case NORMALE:
-      if (languageSystem.language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("normal");
-      else if (languageSystem.language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("normal");
+      if (language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("normal");
+      else if (language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("normal");
+      else if (language == Language.SPANISH) difficultyLevel = bundleESP.getJSONObject("menu").getJSONObject("options").getString("normal");
       break;
 
     case DIFFICILE:
-      if (languageSystem.language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("hard");
-      else if (languageSystem.language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("hard");
+      if (language == Language.ITALIAN) difficultyLevel = bundleITA.getJSONObject("menu").getJSONObject("options").getString("hard");
+      else if (language == Language.ENGLISH) difficultyLevel = bundleENG.getJSONObject("menu").getJSONObject("options").getString("hard");
+      else if (language == Language.SPANISH) difficultyLevel = bundleESP.getJSONObject("menu").getJSONObject("options").getString("hard");
       break;
     }
   }
@@ -356,11 +356,11 @@ class Option {
   private void changeLanguage(boolean increases) {
     Language language = languageSystem.language;
 
-    if (language == Language.ITALIAN && increases)
+    if (language == Language.SPANISH && increases)
     {
       // se il livello di difficolta è massimo non fare niente
       return;
-    } else if (language == Language.ENGLISH && !increases)
+    } else if (language == Language.ITALIAN && !increases)
     {
       // se il livello di difficolta è il minimo non fare niente
       return;
@@ -378,11 +378,11 @@ class Option {
   }
 
   private void changeController(boolean increases) {
-    if (controller == Controller.KEYPAD && increases)
+    if (controller == Controller.GAMEPAD && increases)
     {
       // se il livello di difficolta è massimo non fare niente
       return;
-    } else if (controller == Controller.GAMEPAD && !increases)
+    } else if (controller == Controller.KEYPAD && !increases)
     {
       // se il livello di difficolta è il minimo non fare niente
       return;
@@ -406,11 +406,13 @@ class Option {
     case KEYPAD:
       if (language == Language.ITALIAN) typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("keypad");
       else if (language == Language.ENGLISH) typeController = bundleENG.getJSONObject("menu").getJSONObject("options").getString("keypad");
+      else if (language == Language.SPANISH) typeController = bundleESP.getJSONObject("menu").getJSONObject("options").getString("keypad");
       break;
 
     case GAMEPAD:
       if (language == Language.ITALIAN) typeController = bundleITA.getJSONObject("menu").getJSONObject("options").getString("gamepad");
       else if (language == Language.ENGLISH) typeController = bundleENG.getJSONObject("menu").getJSONObject("options").getString("gamepad");
+      else if (language == Language.SPANISH) typeController = bundleESP.getJSONObject("menu").getJSONObject("options").getString("gamepad");
       break;
     }
   }
@@ -446,12 +448,21 @@ class Option {
   HashMap<String, String> getStringsForLanguage(Language language) {
     HashMap<String, String> languageStrings = new HashMap<String, String>();
     JSONObject bundle = null;
-    if (language == Language.ITALIAN) {
+    
+    switch(language) {
+    case ITALIAN:
       bundle = bundleITA.getJSONObject("menu").getJSONObject("options");
-    } else if (language == Language.ENGLISH) {
-      bundle = bundleENG.getJSONObject("menu").getJSONObject("options");
-    }
+      break;
 
+    case ENGLISH:
+      bundle = bundleENG.getJSONObject("menu").getJSONObject("options");
+      break;
+
+    case SPANISH:
+      bundle = bundleESP.getJSONObject("menu").getJSONObject("options");
+      break;
+    }
+    
     languageStrings.put("title", bundle.getString("title")); // rimane invariato
 
     languageStrings.put("audio", bundle.getString("audio"));
@@ -492,6 +503,10 @@ class Option {
 
     case ENGLISH:
       languageStrings.put("languageType", bundle.getString("english"));
+      break;
+
+    case SPANISH:
+      languageStrings.put("languageType", bundle.getString("spanish"));
       break;
     }
 

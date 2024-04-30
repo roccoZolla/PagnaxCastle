@@ -1,5 +1,6 @@
 TO DO:
 
+[ ] - implementare ECS
 [ ] - aggiungere supporto per controller
 [ ] - aggiungere difficolta
 [ ] - sistemare il frame rate
@@ -26,6 +27,7 @@ TO DO:
 [ ] - capita ancora che le chest vengano generate nello stesso punto delle scale
 [ 🗸 ] - quando la sound track del menu finisce non riparte
 [ 🗸 ] - aggiungere schermata dei crediti
+[ ] - possibilità di disattivare i pulsanti
 
 Idee game design:
 

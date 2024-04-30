@@ -116,10 +116,19 @@ class CommandScreen {
   HashMap<String, String> getStringsForLanguage(Language language) {
     HashMap<String, String> languageStrings = new HashMap<String, String>();
     JSONObject bundle = null;
-    if (language == Language.ITALIAN) {
+    
+    switch(language) {
+    case ITALIAN:
       bundle = bundleITA.getJSONObject("menu").getJSONObject("commands");
-    } else if (language == Language.ENGLISH) {
+      break;
+
+    case ENGLISH:
       bundle = bundleENG.getJSONObject("menu").getJSONObject("commands");
+      break;
+
+    case SPANISH:
+      bundle = bundleESP.getJSONObject("menu").getJSONObject("commands");
+      break;
     }
 
     languageStrings.put("title", bundle.getString("title"));

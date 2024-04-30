@@ -105,11 +105,21 @@ class Menu {
   HashMap<String, String> getStringsForLanguage(Language language) {
     HashMap<String, String> languageStrings = new HashMap<String, String>();
     JSONObject bundle = null;
-    if (language == Language.ITALIAN) {
+    
+    switch(language) {
+    case ITALIAN:
       bundle = bundleITA.getJSONObject("menu").getJSONObject("main");
-    } else if (language == Language.ENGLISH) {
+      break;
+
+    case ENGLISH:
       bundle = bundleENG.getJSONObject("menu").getJSONObject("main");
+      break;
+
+    case SPANISH:
+      bundle = bundleESP.getJSONObject("menu").getJSONObject("main");
+      break;
     }
+
     languageStrings.put("title", bundle.getString("title"));
     languageStrings.put("play", bundle.getString("play"));
     languageStrings.put("options", bundle.getString("options"));

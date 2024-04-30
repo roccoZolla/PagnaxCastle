@@ -86,7 +86,6 @@ class RenderSystem {
     //displayCoins();
     //displayDropItems();
 
-
     if (!game.isBossLevel) {
       displayEnemies();
       displayChests();
@@ -150,7 +149,7 @@ class RenderSystem {
         // mostra le chest nell'area visibile
         chest.display(spritesLayer);
 
-        if (collision.sprite_collision(chest, p1) && !chest.isOpen())
+        if (collision.check_collision(chest, p1) && !chest.isOpen())
         {
           chest.displayHitbox(spritesLayer);
 
@@ -192,7 +191,7 @@ class RenderSystem {
       {
         item.display(spritesLayer);
 
-        if (collision.sprite_collision(item, p1))
+        if (collision.check_collision(item, p1))
         {
           item.displayHitbox(spritesLayer);
 

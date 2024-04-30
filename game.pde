@@ -12,6 +12,8 @@ class Game {
   boolean isTorchDropped;       // indica se la torcia è stata droppata, di base false
   boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
+  
+  ArrayList<Sprite> entities; // array contenente tutte le entite di gioco
 
   ConcreteDamageHandler damageTileHandler;
 
@@ -20,6 +22,7 @@ class Game {
 
   void init() {
     // difficultyLevel = DifficultyLevel.NORMALE;
+    entities = new ArrayList<Sprite>();
 
     isBossLevel = false;
 
@@ -63,6 +66,9 @@ class Game {
 
     fps_clock.timerStart();
     tick_clock.timerStart();
+    
+    //
+    entities.add(p1);
 
     println("game system inizializzato correttamente!");
   }
@@ -157,7 +163,7 @@ class Game {
     // passa al livello successivo
     // aggiungere collider
     // if (currentLevel.stairsNextFloor.sprite_collision(p1))
-    if (collision.sprite_collision(currentLevel.stairsNextFloor, p1))
+    if (collision.check_collision(currentLevel.stairsNextFloor, p1))
     {
       // se il livello dell'area è l'ultimo passa alla prossima area
       if (currentLevel.levelIndex == currentZone.levels.size() - 1) {
@@ -205,7 +211,7 @@ class Game {
 
           // attacca solo se c'è collisione
           // if (enemy.sprite_collision(p1))
-          if (collision.sprite_collision(enemy, p1)) {
+          if (collision.check_collision(enemy, p1)) {
             enemy.attack(p1);
           } else {
             enemy.first_attack = true;
@@ -227,7 +233,7 @@ class Game {
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.getPosition())) {
         // if (chest.sprite_collision(p1) && !chest.isOpen())
-        if (collision.sprite_collision(chest, p1) && !chest.isOpen())
+        if (collision.check_collision(chest, p1) && !chest.isOpen())
         {
           // println("collsione cassa giocatore");
           render.canOpenChest = true;
@@ -301,7 +307,7 @@ class Game {
         // mostra le monete nell'area visibile
         if (!coin.isCollected()) {
           // if (coin.sprite_collision(p1))
-          if (collision.sprite_collision(coin, p1))
+          if (collision.check_collision(coin, p1))
           {
             coin.collect();  // raccogli la moneta
             p1.collectCoin();
@@ -330,7 +336,7 @@ class Game {
         render.drawInteractableLetter = false;
 
         // if (item.sprite_collision(p1))
-        if (collision.sprite_collision(item, p1))
+        if (collision.check_collision(item, p1))
         {
           render.drawInteractableLetter = true;
 

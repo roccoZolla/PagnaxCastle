@@ -87,10 +87,19 @@ class CreditScreen {
   HashMap<String, String> getStringsForLanguage(Language language) {
     HashMap<String, String> languageStrings = new HashMap<String, String>();
     JSONObject bundle = null;
-    if (language == Language.ITALIAN) {
+    
+    switch(language) {
+    case ITALIAN:
       bundle = bundleITA.getJSONObject("menu").getJSONObject("credits");
-    } else if (language == Language.ENGLISH) {
+      break;
+
+    case ENGLISH:
       bundle = bundleENG.getJSONObject("menu").getJSONObject("credits");
+      break;
+
+    case SPANISH:
+      bundle = bundleESP.getJSONObject("menu").getJSONObject("credits");
+      break;
     }
 
     languageStrings.put("credits", bundle.getString("credits"));
