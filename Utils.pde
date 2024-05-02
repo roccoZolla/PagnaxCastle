@@ -118,7 +118,19 @@ void windowResized() {
 
 // calcola la posizione di uno sprite all'interno della scena di gioco
 // se lo sprite si trova al di fuori della scena lo sprite non viene renderizzato
-boolean isInVisibleArea(PVector spritePosition) {
+//boolean isInVisibleArea(PVector spritePosition) {
+//  // Calcola il rettangolo visibile
+//  int tileSize = currentLevel.tileSize;
+
+//  int startX = floor((camera.x / (tileSize * camera.zoom)));
+//  int startY = floor((camera.y / (tileSize * camera.zoom)));
+//  int endX = ceil((camera.x + width) / (tileSize * camera.zoom));
+//  int endY = ceil((camera.y + height) / (tileSize * camera.zoom));
+
+//  return (spritePosition.x >= startX && spritePosition.x <= endX && spritePosition.y >= startY && spritePosition.y <= endY);
+//}
+
+boolean isInVisibleArea(PVector boxPosition) {
   // Calcola il rettangolo visibile
   int tileSize = currentLevel.tileSize;
 
@@ -127,9 +139,14 @@ boolean isInVisibleArea(PVector spritePosition) {
   int endX = ceil((camera.x + width) / (tileSize * camera.zoom));
   int endY = ceil((camera.y + height) / (tileSize * camera.zoom));
 
+  // Calcola le coordinate del centro del box rispetto alle coordinate del tile
+  int boxTileX = floor(boxPosition.x / tileSize);
+  int boxTileY = floor(boxPosition.y / tileSize);
 
-  return (spritePosition.x >= startX && spritePosition.x <= endX && spritePosition.y >= startY && spritePosition.y <= endY);
+  // Controlla se il centro del box è all'interno del rettangolo visibile
+  return (boxTileX >= startX && boxTileX <= endX && boxTileY >= startY && boxTileY <= endY);
 }
+
 
 // controlla che le coordinate si trovino all'interno della mappa
 boolean isWithinMapBounds(int x, int y) {

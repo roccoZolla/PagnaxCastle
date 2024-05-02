@@ -1,8 +1,9 @@
-// per gestione del controller
+// gestione controller //<>//
 //import net.java.games.input.*;
 //import org.gamecontrolplus.*;
 //import org.gamecontrolplus.gui.*;
 
+import fisica.*;
 import processing.sound.*;
 import java.util.Iterator;
 
@@ -29,7 +30,6 @@ UI ui;
 Game game;
 RenderSystem render;
 CollisionSystem collision;
-FisicoSystem fisico;
 
 LanguageSystem languageSystem;
 
@@ -143,6 +143,9 @@ Difficulty difficulty;
 Camera camera;
 
 void setup() {
+  // inizializza il motore fisico
+  Fisica.init(this);
+  
   // dimensioni schermo
   frameRate(60);
   size(1280, 720, P2D);
@@ -166,13 +169,12 @@ void setup() {
 
   bundleITA = loadJSONObject("data/language/it_game.json");
   bundleENG = loadJSONObject("data/language/en_game.json");
-  bundleESP = loadJSONObject("data/language/es_game.json"); //<>//
+  bundleESP = loadJSONObject("data/language/es_game.json");
 
   game = new Game();
   render = new RenderSystem();
   collision = new CollisionSystem();
-  fisico = new FisicoSystem();
-
+  
   languageSystem = new LanguageSystem();
   languageSystem.init();
 
@@ -257,8 +259,8 @@ void setupImages() {
 }
 
 void setupSounds() {
-  volumeMusicLevel = 0.1;
-  volumeEffectsLevel = 0.3;
+  volumeMusicLevel = 0.0;
+  volumeEffectsLevel = 0.0;
 
   click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
@@ -354,9 +356,8 @@ void draw() {
     // render loop
     if (fps_clock.getTicks() > 1000.f / Utils.SCREEN_FPS_CAP) {
       collision.update();
-      fisico.update();
       render.update();
-      ui.update();
+      // ui.update();
 
       renderStats();
       fps_clock.timerReset();

@@ -4,8 +4,23 @@ class Chest extends Item {
   Item openWith;              // oggetto che serve per aprire la chest
   boolean isRare;
 
-  Chest(PVector position, PImage sprite, String name) {
-    super(position, sprite, name);
+  Chest(PImage sprite, String name) {
+    super();
+
+    // name
+    this.name = name;
+
+    // sprite
+    this.sprite = sprite;
+
+    // box settings
+    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setFillColor(3);
+    box.setStatic(true);
+    box.setFriction(0.8);
+    box.setRestitution(0.1);
+    
+    // charateristics
     item = null;
     isOpen = false;    // la cassa di base è chiusa
     openWith = null;   // non si puo aprire con nessun oggetto
@@ -59,35 +74,33 @@ class Chest extends Item {
 
     PVector dropPosition = calculateDropPosition();
 
-    if (randomValue <= dropHeartProbability) 
+    if (randomValue <= dropHeartProbability)
     {
       // drop del cuore
       // Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
-      Item dropHeart = new Item(dropPosition, heart_sprite, "dropHeart", true, 10, false, 0);
+      Item dropHeart = new Item(heart_sprite, "dropHeart", true, 10, false, 0);
+      dropHeart.updatePosition(dropPosition);
       currentLevel.dropItems.add(dropHeart);
-    } 
-    
-    else if (randomValue > dropHeartProbability && randomValue <= dropHeartProbability + dropSwordProbability) 
+    } else if (randomValue > dropHeartProbability && randomValue <= dropHeartProbability + dropSwordProbability)
     {
       // drop della spada
       // Weapon dropSword = new Weapon(dropPosition, sword_sprite, "Spada", 20); // Assumendo che una spada valga 20 danni
-      Item dropSword = new Item(dropPosition, sword_sprite, "Spada", false, 0, true, 20);
+      Item dropSword = new Item(sword_sprite, "Spada", false, 0, true, 20);
+      dropSword.updatePosition(dropPosition);
       currentLevel.dropItems.add(dropSword);
-    } 
-    
-    else if (randomValue > dropHeartProbability + dropSwordProbability && randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability) 
+    } else if (randomValue > dropHeartProbability + dropSwordProbability && randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability)
     {
       // drop della chiave d'oro
-      Item dropGoldenKey = new Item(dropPosition, golden_key_sprite, "dropGoldenKey");
+      Item dropGoldenKey = new Item(golden_key_sprite, "dropGoldenKey");
+      dropGoldenKey.updatePosition(dropPosition);
       currentLevel.dropItems.add(dropGoldenKey);
-    } 
-    
-    else if (randomValue > dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability &&
-      randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability + dropPotionProbability) 
-      {
+    } else if (randomValue > dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability &&
+      randomValue <= dropHeartProbability + dropSwordProbability + dropGoldenKeyProbability + dropPotionProbability)
+    {
       // drop della pozione
       // Healer dropPotion = new Healer(dropPosition, red_potion_sprite, "dropPotion", 20);
-      Item dropPotion = new Item(dropPosition, red_potion_sprite, "dropPotion", true, 20, false, 0);
+      Item dropPotion = new Item(red_potion_sprite, "dropPotion", true, 20, false, 0);
+      dropPotion.updatePosition(dropPosition);
       currentLevel.dropItems.add(dropPotion);
     }
   }
@@ -103,31 +116,29 @@ class Chest extends Item {
 
     PVector dropPosition = calculateDropPosition();
 
-    if (randomValue <= dropTorchProbability && !game.isTorchDropped) 
+    if (randomValue <= dropTorchProbability && !game.isTorchDropped)
     {
       // drop della torcia
-      Item dropTorch = new Item(dropPosition, torch_sprite, "dropTorch");
+      Item dropTorch = new Item(torch_sprite, "dropTorch");
+      dropTorch.updatePosition(dropPosition);
       currentLevel.dropItems.add(dropTorch);
       game.isTorchDropped = true;
-    } 
-    
-    else if (randomValue > dropTorchProbability
+    } else if (randomValue > dropTorchProbability
       && randomValue <= dropTorchProbability + dropMapProbability
-      && !game.isMapDropped) 
-      {
+      && !game.isMapDropped)
+    {
       // drop della mappa
-      Item dropMap = new Item(dropPosition, dungeon_map_sprite, "dropMap");
+      Item dropMap = new Item(dungeon_map_sprite, "dropMap");
+      dropMap.updatePosition(dropPosition);
       currentLevel.dropItems.add(dropMap);
       game.isMapDropped = true;
-    } 
-    
-    else if (randomValue > dropTorchProbability + dropMapProbability
+    } else if (randomValue > dropTorchProbability + dropMapProbability
       && randomValue <= dropTorchProbability + dropMapProbability + dropSuperSwordProbability
-      && !game.isMasterSwordDropped) 
-      {
+      && !game.isMasterSwordDropped)
+    {
       // drop della super spada
-      // Weapon dropMasterSword = new Weapon(dropPosition, master_sword_sprite, "Spada del Maestro", 50); // Assumendo che una super spada valga 50 danni
-      Item dropMasterSword = new Item(dropPosition, master_sword_sprite, "Spada del Maestro", false, 0, true, 50);
+      Item dropMasterSword = new Item(master_sword_sprite, "Spada del Maestro", false, 0, true, 50);
+      dropMasterSword.updatePosition(dropPosition);
       currentLevel.dropItems.add(dropMasterSword);
       game.isMasterSwordDropped = true;
     }
@@ -136,7 +147,7 @@ class Chest extends Item {
   // metodo per calcolare la posizione dei drop
   PVector calculateDropPosition() {
     float dropRadius = 2;
-    PVector dropPosition = position.copy();
+    PVector dropPosition = getPosition().copy();
 
     for (int i = 0; i < 10; i++) {
       float xOffset = random(-dropRadius, dropRadius);
@@ -147,7 +158,7 @@ class Chest extends Item {
       if (!isWall((int) dropPosition.x, (int) dropPosition.y)) {
         break;
       } else {
-        dropPosition = position.copy();
+        dropPosition = getPosition().copy();
       }
     }
 

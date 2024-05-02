@@ -82,33 +82,13 @@ class UI {
     uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(24);
     uiLayer.text("tick timer: " + tick_timer.getTicks(), width / 2, 60);
-    
-    // DEBUG 
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("Posizione: " + p1.position, 10, height / 2 + 80);
-    
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("canMoveUP: " + p1.canMoveUP, 10, height / 2 + 100);    
-    
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("canMoveDOWN: " + p1.canMoveDOWN, 10, height / 2 + 120);    
-    
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("canMoveRIGHT: " + p1.canMoveRIGHT, 10, height / 2 + 140);    
-    
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("canMoveLEFT: " + p1.canMoveLEFT, 10, height / 2 + 160);
-    
+
+    // DEBUG
+    //uiLayer.fill(255);
+    //uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    //uiLayer.textSize(24);
+    //uiLayer.text("Posizione: " + p1.getPosition(), 10, height / 2 + 80);
+
     /////
 
     // pause button
@@ -305,8 +285,8 @@ class UI {
     uiLayer.noStroke();
 
     for (Chest chest : currentLevel.treasures) {
-      chestMiniMapX = map(chest.position.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
-      chestMiniMapY = map(chest.position.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
+      chestMiniMapX = map(chest.getPosition().x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
+      chestMiniMapY = map(chest.getPosition().y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
       uiLayer.ellipse(chestMiniMapX, chestMiniMapY, 5, 5);
     }
   }
@@ -319,9 +299,9 @@ class UI {
     // aggiorna posizione bottone
     buttons.get(0).updatePosition(width - 70, 20, 50, 50);  // pause
   }
-  
+
   void updateLanguage(Language language) {
-     if (language == Language.ITALIAN)
+    if (language == Language.ITALIAN)
     {
       scoreText = bundleITA.getJSONObject("game").getString("score");
       game_target = bundleITA.getJSONObject("game").getString("gametarget");

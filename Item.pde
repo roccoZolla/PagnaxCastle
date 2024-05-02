@@ -14,14 +14,38 @@ class Item extends Sprite {
   // String description;
 
   // constructors
-  Item(PVector position, PImage sprite, String name) {
-    super(position, sprite);
+  Item() {}
+  
+  Item(PImage sprite, String name) {
+    super();
+    
+    // sprite
+    this.sprite = sprite;
+    
+    // box settings
+    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setStatic(true);
+    box.setFriction(0.8);
+    box.setRestitution(0.1);
+    
+    // charateristics
     this.name = name;
   }
 
   // costruttore degli oggetti curativi e delle armi
-  Item(PVector position, PImage sprite, String name, boolean isHealer, int bonusHp, boolean isWeapon, int damage) {
-    super(position, sprite);
+  Item(PImage sprite, String name, boolean isHealer, int bonusHp, boolean isWeapon, int damage) {
+    super();
+    
+    // sprite
+    this.sprite = sprite;
+    
+    // box settings
+    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setStatic(true);
+    box.setFriction(0.8);
+    box.setRestitution(0.1);
+    
+    // charateristics
     this.name = name;
     
     this.isHealer = isHealer;

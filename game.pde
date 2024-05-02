@@ -12,8 +12,9 @@ class Game {
   boolean isTorchDropped;       // indica se la torcia è stata droppata, di base false
   boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
-  
-  ArrayList<Sprite> entities; // array contenente tutte le entite di gioco
+
+
+  Sprite test;
 
   ConcreteDamageHandler damageTileHandler;
 
@@ -22,7 +23,7 @@ class Game {
 
   void init() {
     // difficultyLevel = DifficultyLevel.NORMALE;
-    entities = new ArrayList<Sprite>();
+    // sprites = new ArrayList<Sprite>();
 
     isBossLevel = false;
 
@@ -31,8 +32,8 @@ class Game {
     isMasterSwordDropped = false;
 
     // da togliere di qua
-    golden_key = new Item(null, null, "golden_key");
-    silver_key = new Item(null, null, "silver_key");
+    golden_key = new Item(null, "golden_key");
+    silver_key = new Item(null, "silver_key");
 
     // create world
     castle = new World();
@@ -52,8 +53,9 @@ class Game {
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
     // inizializza il player
-    p1 = new Player(new PVector(0, 0), 100, 100, 1, 0, 3, damageTileHandler);
+    p1 = new Player(100, 100, 1, 0, 3, damageTileHandler);
     p1.updatePosition(currentLevel.getStartPosition());
+    println("player position: " + p1.getPosition());
 
     p1.golden_key = golden_key;
     p1.silver_key = silver_key;
@@ -66,9 +68,9 @@ class Game {
 
     fps_clock.timerStart();
     tick_clock.timerStart();
-    
+
     //
-    entities.add(p1);
+    currentLevel.level.add(p1.box);
 
     println("game system inizializzato correttamente!");
   }
@@ -117,30 +119,32 @@ class Game {
   void update() {
     // gestione controlli player
     // handlePlayerDeath();
+    // da sistemare
+    currentLevel.level.step();
     p1.update();
     p1.attack();
     //p1.usePotion(spritesLayer);
 
-    if (!isBossLevel) {
-      // gestione azione nemici
-      handleEnemyActions();
+    //if (!isBossLevel) {
+    //  // gestione azione nemici
+    // handleEnemyActions();
 
-      // gestione casse
-      handleChest();
+    //  // gestione casse
+    //  handleChest();
 
-      // gestion drop items
-      handleDropItems();
+    //  // gestion drop items
+    //  handleDropItems();
 
-      // gestione monete
-      handleCoin();
+    //  // gestione monete
+    //  handleCoin();
 
-      // gestione livello successivo
-      handleNextLevel();
-    } else {
-      handlePlayerVictory();
-      // gestione azioni boss
-      boss.update(p1);
-    }
+    //  // gestione livello successivo
+    //  handleNextLevel();
+    //} else {
+    //  handlePlayerVictory();
+    //  // gestione azioni boss
+    //  boss.update(p1);
+    //}
   }
 
   // gestisce la vittoria del giocatore - OK
@@ -163,7 +167,7 @@ class Game {
     // passa al livello successivo
     // aggiungere collider
     // if (currentLevel.stairsNextFloor.sprite_collision(p1))
-    if (collision.check_collision(currentLevel.stairsNextFloor, p1))
+    if (checkCollision(currentLevel.stairsNextFloor, p1))
     {
       // se il livello dell'area è l'ultimo passa alla prossima area
       if (currentLevel.levelIndex == currentZone.levels.size() - 1) {
@@ -211,7 +215,7 @@ class Game {
 
           // attacca solo se c'è collisione
           // if (enemy.sprite_collision(p1))
-          if (collision.check_collision(enemy, p1)) {
+          if (checkCollision(enemy, p1)) {
             enemy.attack(p1);
           } else {
             enemy.first_attack = true;
@@ -233,7 +237,7 @@ class Game {
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.getPosition())) {
         // if (chest.sprite_collision(p1) && !chest.isOpen())
-        if (collision.check_collision(chest, p1) && !chest.isOpen())
+        if (checkCollision(chest, p1) && !chest.isOpen())
         {
           // println("collsione cassa giocatore");
           render.canOpenChest = true;
@@ -302,12 +306,12 @@ class Game {
   // gestisce le monete - OK ???
   void handleCoin() {
     // ----- COIN -----
+
     for (Coin coin : currentLevel.coins) {
       if (isInVisibleArea(coin.getPosition())) {
         // mostra le monete nell'area visibile
         if (!coin.isCollected()) {
-          // if (coin.sprite_collision(p1))
-          if (collision.check_collision(coin, p1))
+          if (checkCollision(coin, p1))
           {
             coin.collect();  // raccogli la moneta
             p1.collectCoin();
@@ -336,7 +340,7 @@ class Game {
         render.drawInteractableLetter = false;
 
         // if (item.sprite_collision(p1))
-        if (collision.check_collision(item, p1))
+        if (checkCollision(item, p1))
         {
           render.drawInteractableLetter = true;
 

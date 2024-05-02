@@ -3,8 +3,21 @@ class Coin extends Sprite {
   boolean collected;    // indica se la monete è stata raccolta
   int scoreValue;
 
-  Coin(PVector position, PImage image, int value) {
-    super(position, image);
+  Coin(PImage image, int value) {
+    super();
+    
+    // sprite
+    this.sprite = image;
+    
+    // box settings
+    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setFillColor(10);
+    box.setRotatable(false);
+    box.setFriction(0.5);
+    box.setRestitution(0.2);
+    box.setSensor(true);  // è un sensore
+    
+    // charateristics
     this.value = value;
     this.collected = false;    // di base una moneta non è raccolta
     this.scoreValue = 10;

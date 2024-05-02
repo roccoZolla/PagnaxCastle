@@ -1,6 +1,6 @@
 TO DO:
 
-[ ] - implementare ECS
+[ ] - implementare ECS ( ? ) 
 [ ] - aggiungere supporto per controller
 [ ] - aggiungere difficolta
 [ ] - sistemare il frame rate

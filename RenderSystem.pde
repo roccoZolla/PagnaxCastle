@@ -39,7 +39,7 @@ class RenderSystem {
 
     // disegna il game layer
     // mappa di gioco
-    updateGameLayer();
+    // updateGameLayer();
 
     // disegna lo sprites layer
     // giocatore, nemici, casse
@@ -69,31 +69,37 @@ class RenderSystem {
 
   private void updateSpritesLayer() {
     spritesLayer.beginDraw();
-    spritesLayer.background(255, 0);
+    // spritesLayer.background(255, 0);
+    spritesLayer.background(255);
     spritesLayer.translate(-camera.x, -camera.y);
     spritesLayer.scale(camera.zoom);
     spritesLayer.imageMode(CENTER);
-
+    
     // metodo che gestisce le collisioni del player e di ogni altra entita
     p1.display(spritesLayer);
-    p1.displayHitbox(spritesLayer);
-    p1.displayWeapon(spritesLayer);
+    // p1.displayHitbox(spritesLayer);
+    // p1.displayWeapon(spritesLayer);
 
     // aggiungere logica per cui quando si è nel livello del boss
     // non vengono eseguite
-    //displayEnemies();
-    //displayChests();
-    //displayCoins();
+    // displayEnemies();
+    // displayChests();
+    // displayCoins();
     //displayDropItems();
 
-    if (!game.isBossLevel) {
-      displayEnemies();
-      displayChests();
-      displayCoins();
-      displayDropItems();
-    } else {
-      game.boss.display(spritesLayer);
-    }
+    //if (!game.isBossLevel) {
+    //  displayEnemies();
+    //  displayChests();
+    //  displayCoins();
+    //  displayDropItems();
+    //} else {
+    //  game.boss.display(spritesLayer);
+    //}
+    
+    // debug
+    currentLevel.level.drawDebug(spritesLayer);
+    // currentLevel.level.draw(spritesLayer);
+    
 
     spritesLayer.endDraw();
     image(spritesLayer, 0, 0);
@@ -135,7 +141,7 @@ class RenderSystem {
 
       if (isInVisibleArea(enemy.getPosition())) {
         if (enemy.enemyHP > 0) {
-          enemy.display(render.spritesLayer);
+          enemy.display(spritesLayer);
         }
       }
     }
@@ -149,9 +155,9 @@ class RenderSystem {
         // mostra le chest nell'area visibile
         chest.display(spritesLayer);
 
-        if (collision.check_collision(chest, p1) && !chest.isOpen())
+        if (checkCollision(chest, p1) && !chest.isOpen())
         {
-          chest.displayHitbox(spritesLayer);
+          // chest.displayHitbox(spritesLayer);
 
           // disegna la lettera che indica il tasto per aprire la cassa
           float letterImageX = (chest.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
@@ -170,7 +176,7 @@ class RenderSystem {
   }
 
   private void displayCoins() {
-    for (Coin coin : currentLevel.coins) {
+    for (Coin coin : currentLevel.coins) {      
       if (isInVisibleArea(coin.getPosition())) {
         // mostra le monete nell'area visibile
         if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
@@ -191,9 +197,9 @@ class RenderSystem {
       {
         item.display(spritesLayer);
 
-        if (collision.check_collision(item, p1))
+        if (checkCollision(item, p1))
         {
-          item.displayHitbox(spritesLayer);
+          // item.displayHitbox(spritesLayer);
 
           if (drawInteractableLetter)
           {

@@ -1,54 +1,58 @@
-class Sprite {
-  PVector position;
+class Sprite { //<>//
+  final static int SPRITE_SIZE = 16;
+  FBox box;
   PImage sprite;
 
-  Sprite(PVector position) {
-    this.position = position;
+  // constructors
+  Sprite() {
   }
 
-  Sprite(PVector position, PImage sprite) {
-    this.position = position;
+  Sprite(PImage sprite)
+  {
     this.sprite = sprite;
   }
 
+  Sprite(PImage sprite, FBox box)
+  {
+    this.sprite = sprite;
+    this.box = box;
+  }
+
+  // getters
   PVector getPosition() {
-    return position;
+    return new PVector(box.getX(), box.getY());
+  }
+
+  int getWidth() {
+    return sprite.width;
+  }
+
+  int getHeight() {
+    return sprite.height;
   }
 
   PImage getSprite() {
     return sprite;
   }
 
+  // setters
   void updatePosition(PVector position) {
-    this.position = position;
+    box.setPosition(position.x * SPRITE_SIZE + SPRITE_SIZE / 2, position.y * SPRITE_SIZE + SPRITE_SIZE / 2);
+  }
+  
+  void updatePosition(float x, float y) {
+    box.setPosition(x * SPRITE_SIZE + SPRITE_SIZE / 2, y * SPRITE_SIZE + SPRITE_SIZE / 2);
   }
 
   void updateSprite(PImage sprite) {
     this.sprite = sprite;
   }
 
+  // other methods
   // metodo che si occupa di mostrare lo sprite
   void display(PGraphics layer) {
     layer.noFill(); // Nessun riempimento
-    layer.stroke(255); // Colore del bordo bianco
-
-    float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
-
-    // layer.imageMode(CENTER); // Imposta l'imageMode a center, viene impostata nel codice principale in game
-    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
-  }
-
-  void displayHitbox(PGraphics layer) {
-    float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
-
-    layer.noFill(); // Nessun riempimento
-    layer.stroke(255); // Colore del bordo bianco
-    layer.rectMode(CENTER);
-    layer.rect(centerX, centerY, sprite.width, sprite.height);
-
-    layer.stroke(255, 0, 0);
-    layer.point(centerX, centerY);
+    // layer.stroke(255); // Colore del bordo bianco
+    layer.image(sprite, box.getX(), box.getY(), SPRITE_SIZE, SPRITE_SIZE);
   }
 }
