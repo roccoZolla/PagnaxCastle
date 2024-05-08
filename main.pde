@@ -1,4 +1,4 @@
-// gestione controller //<>//
+// gestione controller //<>// //<>//
 //import net.java.games.input.*;
 //import org.gamecontrolplus.*;
 //import org.gamecontrolplus.gui.*;
@@ -260,7 +260,7 @@ void setupImages() {
 
 void setupSounds() {
   volumeMusicLevel = 0.0;
-  volumeEffectsLevel = 0.0;
+  volumeEffectsLevel = 0.3;
 
   click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
@@ -355,7 +355,7 @@ void draw() {
     // verifica se è il momento di eseguire il rendering della scena
     // render loop
     if (fps_clock.getTicks() > 1000.f / Utils.SCREEN_FPS_CAP) {
-      collision.update();
+      // collision.update();
       render.update();
       // ui.update();
 

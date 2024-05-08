@@ -27,7 +27,8 @@ TO DO:
 [ ] - capita ancora che le chest vengano generate nello stesso punto delle scale
 [ 🗸 ] - quando la sound track del menu finisce non riparte
 [ 🗸 ] - aggiungere schermata dei crediti
-[ ] - possibilità di disattivare i pulsanti
+[ ] - possibilità di disattivare i pulsanti (della ui quando non ci sono piu opzioni disponibili)
+[ ] - aggiungere scatto (quarto pulsante)
 
 Idee game design:
 

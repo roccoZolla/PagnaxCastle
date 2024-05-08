@@ -8,7 +8,9 @@ class RenderSystem {
   float maskRadius;
 
   // triggers
+  boolean isCollidingWithChest = false;
   boolean canOpenChest;        // trigger che attiva il disegno della k quando non si puo aprire una chest
+  
   boolean drawUpBuff;
   boolean drawDownBuff;
   boolean drawInteractableLetter;  // trigger che attiva il disegno della lettera di interazione
@@ -39,7 +41,7 @@ class RenderSystem {
 
     // disegna il game layer
     // mappa di gioco
-    // updateGameLayer();
+    updateGameLayer();
 
     // disegna lo sprites layer
     // giocatore, nemici, casse
@@ -69,8 +71,8 @@ class RenderSystem {
 
   private void updateSpritesLayer() {
     spritesLayer.beginDraw();
-    // spritesLayer.background(255, 0);
-    spritesLayer.background(255);
+    spritesLayer.background(255, 0);
+    // spritesLayer.background(255);
     spritesLayer.translate(-camera.x, -camera.y);
     spritesLayer.scale(camera.zoom);
     spritesLayer.imageMode(CENTER);
@@ -82,9 +84,9 @@ class RenderSystem {
 
     // aggiungere logica per cui quando si è nel livello del boss
     // non vengono eseguite
-    // displayEnemies();
-    // displayChests();
-    // displayCoins();
+    displayEnemies();
+    displayChests();
+    displayCoins();
     //displayDropItems();
 
     //if (!game.isBossLevel) {
@@ -97,8 +99,8 @@ class RenderSystem {
     //}
     
     // debug
-    currentLevel.level.drawDebug(spritesLayer);
-    // currentLevel.level.draw(spritesLayer);
+    // currentLevel.level.drawDebug(spritesLayer);
+    //currentLevel.level.draw(spritesLayer);
     
 
     spritesLayer.endDraw();
@@ -148,26 +150,25 @@ class RenderSystem {
   }
 
   // da spostare nel render system
-  private void displayChests() {
+  void displayChests() {
     for (Chest chest : currentLevel.treasures) {
       if (isInVisibleArea(chest.getPosition()))
       {
         // mostra le chest nell'area visibile
         chest.display(spritesLayer);
 
-        if (checkCollision(chest, p1) && !chest.isOpen())
+        if (isCollidingWithChest && !chest.isOpen())
         {
           // chest.displayHitbox(spritesLayer);
-
           // disegna la lettera che indica il tasto per aprire la cassa
-          float letterImageX = (chest.getPosition().x * currentLevel.tileSize + (p1.sprite.width / 2));
-          float letterImageY = (chest.getPosition().y * currentLevel.tileSize + (p1.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+          float letterImageX = (chest.getPosition().x);
+          float letterImageY = (chest.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
           spritesLayer.image(letter_k, letterImageX, letterImageY);
 
           if (!canOpenChest)
           {
-            float crossImageX = (p1.getPosition().x * currentLevel.tileSize + (chest.sprite.width / 2));
-            float crossImageY = (p1.getPosition().y * currentLevel.tileSize + (chest.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+            float crossImageX = (p1.getPosition().x);
+            float crossImageY = (p1.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
             spritesLayer.image(cross_sprite, crossImageX, crossImageY);
           }
         }

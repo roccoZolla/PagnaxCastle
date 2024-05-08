@@ -44,6 +44,7 @@ class Level {
   PImage stairsNextFloorImage; // scale per accedere al livello successivo
 
   ArrayList<Coin> coins;      // contiene le monete presenti nel livello
+  ArrayList<Trap> traps;      // contiene le trappole presenti nel livello
 
   // chest che puoi trovare nel livello
   ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
@@ -92,6 +93,8 @@ class Level {
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
 
+    traps = new ArrayList<Trap>();
+
     // Genera le stanze all'interno delle foglie dell'albero BSP
     generateRooms();
 
@@ -103,6 +106,14 @@ class Level {
     // da rimuovere
     map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = Utils.START_ROOM_TILE_TYPE; // Stanza iniziale
     map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = Utils.STAIRS_TILE_TYPE; // Stanza finale
+
+    FBox stairs = new FBox(tileSize, tileSize);
+    stairs.setName("Stairs");
+    stairs.setPosition(int(rooms.get(endRoomIndex).roomPosition.x) * tileSize + tileSize / 2, int(rooms.get(endRoomIndex).roomPosition.y) * tileSize + tileSize / 2);
+    stairs.setFillColor(240);
+    stairs.setRotatable(false);
+    stairs.setSensor(true);
+    level.add(stairs);
 
     // inizializza l'array dei drop items
     // inizialmente è vuoto
@@ -240,8 +251,9 @@ class Level {
 
               // creazione del muro
               FBox wall = new FBox(tileSize, tileSize);
+              wall.setName("Wall");
               wall.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
-              wall.setStatic(true); // Rendi il corpo fisico statico
+              wall.setStaticBody(true); // Rendi il corpo fisico statico
               wall.setFriction(0.8);
               wall.setRestitution(0.1);
               level.add(wall);
@@ -251,11 +263,17 @@ class Level {
               // spawn delle trappole all'interno delle stanze
               if (random(1) <= TRAP_SPAWN_PROBABILITY) {
                 map[x][y] = Utils.PEAKS_TILE_TYPE;
-                FBox peaks = new FBox(tileSize, tileSize);
-                peaks.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
-                peaks.setStatic(true); // Rendi il corpo fisico statico
-                peaks.setSensor(true);
-                level.add(peaks);
+                Trap trap = new Trap(peaksTrapImage, DAMAGE_PEAKS);
+                trap.updatePosition(x, y);
+                traps.add(trap);
+                level.add(trap.box);
+                
+                //FBox peaks = new FBox(tileSize, tileSize);
+                //peaks.setName("Peaks");
+                //peaks.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
+                //peaks.setStaticBody(true); // Rendi il corpo fisico statico
+                //peaks.setSensor(true);
+                //level.add(peaks);
               }
             }
           }
@@ -286,12 +304,13 @@ class Level {
 
       int x1 = int(room1.x);
       int y1 = int(room1.y);
+
       int x2 = int(room2.x);
       int y2 = int(room2.y);
 
       // Collega le stanze con un corridoio
       while (x1 != x2 || y1 != y2) {
-        if (map[x1][y1] != 1) map[x1][y1] = 5; // Imposta il tile come spazio vuoto (corridoio)
+        if (map[x1][y1] != 1) map[x1][y1] = Utils.HALLWAY_TILE_TYPE; // Imposta il tile come spazio vuoto (corridoio)
 
         int choice = int(random(2));
         if (choice == 0) {
@@ -641,4 +660,32 @@ boolean checkCollision(Sprite spriteA, Sprite spriteB) {
   }
 
   return false;
+}
+
+class Trap extends Sprite {
+  int damage;
+
+  Trap(PImage image, int damage)
+  {
+    super();
+
+    // sprite
+    this.sprite = image;
+
+    // box settings
+    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setName("Trap");
+    box.setFillColor(10);
+    box.setRotatable(false);
+    box.setFriction(0.5);
+    box.setRestitution(0.2);
+    box.setSensor(true);  // è un sensore
+
+    this.damage = damage;
+  }
+
+  int getDamage()
+  {
+    return damage;
+  }
 }

@@ -28,6 +28,7 @@ class Enemy extends Sprite implements Damageable {
     
     // setting's box
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setName("Enemy");
     box.setFillColor(40);
     box.setRotatable(false);
     box.setFriction(0.5);

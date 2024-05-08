@@ -1,4 +1,4 @@
-// da mettere nelle utilities //<>//
+// da mettere nelle utilities //<>// //<>// //<>//
 enum Direction {
   SINISTRA,
     DESTRA,
@@ -62,6 +62,7 @@ class Player extends Sprite implements Damageable {
 
     // box's settings
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setName("Player");
     box.setFillColor(10);
     box.setRotatable(false);
     box.setFriction(0.5);
@@ -69,6 +70,7 @@ class Player extends Sprite implements Damageable {
 
     this.direction = Direction.DESTRA;
 
+    // charateristics
     this.playerScore = 0;
     this.playerHP = playerHP;
     this.playerMaxHP = maxHP;
@@ -95,6 +97,32 @@ class Player extends Sprite implements Damageable {
     this.moveDOWN = false;
     this.moveRIGHT = false;
     this.moveLEFT = false;
+  }
+
+  // aggiorna il movimento del giocatore
+  void update()
+  {
+    if (moveUP)
+    {
+      box.addForce(0, -1 * speed);
+    }
+
+    if (moveDOWN)
+    {
+      box.addForce(0, 1 * speed);
+    }
+
+    if (moveLEFT)
+    {
+      box.addForce(-1 * speed, 0);
+      sprite = left_side;
+    }
+
+    if (moveRIGHT)
+    {
+      box.addForce(1 * speed, 0);
+      sprite = right_side;
+    }
   }
 
   void collectCoin() {
@@ -134,60 +162,6 @@ class Player extends Sprite implements Damageable {
 
     if (playerHP < 0) {
       playerHP = 0;
-    }
-  }
-
-  // aggiorna movimento del giocatore
-  // metodo piu veloce e meno costoso in termini di risorse
-  //void update() {
-  //  if (moveUP)
-  //  {
-  //    velocity_y += -1 * speed;
-  //  }
-
-  //  if (moveDOWN)
-  //  {
-  //    velocity_y += 1 * speed;
-  //  }
-
-  //  if (moveLEFT)
-  //  {
-  //    velocity_x += -1 * speed;
-  //    sprite = left_side;
-  //  }
-
-  //  if (moveRIGHT)
-  //  {
-  //    velocity_x += 1 * speed;
-  //    sprite = right_side;
-  //  }
-
-  //  // da mettere da un'altra parte
-  //  damageTileHandler.handleDamageTiles(this, round(position.x), round(position.y));
-  //}
-
-  void update()
-  {
-    if (moveUP)
-    {
-      box.addForce(0, -1 * speed);
-    }
-
-    if (moveDOWN)
-    {
-      box.addForce(0, 1 * speed);
-    }
-
-    if (moveLEFT)
-    {
-      box.addForce(-1 * speed, 0);
-      sprite = left_side;
-    }
-
-    if (moveRIGHT)
-    {
-      box.addForce(1 * speed, 0);
-      sprite = right_side;
     }
   }
 

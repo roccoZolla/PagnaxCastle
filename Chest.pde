@@ -15,8 +15,9 @@ class Chest extends Item {
 
     // box settings
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setName("Chest");
     box.setFillColor(3);
-    box.setStatic(true);
+    box.setStaticBody(true);
     box.setFriction(0.8);
     box.setRestitution(0.1);
     

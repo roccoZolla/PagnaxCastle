@@ -11,6 +11,7 @@ class Coin extends Sprite {
     
     // box settings
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setName("Coin");
     box.setFillColor(10);
     box.setRotatable(false);
     box.setFriction(0.5);

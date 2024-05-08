@@ -1,4 +1,4 @@
-class Sprite { //<>//
+class Sprite { //<>// //<>//
   final static int SPRITE_SIZE = 16;
   FBox box;
   PImage sprite;
@@ -33,6 +33,10 @@ class Sprite { //<>//
 
   PImage getSprite() {
     return sprite;
+  }
+  
+  FBox getBox() {
+    return box;
   }
 
   // setters
