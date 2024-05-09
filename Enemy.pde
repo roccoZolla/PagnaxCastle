@@ -1,31 +1,35 @@
-class Enemy extends Sprite implements Damageable {
-  // componente velocita dei nemici
-  float velocity_x = 0;
-  float velocity_y = 0;
-  
-  float speed = 0.1f;
-  
-  float currentDirection = random(4);
-  int framesInCurrentDirection = 0;
-  int maxFramesInSameDirection = 30;
-
-  ConcreteDamageHandler damageTileHandler;
-
-  private final int attack_interval = 60; // Tempo di cooldown in millisecondi (3 secondi)
-  private long attack_timer = attack_interval;
-  boolean first_attack;    // di base è true
-
-  int enemyHP;
+class Enemy extends Character {
+  // caratteristiche nemico
   int damage;
   String name;
   int scoreValue;
 
-  Enemy(PImage sprite, int enemyHP, String name, int damage, ConcreteDamageHandler damageTileHandler) {
+  // componenti fisiche
+  float velocity_x = 0;
+  float velocity_y = 0;
+  float speed = 0.1f;
+
+  float currentDirection = random(4);
+  int framesInCurrentDirection = 0;
+  int maxFramesInSameDirection = 30;
+
+  private final int attack_interval = 60; // Tempo di cooldown in millisecondi (3 secondi)
+  private long attack_timer = attack_interval;
+  boolean first_attack;    // di base è true
+  
+  // drop probabilities constant
+  // non definitive
+  final float DROP_NOTHING = 0.3;
+  final float DROP_SILVER_KEY = 0.1;
+  final float DROP_HEART = 0.3;
+  final float DROP_HALF_HEART = 0.3;
+
+  Enemy(PImage sprite, int enemyHP, String name, int damage) {
     super();
-    
+
     // sprite
     this.sprite = sprite;
-    
+
     // setting's box
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
     box.setName("Enemy");
@@ -33,16 +37,18 @@ class Enemy extends Sprite implements Damageable {
     box.setRotatable(false);
     box.setFriction(0.5);
     box.setRestitution(0.2);
-    
+
     // characteristics
-    this.enemyHP = enemyHP;
+    this.hp = enemyHP;
     this.name = name;
     this.damage = damage;
     this.scoreValue = 20;
 
     first_attack = true;
+  }
 
-    this.damageTileHandler = damageTileHandler;
+  int getDamage() {
+    return damage;
   }
 
   // gestisce il movimento del nemico
@@ -72,9 +78,9 @@ class Enemy extends Sprite implements Damageable {
     //  //  updatePosition(new PVector(newX, newY));
     //  //  damageTileHandler.handleDamageTiles(this, round(newX), round(newY));
     //  //}
-    //} 
-    
-    //else 
+    //}
+
+    //else
     //{
     //  // metodo leggermente migliore rispetto al metodo parkinson
     //  float x = position.x;
@@ -128,7 +134,7 @@ class Enemy extends Sprite implements Damageable {
   void attack(Player player) {
     if (first_attack) {
       // Esegui l'attacco
-      player.takeDamage(damage);
+      // player.takeDamage(damage);
 
       // fare in modo che rimanga un po piu di tempo a schermo
       TextDisplay damageHitText = new TextDisplay(p1.getPosition(), Integer.toString(damage), color(255, 0, 0));
@@ -141,7 +147,7 @@ class Enemy extends Sprite implements Damageable {
 
       if (attack_timer <= 0) {
         // Esegui l'attacco periodico
-        player.takeDamage(damage);
+        // player.takeDamage(damage);
 
         // Reimposta il timer per il prossimo attacco
         attack_timer = attack_interval;
@@ -152,43 +158,35 @@ class Enemy extends Sprite implements Damageable {
   void death() {
     enemy_death_sound.play();
     dropItem();
+    setDead();
   }
+
 
   private void dropItem() {
     // numero casuale
     double randomValue = Math.random();
-
-    // dropRate degli oggetti droppati dai nemici
-    double dropNothingProbability = 0.3;        // 30 %
-    double dropSilverKeyProbability = 0.1;      // 10 %
-    double dropHeartProbability = 0.3;          // 30 %
-    double dropHalfHeartProbability = 0.3;      // 30 %
-
     PVector dropPosition = getPosition().copy();
 
-    if (randomValue <= dropNothingProbability) 
+    dropPosition.x = ( dropPosition.x - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
+    dropPosition.y = ( dropPosition.y - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
+
+    if (randomValue <= DROP_NOTHING)
     {
       // Nessun drop
-    } 
-    
-    else if (randomValue <= dropNothingProbability + dropSilverKeyProbability) 
+    } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY)
     {
       // drop della chiave d'argento
       Item dropSilverKey = new Item(silver_key_sprite, "dropSilverKey");
       dropSilverKey.updatePosition(dropPosition);
       currentLevel.dropItems.add(dropSilverKey);
-    } 
-    
-    else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability) 
+    } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY + DROP_HEART)
     {
       // drop del cuore intero
       // Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
       Item dropHeart = new Item(heart_sprite, "dropHeart", true, 10, false, 0);
       dropHeart.updatePosition(dropPosition);
       currentLevel.dropItems.add(dropHeart);
-    } 
-    
-    else if (randomValue <= dropNothingProbability + dropSilverKeyProbability + dropHeartProbability + dropHalfHeartProbability) 
+    } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY + DROP_HEART + DROP_HALF_HEART)
     {
       // drop del mezzocuore
       // Healer dropHalfHeart = new Healer(dropPosition, half_heart_sprite, "dropHalfHeart", 5);
@@ -197,24 +195,4 @@ class Enemy extends Sprite implements Damageable {
       currentLevel.dropItems.add(dropHalfHeart);
     }
   }
-
-
-  // override dei metodi dell'interfaccia
-  @Override
-    public void takeDamage(int damage) {
-    enemyHP -= damage;
-
-    // testo danno subito dal nemico
-    //TextDisplay damageHitText = new TextDisplay(position, Integer.toString(damage), color(255, 0, 0));
-    //damageHitText.display(render.spritesLayer);
-
-    if (enemyHP < 0) {
-      enemyHP = 0;
-    }
-  }
-
-  //@Override
-  //  PVector getPosition() {
-  //  return getPosition();
-  //}
 }

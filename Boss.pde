@@ -1,5 +1,5 @@
 // classe del boss
-class Boss extends Sprite {
+class Boss extends Character {
   PVector spriteVelocity;      // velocita corrente del boss
   float spriteSpeed;           // velocita desiderata a cui deve andare il boss
   ArrayList<Projectile> projectiles;    // proiettili

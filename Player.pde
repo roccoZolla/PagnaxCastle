@@ -6,7 +6,40 @@ enum Direction {
     GIU
 }
 
-class Player extends Sprite implements Damageable {
+class Character extends Sprite
+{
+  int hp = 0;
+  private boolean isDamageable = true;
+  private boolean isDead = false;
+
+  boolean IsDamageable() {
+    return isDamageable;
+  }
+  void setDead() {
+    this.isDead = true;
+  }
+  boolean IsDead() {
+    return isDead;
+  }
+
+  void takeDamage(int damage)
+  {
+    hp -= damage;
+
+    // aggiungere piccolo feedback visivo
+
+    // hurt_sound.play();
+
+    if (hp < 0)
+    {
+      hp = 0;
+      isDead = true;
+    }
+  }
+}
+
+class Player extends Character 
+{
   // componente velocita  del player
   // non definitivo
   float speed = 100.0f;
@@ -34,11 +67,9 @@ class Player extends Sprite implements Damageable {
 
   boolean displayAttack = false;
 
-  ConcreteDamageHandler damageTileHandler;
-
   // caratteristiche del player
   int playerMaxHP;
-  int playerHP;
+  // int playerHP;
   int playerScore;
   int coins;      // numero di monete che ha il giocatore
   // Weapon weapon;
@@ -51,7 +82,7 @@ class Player extends Sprite implements Damageable {
   int numberOfGoldenKeys;
   int numberOfPotion;
 
-  Player(int playerHP, int maxHP, int numberOfSilverKeys, int numberOfGoldenKeys, int numberOfPotion, ConcreteDamageHandler damageTileHandler) {
+  Player(int playerHP, int maxHP) {
     super();
 
     // sprite
@@ -72,14 +103,12 @@ class Player extends Sprite implements Damageable {
 
     // charateristics
     this.playerScore = 0;
-    this.playerHP = playerHP;
+    this.hp = playerHP;
     this.playerMaxHP = maxHP;
     this.coins = 0;
-    this.numberOfSilverKeys = numberOfSilverKeys;
-    this.numberOfGoldenKeys = numberOfGoldenKeys;
-    this.numberOfPotion = numberOfPotion;
-
-    this.damageTileHandler = damageTileHandler;
+    this.numberOfSilverKeys = 10;
+    this.numberOfGoldenKeys = 10;
+    this.numberOfPotion = 10;
 
     this.golden_key = new Item(null, "golden_key");
     this.silver_key = new Item(null, "silver_key");
@@ -143,26 +172,11 @@ class Player extends Sprite implements Damageable {
 
   // aggiorna la vita del giocatore e
   // riproduci suono
-  void takeHP(int HP) {
+  void restoreHP(int HP) {
     drinkPotion.play();
-    playerHP += HP;
+    hp += HP;
 
-    if (playerHP > playerMaxHP) playerHP = playerMaxHP;
-  }
-
-  // override dei metodi dell'interfaccia
-  @Override
-    public void takeDamage(int damage) {
-    playerHP -= damage;
-
-    //TextDisplay damageHitText = new TextDisplay(position, Integer.toString(damage), color(255, 0, 0));
-    //damageHitText.display(render.spritesLayer);
-
-    hurt_sound.play();
-
-    if (playerHP < 0) {
-      playerHP = 0;
-    }
+    if (hp > playerMaxHP) hp = playerMaxHP;
   }
 
   // da fixare
@@ -194,7 +208,7 @@ class Player extends Sprite implements Damageable {
             if (checkCollision(weapon, enemy))
             {
               swordAttack.play();
-              enemy.takeDamage(weapon.getDamage());
+              // enemy.takeDamage(weapon.getDamage());
               // l'attacco è stato eseguito non continuare ad attaccare
               // println("attacco eseguito...");
               attackExecuted = true;
@@ -249,8 +263,8 @@ class Player extends Sprite implements Damageable {
         // se il numero delle pozioni è maggiore di 0
         if (numberOfPotion > 0) {
           // se vita minore della vita massima
-          if (playerHP < playerMaxHP) {
-            takeHP(potion.getBonusHp());
+          if (hp < playerMaxHP) {
+            restoreHP(potion.getBonusHp());
 
             // dimunuisci numero di pozioni del giocatore
             numberOfPotion -= 1;

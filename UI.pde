@@ -173,11 +173,11 @@ class UI {
 
   void displayPlayerHearts() {
     // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
-    heartsToDisplay = p1.playerHP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
+    heartsToDisplay = p1.hp / 10; // Supponiamo che ogni cuore rappresenti 10 HP
     heartX = 20;
     heartY = 50;
     maxHearts = p1.playerMaxHP / 10;
-    isHalfHeart = p1.playerHP % 10 >= 5; // Controlla se c'è un cuore a metà
+    isHalfHeart = p1.hp % 10 >= 5; // Controlla se c'è un cuore a metà
 
     // Disegna i cuori pieni
     for (int i = 0; i < heartsToDisplay; i++) {

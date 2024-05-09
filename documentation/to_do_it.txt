@@ -5,7 +5,9 @@ TO DO:
 [ ] - aggiungere difficolta
 [ ] - sistemare il frame rate
 [ ] - gestione animazioni
-[ ] - migliorare collision system (aggiungere)
+[ 🗸 ] - migliorare collision system (aggiungere)
+ [ ] - da sistemare movimento nemici che trapassano i muri
+ [ ] - collisione con chest non proprio immediata 
 [ ] - migliorare organizzazione delle classi
  [ ] - classe Game
  [ ] - classe Player
@@ -14,7 +16,7 @@ TO DO:
 [ ] - migliorare nemici
  [ ] - ia piu efficiente
 [ 🗸 ] - aggiungere logo screen
-[ ] - aggiungere suono di boot up
+ [ ] - aggiungere suono di boot up
 [ 🗸 ] - ricordarti di togliere game.render.spriteslayer
 [ ] - rivedere completamente la classe del Boss
 [ ] - aggiungere effetto di cura
@@ -29,6 +31,7 @@ TO DO:
 [ 🗸 ] - aggiungere schermata dei crediti
 [ ] - possibilità di disattivare i pulsanti (della ui quando non ci sono piu opzioni disponibili)
 [ ] - aggiungere scatto (quarto pulsante)
+[ ] - quando passo al livello successivo che succede al livello precedente? rimane in memoria? 
 
 Idee game design:
 

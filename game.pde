@@ -13,17 +13,14 @@ class Game {
   boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
 
-
-  Sprite test;
-
-  ConcreteDamageHandler damageTileHandler;
+  ArrayList<Character> characters;
 
   Game() {
   }
 
   void init() {
     // difficultyLevel = DifficultyLevel.NORMALE;
-    // sprites = new ArrayList<Sprite>();
+    characters = new ArrayList<Character>();
 
     isBossLevel = false;
 
@@ -38,8 +35,6 @@ class Game {
     // create world
     castle = new World();
 
-    damageTileHandler = new ConcreteDamageHandler();
-
     currentZone = castle.currentZone;
 
     // caricamento delle immagini
@@ -53,7 +48,7 @@ class Game {
     actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
 
     // inizializza il player
-    p1 = new Player(100, 100, 1, 0, 3, damageTileHandler);
+    p1 = new Player(1000, 1000);
     p1.updatePosition(currentLevel.getStartPosition());
     println("player position: " + p1.getPosition());
 
@@ -71,6 +66,13 @@ class Game {
 
     //
     currentLevel.level.add(p1.box);
+
+    //
+    characters.add(p1);
+    for (Enemy enemy : currentLevel.enemies)
+    {
+      characters.add(enemy);
+    }
 
     println("game system inizializzato correttamente!");
   }
@@ -149,7 +151,7 @@ class Game {
 
   // gestisce la vittoria del giocatore - OK
   void handlePlayerVictory() {
-    if (boss.HP <= 0) {
+    if (boss.IsDead()) {
       p1.updateScore(1000);
       screen_state = ScreenState.WIN_SCREEN;
     }
@@ -157,7 +159,7 @@ class Game {
 
   // gestisce la morte del giocatore - OK
   void handlePlayerDeath() {
-    if (p1.playerHP <= 0) {
+    if (p1.IsDead()) {
       screen_state = ScreenState.LOSE_SCREEN;
     }
   }
@@ -201,6 +203,23 @@ class Game {
     }
   }
 
+  // gestisce l'attacco del nemico
+  // da migliorare
+  void handleEnemyAttack(FBody enemyBody)
+  {
+    for (Enemy enemy : currentLevel.enemies)
+    {
+      if (isInVisibleArea(enemy.getPosition()))
+      {
+        if (enemy.getBox() == enemyBody)
+        {
+          p1.takeDamage(enemy.getDamage());
+          println("attacco subito: " + enemy.getDamage());
+        }
+      }
+    }
+  }
+
   // gestisce le azioni del nemico - DA RIVEDERE
   void handleEnemyActions() {
     Iterator<Enemy> iterator = currentLevel.enemies.iterator();
@@ -209,7 +228,7 @@ class Game {
       Enemy enemy = iterator.next();
 
       if (isInVisibleArea(enemy.getPosition())) {
-        if (enemy.enemyHP > 0) {
+        if (enemy.hp > 0) {
           enemy.update();
 
           // attacca solo se c'è collisione
@@ -221,7 +240,7 @@ class Game {
           }
         } else {
           enemy.death();
-          p1.updateScore(enemy.scoreValue);
+          // p1.updateScore(enemy.scoreValue);
           iterator.remove();
         }
       }
@@ -234,19 +253,75 @@ class Game {
   {
     for (Chest chest : currentLevel.treasures)
     {
-      if (isInVisibleArea(chest.getPosition())) {
+      if (isInVisibleArea(chest.getPosition()))
+      {
 
         if (chest.getBox() == chestBody)
         {
           println("collisione chest rilevata!");
-          
+
           // aggiungere logica
+          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK))
+          {
+            if (!p1.isInteracting)
+            {
+              p1.isInteracting = true;
+              if (chest.isRare())
+              {    // se la cassa è rara
+                // CASSA RARA
+                if (p1.numberOfGoldenKeys > 0)
+                {
+                  if (chest.getOpenWith().equals(p1.golden_key))
+                  {
+                    // imposta la cassa come aperta
+                    chest.setIsOpen(true);
+                    chest_open.play();
+                    // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+                    chest.sprite = special_chest_open_sprite;
+
+                    p1.numberOfGoldenKeys -= 1;
+                    p1.updateScore(50);
+
+                    chest.dropItemSpecialChest();
+                  }
+                } else
+                {
+                  render.isPossibleToOpenChest = false;
+                }
+              } else
+              {  // se la cassa è normale
+                // CASSA NORMALE
+                if (p1.numberOfSilverKeys > 0)
+                {
+                  if (chest.getOpenWith().equals(p1.silver_key))
+                  {
+                    // imposta la cassa come aperta
+                    chest.setIsOpen(true);
+                    chest_open.play();
+                    // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+                    chest.sprite = chest_open_sprite;
+
+                    p1.numberOfSilverKeys -= 1;
+                    p1.updateScore(30);
+
+                    // metodo per drop item casuale
+                    chest.dropItemNormalChest();
+                  }
+                } else
+                {
+                  render.isPossibleToOpenChest = false;
+                }
+              }
+            }
+          } else
+          {
+            // resettta la variabile
+            p1.isInteracting = false;
+          }
         }
-        
-        
       }
     }
-    
+
     // ----- CHEST -----
     // disegna solo le chest visibili
     //for (Chest chest : currentLevel.treasures) {
@@ -258,84 +333,91 @@ class Game {
     //      render.canOpenChest = true;
 
     //      // se il giocatore preme il tasto interazione e la cassa non è stata aperta
-    //      if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
-    //        if (!p1.isInteracting) {
-    //          p1.isInteracting = true;
-    //          if (chest.isRare())
-    //          {    // se la cassa è rara
-    //            // CASSA RARA
-    //            if (p1.numberOfGoldenKeys > 0)
-    //            {
-    //              if (chest.getOpenWith().equals(p1.golden_key))
-    //              {
-    //                // imposta la cassa come aperta
-    //                chest.setIsOpen(true);
-    //                chest_open.play();
-    //                // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
-    //                chest.sprite = special_chest_open_sprite;
+    //if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
+    //  if (!p1.isInteracting) {
+    //    p1.isInteracting = true;
+    //    if (chest.isRare())
+    //    {    // se la cassa è rara
+    //      // CASSA RARA
+    //      if (p1.numberOfGoldenKeys > 0)
+    //      {
+    //        if (chest.getOpenWith().equals(p1.golden_key))
+    //        {
+    //          // imposta la cassa come aperta
+    //          chest.setIsOpen(true);
+    //          chest_open.play();
+    //          // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+    //          chest.sprite = special_chest_open_sprite;
 
-    //                p1.numberOfGoldenKeys -= 1;
-    //                p1.updateScore(50);
+    //          p1.numberOfGoldenKeys -= 1;
+    //          p1.updateScore(50);
 
-    //                chest.dropItemSpecialChest();
-    //              }
-    //            } else
-    //            {
-    //              render.canOpenChest = false;
-    //            }
-    //          } else
-    //          {  // se la cassa è normale
-    //            // CASSA NORMALE
-    //            if (p1.numberOfSilverKeys > 0)
-    //            {
-    //              if (chest.getOpenWith().equals(p1.silver_key))
-    //              {
-    //                // imposta la cassa come aperta
-    //                chest.setIsOpen(true);
-    //                chest_open.play();
-    //                // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
-    //                chest.sprite = chest_open_sprite;
-
-    //                p1.numberOfSilverKeys -= 1;
-    //                p1.updateScore(30);
-
-    //                // metodo per drop item casuale
-    //                chest.dropItemNormalChest();
-    //              }
-    //            } else
-    //            {
-    //              render.canOpenChest = false;
-    //            }
-    //          }
+    //          chest.dropItemSpecialChest();
     //        }
     //      } else
     //      {
-    //        // resettta la variabile
-    //        p1.isInteracting = false;
+    //        render.canOpenChest = false;
     //      }
+    //    } else
+    //    {  // se la cassa è normale
+    //      // CASSA NORMALE
+    //      if (p1.numberOfSilverKeys > 0)
+    //      {
+    //        if (chest.getOpenWith().equals(p1.silver_key))
+    //        {
+    //          // imposta la cassa come aperta
+    //          chest.setIsOpen(true);
+    //          chest_open.play();
+    //          // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+    //          chest.sprite = chest_open_sprite;
+
+    //          p1.numberOfSilverKeys -= 1;
+    //          p1.updateScore(30);
+
+    //          // metodo per drop item casuale
+    //          chest.dropItemNormalChest();
+    //        }
+    //      } else
+    //      {
+    //        render.canOpenChest = false;
+    //      }
+    //    }
+    //  }
+    //} else
+    //{
+    //  // resettta la variabile
+    //  p1.isInteracting = false;
+    //}
     //    }
     //  }
     //}
   }
 
   // gestisce le trappole
-  //void handlePeaks(FBody trapBody) {
-  //  //for (Trap trap : currentLevel.traps) {
-  //  //  if (isInVisibleArea(trap.getPosition())) {
-  //  //    // mostra le monete nell'area visibile
-
-  //  //    if (trap.getBox() == trapBody)
-  //  //    {
-  //  //      coin.collect();  // raccogli la moneta
-  //  //      p1.collectCoin();
-  //  //      pickupCoin.play();
-  //  //      p1.updateScore(coin.scoreValue);
-  //  //      currentLevel.level.remove(coinBody);  // rimuovi la moneta dal mondo fisico
-  //  //    }
-  //  //  }
-  //  //}
-  //}
-
+  // da migliorare ma ci siamo
+  void handlePeaks(FBody trapBody, FBody characterBody) {
+    for (Trap trap : currentLevel.traps) {
+      if (isInVisibleArea(trap.getPosition()))
+      {
+        if (trap.getBox() == trapBody)
+        {
+          for (Character character : characters)
+          {
+            if (!character.IsDead()) {
+              if (character.getBox() == characterBody)
+              {
+                if (character.IsDamageable())
+                {
+                  character.takeDamage(trap.getDamage());
+                  println("danno subito: " + trap.getDamage());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   // gestisce le monete - OK ???
   void handleCoin(FBody coinBody) {
@@ -409,12 +491,12 @@ class Game {
                   iterator.remove();
                 } else
                 {  // se è un cuore recupera la vita istantaneamente
-                  if (p1.playerHP < p1.playerMaxHP)
+                  if (p1.hp < p1.playerMaxHP)
                   { // verifico che la salute del giocatore sia minore della salute massima
                     // Healer healerItem = (Healer) item;
                     Item healerItem = item;
 
-                    p1.takeHP(healerItem.getBonusHp());
+                    p1.restoreHP(healerItem.getBonusHp());
 
                     // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
                     iterator.remove();

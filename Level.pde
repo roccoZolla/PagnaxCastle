@@ -267,13 +267,6 @@ class Level {
                 trap.updatePosition(x, y);
                 traps.add(trap);
                 level.add(trap.box);
-                
-                //FBox peaks = new FBox(tileSize, tileSize);
-                //peaks.setName("Peaks");
-                //peaks.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
-                //peaks.setStaticBody(true); // Rendi il corpo fisico statico
-                //peaks.setSensor(true);
-                //level.add(peaks);
               }
             }
           }
@@ -484,10 +477,8 @@ class Level {
           positionOccupied = (map[x][y] != Utils.FLOOR_TILE_TYPE);
         } while (positionOccupied);
 
-        ConcreteDamageHandler damageTileHandler = new ConcreteDamageHandler();
-
         // creazione dell'entita nemico
-        Enemy enemy = new Enemy(rat_enemy_sprite, ENEMY_HP, "rat", 5, damageTileHandler);
+        Enemy enemy = new Enemy(rat_enemy_sprite, ENEMY_HP, "rat", 5);
         enemy.updatePosition(x, y);
 
         // Aggiungi il nemico alla lista

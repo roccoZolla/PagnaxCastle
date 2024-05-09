@@ -30,33 +30,35 @@ void contactStarted(FContact contact) {
   String bodyName1 = body1.getName();
   String bodyName2 = body2.getName();
 
+  println("body 1 : " + bodyName1);
+  println("body 2 : " + bodyName2);
+
   // Controlla se uno dei corpi è un sensore (moneta, scale, trappole)
   if (body1.isSensor() || body2.isSensor())
   {
-    println("body 1 : " + bodyName1);
-    println("body 2 : " + bodyName2);
-
     // coin
     if (bodyName1.equals("Coin") && bodyName2.equals("Player")
       || bodyName2.equals("Coin") && bodyName1.equals("Player"))
     {
-      if (bodyName1.equals("Coin")) {
-        // currentLevel.level.remove(body1);
+      if (bodyName1.equals("Coin"))
+      {
         game.handleCoin(body1);
-      } else {
-        // currentLevel.level.remove(body2);
+      } else
+      {
         game.handleCoin(body2);
       }
     }
 
     // peaks
-    if (bodyName1.equals("Peaks") && (bodyName2.equals("Player") || bodyName2.equals("Enemy"))
-      || bodyName2.equals("Peaks") && (bodyName1.equals("Player") || bodyName1.equals("Enemy")))
+    // da sistemare 
+    if (bodyName1.equals("Trap") && (bodyName2.equals("Player") || bodyName2.equals("Enemy"))
+      || bodyName2.equals("Trap") && (bodyName1.equals("Player") || bodyName1.equals("Enemy")))
     {
-      if (bodyName1.equals("Peaks")) {
-        // game.handlePeaks(body1);
+      if (bodyName1.equals("Trap"))
+      {
+        game.handlePeaks(body1, body2);
       } else {
-        // game.handlePeaks(body2);
+        game.handlePeaks(body2, body1);
       }
     }
 
@@ -64,7 +66,8 @@ void contactStarted(FContact contact) {
     if (bodyName1.equals("Stairs") && bodyName2.equals("Player")
       || bodyName2.equals("Stairs") && bodyName1.equals("Player"))
     {
-      if (bodyName1.equals("Stairs")) {
+      if (bodyName1.equals("Stairs"))
+      {
         game.handleNextLevel();
       } else {
         game.handleNextLevel();
@@ -76,18 +79,30 @@ void contactStarted(FContact contact) {
   if (bodyName1.equals("Chest") && bodyName2.equals("Player")
     || bodyName2.equals("Chest") && bodyName1.equals("Player"))
   {
-    if (bodyName1.equals("Chest")) {
+    if (bodyName1.equals("Chest"))
+    {
       game.handleChest(body1);
       render.isCollidingWithChest = true;
-      render.canOpenChest = true;
+      render.isPossibleToOpenChest = true;
     } else {
       game.handleChest(body2);
       render.isCollidingWithChest = true;
-      render.canOpenChest = true;
+      render.isPossibleToOpenChest = true;
     }
-  } 
-  
+  }
+
   // collisione con i nemici
+  // da migliorare
+  if (bodyName1.equals("Enemy") && bodyName2.equals("Player")
+    || bodyName2.equals("Enemy") && bodyName1.equals("Player"))
+  {
+    if (bodyName1.equals("Enemy"))
+    {
+      game.handleEnemyAttack(body1);
+    } else {
+      game.handleEnemyAttack(body2);
+    }
+  }
 }
 
 // Questo metodo viene chiamato quando un contatto persiste (continua)
