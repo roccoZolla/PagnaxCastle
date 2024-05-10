@@ -5,8 +5,11 @@ class Camera {
   float easing;
 
   void update() {
-    float targetCameraX = p1.getPosition().x * currentLevel.tileSize * zoom - width / 2;
-    float targetCameraY = p1.getPosition().y * currentLevel.tileSize * zoom - height / 2;
+    //float targetCameraX = p1.getPosition().x * currentLevel.tileSize * zoom - width / 2;
+    //float targetCameraY = p1.getPosition().y * currentLevel.tileSize * zoom - height / 2;    
+    
+    float targetCameraX = p1.box.getX() * zoom - width / 2;
+    float targetCameraY =  p1.box.getY() * zoom - height / 2;
 
     // Limita la telecamera in modo che non esca dalla mappa
     targetCameraX = constrain(targetCameraX, 0, currentLevel.cols * currentLevel.tileSize * zoom - width);

@@ -9,22 +9,6 @@ enum Difficulty {
     DIFFICILE
 }
 
-//enum TypeButton {
-//  EFFECTSUP,
-//    EFFECTSDOWN,
-//    MUSICUP,
-//    MUSICDOWN,
-//    DIFFICULTYRIGHT,
-//    DIFFICULTYLEFT,
-//    CONTROLLERRIGHT,
-//    CONTROLLERLEFT,
-//    LANGUAGERIGHT,
-//    LANGUAGELEFT,
-//    COMMANDS,
-//    CREDITS,
-//    BACK
-//}
-
 // option screen
 class Option {
   ArrayList<Button> buttons;

@@ -1,11 +1,13 @@
 TO DO:
 
-[ ] - implementare ECS
+[ ] - implementare ECS ( ? ) 
 [ ] - aggiungere supporto per controller
 [ ] - aggiungere difficolta
 [ ] - sistemare il frame rate
 [ ] - gestione animazioni
-[ ] - migliorare collision system (aggiungere)
+[ 🗸 ] - migliorare collision system (aggiungere)
+ [ ] - da sistemare movimento nemici che trapassano i muri
+ [ ] - collisione con chest non proprio immediata 
 [ ] - migliorare organizzazione delle classi
  [ ] - classe Game
  [ ] - classe Player
@@ -14,7 +16,7 @@ TO DO:
 [ ] - migliorare nemici
  [ ] - ia piu efficiente
 [ 🗸 ] - aggiungere logo screen
-[ ] - aggiungere suono di boot up
+ [ ] - aggiungere suono di boot up
 [ 🗸 ] - ricordarti di togliere game.render.spriteslayer
 [ ] - rivedere completamente la classe del Boss
 [ ] - aggiungere effetto di cura
@@ -27,7 +29,10 @@ TO DO:
 [ ] - capita ancora che le chest vengano generate nello stesso punto delle scale
 [ 🗸 ] - quando la sound track del menu finisce non riparte
 [ 🗸 ] - aggiungere schermata dei crediti
-[ ] - possibilità di disattivare i pulsanti
+[ ] - possibilità di disattivare i pulsanti (della ui quando non ci sono piu opzioni disponibili)
+[ ] - aggiungere scatto (quarto pulsante)
+[ ] - quando passo al livello successivo che succede al livello precedente? rimane in memoria? 
+[ ] - possibile file json dove mantenere i vari pezzi di storia che in base alla zona vengono mostrati eliminando il collegamento storia zona a livello di classe
 
 Idee game design:
 

@@ -1,8 +1,9 @@
-// per gestione del controller
+// gestione controller //<>// //<>//
 //import net.java.games.input.*;
 //import org.gamecontrolplus.*;
 //import org.gamecontrolplus.gui.*;
 
+import fisica.*;
 import processing.sound.*;
 import java.util.Iterator;
 
@@ -23,13 +24,13 @@ Pause pauseMenu;
 Option optionMenu;
 CommandScreen commandScreen;
 CreditScreen creditScreen;
-UI ui;
 
 // gioco, render e collision logic
 Game game;
 RenderSystem render;
 CollisionSystem collision;
-FisicoSystem fisico;
+Story storyScreen;
+UI ui;
 
 LanguageSystem languageSystem;
 
@@ -124,7 +125,7 @@ enum ScreenState {
 ScreenState screen_state;
 ScreenState previous_state;  // salva lo stato precedente
 
-String actualLevel;
+// String actualLevel;
 
 // for the writer function
 int letterIndex = 0; // Indice della lettera corrente
@@ -132,17 +133,15 @@ boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
 
 PFont myFont;  // font del gioco
 
-// NON DEFINITIVO
-String victory = "";
-String defeat = "";
-String pressButton = "";
-
 Controller controller;
 Difficulty difficulty;
 
 Camera camera;
 
 void setup() {
+  // inizializza il motore fisico
+  Fisica.init(this);
+
   // dimensioni schermo
   frameRate(60);
   size(1280, 720, P2D);
@@ -166,12 +165,12 @@ void setup() {
 
   bundleITA = loadJSONObject("data/language/it_game.json");
   bundleENG = loadJSONObject("data/language/en_game.json");
-  bundleESP = loadJSONObject("data/language/es_game.json"); //<>//
+  bundleESP = loadJSONObject("data/language/es_game.json");
 
   game = new Game();
   render = new RenderSystem();
   collision = new CollisionSystem();
-  fisico = new FisicoSystem();
+  storyScreen = new Story();
 
   languageSystem = new LanguageSystem();
   languageSystem.init();
@@ -198,6 +197,7 @@ void setup() {
 
   logoScreenStartTime = millis();
 
+  //
   languageSystem.update();
 }
 
@@ -257,7 +257,7 @@ void setupImages() {
 }
 
 void setupSounds() {
-  volumeMusicLevel = 0.1;
+  volumeMusicLevel = 0.0;
   volumeEffectsLevel = 0.3;
 
   click = new SoundFile(this, "data/sound/click.wav");
@@ -318,9 +318,8 @@ void draw() {
     if (menu_background.isPlaying()) {
       menu_background.stop();
     }
-
-    storyScreen(currentZone.storyText);
-    image(p1.right_side, width / 2, height / 2 - 130, 64, 64);
+    
+    storyScreen.display();
     break;
 
   case COMMAND_SCREEN:
@@ -353,10 +352,9 @@ void draw() {
     // verifica se è il momento di eseguire il rendering della scena
     // render loop
     if (fps_clock.getTicks() > 1000.f / Utils.SCREEN_FPS_CAP) {
-      collision.update();
-      fisico.update();
+      // collision.update();
       render.update();
-      ui.update();
+      // ui.update();
 
       renderStats();
       fps_clock.timerReset();
@@ -397,15 +395,21 @@ void winScreen() {
   }
 
   // canzone della vittoria
+  
+  // setta storyScreen su isVictoryScreen
+  storyScreen.setVictoryScreen();
+  
+  storyScreen.display();
+  
 
   // chiama la funzione
   // mettere variabile victory
-  writer("Finalmente lo stregone Pagnax e' stato sconfitto!\n" +
-    "La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.\n" +
-    "Score totalizzato: " + p1.playerScore);
+  //storyScreen.writer("Finalmente lo stregone Pagnax e' stato sconfitto!\n" +
+  //  "La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.\n" +
+  //  "Score totalizzato: " + p1.playerScore);
 
-  image(p1.left_side, width / 2 + 50, height / 2 - 120, 64, 64);
-  image(chela_sprite, width / 2 - 50, height / 2 - 120, 64, 64);
+  //image(p1.left_side, width / 2 + 50, height / 2 - 120, 64, 64);
+  //image(chela_sprite, width / 2 - 50, height / 2 - 120, 64, 64);
 }
 
 void loseScreen() {
@@ -419,21 +423,18 @@ void loseScreen() {
   }
 
   // canzone della sconfitta
+  
+  // setta storyScreen su isLoseScreen
+  storyScreen.setLoseScreen();
+  
+  storyScreen.display();
 
   // chiama la funzione
   // variabile defeat
-  writer("Sei stato sconfitto Cavaliere!\n" +
-    "Score totalizzato: " + p1.playerScore);
+  //storyScreen.writer("Sei stato sconfitto Cavaliere!\n" +
+  //  "Score totalizzato: " + p1.playerScore);
 
-  image(boss_sprite, width / 2, height / 2 - 120, 64, 64);
-}
-
-void storyScreen(String storyText) {
-  // salva lo stato precedente
-  previous_state = screen_state;
-
-  // chiama il writer
-  writer(storyText);
+  //image(boss_sprite, width / 2, height / 2 - 120, 64, 64);
 }
 
 void tickStats() {
@@ -454,29 +455,4 @@ void renderStats() {
   }
 
   ++counted_frames;
-}
-
-void writer(String txt) {
-  // cancella lo schermo
-  background(0);
-
-  // Mostra il testo narrativo con l'effetto macchina da scrivere
-  fill(255);
-  textAlign(CENTER, CENTER);
-  textSize(24);
-  text(txt.substring(0, letterIndex), width / 2, height / 2);
-
-  if (isTyping) {
-    // Continua a scrivere il testo
-    if (frameCount % Utils.typingSpeed == 0) {
-      if (letterIndex < txt.length()) {
-        letterIndex++;
-      } else {
-        isTyping = false;
-      }
-    }
-  } else {
-    textSize(16);
-    text("\nPremi un tasto per continuare", width / 2, height - 50);
-  }
 }

@@ -1,4 +1,5 @@
 // da spostare nella classe game
+// non definitivi
 World castle;
 Zone currentZone;
 Level currentLevel;
@@ -6,23 +7,27 @@ Level currentLevel;
 // contiene le logiche di gioco
 class Game {
   // DifficultyLevel difficultyLevel; // livello di difficolta del gioco
+  Level level;
+  int levelIndex = 1;
+
+  // FWorld world; // va aggiornato ogni volta
+
   Boss boss;    // boss del gioco
 
   boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
   boolean isTorchDropped;       // indica se la torcia è stata droppata, di base false
   boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
-  
-  ArrayList<Sprite> entities; // array contenente tutte le entite di gioco
 
-  ConcreteDamageHandler damageTileHandler;
+  ArrayList<Character> characters;
 
   Game() {
   }
 
-  void init() {
+  void init() 
+  {
     // difficultyLevel = DifficultyLevel.NORMALE;
-    entities = new ArrayList<Sprite>();
+    characters = new ArrayList<Character>();
 
     isBossLevel = false;
 
@@ -31,13 +36,11 @@ class Game {
     isMasterSwordDropped = false;
 
     // da togliere di qua
-    golden_key = new Item(null, null, "golden_key");
-    silver_key = new Item(null, null, "silver_key");
+    golden_key = new Item(null, "golden_key");
+    silver_key = new Item(null, "silver_key");
 
     // create world
     castle = new World();
-
-    damageTileHandler = new ConcreteDamageHandler();
 
     currentZone = castle.currentZone;
 
@@ -49,11 +52,17 @@ class Game {
     currentLevel.loadAssetsLevel();
     currentLevel.init();
 
-    actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
+    // carica una sola volta all'inizio gli assets del livello
+    // level.loadAssetsLevel();
+    // level.init();
+
+    ui.setActualLevelText(currentZone.zoneName + " - " + currentLevel.levelName);
+
 
     // inizializza il player
-    p1 = new Player(new PVector(0, 0), 100, 100, 1, 0, 3, damageTileHandler);
+    p1 = new Player(1000, 1000);
     p1.updatePosition(currentLevel.getStartPosition());
+    println("player position: " + p1.getPosition());
 
     p1.golden_key = golden_key;
     p1.silver_key = silver_key;
@@ -66,9 +75,16 @@ class Game {
 
     fps_clock.timerStart();
     tick_clock.timerStart();
-    
+
     //
-    entities.add(p1);
+    currentLevel.level.add(p1.box);
+
+    //
+    characters.add(p1);
+    for (Enemy enemy : currentLevel.enemies)
+    {
+      characters.add(enemy);
+    }
 
     println("game system inizializzato correttamente!");
   }
@@ -86,7 +102,7 @@ class Game {
     p1.updatePosition(currentLevel.getStartPosition());
 
     // aggiorna il testo relativo al livello attuale
-    actualLevel = currentZone.zoneName + " - Livello Finale";
+    ui.setActualLevelText(currentZone.zoneName + " - Livello Finale");
 
     // crea il boss
     PVector spawn_boss_position = new PVector(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y);
@@ -117,35 +133,38 @@ class Game {
   void update() {
     // gestione controlli player
     // handlePlayerDeath();
+    // da sistemare
+    currentLevel.level.step();
+
     p1.update();
     p1.attack();
     //p1.usePotion(spritesLayer);
 
-    if (!isBossLevel) {
-      // gestione azione nemici
-      handleEnemyActions();
+    //if (!isBossLevel) {
+    //  // gestione azione nemici
+    // handleEnemyActions();
 
-      // gestione casse
-      handleChest();
+    //  // gestione casse
+    //  handleChest();
 
-      // gestion drop items
-      handleDropItems();
+    //  // gestion drop items
+    //  handleDropItems();
 
-      // gestione monete
-      handleCoin();
+    //  // gestione monete
+    //  // handleCoin(); metodo chiamato direttamente dal collider
 
-      // gestione livello successivo
-      handleNextLevel();
-    } else {
-      handlePlayerVictory();
-      // gestione azioni boss
-      boss.update(p1);
-    }
+    //  // gestione livello successivo
+    //  // handleNextLevel(); metodo chiamato direttamente dal collider
+    //} else {
+    //  handlePlayerVictory();
+    //  // gestione azioni boss
+    //  boss.update(p1);
+    //}
   }
 
   // gestisce la vittoria del giocatore - OK
   void handlePlayerVictory() {
-    if (boss.HP <= 0) {
+    if (boss.IsDead()) {
       p1.updateScore(1000);
       screen_state = ScreenState.WIN_SCREEN;
     }
@@ -153,94 +172,151 @@ class Game {
 
   // gestisce la morte del giocatore - OK
   void handlePlayerDeath() {
-    if (p1.playerHP <= 0) {
+    if (p1.IsDead()) {
       screen_state = ScreenState.LOSE_SCREEN;
     }
   }
 
-  // gestisce il passaggio al livello successivo - DA SISTEMARE
-  void handleNextLevel() {
-    // passa al livello successivo
-    // aggiungere collider
-    // if (currentLevel.stairsNextFloor.sprite_collision(p1))
-    if (collision.check_collision(currentLevel.stairsNextFloor, p1))
+  //
+  void handleNextLevel()
+  {
+    if (levelIndex == currentZone.numberLevels)
     {
-      // se il livello dell'area è l'ultimo passa alla prossima area
-      if (currentLevel.levelIndex == currentZone.levels.size() - 1) {
-        // controlla se è l'area finale
-        if (currentZone.isFinal()) {
-          initBossBattle();
-          isBossLevel = true;
-        } else {
-          // passa alla prossima macroarea
-          currentZone = castle.zones.get(currentZone.zoneIndex + 1);
-          currentLevel = currentZone.currentLevel;
-          currentLevel.loadAssetsLevel();
-          currentLevel.init();
-          actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-          p1.updatePosition(currentLevel.getStartPosition());
+      // verifica che la zona sia la zona finale
+      // in caso positivo spostati nella sala del boss
+      if (currentZone.isFinal())
+      {
+      } else  // passa alla prossima macroarea
+      {
+        // zoneIndex += 1;
+        // resetta il level index a 1
+        // carica gli assets della nuova zona nel livello
+        // level.loadAssestLevel();
+        // una volta caricati quando di passa al livello successivo non ci sara bisogno di ricaricarli
+        // inizializza il livello
+        // world.clear();
+        // level.init();
+        // ui.setActualLevelText(currentZone.zoneName + " - " + currentLevel.levelName);
+        // p1.updatePosition(currentLevel.getStartPosition());
+        // // aggiorna lo score del player
+        // p1.updateScore(200);
+        // screen_state = ScreenState.STORY_SCREEN;
+      }
+    } else  // altrimenti passa al livello successivo della stessa zona
+    {
+      //levelIndex += 1;
+      // gli asset sono stati gia caricati
+      // world.clear
+      // deve essere aggiornato anche characters
+      // level.init();
+      // ui.setActualLevelText(currentZone.zoneName + " - " + currentLevel.levelName);
+      // p1.updatePosition(currentLevel.getStartPosition());
+      // // aggiorna lo score del player
+      // p1.updateScore(100);
+    }
+  }
 
-          // aggiorna lo score del player
-          p1.updateScore(200);
-          screen_state = ScreenState.STORY_SCREEN;
+  // gestisce il passaggio al livello successivo - DA SISTEMARE
+  //void handleNextLevel()
+  //{
+  //  // se il livello dell'area è l'ultimo passa alla prossima area
+  //  if (currentLevel.levelIndex == currentZone.levels.size() - 1)
+  //  {
+  //    // controlla se è l'area finale
+  //    if (currentZone.isFinal())
+  //    {
+  //      initBossBattle();
+  //      isBossLevel = true;
+  //    } else
+  //    {
+  //      // passa alla prossima macroarea
+  //      currentZone = castle.zones.get(currentZone.zoneIndex + 1);
+  //      currentLevel = currentZone.currentLevel;
+  //      currentLevel.loadAssetsLevel();
+  //      currentLevel.init();
+  //      actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
+  //      p1.updatePosition(currentLevel.getStartPosition());
+
+  //      // aggiorna lo score del player
+  //      p1.updateScore(200);
+  //      screen_state = ScreenState.STORY_SCREEN;
+  //    }
+  //  } else
+  //  {
+  //    // passa al livello successivo - stessa macro area
+  //    currentLevel = currentZone.levels.get(currentLevel.levelIndex + 1);
+  //    currentLevel.loadAssetsLevel();
+  //    currentLevel.init();
+  //    actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
+  //    p1.updatePosition(currentLevel.getStartPosition());
+
+  //    // aggiorna lo score del player
+  //    p1.updateScore(100);
+  //  }
+  //}
+
+  // gestisce l'attacco del nemico
+  // da migliorare
+  void handleEnemyAttack(FBody enemyBody)
+  {
+    for (Enemy enemy : currentLevel.enemies)
+    {
+      if (isInVisibleArea(enemy.getPosition()))
+      {
+        if (enemy.getBox() == enemyBody)
+        {
+          p1.takeDamage(enemy.getDamage());
+          println("attacco subito: " + enemy.getDamage());
         }
-      } else {
-        // passa al livello successivo - stessa macro area
-        currentLevel = currentZone.levels.get(currentLevel.levelIndex + 1);
-        currentLevel.loadAssetsLevel();
-        currentLevel.init();
-        actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-        p1.updatePosition(currentLevel.getStartPosition());
-
-        // aggiorna lo score del player
-        p1.updateScore(100);
       }
     }
   }
 
   // gestisce le azioni del nemico - DA RIVEDERE
-  void handleEnemyActions() {
-    Iterator<Enemy> iterator = currentLevel.enemies.iterator();
+  //void handleEnemyActions() {
+  //  Iterator<Enemy> iterator = currentLevel.enemies.iterator();
 
-    while (iterator.hasNext()) {
-      Enemy enemy = iterator.next();
+  //  while (iterator.hasNext()) {
+  //    Enemy enemy = iterator.next();
 
-      if (isInVisibleArea(enemy.getPosition())) {
-        if (enemy.enemyHP > 0) {
-          enemy.update();
+  //    if (isInVisibleArea(enemy.getPosition())) {
+  //      if (enemy.hp > 0) {
+  //        enemy.update();
 
-          // attacca solo se c'è collisione
-          // if (enemy.sprite_collision(p1))
-          if (collision.check_collision(enemy, p1)) {
-            enemy.attack(p1);
-          } else {
-            enemy.first_attack = true;
-          }
-        } else {
-          enemy.death();
-          p1.updateScore(enemy.scoreValue);
-          iterator.remove();
-        }
-      }
-    }
-  }
+  //        // attacca solo se c'è collisione
+  //        // if (enemy.sprite_collision(p1))
+  //        if (checkCollision(enemy, p1)) {
+  //          enemy.attack(p1);
+  //        } else {
+  //          enemy.first_attack = true;
+  //        }
+  //      } else {
+  //        enemy.death();
+  //        // p1.updateScore(enemy.scoreValue);
+  //        iterator.remove();
+  //      }
+  //    }
+  //  }
+  //}
 
   // gestione delle chest - DA SISTEMARE
   // da migliorare
-  void handleChest() {
-    // ----- CHEST -----
-    // disegna solo le chest visibili
-    for (Chest chest : currentLevel.treasures) {
-      if (isInVisibleArea(chest.getPosition())) {
-        // if (chest.sprite_collision(p1) && !chest.isOpen())
-        if (collision.check_collision(chest, p1) && !chest.isOpen())
-        {
-          // println("collsione cassa giocatore");
-          render.canOpenChest = true;
+  void handleChest(FBody chestBody)
+  {
+    for (Chest chest : currentLevel.treasures)
+    {
+      if (isInVisibleArea(chest.getPosition()))
+      {
 
-          // se il giocatore preme il tasto interazione e la cassa non è stata aperta
-          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
-            if (!p1.isInteracting) {
+        if (chest.getBox() == chestBody)
+        {
+          println("collisione chest rilevata!");
+
+          // aggiungere logica
+          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK))
+          {
+            if (!p1.isInteracting)
+            {
               p1.isInteracting = true;
               if (chest.isRare())
               {    // se la cassa è rara
@@ -262,7 +338,7 @@ class Game {
                   }
                 } else
                 {
-                  render.canOpenChest = false;
+                  render.isPossibleToOpenChest = false;
                 }
               } else
               {  // se la cassa è normale
@@ -285,7 +361,7 @@ class Game {
                   }
                 } else
                 {
-                  render.canOpenChest = false;
+                  render.isPossibleToOpenChest = false;
                 }
               }
             }
@@ -297,22 +373,117 @@ class Game {
         }
       }
     }
+
+    // ----- CHEST -----
+    // disegna solo le chest visibili
+    //for (Chest chest : currentLevel.treasures) {
+    //  if (isInVisibleArea(chest.getPosition())) {
+    //    // if (chest.sprite_collision(p1) && !chest.isOpen())
+    //    if (checkCollision(chest, p1) && !chest.isOpen())
+    //    {
+    //      // println("collsione cassa giocatore");
+    //      render.canOpenChest = true;
+
+    //      // se il giocatore preme il tasto interazione e la cassa non è stata aperta
+    //if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
+    //  if (!p1.isInteracting) {
+    //    p1.isInteracting = true;
+    //    if (chest.isRare())
+    //    {    // se la cassa è rara
+    //      // CASSA RARA
+    //      if (p1.numberOfGoldenKeys > 0)
+    //      {
+    //        if (chest.getOpenWith().equals(p1.golden_key))
+    //        {
+    //          // imposta la cassa come aperta
+    //          chest.setIsOpen(true);
+    //          chest_open.play();
+    //          // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+    //          chest.sprite = special_chest_open_sprite;
+
+    //          p1.numberOfGoldenKeys -= 1;
+    //          p1.updateScore(50);
+
+    //          chest.dropItemSpecialChest();
+    //        }
+    //      } else
+    //      {
+    //        render.canOpenChest = false;
+    //      }
+    //    } else
+    //    {  // se la cassa è normale
+    //      // CASSA NORMALE
+    //      if (p1.numberOfSilverKeys > 0)
+    //      {
+    //        if (chest.getOpenWith().equals(p1.silver_key))
+    //        {
+    //          // imposta la cassa come aperta
+    //          chest.setIsOpen(true);
+    //          chest_open.play();
+    //          // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
+    //          chest.sprite = chest_open_sprite;
+
+    //          p1.numberOfSilverKeys -= 1;
+    //          p1.updateScore(30);
+
+    //          // metodo per drop item casuale
+    //          chest.dropItemNormalChest();
+    //        }
+    //      } else
+    //      {
+    //        render.canOpenChest = false;
+    //      }
+    //    }
+    //  }
+    //} else
+    //{
+    //  // resettta la variabile
+    //  p1.isInteracting = false;
+    //}
+    //    }
+    //  }
+    //}
+  }
+
+  // gestisce le trappole
+  // da migliorare ma ci siamo
+  void handlePeaks(FBody trapBody, FBody characterBody) {
+    for (Trap trap : currentLevel.traps) {
+      if (isInVisibleArea(trap.getPosition()))
+      {
+        if (trap.getBox() == trapBody)
+        {
+          for (Character character : characters)
+          {
+            if (!character.IsDead()) {
+              if (character.getBox() == characterBody)
+              {
+                if (character.IsDamageable())
+                {
+                  character.takeDamage(trap.getDamage());
+                  println("danno subito: " + trap.getDamage());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   // gestisce le monete - OK ???
-  void handleCoin() {
-    // ----- COIN -----
+  void handleCoin(FBody coinBody) {
     for (Coin coin : currentLevel.coins) {
       if (isInVisibleArea(coin.getPosition())) {
         // mostra le monete nell'area visibile
         if (!coin.isCollected()) {
-          // if (coin.sprite_collision(p1))
-          if (collision.check_collision(coin, p1))
+          if (coin.getBox() == coinBody)
           {
             coin.collect();  // raccogli la moneta
             p1.collectCoin();
             pickupCoin.play();
             p1.updateScore(coin.scoreValue);
+            currentLevel.level.remove(coinBody);  // rimuovi la moneta dal mondo fisico
           }
         }
       }
@@ -336,97 +507,97 @@ class Game {
         render.drawInteractableLetter = false;
 
         // if (item.sprite_collision(p1))
-        if (collision.check_collision(item, p1))
-        {
-          render.drawInteractableLetter = true;
+        //if (checkCollision(item, p1))
+        //{
+        //  render.drawInteractableLetter = true;
 
-          if (item.isWeapon())
-          {
-            render.drawUpBuff = false;
-            render.drawDownBuff = false;
+        //  if (item.isWeapon())
+        //  {
+        //    render.drawUpBuff = false;
+        //    render.drawDownBuff = false;
 
-            Item temp = item;
+        //    Item temp = item;
 
-            // mostra se un'arma è piu forte o debole rispetto a quella del giocatore
-            if (temp.damage > p1.weapon.damage)
-            {
-              render.drawUpBuff = true;
-            } else if (temp.damage < p1.weapon.damage)
-            {
-              render.drawDownBuff = true;
-            }
-          }
+        //    // mostra se un'arma è piu forte o debole rispetto a quella del giocatore
+        //    if (temp.damage > p1.weapon.damage)
+        //    {
+        //      render.drawUpBuff = true;
+        //    } else if (temp.damage < p1.weapon.damage)
+        //    {
+        //      render.drawDownBuff = true;
+        //    }
+        //  }
 
-          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK))
-          {
-            if (!p1.isInteracting)
-            {
-              p1.isInteracting = true;
+        //  if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK))
+        //  {
+        //    if (!p1.isInteracting)
+        //    {
+        //      p1.isInteracting = true;
 
-              // if (item instanceof Healer)
-              if (item.isHealer())
-              { // verifico prima che sia un oggetto curativo
-                if (item.name.equals("dropPotion"))
-                {  // se è un pozione aggiungila
-                  p1.numberOfPotion++;
-                  iterator.remove();
-                } else
-                {  // se è un cuore recupera la vita istantaneamente
-                  if (p1.playerHP < p1.playerMaxHP)
-                  { // verifico che la salute del giocatore sia minore della salute massima
-                    // Healer healerItem = (Healer) item;
-                    Item healerItem = item;
+        //      // if (item instanceof Healer)
+        //      if (item.isHealer())
+        //      { // verifico prima che sia un oggetto curativo
+        //        if (item.name.equals("dropPotion"))
+        //        {  // se è un pozione aggiungila
+        //          p1.numberOfPotion++;
+        //          iterator.remove();
+        //        } else
+        //        {  // se è un cuore recupera la vita istantaneamente
+        //          if (p1.hp < p1.playerMaxHP)
+        //          { // verifico che la salute del giocatore sia minore della salute massima
+        //            // Healer healerItem = (Healer) item;
+        //            Item healerItem = item;
 
-                    p1.takeHP(healerItem.getBonusHp());
+        //            p1.restoreHP(healerItem.getBonusHp());
 
-                    // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
-                    iterator.remove();
-                  } else
-                  {
-                    // da togliere di qua e mettere nel metodo di render
-                    // TextDisplay healthFull = new TextDisplay(p1.getPosition(), "Salute al massimo", color(255));
-                    // healthFull.display(spritesLayer);
-                  }
-                }
-              }
+        //            // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
+        //            iterator.remove();
+        //          } else
+        //          {
+        //            // da togliere di qua e mettere nel metodo di render
+        //            // TextDisplay healthFull = new TextDisplay(p1.getPosition(), "Salute al massimo", color(255));
+        //            // healthFull.display(spritesLayer);
+        //          }
+        //        }
+        //      }
 
-              // else if (item instanceof Weapon)
-              else if (item.isWeapon())
-              {
-                // una volta scambiata l'arma non è piu possibile recuperare quella vecchia
-                // assegna arma a terra al giocatore
-                // p1.weapon = (Weapon) item;
-                p1.weapon = item;
-                // rimuovi l'oggetto droppato a terra
-                iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropSilverKey"))
-              {
-                // aumenta il numero delle chiavi d'argento
-                p1.takeSilverKey();
-                iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropGoldenKey"))
-              {
-                // aumenta il numero delle chiavi d'oro
-                p1.takeGoldenKey();
-                iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropTorch"))
-              {
-                // aumenta il raggio della maschera
-                // holeRadius += 50;
-                iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropMap"))
-              {
-                // attiva la minimappa per tutti i livelli
-                ui.activateMap();
-                iterator.remove();
-              }
-            }
-          } else
-          {
-            // resetta la variabile di stato
-            p1.isInteracting = false;
-          }
-        }
+        //      // else if (item instanceof Weapon)
+        //      else if (item.isWeapon())
+        //      {
+        //        // una volta scambiata l'arma non è piu possibile recuperare quella vecchia
+        //        // assegna arma a terra al giocatore
+        //        // p1.weapon = (Weapon) item;
+        //        p1.weapon = item;
+        //        // rimuovi l'oggetto droppato a terra
+        //        iterator.remove();
+        //      } else if (item.isCollectible && item.name.equals("dropSilverKey"))
+        //      {
+        //        // aumenta il numero delle chiavi d'argento
+        //        p1.takeSilverKey();
+        //        iterator.remove();
+        //      } else if (item.isCollectible && item.name.equals("dropGoldenKey"))
+        //      {
+        //        // aumenta il numero delle chiavi d'oro
+        //        p1.takeGoldenKey();
+        //        iterator.remove();
+        //      } else if (item.isCollectible && item.name.equals("dropTorch"))
+        //      {
+        //        // aumenta il raggio della maschera
+        //        // holeRadius += 50;
+        //        iterator.remove();
+        //      } else if (item.isCollectible && item.name.equals("dropMap"))
+        //      {
+        //        // attiva la minimappa per tutti i livelli
+        //        ui.activateMap();
+        //        iterator.remove();
+        //      }
+        //    }
+        //  } else
+        //  {
+        //    // resetta la variabile di stato
+        //    p1.isInteracting = false;
+        //  }
+        //}
       }
     }
   }

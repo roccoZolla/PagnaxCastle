@@ -49,7 +49,10 @@
   },
   "game": {
     "story": {
-      "storyBegins": "Nel lontano Regno di Lontano la principessa Chela e' stata rapita dallo stregone Pagnax. Sei stato mandato al castello dello stregone pazzo dove si dice che ogni piano cambi in continuazione. Devi salvare la principessa e sconfiggere Pagnax, che la casualita' ti aiuti Cavaliere.",
+      "zone_1": "Nel lontano Regno di Lontano la principessa Chela e' stata rapita dallo stregone Pagnax.\nSei stato mandato al castello dello stregone pazzo dove si dice che ogni piano cambi in continuazione.\nDevi salvare la principessa e sconfiggere Pagnax, che la casualita' ti aiuti Cavaliere.\n",
+      "zone_2": "",
+      "zone_3": "",
+      "zone_4": "",
       "victory": "Finalmente lo stregone Pagnax e' stato sconfitto! La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.",
       "defeat": "Sei stato sconfitto Cavaliere!",
       "pressButton": "Premi un tasto qualsiasi per continuare"

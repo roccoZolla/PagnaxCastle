@@ -4,6 +4,7 @@ class UI {
 
   String scoreText = "";
   String game_target = "";   // indica al giocatore l'obiettivo
+  String actualLevel = "";
 
   // ----- CUORI BOSS -----
   boolean isBossBattle;  // indica se il giocatore si trova nel livello finale
@@ -82,33 +83,13 @@ class UI {
     uiLayer.textAlign(CENTER, TOP); // Allinea il testo a sinistra e in alto
     uiLayer.textSize(24);
     uiLayer.text("tick timer: " + tick_timer.getTicks(), width / 2, 60);
-    
-    // DEBUG 
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("Posizione: " + p1.position, 10, height / 2 + 80);
-    
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("canMoveUP: " + p1.canMoveUP, 10, height / 2 + 100);    
-    
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("canMoveDOWN: " + p1.canMoveDOWN, 10, height / 2 + 120);    
-    
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("canMoveRIGHT: " + p1.canMoveRIGHT, 10, height / 2 + 140);    
-    
-    uiLayer.fill(255);
-    uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
-    uiLayer.textSize(24);
-    uiLayer.text("canMoveLEFT: " + p1.canMoveLEFT, 10, height / 2 + 160);
-    
+
+    // DEBUG
+    //uiLayer.fill(255);
+    //uiLayer.textAlign(LEFT, TOP); // Allinea il testo a sinistra e in alto
+    //uiLayer.textSize(24);
+    //uiLayer.text("Posizione: " + p1.getPosition(), 10, height / 2 + 80);
+
     /////
 
     // pause button
@@ -158,7 +139,7 @@ class UI {
     uiLayer.image(red_potion_sprite, 20, 110, 20, 20);
 
     // ------- MINIMAPPA ------
-    if (isMapActive) displayMinimap();
+    // if (isMapActive) displayMinimap();
 
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento
@@ -191,13 +172,14 @@ class UI {
     image(uiLayer, 0, 0);
   }
 
-  void displayPlayerHearts() {
+  void displayPlayerHearts()
+  {
     // Calcola quanti cuori pieni mostrare in base alla vita del giocatore
-    heartsToDisplay = p1.playerHP / 10; // Supponiamo che ogni cuore rappresenti 10 HP
+    heartsToDisplay = p1.hp / 10; // Supponiamo che ogni cuore rappresenti 10 HP
     heartX = 20;
     heartY = 50;
     maxHearts = p1.playerMaxHP / 10;
-    isHalfHeart = p1.playerHP % 10 >= 5; // Controlla se c'è un cuore a metà
+    isHalfHeart = p1.hp % 10 >= 5; // Controlla se c'è un cuore a metà
 
     // Disegna i cuori pieni
     for (int i = 0; i < heartsToDisplay; i++) {
@@ -261,55 +243,59 @@ class UI {
   void deactivateMap() {
     isMapActive = false;
   }
-
-  void displayMinimap() {
-    // ------- MINIMAPPA ------
-    // Disegna la minimappa nell'angolo in basso a sinistra
-    uiLayer.noFill(); // Nessun riempimento
-
-    for (int x = 0; x < currentLevel.cols; x++) {
-      for (int y = 0; y < currentLevel.rows; y++) {
-        int tileType = currentLevel.map[x][y];
-
-        // Controlla se il tile è una parete o un corridoio (bordo della stanza)
-        if (tileType == 4 || tileType == 5) {
-          // Mappa i tile della minimappa nel rettangolo
-          miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
-          miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
-
-          // Disegna il bordo della stanza sulla minimappa
-          uiLayer.stroke(255); // Colore del bordo bianco
-          uiLayer.point(miniMapTileX, miniMapTileY);
-        } else if (tileType == 3) {
-          // ----- SCALE QUADRATO AZZURO -----
-          miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
-          miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
-
-          uiLayer.noFill();
-          uiLayer.stroke(0, 127, 255);
-          uiLayer.rect(miniMapTileX, miniMapTileY, miniMapWidth / currentLevel.cols, miniMapHeight / currentLevel.rows);
-        }
-      }
-    }
-
-    // ----- PLAYER PALLINO ROSSO -----
-    playerMiniMapX = map(p1.getPosition().x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
-    playerMiniMapY = map(p1.getPosition().y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
-
-    uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
-    uiLayer.noStroke();
-    uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5);
-
-    // ----- NEMICI PALLINI GIALLI -----
-    uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
-    uiLayer.noStroke();
-
-    for (Chest chest : currentLevel.treasures) {
-      chestMiniMapX = map(chest.position.x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
-      chestMiniMapY = map(chest.position.y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
-      uiLayer.ellipse(chestMiniMapX, chestMiniMapY, 5, 5);
-    }
+  
+  void setActualLevelText(String actualLevel) {
+    this.actualLevel = actualLevel;
   }
+
+  //void displayMinimap() {
+  //  // ------- MINIMAPPA ------
+  //  // Disegna la minimappa nell'angolo in basso a sinistra
+  //  uiLayer.noFill(); // Nessun riempimento
+
+  //  for (int x = 0; x < currentLevel.cols; x++) {
+  //    for (int y = 0; y < currentLevel.rows; y++) {
+  //      int tileType = currentLevel.map[x][y];
+
+  //      // Controlla se il tile è una parete o un corridoio (bordo della stanza)
+  //      if (tileType == 4 || tileType == 5) {
+  //        // Mappa i tile della minimappa nel rettangolo
+  //        miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
+  //        miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
+
+  //        // Disegna il bordo della stanza sulla minimappa
+  //        uiLayer.stroke(255); // Colore del bordo bianco
+  //        uiLayer.point(miniMapTileX, miniMapTileY);
+  //      } else if (tileType == 3) {
+  //        // ----- SCALE QUADRATO AZZURO -----
+  //        miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
+  //        miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
+
+  //        uiLayer.noFill();
+  //        uiLayer.stroke(0, 127, 255);
+  //        uiLayer.rect(miniMapTileX, miniMapTileY, miniMapWidth / currentLevel.cols, miniMapHeight / currentLevel.rows);
+  //      }
+  //    }
+  //  }
+
+  //  // ----- PLAYER PALLINO ROSSO -----
+  //  playerMiniMapX = map(p1.getPosition().x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
+  //  playerMiniMapY = map(p1.getPosition().y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
+
+  //  uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
+  //  uiLayer.noStroke();
+  //  uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5);
+
+  //  // ----- NEMICI PALLINI GIALLI -----
+  //  uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
+  //  uiLayer.noStroke();
+
+  //  for (Chest chest : currentLevel.treasures) {
+  //    chestMiniMapX = map(chest.getPosition().x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
+  //    chestMiniMapY = map(chest.getPosition().y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
+  //    uiLayer.ellipse(chestMiniMapX, chestMiniMapY, 5, 5);
+  //  }
+  //}
 
   void updateScreen() {
     uiLayer = createGraphics(width, height);
@@ -319,9 +305,9 @@ class UI {
     // aggiorna posizione bottone
     buttons.get(0).updatePosition(width - 70, 20, 50, 50);  // pause
   }
-  
+
   void updateLanguage(Language language) {
-     if (language == Language.ITALIAN)
+    if (language == Language.ITALIAN)
     {
       scoreText = bundleITA.getJSONObject("game").getString("score");
       game_target = bundleITA.getJSONObject("game").getString("gametarget");
