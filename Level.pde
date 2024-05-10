@@ -1,21 +1,16 @@
 class Level {
-  String levelName;
-  int levelIndex;
-  // String dataPath;
   boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
-  int numberOfRooms;
+  int numberOfRooms = 8;  // aggiungere logica per il calcolo del numero delle stanze, 8 valore di test
+  // ad esempio in base alle difficolta, facile 5 stanze, 7 normale, 9 difficile
   boolean isFinalLevel;      // indica se è il livello finale, composto da una singola stanza, di base false
 
   Sprite stairsNextFloor;
 
-  FWorld level;
-
   // rooms
-  int tileSize = 16;
+  int tileSize;
   int cols, rows;
   int[][] map;
   ArrayList<Room> rooms;
-
   int startRoomIndex;
   int endRoomIndex;
 
@@ -29,7 +24,7 @@ class Level {
   // da togliere
   final int ENEMY_HP = 30;
 
-  // attributi
+  // assets della mappa
   PImage startFloorImage;
   PImage floorImage; // Immagine per il pavimento
   // private PImage wallImage;  // Immagine per sfondo
@@ -46,59 +41,45 @@ class Level {
 
   ArrayList<Coin> coins;      // contiene le monete presenti nel livello
   ArrayList<Trap> traps;      // contiene le trappole presenti nel livello
+  ArrayList<Chest> treasures; // lista delle chest
+  ArrayList<Enemy> enemies;   // lista dei nemici
+  ArrayList<Item> dropItems;  // lista degli oggetti caduti a terra
 
-  // chest che puoi trovare nel livello
-  ArrayList<Chest> treasures; // Memorizza le posizioni degli oggetti
-
-  // nemici che puoi trovare nel livello
-  ArrayList<Enemy> enemies; // Lista dei nemici
-
-  ArrayList<Item> dropItems; // lista degli oggetti caduti a terra
-
-  Level(String levelName, int levelIndex, int numberOfRooms) {
-    this.levelName = levelName;
-    this.completed = false;
-    this.levelIndex = levelIndex;
-    // this.dataPath = dataPath;
-    this.numberOfRooms = numberOfRooms;
-
-    this.isFinalLevel = false;
-
-    // creazione del mondo fisico per il livello
-    level = new FWorld();
-    level.setGrabbable(false);
-    level.setGravity(0, 0);
-    level.setEdges();
+  Level()
+  {
   }
 
-  // da sistemare poco efficiente
-  void loadAssetsLevel() {
-    floorImage = currentZone.floorImage;
-    wallImageNorth = currentZone.wallImageNorth;
-    hallwayImage = currentZone.hallwayImage;
-    stairsNextFloorImage = currentZone.stairsNextFloorImage;
-    peaksTrapImage = currentZone.peaksTrapImage;
-    hallwayImage = currentZone.hallwayImage;
-    stairsNextFloorImage = currentZone.stairsNextFloorImage;
-    
-    println("assets del livello caricati correttamente!");
+  void loadAssets(String dataPath)
+  {
+    floorImage = loadImage(dataPath + "floorTile.png");
+    wallImageNorth = loadImage(dataPath + "northWallTop.png");
+    hallwayImage = loadImage(dataPath + "hallwayTile.png");
+    stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
+    peaksTrapImage = loadImage("data/trap/peaks.png");
+    hallwayImage = loadImage(dataPath + "hallwayTile.png");
+    stairsNextFloorImage = loadImage(dataPath + "stairsNextFloor.png");
   }
 
   void init() {
     // inizializzo il livello
-    // println("inizializzo il livello...");
-    
-    // pulisce il mondo fisico
-    // level.clear();
+    println("inizializzo il livello...");
 
     // logica per la creazione del livello (mappa del livello)
-    cols = width / tileSize;
-    rows = height / tileSize;
+    cols = width / Utils.TILE_SIZE;
+    rows = height / Utils.TILE_SIZE;
+
+    tileSize = Utils.TILE_SIZE;
+
+    println("cols: " + cols);
+    println("rows: " + rows);
 
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
-
+    coins = new ArrayList<>();
+    treasures = new ArrayList<Chest>();
+    enemies = new ArrayList<Enemy>();
     traps = new ArrayList<Trap>();
+    dropItems = new ArrayList<>();
 
     // Genera le stanze all'interno delle foglie dell'albero BSP
     generateRooms();
@@ -106,23 +87,21 @@ class Level {
     // Collega le stanze con corridoi
     connectRooms();
 
+    addWallsToRooms();
+
     stairsNextFloor = new Sprite(stairsNextFloorImage);
 
     // da rimuovere
     map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = Utils.START_ROOM_TILE_TYPE; // Stanza iniziale
     map[int(rooms.get(endRoomIndex).roomPosition.x)][int(rooms.get(endRoomIndex).roomPosition.y)] = Utils.STAIRS_TILE_TYPE; // Stanza finale
 
-    FBox stairs = new FBox(tileSize, tileSize);
+    FBox stairs = new FBox(Utils.TILE_SIZE, Utils.TILE_SIZE);
     stairs.setName("Stairs");
-    stairs.setPosition(int(rooms.get(endRoomIndex).roomPosition.x) * tileSize + tileSize / 2, int(rooms.get(endRoomIndex).roomPosition.y) * tileSize + tileSize / 2);
+    stairs.setPosition(int(rooms.get(endRoomIndex).roomPosition.x) * Utils.TILE_SIZE + Utils.TILE_SIZE / 2, int(rooms.get(endRoomIndex).roomPosition.y) * Utils.TILE_SIZE + Utils.TILE_SIZE / 2);
     stairs.setFillColor(240);
     stairs.setRotatable(false);
     stairs.setSensor(true);
-    level.add(stairs);
-
-    // inizializza l'array dei drop items
-    // inizialmente è vuoto
-    dropItems = new ArrayList<>();
+    game.world.add(stairs);
 
     // genera le chest
     generateRandomChests();
@@ -133,18 +112,18 @@ class Level {
 
     // genera le monete
     generateRandomCoins();
-    
+
     println("livello inizializzato correttamente");
   }
 
   void initBossLevel() {
     // println("inizializzo il livello finale...");
-    
+
     // level.clear();
 
     // logica per la creazione del livello (mappa del livello)
-    cols = width / tileSize;
-    rows = height / tileSize;
+    cols = width / Utils.TILE_SIZE;
+    rows = height / Utils.TILE_SIZE;
 
     println("cols: " + cols);
     println("rows: " + rows);
@@ -257,16 +236,6 @@ class Level {
           for (int y = roomY; y < roomY + roomHeight; y++) {
             if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
               map[x][y] = Utils.WALL_PERIMETER_TILE_TYPE;
-
-              // creazione del muro
-              FBox wall = new FBox(tileSize, tileSize);
-              wall.setName("Wall");
-              wall.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
-              wall.setStaticBody(true); // Rendi il corpo fisico statico
-              wall.setFriction(0.8);
-              wall.setRestitution(0.1);
-              level.add(wall);
-              // aggiungere entita wall fbox per ogni parete
             } else {
               map[x][y] = Utils.FLOOR_TILE_TYPE;
               // spawn delle trappole all'interno delle stanze
@@ -275,7 +244,7 @@ class Level {
                 Trap trap = new Trap(peaksTrapImage, DAMAGE_PEAKS);
                 trap.updatePosition(x, y);
                 traps.add(trap);
-                level.add(trap.box);
+                game.world.add(trap.box);
               }
             }
           }
@@ -298,7 +267,8 @@ class Level {
     return false;
   }
 
-  private void connectRooms() {
+  private void connectRooms()
+  {
     // println("collego le stanze...");
     for (int i = 0; i < rooms.size() - 1; i++) {
       PVector room1 = rooms.get(i).roomPosition.copy();
@@ -312,13 +282,34 @@ class Level {
 
       // Collega le stanze con un corridoio
       while (x1 != x2 || y1 != y2) {
-        if (map[x1][y1] != 1) map[x1][y1] = Utils.HALLWAY_TILE_TYPE; // Imposta il tile come spazio vuoto (corridoio)
+        if (map[x1][y1] != Utils.FLOOR_TILE_TYPE) map[x1][y1] = Utils.HALLWAY_TILE_TYPE; // Imposta il tile come spazio vuoto (corridoio)
 
         int choice = int(random(2));
-        if (choice == 0) {
+        if (choice == 0)
+        {
           x1 += (x1 < x2) ? 1 : ((x1 > x2) ? -1 : 0);
-        } else {
+        } else
+        {
           y1 += (y1 < y2) ? 1 : ((y1 > y2) ? -1 : 0);
+        }
+      }
+    }
+  }
+
+  // aggiunge i muri
+  // da migliorare
+  private void addWallsToRooms()
+  {
+    for (int x = 0; x < cols; x++) {
+      for (int y = 0; y < rows; y++) {
+        if (map[x][y] == Utils.WALL_PERIMETER_TILE_TYPE) {
+          FBox wall = new FBox(Utils.TILE_SIZE, Utils.TILE_SIZE);
+          wall.setName("Wall");
+          wall.setPosition(x * Utils.TILE_SIZE + Utils.TILE_SIZE / 2, y * Utils.TILE_SIZE + Utils.TILE_SIZE / 2);
+          wall.setStaticBody(true); // Rendi il corpo fisico statico
+          wall.setFriction(0.8);
+          wall.setRestitution(0.001);
+          game.world.add(wall);
         }
       }
     }
@@ -327,7 +318,6 @@ class Level {
   // generatore di monete casuale
   private void generateRandomCoins() {
     // println("genero le monete...");
-    coins = new ArrayList<>();
     boolean positionOccupied;
     int totalCoins = 20; // Modifica il numero di monete da generare come preferisci
 
@@ -350,7 +340,7 @@ class Level {
       coins.add(coin);
 
       // aggiungi box coin al mondo fisico
-      level.add(coin.box);
+      game.world.add(coin.box);
     }
   }
 
@@ -358,7 +348,6 @@ class Level {
   private void generateRandomChests() {
     // println("genero le chest...");
     int spawnLevel = 3; // Livello di spawn delle chest, tre chest per livello
-    treasures = new ArrayList<Chest>();
     boolean positionOccupied;
     Chest chest;
     Room room;
@@ -444,7 +433,7 @@ class Level {
       treasures.add(chest);
 
       // aggiungi chest al mondo fisico
-      level.add(chest.box);
+      game.world.add(chest.box);
     }
   }
 
@@ -462,7 +451,7 @@ class Level {
   // genera nemici in ogni stanza in maniera casuale
   private void generateEnemies() {
     // println("genero i nemici...");
-    enemies = new ArrayList<Enemy>();
+    
     boolean positionOccupied;
 
     for (Room room : rooms) {
@@ -494,7 +483,7 @@ class Level {
         enemies.add(enemy);
 
         // aggiungi nemici al mondo fisico
-        level.add(enemy.box);
+        game.world.add(enemy.box);
       }
     }
   }

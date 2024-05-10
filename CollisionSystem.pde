@@ -8,8 +8,8 @@ class CollisionSystem
 
   void init()
   {
-    world = currentLevel.level;
-    bodies = world.getBodies();
+    // world = currentLevel.level;
+    // bodies = world.getBodies();
     println("collision system inizializzato correttamente!");
   }
 
@@ -68,9 +68,9 @@ void contactStarted(FContact contact) {
     {
       if (bodyName1.equals("Stairs"))
       {
-        game.handleNextLevel();
+        // game.handleNextLevel();
       } else {
-        game.handleNextLevel();
+        // game.handleNextLevel();
       }
     }
   }

@@ -53,8 +53,8 @@
       "zone_2": "",
       "zone_3": "",
       "zone_4": "",
-      "victory": "The sorcerer Pagnax has finally been defeated! Princess Chela is safe and our brave Knight is now the hero of the Kingdom.",
-      "defeat": "You have been defeated Knight!",
+      "victory": "The sorcerer Pagnax has finally been defeated!\nPrincess Chela is safe and our brave Knight is now the hero of the Kingdom.\n",
+      "defeat": "You have been defeated Knight!\n",
       "pressButton": "Press any key to continue"
     },
     "score": "score",

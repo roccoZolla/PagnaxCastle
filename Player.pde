@@ -96,8 +96,9 @@ class Player extends Character
     box.setName("Player");
     box.setFillColor(10);
     box.setRotatable(false);
-    box.setFriction(0.5);
-    box.setRestitution(0.2);
+    box.setFriction(0.5);   // quanto attrito fa
+    box.setRestitution(0);  // quanto rimbalza
+    box.setDamping(1);      // ammortizza il movimento
 
     this.direction = Direction.DESTRA;
 
@@ -203,17 +204,18 @@ class Player extends Character
           //  attackExecuted = true;
           //}
         } else {
-          for (Enemy enemy : currentLevel.enemies)
-          {
-            //if (checkCollision(weapon, enemy))
-            //{
-            //  swordAttack.play();
-            //  // enemy.takeDamage(weapon.getDamage());
-            //  // l'attacco è stato eseguito non continuare ad attaccare
-            //  // println("attacco eseguito...");
-            //  attackExecuted = true;
-            //}
-          }
+          //// for (Enemy enemy : currentLevel.enemies)
+          //for (Enemy enemy : level.enemies)
+          //{
+          //  //if (checkCollision(weapon, enemy))
+          //  //{
+          //  //  swordAttack.play();
+          //  //  // enemy.takeDamage(weapon.getDamage());
+          //  //  // l'attacco è stato eseguito non continuare ad attaccare
+          //  //  // println("attacco eseguito...");
+          //  //  attackExecuted = true;
+          //  //}
+          //}
         }
       }
     } else
@@ -278,10 +280,10 @@ class Player extends Character
         } else {
           // non deve stare qui
           // stampa x per indicare che non hai piu pozioni
-          float crossImageX = (getPosition().x * currentLevel.tileSize + (sprite.width / 2));
-          float crossImageY = (getPosition().y * currentLevel.tileSize + (sprite.height / 2)) - 20;
-          layer.imageMode(CENTER);
-          layer.image(cross_sprite, crossImageX, crossImageY);
+          //float crossImageX = (getPosition().x * currentLevel.tileSize + (sprite.width / 2));
+          //float crossImageY = (getPosition().y * currentLevel.tileSize + (sprite.height / 2)) - 20;
+          //layer.imageMode(CENTER);
+          //layer.image(cross_sprite, crossImageX, crossImageY);
         }
       }
     } else {

@@ -33,6 +33,10 @@ TO DO:
 [ ] - aggiungere scatto (quarto pulsante)
 [ ] - quando passo al livello successivo che succede al livello precedente? rimane in memoria? 
 [ ] - possibile file json dove mantenere i vari pezzi di storia che in base alla zona vengono mostrati eliminando il collegamento storia zona a livello di classe
+[ ] - numero di chest e nemici variano in base alla difficolta e vengono gestiti nella classe livello
+[ ] - logica tramite cui calcolare il numero delle stanze presenti in un livello
+[ ] - fixare danno causato da trappole
+[ ] - fixare schermata sconfitta e vittoria
 
 Idee game design:
 

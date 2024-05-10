@@ -3,17 +3,17 @@ class Camera {
   float y = 0;
   float zoom;    // zoom ideale 5, in realta la camera deve seguire il giocatore
   float easing;
+  
+  int cols;
+  int rows;
 
   void update() {
-    //float targetCameraX = p1.getPosition().x * currentLevel.tileSize * zoom - width / 2;
-    //float targetCameraY = p1.getPosition().y * currentLevel.tileSize * zoom - height / 2;    
-    
     float targetCameraX = p1.box.getX() * zoom - width / 2;
     float targetCameraY =  p1.box.getY() * zoom - height / 2;
 
     // Limita la telecamera in modo che non esca dalla mappa
-    targetCameraX = constrain(targetCameraX, 0, currentLevel.cols * currentLevel.tileSize * zoom - width);
-    targetCameraY = constrain(targetCameraY, 0, currentLevel.rows * currentLevel.tileSize * zoom - height);
+    targetCameraX = constrain(targetCameraX, 0, cols * Utils.TILE_SIZE * zoom - width);
+    targetCameraY = constrain(targetCameraY, 0, rows * Utils.TILE_SIZE * zoom - height);
 
     // Interpolazione per rendere il movimento della camera più fluido
     x += (targetCameraX - x) * easing;
@@ -21,7 +21,10 @@ class Camera {
   }
 
   Camera() {
-    this.zoom = 5.0;
+    this.cols = width / Utils.TILE_SIZE;
+    this.rows = width / Utils.TILE_SIZE;
+      
+    this.zoom = 1.0;
     this.easing = 0.7;
   }
 }

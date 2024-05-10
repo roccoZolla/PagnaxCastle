@@ -20,6 +20,7 @@ class TextDisplay {
     layer.textFont(myFont);
     layer.fill(text_color);
     layer.textSize(15);
-    layer.text(text, text_position.x * currentLevel.tileSize, (text_position.y * currentLevel.tileSize) - 10);
+    // layer.text(text, text_position.x * currentLevel.tileSize, (text_position.y * currentLevel.tileSize) - 10);
+    // layer.text(text, text_position.x * level.tileSize, (text_position.y * level.tileSize) - 10);
   }
 }

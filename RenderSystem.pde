@@ -62,7 +62,9 @@ class RenderSystem {
     gameLayer.imageMode(CENTER);  // imposto l'image mode a center
 
     // Disegna la mappa del livello corrente
-    currentLevel.display(gameLayer); // renderizza il 4,6 % della mappa
+    // currentLevel.display(gameLayer); // renderizza il 4,6 % della mappa
+    game.level.display(gameLayer); // renderizza il 4,6 % della mappa NON DEFINITIVO
+    // displayLevel();
 
     gameLayer.endDraw();
 
@@ -84,10 +86,10 @@ class RenderSystem {
 
     // aggiungere logica per cui quando si è nel livello del boss
     // non vengono eseguite
-    displayCharacter();
-    displayChests();
-    displayCoins();
-    displayDropItems();
+     displayCharacter();
+     displayChests();
+     displayCoins();
+     displayDropItems();
 
     //if (!game.isBossLevel) {
     //  displayEnemies();
@@ -99,8 +101,8 @@ class RenderSystem {
     //}
 
     // debug
-    // currentLevel.level.drawDebug(spritesLayer);
-    //currentLevel.level.draw(spritesLayer);
+    // game.world.drawDebug(spritesLayer);
+    // game.world.draw(spritesLayer);
 
 
     spritesLayer.endDraw();
@@ -108,23 +110,23 @@ class RenderSystem {
   }
 
   private void updateMaskLayer() {
-    maskLayer.beginDraw();
-    maskLayer.background(0, 255);
-    maskLayer.blendMode(REPLACE);
+    //maskLayer.beginDraw();
+    //maskLayer.background(0, 255);
+    //maskLayer.blendMode(REPLACE);
 
-    maskLayer.translate(-camera.x, -camera.y);
-    maskLayer.scale(camera.zoom);
+    //maskLayer.translate(-camera.x, -camera.y);
+    //maskLayer.scale(camera.zoom);
 
-    float centerX = p1.getPosition().x * currentLevel.tileSize + currentLevel.tileSize/ 2;
-    float centerY = p1.getPosition().y * currentLevel.tileSize + currentLevel.tileSize/ 2;
+    //float centerX = p1.getPosition().x * currentLevel.tileSize + currentLevel.tileSize/ 2;
+    //float centerY = p1.getPosition().y * currentLevel.tileSize + currentLevel.tileSize/ 2;
 
-    maskLayer.fill(255, 0);
-    maskLayer.ellipseMode(RADIUS);
-    maskLayer.ellipse(centerX, centerY, maskRadius, maskRadius);
+    //maskLayer.fill(255, 0);
+    //maskLayer.ellipseMode(RADIUS);
+    //maskLayer.ellipse(centerX, centerY, maskRadius, maskRadius);
 
-    maskLayer.endDraw();
+    //maskLayer.endDraw();
 
-    image(maskLayer, 0, 0);
+    //image(maskLayer, 0, 0);
   }
 
   // aggiorna i layer con le dimensioni aggiornate della finestra
@@ -148,6 +150,73 @@ class RenderSystem {
     }
   }
 
+  // disegna solo cio che vede il giocatore
+  // da spostare nel render system
+  private void displayLevel() {
+    //// Calcola i limiti dello schermo visibile in termini di celle di mappa
+    //int startX = floor((camera.x / (Utils.TILE_SIZE * camera.zoom)));
+    //int startY = floor((camera.y / (Utils.TILE_SIZE * camera.zoom)));
+    //int endX = ceil((camera.x + width) / (Utils.TILE_SIZE * camera.zoom));
+    //int endY = ceil((camera.y + height) / (Utils.TILE_SIZE * camera.zoom));
+
+    //// Assicurati che i limiti siano all'interno dei limiti della mappa
+    //startX = constrain(startX, 0, game.level.cols - 1);
+    //startY = constrain(startY, 0, game.level.rows - 1);
+    //endX = constrain(endX, 0, game.level.cols);
+    //endY = constrain(endY, 0, game.level.rows);
+
+    //for (int x = startX; x < endX; x++) {
+    //  for (int y = startY; y < endY; y++) {
+    //    int tileType = game.level.map[x][y];
+
+    //    float centerX = x * Utils.TILE_SIZE + Utils.TILE_SIZE / 2;
+    //    float centerY = y * Utils.TILE_SIZE + Utils.TILE_SIZE / 2;
+
+    //    switch(tileType) {
+    //    case Utils.BACKGROUND_TILE_TYPE:
+    //      // sfondo
+    //      break;
+
+    //    case Utils.FLOOR_TILE_TYPE:
+    //      // pavimento
+    //      gameLayer.image(game.level.floorImage, centerX, centerY, Utils.TILE_SIZE, Utils.TILE_SIZE);
+    //      break;
+
+    //    case Utils.START_ROOM_TILE_TYPE:
+    //      // Imposta l'immagine per la stanza iniziale (nero)
+    //      gameLayer.image(game.level.floorImage, centerX, centerY, Utils.TILE_SIZE, Utils.TILE_SIZE);
+    //      break;
+
+    //    case Utils.STAIRS_TILE_TYPE:
+    //      // scale per il piano successivo
+    //      gameLayer.image(game.level.stairsNextFloorImage, centerX, centerY, Utils.TILE_SIZE, Utils.TILE_SIZE);
+    //      break;
+
+    //    case Utils.WALL_PERIMETER_TILE_TYPE:
+    //      // muri perimetrali
+    //      gameLayer.image(game.level.wallImageNorth, centerX, centerY, Utils.TILE_SIZE, Utils.TILE_SIZE);
+    //      break;
+
+    //    case Utils.HALLWAY_TILE_TYPE:
+    //      // corridoio
+    //      gameLayer.image(game.level.hallwayImage, centerX, centerY, Utils.TILE_SIZE, Utils.TILE_SIZE);
+    //      break;
+
+    //    case Utils.CHEST_TILE_TYPE:
+    //      // ci sta tenerlo sono statiche le casse
+    //      // tesori
+    //      gameLayer.image(game.level.floorImage, centerX, centerY, Utils.TILE_SIZE, Utils.TILE_SIZE);
+    //      break;
+
+    //    case Utils.PEAKS_TILE_TYPE:
+    //      // peaks trap
+    //      gameLayer.image(game.level.peaksTrapImage, centerX, centerY, Utils.TILE_SIZE, Utils.TILE_SIZE);
+    //      break;
+    //    }
+    //  }
+    //}
+  }
+
 
   // da spostare nel render system
   //private void displayEnemies()
@@ -168,7 +237,9 @@ class RenderSystem {
   // da spostare nel render system
   // da rivedere
   void displayChests() {
-    for (Chest chest : currentLevel.treasures) {
+    // for (Chest chest : currentLevel.treasures)
+    for (Chest chest : game.level.treasures)
+    {
       if (isInVisibleArea(chest.getPosition()))
       {
         // mostra le chest nell'area visibile
@@ -195,7 +266,9 @@ class RenderSystem {
   }
 
   private void displayCoins() {
-    for (Coin coin : currentLevel.coins) {
+    // for (Coin coin : currentLevel.coins)
+    for (Coin coin : game.level.coins)
+    {
       if (isInVisibleArea(coin.getPosition())) {
         // mostra le monete nell'area visibile
         if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
@@ -206,7 +279,8 @@ class RenderSystem {
   }
 
   private void displayDropItems() {
-    Iterator<Item> iterator = currentLevel.dropItems.iterator();
+    // Iterator<Item> iterator = currentLevel.dropItems.iterator();
+    Iterator<Item> iterator = game.level.dropItems.iterator();
 
     while (iterator.hasNext()) {
       Item item = iterator.next();

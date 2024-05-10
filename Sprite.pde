@@ -41,6 +41,8 @@ class Sprite { //<>// //<>//
 
   // setters
   void updatePosition(PVector position) {
+    println("aggiorno la posizione...");
+    println("posizione: " + position);
     box.setPosition(position.x * SPRITE_SIZE + SPRITE_SIZE / 2, position.y * SPRITE_SIZE + SPRITE_SIZE / 2);
   }
   

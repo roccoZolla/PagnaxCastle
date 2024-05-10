@@ -1,16 +1,19 @@
-// da spostare nella classe game
-// non definitivi
-World castle;
-Zone currentZone;
-Level currentLevel;
-
 // contiene le logiche di gioco
 class Game {
   // DifficultyLevel difficultyLevel; // livello di difficolta del gioco
+
+  // game settings
   Level level;
+  Zone zone;
+  int numberOfZone = 1;    // numero delle zone che compongono il gioco
+  int zoneIndex = 1;
   int levelIndex = 1;
 
-  // FWorld world; // va aggiornato ogni volta
+  // provvisorio
+  String dataPath =  "data/zone_1/";
+
+
+  FWorld world; // va aggiornato ogni volta
 
   Boss boss;    // boss del gioco
 
@@ -21,10 +24,19 @@ class Game {
 
   ArrayList<Character> characters;
 
-  Game() {
+  Game()
+  {
+    zone = new Zone();
+    level = new Level();
+
+    // world physics settings
+    world = new FWorld();
+    world.setGrabbable(false);
+    world.setGravity(0, 0);
+    world.setEdges();
   }
 
-  void init() 
+  void init()
   {
     // difficultyLevel = DifficultyLevel.NORMALE;
     characters = new ArrayList<Character>();
@@ -39,29 +51,24 @@ class Game {
     golden_key = new Item(null, "golden_key");
     silver_key = new Item(null, "silver_key");
 
-    // create world
-    castle = new World();
+    // creazione della zona
+    zone = new Zone();
+    zone.setName("test");
+    zone.setNumberLevels(8); // 8 valore di test
+    zone.setFinalZone();
 
-    currentZone = castle.currentZone;
-
-    // caricamento delle immagini
-    currentZone.loadAssetsZone();
-
-    // inizializzo un livello per volta
-    currentLevel = currentZone.currentLevel;
-    currentLevel.loadAssetsLevel();
-    currentLevel.init();
+    println(zone.name);
 
     // carica una sola volta all'inizio gli assets del livello
-    // level.loadAssetsLevel();
-    // level.init();
+    level.loadAssets(dataPath);
+    level.init();
 
-    ui.setActualLevelText(currentZone.zoneName + " - " + currentLevel.levelName);
-
+    // da togliere di qua
+    ui.setActualLevelText(zone.name + " - Livello " + levelIndex);
 
     // inizializza il player
-    p1 = new Player(1000, 1000);
-    p1.updatePosition(currentLevel.getStartPosition());
+    p1 = new Player(100, 100);
+    p1.updatePosition(level.getStartPosition());
     println("player position: " + p1.getPosition());
 
     p1.golden_key = golden_key;
@@ -76,12 +83,13 @@ class Game {
     fps_clock.timerStart();
     tick_clock.timerStart();
 
-    //
-    currentLevel.level.add(p1.box);
+    // da sistemare
+    world.add(p1.box);
 
-    //
+    // da sistemare
     characters.add(p1);
-    for (Enemy enemy : currentLevel.enemies)
+
+    for (Enemy enemy : level.enemies)
     {
       characters.add(enemy);
     }
@@ -89,31 +97,31 @@ class Game {
     println("game system inizializzato correttamente!");
   }
 
-  void initBossBattle() {
-    // crea il livello finale
-    currentLevel = currentZone.createBossLevel();
+  //void initBossBattle() {
+  //  // crea il livello finale
+  //  currentLevel = currentZone.createBossLevel();
 
-    // inizializza il livello del boss
-    currentLevel.isFinalLevel = true;
-    currentLevel.loadAssetsLevel();
-    currentLevel.initBossLevel();
+  //  // inizializza il livello del boss
+  //  currentLevel.isFinalLevel = true;
+  //  currentLevel.loadAssetsLevel();
+  //  currentLevel.initBossLevel();
 
-    // posizione il giocatore nel punto di spawn
-    p1.updatePosition(currentLevel.getStartPosition());
+  //  // posizione il giocatore nel punto di spawn
+  //  p1.updatePosition(currentLevel.getStartPosition());
 
-    // aggiorna il testo relativo al livello attuale
-    ui.setActualLevelText(currentZone.zoneName + " - Livello Finale");
+  //  // aggiorna il testo relativo al livello attuale
+  //  ui.setActualLevelText(currentZone.name + " - Livello Finale");
 
-    // crea il boss
-    PVector spawn_boss_position = new PVector(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y);
-    // velocita di base boss 0.1
-    boss = new Boss(spawn_boss_position, boss_sprite, 0.07, "Stregone Pagnax", 100, 100);
+  //  // crea il boss
+  //  PVector spawn_boss_position = new PVector(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y);
+  //  // velocita di base boss 0.1
+  //  boss = new Boss(spawn_boss_position, boss_sprite, 0.07, "Stregone Pagnax", 100, 100);
 
-    ui.game_target = "Sconfiggi Pagnax!";
+  //  ui.game_target = "Sconfiggi Pagnax!";
 
-    ui.activateBossUI();
-    ui.deactivateMap();
-  }
+  //  ui.activateBossUI();
+  //  ui.deactivateMap();
+  //}
 
   // reimposta le variabili di gioco
   void resetGame() {
@@ -133,12 +141,10 @@ class Game {
   void update() {
     // gestione controlli player
     // handlePlayerDeath();
-    // da sistemare
-    currentLevel.level.step();
 
     p1.update();
-    p1.attack();
-    //p1.usePotion(spritesLayer);
+    // p1.attack();  // deve essere chiamata solo quando viene premuto il tasto
+    //p1.usePotion(spritesLayer);  // deve essere chiamata solo quando viene premuto il tasto
 
     //if (!isBossLevel) {
     //  // gestione azione nemici
@@ -164,102 +170,81 @@ class Game {
 
   // gestisce la vittoria del giocatore - OK
   void handlePlayerVictory() {
-    if (boss.IsDead()) {
+    if (boss.IsDead())
+    {
       p1.updateScore(1000);
       screen_state = ScreenState.WIN_SCREEN;
     }
   }
 
   // gestisce la morte del giocatore - OK
-  void handlePlayerDeath() {
+  void handlePlayerDeath()
+  {
     if (p1.IsDead()) {
       screen_state = ScreenState.LOSE_SCREEN;
     }
   }
 
-  //
+  // da sistemare
   void handleNextLevel()
   {
-    if (levelIndex == currentZone.numberLevels)
+    if (levelIndex == zone.getNumberOfLevels())
     {
       // verifica che la zona sia la zona finale
       // in caso positivo spostati nella sala del boss
-      if (currentZone.isFinal())
+      if (zone.IsFinal() && zoneIndex == numberOfZone)
       {
+        // initBossBattle();
       } else  // passa alla prossima macroarea
       {
-        // zoneIndex += 1;
+        zoneIndex += 1;
         // resetta il level index a 1
+        levelIndex = 1;
         // carica gli assets della nuova zona nel livello
         // level.loadAssestLevel();
         // una volta caricati quando di passa al livello successivo non ci sara bisogno di ricaricarli
         // inizializza il livello
-        // world.clear();
-        // level.init();
-        // ui.setActualLevelText(currentZone.zoneName + " - " + currentLevel.levelName);
-        // p1.updatePosition(currentLevel.getStartPosition());
+        world.clear();
+        level.init();
+        ui.setActualLevelText(zone.getName() + " - Livello " + levelIndex);
+        p1.updatePosition(level.getStartPosition());
         // // aggiorna lo score del player
-        // p1.updateScore(200);
-        // screen_state = ScreenState.STORY_SCREEN;
+        p1.updateScore(200);
+        screen_state = ScreenState.STORY_SCREEN;
       }
     } else  // altrimenti passa al livello successivo della stessa zona
     {
-      //levelIndex += 1;
-      // gli asset sono stati gia caricati
-      // world.clear
+      println("passa al livello successivo...");
+      levelIndex += 1;
+      world.clear(); // ripulisci il mondo fisico
+      characters.clear();
       // deve essere aggiornato anche characters
-      // level.init();
-      // ui.setActualLevelText(currentZone.zoneName + " - " + currentLevel.levelName);
-      // p1.updatePosition(currentLevel.getStartPosition());
-      // // aggiorna lo score del player
-      // p1.updateScore(100);
+      // gli asset sono stati gia caricati
+      level.init();
+      ui.setActualLevelText(zone.getName() + " - Livello " + levelIndex);
+      p1.updatePosition(level.getStartPosition());
+      // aggiorna lo score del player
+      p1.updateScore(100);
+
+      // da sistemare
+      world.add(p1.box);
+
+      // da sistemare
+      characters.add(p1);
+
+      for (Enemy enemy : level.enemies)
+      {
+        characters.add(enemy);
+      }
     }
   }
-
-  // gestisce il passaggio al livello successivo - DA SISTEMARE
-  //void handleNextLevel()
-  //{
-  //  // se il livello dell'area è l'ultimo passa alla prossima area
-  //  if (currentLevel.levelIndex == currentZone.levels.size() - 1)
-  //  {
-  //    // controlla se è l'area finale
-  //    if (currentZone.isFinal())
-  //    {
-  //      initBossBattle();
-  //      isBossLevel = true;
-  //    } else
-  //    {
-  //      // passa alla prossima macroarea
-  //      currentZone = castle.zones.get(currentZone.zoneIndex + 1);
-  //      currentLevel = currentZone.currentLevel;
-  //      currentLevel.loadAssetsLevel();
-  //      currentLevel.init();
-  //      actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-  //      p1.updatePosition(currentLevel.getStartPosition());
-
-  //      // aggiorna lo score del player
-  //      p1.updateScore(200);
-  //      screen_state = ScreenState.STORY_SCREEN;
-  //    }
-  //  } else
-  //  {
-  //    // passa al livello successivo - stessa macro area
-  //    currentLevel = currentZone.levels.get(currentLevel.levelIndex + 1);
-  //    currentLevel.loadAssetsLevel();
-  //    currentLevel.init();
-  //    actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-  //    p1.updatePosition(currentLevel.getStartPosition());
-
-  //    // aggiorna lo score del player
-  //    p1.updateScore(100);
-  //  }
-  //}
 
   // gestisce l'attacco del nemico
   // da migliorare
   void handleEnemyAttack(FBody enemyBody)
   {
-    for (Enemy enemy : currentLevel.enemies)
+    // for (Enemy enemy : currentLevel.enemies)
+    for (Enemy enemy : level.enemies)
     {
       if (isInVisibleArea(enemy.getPosition()))
       {
@@ -303,7 +288,8 @@ class Game {
   // da migliorare
   void handleChest(FBody chestBody)
   {
-    for (Chest chest : currentLevel.treasures)
+    // for (Chest chest : currentLevel.treasures)
+    for (Chest chest : level.treasures)
     {
       if (isInVisibleArea(chest.getPosition()))
       {
@@ -373,82 +359,15 @@ class Game {
         }
       }
     }
-
-    // ----- CHEST -----
-    // disegna solo le chest visibili
-    //for (Chest chest : currentLevel.treasures) {
-    //  if (isInVisibleArea(chest.getPosition())) {
-    //    // if (chest.sprite_collision(p1) && !chest.isOpen())
-    //    if (checkCollision(chest, p1) && !chest.isOpen())
-    //    {
-    //      // println("collsione cassa giocatore");
-    //      render.canOpenChest = true;
-
-    //      // se il giocatore preme il tasto interazione e la cassa non è stata aperta
-    //if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK)) {
-    //  if (!p1.isInteracting) {
-    //    p1.isInteracting = true;
-    //    if (chest.isRare())
-    //    {    // se la cassa è rara
-    //      // CASSA RARA
-    //      if (p1.numberOfGoldenKeys > 0)
-    //      {
-    //        if (chest.getOpenWith().equals(p1.golden_key))
-    //        {
-    //          // imposta la cassa come aperta
-    //          chest.setIsOpen(true);
-    //          chest_open.play();
-    //          // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
-    //          chest.sprite = special_chest_open_sprite;
-
-    //          p1.numberOfGoldenKeys -= 1;
-    //          p1.updateScore(50);
-
-    //          chest.dropItemSpecialChest();
-    //        }
-    //      } else
-    //      {
-    //        render.canOpenChest = false;
-    //      }
-    //    } else
-    //    {  // se la cassa è normale
-    //      // CASSA NORMALE
-    //      if (p1.numberOfSilverKeys > 0)
-    //      {
-    //        if (chest.getOpenWith().equals(p1.silver_key))
-    //        {
-    //          // imposta la cassa come aperta
-    //          chest.setIsOpen(true);
-    //          chest_open.play();
-    //          // per migliorare prestazioni, carico questo immagine all'inizio e l'assegno quando mi serve
-    //          chest.sprite = chest_open_sprite;
-
-    //          p1.numberOfSilverKeys -= 1;
-    //          p1.updateScore(30);
-
-    //          // metodo per drop item casuale
-    //          chest.dropItemNormalChest();
-    //        }
-    //      } else
-    //      {
-    //        render.canOpenChest = false;
-    //      }
-    //    }
-    //  }
-    //} else
-    //{
-    //  // resettta la variabile
-    //  p1.isInteracting = false;
-    //}
-    //    }
-    //  }
-    //}
   }
 
   // gestisce le trappole
   // da migliorare ma ci siamo
-  void handlePeaks(FBody trapBody, FBody characterBody) {
-    for (Trap trap : currentLevel.traps) {
+  void handlePeaks(FBody trapBody, FBody characterBody)
+  {
+    // for (Trap trap : currentLevel.traps)
+    for (Trap trap : level.traps)
+    {
       if (isInVisibleArea(trap.getPosition()))
       {
         if (trap.getBox() == trapBody)
@@ -472,9 +391,13 @@ class Game {
   }
 
   // gestisce le monete - OK ???
-  void handleCoin(FBody coinBody) {
-    for (Coin coin : currentLevel.coins) {
-      if (isInVisibleArea(coin.getPosition())) {
+  void handleCoin(FBody coinBody)
+  {
+    // for (Coin coin : currentLevel.coins)
+    for (Coin coin : level.coins)
+    {
+      if (isInVisibleArea(coin.getPosition()))
+      {
         // mostra le monete nell'area visibile
         if (!coin.isCollected()) {
           if (coin.getBox() == coinBody)
@@ -483,7 +406,7 @@ class Game {
             p1.collectCoin();
             pickupCoin.play();
             p1.updateScore(coin.scoreValue);
-            currentLevel.level.remove(coinBody);  // rimuovi la moneta dal mondo fisico
+            // currentLevel.level.remove(coinBody);  // rimuovi la moneta dal mondo fisico
           }
         }
       }
@@ -494,9 +417,11 @@ class Game {
   // da riscrivere completamente
   void handleDropItems() {
     // ----- DROP ITEMS -----
-    Iterator<Item> iterator = currentLevel.dropItems.iterator();
+    // Iterator<Item> iterator = currentLevel.dropItems.iterator();
+    Iterator<Item> iterator = level.dropItems.iterator();
 
-    while (iterator.hasNext()) {
+    while (iterator.hasNext())
+    {
       Item item = iterator.next();
 
       // controlla che gli elementi droppati siano visibili

@@ -35,8 +35,9 @@ class Enemy extends Character {
     box.setName("Enemy");
     box.setFillColor(40);
     box.setRotatable(false);
-    box.setFriction(0.5);
-    box.setRestitution(0.2);
+    box.setFriction(0.5);   // quanto attrito fa
+    box.setRestitution(0);  // quanto rimbalza
+    box.setDamping(1);      // ammortizza il movimento
 
     // characteristics
     this.hp = enemyHP;
@@ -178,21 +179,21 @@ class Enemy extends Character {
       // drop della chiave d'argento
       Item dropSilverKey = new Item(silver_key_sprite, "dropSilverKey");
       dropSilverKey.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropSilverKey);
+      // currentLevel.dropItems.add(dropSilverKey);
     } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY + DROP_HEART)
     {
       // drop del cuore intero
       // Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
       Item dropHeart = new Item(heart_sprite, "dropHeart", true, 10, false, 0);
       dropHeart.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropHeart);
+      // currentLevel.dropItems.add(dropHeart);
     } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY + DROP_HEART + DROP_HALF_HEART)
     {
       // drop del mezzocuore
       // Healer dropHalfHeart = new Healer(dropPosition, half_heart_sprite, "dropHalfHeart", 5);
       Item dropHalfHeart = new Item(half_heart_sprite, "dropHalfHeart", true, 5, false, 0);
       dropHalfHeart.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropHalfHeart);
+      // currentLevel.dropItems.add(dropHalfHeart);
     }
   }
 }

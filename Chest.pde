@@ -86,20 +86,20 @@ class Chest extends Item {
       // Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
       Item dropHeart = new Item(heart_sprite, "dropHeart", true, 10, false, 0);
       dropHeart.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropHeart);
+      // currentLevel.dropItems.add(dropHeart);
     } else if (randomValue > DROP_HEART && randomValue <= DROP_HEART + DROP_SWORD)
     {
       // drop della spada
       // Weapon dropSword = new Weapon(dropPosition, sword_sprite, "Spada", 20); // Assumendo che una spada valga 20 danni
       Item dropSword = new Item(sword_sprite, "Spada", false, 0, true, 20);
       dropSword.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropSword);
+      // currentLevel.dropItems.add(dropSword);
     } else if (randomValue > DROP_HEART + DROP_SWORD && randomValue <= DROP_HEART + DROP_SWORD + DROP_GOLDEN_KEY)
     {
       // drop della chiave d'oro
       Item dropGoldenKey = new Item(golden_key_sprite, "dropGoldenKey");
       dropGoldenKey.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropGoldenKey);
+      // currentLevel.dropItems.add(dropGoldenKey);
     } else if (randomValue > DROP_HEART + DROP_SWORD + DROP_GOLDEN_KEY &&
       randomValue <= DROP_HEART + DROP_SWORD + DROP_GOLDEN_KEY + DROP_POTION)
     {
@@ -107,7 +107,7 @@ class Chest extends Item {
       // Healer dropPotion = new Healer(dropPosition, red_potion_sprite, "dropPotion", 20);
       Item dropPotion = new Item(red_potion_sprite, "dropPotion", true, 20, false, 0);
       dropPotion.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropPotion);
+      // currentLevel.dropItems.add(dropPotion);
     }
   }
 
@@ -121,7 +121,7 @@ class Chest extends Item {
       // drop della torcia
       Item dropTorch = new Item(torch_sprite, "dropTorch");
       dropTorch.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropTorch);
+      // currentLevel.dropItems.add(dropTorch);
       game.isTorchDropped = true;
     } else if (randomValue > DROP_TORCH
       && randomValue <= DROP_TORCH + DROP_MAP
@@ -130,7 +130,7 @@ class Chest extends Item {
       // drop della mappa
       Item dropMap = new Item(dungeon_map_sprite, "dropMap");
       dropMap.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropMap);
+      // currentLevel.dropItems.add(dropMap);
       game.isMapDropped = true;
     } else if (randomValue > DROP_TORCH + DROP_MAP
       && randomValue <= DROP_TORCH + DROP_MAP + DROP_MASTER_SWORD
@@ -139,7 +139,7 @@ class Chest extends Item {
       // drop della super spada
       Item dropMasterSword = new Item(master_sword_sprite, "Spada del Maestro", false, 0, true, 50);
       dropMasterSword.updatePosition(dropPosition);
-      currentLevel.dropItems.add(dropMasterSword);
+      // currentLevel.dropItems.add(dropMasterSword);
       game.isMasterSwordDropped = true;
     }
   }
@@ -158,11 +158,11 @@ class Chest extends Item {
 
       dropPosition.add(xOffset, yOffset);
       
-      if (!isWall((int) dropPosition.x, (int) dropPosition.y)) {
-        break;
-      } else {
-        dropPosition = getPosition().copy();
-      }
+      //if (!isWall((int) dropPosition.x, (int) dropPosition.y)) {
+      //  break;
+      //} else {
+      //  dropPosition = getPosition().copy();
+      //}
     }
     
     return dropPosition;

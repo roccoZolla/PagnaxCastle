@@ -53,8 +53,8 @@
       "zone_2": "",
       "zone_3": "",
       "zone_4": "",
-      "victory": "Finalmente lo stregone Pagnax e' stato sconfitto! La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.",
-      "defeat": "Sei stato sconfitto Cavaliere!",
+      "victory": "Finalmente lo stregone Pagnax e' stato sconfitto!\nLa principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.\n",
+      "defeat": "Sei stato sconfitto Cavaliere!\n",
       "pressButton": "Premi un tasto qualsiasi per continuare"
     },
     "score": "Punteggio",

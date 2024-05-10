@@ -101,24 +101,24 @@ class Boss extends Character {
   }
 
 // da togliere
-  @Override
-    void display(PGraphics layer) {
-    // Disegna il boss
-    layer.noFill(); // Nessun riempimento
-    layer.stroke(255, 23, 23);
+//  @Override
+//    void display(PGraphics layer) {
+//    // Disegna il boss
+//    layer.noFill(); // Nessun riempimento
+//    layer.stroke(255, 23, 23);
 
-    float centerX = box.getX() * currentLevel.tileSize + sprite.width / 2;
-    float centerY = box.getY() * currentLevel.tileSize + sprite.height / 2;
+////    float centerX = box.getX() * currentLevel.tileSize + sprite.width / 2;
+////    float centerY = box.getY() * currentLevel.tileSize + sprite.height / 2;
 
-    layer.imageMode(CENTER); // Imposta l'imageMode a center
-    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+//    layer.imageMode(CENTER); // Imposta l'imageMode a center
+//    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
 
-    // Disegna i proiettili
-    for (Projectile projectile : projectiles) {
-      projectile.display(layer);
-      // projectile.displayHitbox(layer);
-    }
-  }
+//    // Disegna i proiettili
+//    for (Projectile projectile : projectiles) {
+//      projectile.display(layer);
+//      // projectile.displayHitbox(layer);
+//    }
+//  }
 }
 
 class Projectile extends Sprite {

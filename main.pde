@@ -258,7 +258,7 @@ void setupImages() {
 
 void setupSounds() {
   volumeMusicLevel = 0.0;
-  volumeEffectsLevel = 0.3;
+  volumeEffectsLevel = 0.0;
 
   click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
@@ -352,9 +352,9 @@ void draw() {
     // verifica se è il momento di eseguire il rendering della scena
     // render loop
     if (fps_clock.getTicks() > 1000.f / Utils.SCREEN_FPS_CAP) {
-      // collision.update();
+      game.world.step();  // aggiornamento del mondo fisico
       render.update();
-      // ui.update();
+      ui.update();
 
       renderStats();
       fps_clock.timerReset();
@@ -400,16 +400,6 @@ void winScreen() {
   storyScreen.setVictoryScreen();
   
   storyScreen.display();
-  
-
-  // chiama la funzione
-  // mettere variabile victory
-  //storyScreen.writer("Finalmente lo stregone Pagnax e' stato sconfitto!\n" +
-  //  "La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.\n" +
-  //  "Score totalizzato: " + p1.playerScore);
-
-  //image(p1.left_side, width / 2 + 50, height / 2 - 120, 64, 64);
-  //image(chela_sprite, width / 2 - 50, height / 2 - 120, 64, 64);
 }
 
 void loseScreen() {
@@ -424,17 +414,9 @@ void loseScreen() {
 
   // canzone della sconfitta
   
-  // setta storyScreen su isLoseScreen
   storyScreen.setLoseScreen();
   
   storyScreen.display();
-
-  // chiama la funzione
-  // variabile defeat
-  //storyScreen.writer("Sei stato sconfitto Cavaliere!\n" +
-  //  "Score totalizzato: " + p1.playerScore);
-
-  //image(boss_sprite, width / 2, height / 2 - 120, 64, 64);
 }
 
 void tickStats() {
