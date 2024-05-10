@@ -49,7 +49,10 @@
     },
     "game": {
         "story": {
-            "storyBegins": "En el lejano Reino de Lejos, la princesa Chela ha sido secuestrada por el hechicero Pagnax. Has sido enviado al castillo del loco hechicero, donde se dice que cada piso cambia constantemente. Debes salvar a la princesa y derrotar a Pagnax. ¡Que la suerte esté de tu lado, Caballero!",
+            "zone_1": "En el lejano Reino de Lejos, la princesa Chela ha sido secuestrada por el hechicero Pagnax.\nHas sido enviado al castillo del loco hechicero, donde se dice que cada piso cambia constantemente.\nDebes salvar a la princesa y derrotar a Pagnax. ¡Que la suerte esté de tu lado, Caballero!\n",
+            "zone_2": "",
+            "zone_3": "",
+            "zone_4": "",
             "victory": "¡Finalmente el hechicero Pagnax ha sido derrotado! La princesa Chela está a salvo y nuestro valiente Caballero es ahora el héroe del Reino.",
             "defeat": "¡Has sido derrotado, Caballero!",
             "pressButton": "Presiona cualquier botón para continuar"

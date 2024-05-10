@@ -32,6 +32,7 @@ TO DO:
 [ ] - possibilità di disattivare i pulsanti (della ui quando non ci sono piu opzioni disponibili)
 [ ] - aggiungere scatto (quarto pulsante)
 [ ] - quando passo al livello successivo che succede al livello precedente? rimane in memoria? 
+[ ] - possibile file json dove mantenere i vari pezzi di storia che in base alla zona vengono mostrati eliminando il collegamento storia zona a livello di classe
 
 Idee game design:
 

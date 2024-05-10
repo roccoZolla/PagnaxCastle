@@ -216,32 +216,32 @@ class RenderSystem {
       {
         item.display(spritesLayer);
 
-        if (checkCollision(item, p1))
-        {
-          // item.displayHitbox(spritesLayer);
+        //if (checkCollision(item, p1))
+        //{
+        //  // item.displayHitbox(spritesLayer);
 
-          if (drawInteractableLetter)
-          {
-            // disegna la lettera ch eindica il tasto per interagire con l'item
-            float letterImageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2));
-            float letterImageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-            spritesLayer.image(letter_k, letterImageX, letterImageY);
-          }
+        //  if (drawInteractableLetter)
+        //  {
+        //    // disegna la lettera ch eindica il tasto per interagire con l'item
+        //    float letterImageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2));
+        //    float letterImageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+        //    spritesLayer.image(letter_k, letterImageX, letterImageY);
+        //  }
 
-          if (item.isWeapon) {
-            if (drawUpBuff)
-            {
-              float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
-              float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-              spritesLayer.image(up_buff, imageX, imageY);
-            } else if (drawDownBuff)
-            {
-              float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
-              float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-              spritesLayer.image(down_buff, imageX, imageY);
-            }
-          }
-        }
+        //  if (item.isWeapon) {
+        //    if (drawUpBuff)
+        //    {
+        //      float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+        //      float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+        //      spritesLayer.image(up_buff, imageX, imageY);
+        //    } else if (drawDownBuff)
+        //    {
+        //      float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+        //      float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+        //      spritesLayer.image(down_buff, imageX, imageY);
+        //    }
+        //  }
+        //}
       }
     }
   }

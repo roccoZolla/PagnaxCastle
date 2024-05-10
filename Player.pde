@@ -193,26 +193,26 @@ class Player extends Character
 
         if (game.isBossLevel)
         {
-          // da rivedere
-          if (checkCollision(weapon, game.boss))
-          {
-            swordAttack.play();
-            game.boss.takeDamage(weapon.getDamage());
-            // l'attacco è stato eseguito non continuare ad attaccare
-            // println("attacco eseguito...");
-            attackExecuted = true;
-          }
+          //// da rivedere
+          //if (checkCollision(weapon, game.boss))
+          //{
+          //  swordAttack.play();
+          //  game.boss.takeDamage(weapon.getDamage());
+          //  // l'attacco è stato eseguito non continuare ad attaccare
+          //  // println("attacco eseguito...");
+          //  attackExecuted = true;
+          //}
         } else {
           for (Enemy enemy : currentLevel.enemies)
           {
-            if (checkCollision(weapon, enemy))
-            {
-              swordAttack.play();
-              // enemy.takeDamage(weapon.getDamage());
-              // l'attacco è stato eseguito non continuare ad attaccare
-              // println("attacco eseguito...");
-              attackExecuted = true;
-            }
+            //if (checkCollision(weapon, enemy))
+            //{
+            //  swordAttack.play();
+            //  // enemy.takeDamage(weapon.getDamage());
+            //  // l'attacco è stato eseguito non continuare ad attaccare
+            //  // println("attacco eseguito...");
+            //  attackExecuted = true;
+            //}
           }
         }
       }
@@ -289,9 +289,4 @@ class Player extends Character
       isUsingPotion = false;
     }
   }
-
-  //@Override
-  //  PVector getPosition() {
-  //  return getPosition();
-  //}
 }

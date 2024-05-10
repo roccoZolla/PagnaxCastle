@@ -1,7 +1,7 @@
 class Level {
   String levelName;
   int levelIndex;
-  String dataPath;
+  // String dataPath;
   boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
   int numberOfRooms;
   boolean isFinalLevel;      // indica se è il livello finale, composto da una singola stanza, di base false
@@ -26,6 +26,7 @@ class Level {
   final int DAMAGE_PEAKS = 5;
 
   // vita dei nemici
+  // da togliere
   final int ENEMY_HP = 30;
 
   // attributi
@@ -54,11 +55,11 @@ class Level {
 
   ArrayList<Item> dropItems; // lista degli oggetti caduti a terra
 
-  Level(String levelName, int levelIndex, String dataPath, int numberOfRooms) {
+  Level(String levelName, int levelIndex, int numberOfRooms) {
     this.levelName = levelName;
     this.completed = false;
     this.levelIndex = levelIndex;
-    this.dataPath = dataPath;
+    // this.dataPath = dataPath;
     this.numberOfRooms = numberOfRooms;
 
     this.isFinalLevel = false;
@@ -72,7 +73,6 @@ class Level {
 
   // da sistemare poco efficiente
   void loadAssetsLevel() {
-    // println("carico gli assets del livello...");
     floorImage = currentZone.floorImage;
     wallImageNorth = currentZone.wallImageNorth;
     hallwayImage = currentZone.hallwayImage;
@@ -80,11 +80,16 @@ class Level {
     peaksTrapImage = currentZone.peaksTrapImage;
     hallwayImage = currentZone.hallwayImage;
     stairsNextFloorImage = currentZone.stairsNextFloorImage;
+    
+    println("assets del livello caricati correttamente!");
   }
 
   void init() {
     // inizializzo il livello
     // println("inizializzo il livello...");
+    
+    // pulisce il mondo fisico
+    // level.clear();
 
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
@@ -128,10 +133,14 @@ class Level {
 
     // genera le monete
     generateRandomCoins();
+    
+    println("livello inizializzato correttamente");
   }
 
   void initBossLevel() {
     // println("inizializzo il livello finale...");
+    
+    // level.clear();
 
     // logica per la creazione del livello (mappa del livello)
     cols = width / tileSize;
@@ -622,35 +631,6 @@ class Level {
       this.isChestPresent = isChestPresent;
     }
   }
-}
-
-boolean checkCollision(Sprite spriteA, Sprite spriteB) {
-  PVector positionA = spriteA.getPosition();
-  PVector positionB = spriteB.getPosition();
-
-  // Calcola le dimensioni degli sprite
-  int widthA = spriteA.getSprite().width;
-  int heightA = spriteA.getSprite().height;
-  int widthB = spriteB.getSprite().width;
-  int heightB = spriteB.getSprite().height;
-
-  // Calcola i limiti degli sprite
-  float leftA = positionA.x * currentLevel.tileSize - (widthA / 2);
-  float rightA = positionA.x * currentLevel.tileSize + (widthA / 2);
-  float topA = positionA.y * currentLevel.tileSize - (heightA / 2);
-  float bottomA = positionA.y * currentLevel.tileSize + (heightA / 2);
-
-  float leftB = positionB.x * currentLevel.tileSize - (widthB / 2);
-  float rightB = positionB.x * currentLevel.tileSize + (widthB / 2);
-  float topB = positionB.y * currentLevel.tileSize - (heightB / 2);
-  float bottomB = positionB.y * currentLevel.tileSize + (heightB / 2);
-
-  // Controlla la collisione tra gli sprite
-  if (rightA >= leftB && leftA <= rightB && bottomA >= topB && topA <= bottomB) {
-    return true;
-  }
-
-  return false;
 }
 
 class Trap extends Sprite {

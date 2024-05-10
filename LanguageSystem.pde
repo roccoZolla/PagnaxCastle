@@ -27,5 +27,6 @@ class LanguageSystem {
     commandScreen.updateLanguage(language);
     creditScreen.updateLanguage(language);
     ui.updateLanguage(language);
+    storyScreen.updateLanguage(language);
   }
 }

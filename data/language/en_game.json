@@ -49,7 +49,10 @@
   },
   "game": {
     "story": {
-      "storyBegins": "In the distant Far Kingdom, Princess Chela has been kidnapped by the sorcerer Pagnax. You have been sent to the mad sorcerer's castle where it is said that every plan is constantly changing You must rescue the princess and defeat Pagnax, may chance help you, Knight.",
+      "zone_1": "In the distant Far Kingdom, Princess Chela has been kidnapped by the sorcerer Pagnax.\nYou have been sent to the mad sorcerer's castle where it is said that every plan is constantly changing.\nYou must rescue the princess and defeat Pagnax, may chance help you, Knight.\n",
+      "zone_2": "",
+      "zone_3": "",
+      "zone_4": "",
       "victory": "The sorcerer Pagnax has finally been defeated! Princess Chela is safe and our brave Knight is now the hero of the Kingdom.",
       "defeat": "You have been defeated Knight!",
       "pressButton": "Press any key to continue"

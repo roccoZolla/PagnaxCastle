@@ -1,4 +1,5 @@
 // da spostare nella classe game
+// non definitivi
 World castle;
 Zone currentZone;
 Level currentLevel;
@@ -6,6 +7,11 @@ Level currentLevel;
 // contiene le logiche di gioco
 class Game {
   // DifficultyLevel difficultyLevel; // livello di difficolta del gioco
+  Level level;
+  int levelIndex = 1;
+
+  // FWorld world; // va aggiornato ogni volta
+
   Boss boss;    // boss del gioco
 
   boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
@@ -18,7 +24,8 @@ class Game {
   Game() {
   }
 
-  void init() {
+  void init() 
+  {
     // difficultyLevel = DifficultyLevel.NORMALE;
     characters = new ArrayList<Character>();
 
@@ -45,7 +52,12 @@ class Game {
     currentLevel.loadAssetsLevel();
     currentLevel.init();
 
-    actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
+    // carica una sola volta all'inizio gli assets del livello
+    // level.loadAssetsLevel();
+    // level.init();
+
+    ui.setActualLevelText(currentZone.zoneName + " - " + currentLevel.levelName);
+
 
     // inizializza il player
     p1 = new Player(1000, 1000);
@@ -90,7 +102,7 @@ class Game {
     p1.updatePosition(currentLevel.getStartPosition());
 
     // aggiorna il testo relativo al livello attuale
-    actualLevel = currentZone.zoneName + " - Livello Finale";
+    ui.setActualLevelText(currentZone.zoneName + " - Livello Finale");
 
     // crea il boss
     PVector spawn_boss_position = new PVector(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y);
@@ -123,6 +135,7 @@ class Game {
     // handlePlayerDeath();
     // da sistemare
     currentLevel.level.step();
+
     p1.update();
     p1.attack();
     //p1.usePotion(spritesLayer);
@@ -164,44 +177,83 @@ class Game {
     }
   }
 
-  // gestisce il passaggio al livello successivo - DA SISTEMARE
+  //
   void handleNextLevel()
   {
-    // se il livello dell'area è l'ultimo passa alla prossima area
-    if (currentLevel.levelIndex == currentZone.levels.size() - 1)
+    if (levelIndex == currentZone.numberLevels)
     {
-      // controlla se è l'area finale
+      // verifica che la zona sia la zona finale
+      // in caso positivo spostati nella sala del boss
       if (currentZone.isFinal())
       {
-        initBossBattle();
-        isBossLevel = true;
-      } else
+      } else  // passa alla prossima macroarea
       {
-        // passa alla prossima macroarea
-        currentZone = castle.zones.get(currentZone.zoneIndex + 1);
-        currentLevel = currentZone.currentLevel;
-        currentLevel.loadAssetsLevel();
-        currentLevel.init();
-        actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-        p1.updatePosition(currentLevel.getStartPosition());
-
-        // aggiorna lo score del player
-        p1.updateScore(200);
-        screen_state = ScreenState.STORY_SCREEN;
+        // zoneIndex += 1;
+        // resetta il level index a 1
+        // carica gli assets della nuova zona nel livello
+        // level.loadAssestLevel();
+        // una volta caricati quando di passa al livello successivo non ci sara bisogno di ricaricarli
+        // inizializza il livello
+        // world.clear();
+        // level.init();
+        // ui.setActualLevelText(currentZone.zoneName + " - " + currentLevel.levelName);
+        // p1.updatePosition(currentLevel.getStartPosition());
+        // // aggiorna lo score del player
+        // p1.updateScore(200);
+        // screen_state = ScreenState.STORY_SCREEN;
       }
-    } else
+    } else  // altrimenti passa al livello successivo della stessa zona
     {
-      // passa al livello successivo - stessa macro area
-      currentLevel = currentZone.levels.get(currentLevel.levelIndex + 1);
-      currentLevel.loadAssetsLevel();
-      currentLevel.init();
-      actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
-      p1.updatePosition(currentLevel.getStartPosition());
-
-      // aggiorna lo score del player
-      p1.updateScore(100);
+      //levelIndex += 1;
+      // gli asset sono stati gia caricati
+      // world.clear
+      // deve essere aggiornato anche characters
+      // level.init();
+      // ui.setActualLevelText(currentZone.zoneName + " - " + currentLevel.levelName);
+      // p1.updatePosition(currentLevel.getStartPosition());
+      // // aggiorna lo score del player
+      // p1.updateScore(100);
     }
   }
+
+  // gestisce il passaggio al livello successivo - DA SISTEMARE
+  //void handleNextLevel()
+  //{
+  //  // se il livello dell'area è l'ultimo passa alla prossima area
+  //  if (currentLevel.levelIndex == currentZone.levels.size() - 1)
+  //  {
+  //    // controlla se è l'area finale
+  //    if (currentZone.isFinal())
+  //    {
+  //      initBossBattle();
+  //      isBossLevel = true;
+  //    } else
+  //    {
+  //      // passa alla prossima macroarea
+  //      currentZone = castle.zones.get(currentZone.zoneIndex + 1);
+  //      currentLevel = currentZone.currentLevel;
+  //      currentLevel.loadAssetsLevel();
+  //      currentLevel.init();
+  //      actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
+  //      p1.updatePosition(currentLevel.getStartPosition());
+
+  //      // aggiorna lo score del player
+  //      p1.updateScore(200);
+  //      screen_state = ScreenState.STORY_SCREEN;
+  //    }
+  //  } else
+  //  {
+  //    // passa al livello successivo - stessa macro area
+  //    currentLevel = currentZone.levels.get(currentLevel.levelIndex + 1);
+  //    currentLevel.loadAssetsLevel();
+  //    currentLevel.init();
+  //    actualLevel = currentZone.zoneName + " - " + currentLevel.levelName;
+  //    p1.updatePosition(currentLevel.getStartPosition());
+
+  //    // aggiorna lo score del player
+  //    p1.updateScore(100);
+  //  }
+  //}
 
   // gestisce l'attacco del nemico
   // da migliorare
@@ -221,31 +273,31 @@ class Game {
   }
 
   // gestisce le azioni del nemico - DA RIVEDERE
-  void handleEnemyActions() {
-    Iterator<Enemy> iterator = currentLevel.enemies.iterator();
+  //void handleEnemyActions() {
+  //  Iterator<Enemy> iterator = currentLevel.enemies.iterator();
 
-    while (iterator.hasNext()) {
-      Enemy enemy = iterator.next();
+  //  while (iterator.hasNext()) {
+  //    Enemy enemy = iterator.next();
 
-      if (isInVisibleArea(enemy.getPosition())) {
-        if (enemy.hp > 0) {
-          enemy.update();
+  //    if (isInVisibleArea(enemy.getPosition())) {
+  //      if (enemy.hp > 0) {
+  //        enemy.update();
 
-          // attacca solo se c'è collisione
-          // if (enemy.sprite_collision(p1))
-          if (checkCollision(enemy, p1)) {
-            enemy.attack(p1);
-          } else {
-            enemy.first_attack = true;
-          }
-        } else {
-          enemy.death();
-          // p1.updateScore(enemy.scoreValue);
-          iterator.remove();
-        }
-      }
-    }
-  }
+  //        // attacca solo se c'è collisione
+  //        // if (enemy.sprite_collision(p1))
+  //        if (checkCollision(enemy, p1)) {
+  //          enemy.attack(p1);
+  //        } else {
+  //          enemy.first_attack = true;
+  //        }
+  //      } else {
+  //        enemy.death();
+  //        // p1.updateScore(enemy.scoreValue);
+  //        iterator.remove();
+  //      }
+  //    }
+  //  }
+  //}
 
   // gestione delle chest - DA SISTEMARE
   // da migliorare
@@ -455,97 +507,97 @@ class Game {
         render.drawInteractableLetter = false;
 
         // if (item.sprite_collision(p1))
-        if (checkCollision(item, p1))
-        {
-          render.drawInteractableLetter = true;
+        //if (checkCollision(item, p1))
+        //{
+        //  render.drawInteractableLetter = true;
 
-          if (item.isWeapon())
-          {
-            render.drawUpBuff = false;
-            render.drawDownBuff = false;
+        //  if (item.isWeapon())
+        //  {
+        //    render.drawUpBuff = false;
+        //    render.drawDownBuff = false;
 
-            Item temp = item;
+        //    Item temp = item;
 
-            // mostra se un'arma è piu forte o debole rispetto a quella del giocatore
-            if (temp.damage > p1.weapon.damage)
-            {
-              render.drawUpBuff = true;
-            } else if (temp.damage < p1.weapon.damage)
-            {
-              render.drawDownBuff = true;
-            }
-          }
+        //    // mostra se un'arma è piu forte o debole rispetto a quella del giocatore
+        //    if (temp.damage > p1.weapon.damage)
+        //    {
+        //      render.drawUpBuff = true;
+        //    } else if (temp.damage < p1.weapon.damage)
+        //    {
+        //      render.drawDownBuff = true;
+        //    }
+        //  }
 
-          if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK))
-          {
-            if (!p1.isInteracting)
-            {
-              p1.isInteracting = true;
+        //  if (p1.moveINTR && (!p1.moveUSE && !p1.moveATCK))
+        //  {
+        //    if (!p1.isInteracting)
+        //    {
+        //      p1.isInteracting = true;
 
-              // if (item instanceof Healer)
-              if (item.isHealer())
-              { // verifico prima che sia un oggetto curativo
-                if (item.name.equals("dropPotion"))
-                {  // se è un pozione aggiungila
-                  p1.numberOfPotion++;
-                  iterator.remove();
-                } else
-                {  // se è un cuore recupera la vita istantaneamente
-                  if (p1.hp < p1.playerMaxHP)
-                  { // verifico che la salute del giocatore sia minore della salute massima
-                    // Healer healerItem = (Healer) item;
-                    Item healerItem = item;
+        //      // if (item instanceof Healer)
+        //      if (item.isHealer())
+        //      { // verifico prima che sia un oggetto curativo
+        //        if (item.name.equals("dropPotion"))
+        //        {  // se è un pozione aggiungila
+        //          p1.numberOfPotion++;
+        //          iterator.remove();
+        //        } else
+        //        {  // se è un cuore recupera la vita istantaneamente
+        //          if (p1.hp < p1.playerMaxHP)
+        //          { // verifico che la salute del giocatore sia minore della salute massima
+        //            // Healer healerItem = (Healer) item;
+        //            Item healerItem = item;
 
-                    p1.restoreHP(healerItem.getBonusHp());
+        //            p1.restoreHP(healerItem.getBonusHp());
 
-                    // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
-                    iterator.remove();
-                  } else
-                  {
-                    // da togliere di qua e mettere nel metodo di render
-                    // TextDisplay healthFull = new TextDisplay(p1.getPosition(), "Salute al massimo", color(255));
-                    // healthFull.display(spritesLayer);
-                  }
-                }
-              }
+        //            // una volta che è stato utilizzato l'oggetto viene rimosso dalla lista
+        //            iterator.remove();
+        //          } else
+        //          {
+        //            // da togliere di qua e mettere nel metodo di render
+        //            // TextDisplay healthFull = new TextDisplay(p1.getPosition(), "Salute al massimo", color(255));
+        //            // healthFull.display(spritesLayer);
+        //          }
+        //        }
+        //      }
 
-              // else if (item instanceof Weapon)
-              else if (item.isWeapon())
-              {
-                // una volta scambiata l'arma non è piu possibile recuperare quella vecchia
-                // assegna arma a terra al giocatore
-                // p1.weapon = (Weapon) item;
-                p1.weapon = item;
-                // rimuovi l'oggetto droppato a terra
-                iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropSilverKey"))
-              {
-                // aumenta il numero delle chiavi d'argento
-                p1.takeSilverKey();
-                iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropGoldenKey"))
-              {
-                // aumenta il numero delle chiavi d'oro
-                p1.takeGoldenKey();
-                iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropTorch"))
-              {
-                // aumenta il raggio della maschera
-                // holeRadius += 50;
-                iterator.remove();
-              } else if (item.isCollectible && item.name.equals("dropMap"))
-              {
-                // attiva la minimappa per tutti i livelli
-                ui.activateMap();
-                iterator.remove();
-              }
-            }
-          } else
-          {
-            // resetta la variabile di stato
-            p1.isInteracting = false;
-          }
-        }
+        //      // else if (item instanceof Weapon)
+        //      else if (item.isWeapon())
+        //      {
+        //        // una volta scambiata l'arma non è piu possibile recuperare quella vecchia
+        //        // assegna arma a terra al giocatore
+        //        // p1.weapon = (Weapon) item;
+        //        p1.weapon = item;
+        //        // rimuovi l'oggetto droppato a terra
+        //        iterator.remove();
+        //      } else if (item.isCollectible && item.name.equals("dropSilverKey"))
+        //      {
+        //        // aumenta il numero delle chiavi d'argento
+        //        p1.takeSilverKey();
+        //        iterator.remove();
+        //      } else if (item.isCollectible && item.name.equals("dropGoldenKey"))
+        //      {
+        //        // aumenta il numero delle chiavi d'oro
+        //        p1.takeGoldenKey();
+        //        iterator.remove();
+        //      } else if (item.isCollectible && item.name.equals("dropTorch"))
+        //      {
+        //        // aumenta il raggio della maschera
+        //        // holeRadius += 50;
+        //        iterator.remove();
+        //      } else if (item.isCollectible && item.name.equals("dropMap"))
+        //      {
+        //        // attiva la minimappa per tutti i livelli
+        //        ui.activateMap();
+        //        iterator.remove();
+        //      }
+        //    }
+        //  } else
+        //  {
+        //    // resetta la variabile di stato
+        //    p1.isInteracting = false;
+        //  }
+        //}
       }
     }
   }
