@@ -43,7 +43,7 @@ class Level {
   ArrayList<Trap> traps;      // contiene le trappole presenti nel livello
   ArrayList<Chest> treasures; // lista delle chest
   ArrayList<Enemy> enemies;   // lista dei nemici
-  ArrayList<Item> dropItems;  // lista degli oggetti caduti a terra
+  
 
   Level()
   {
@@ -79,7 +79,6 @@ class Level {
     treasures = new ArrayList<Chest>();
     enemies = new ArrayList<Enemy>();
     traps = new ArrayList<Trap>();
-    dropItems = new ArrayList<>();
 
     // Genera le stanze all'interno delle foglie dell'albero BSP
     generateRooms();

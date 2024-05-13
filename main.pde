@@ -28,7 +28,6 @@ CreditScreen creditScreen;
 // gioco, render e collision logic
 Game game;
 RenderSystem render;
-CollisionSystem collision;
 Story storyScreen;
 UI ui;
 
@@ -169,7 +168,6 @@ void setup() {
 
   game = new Game();
   render = new RenderSystem();
-  collision = new CollisionSystem();
   storyScreen = new Story();
 
   languageSystem = new LanguageSystem();

@@ -11,9 +11,9 @@ class RenderSystem {
   boolean isCollidingWithChest = false;
   FBody collidingChest;
 
-  boolean drawUpBuff;
-  boolean drawDownBuff;
-  boolean drawInteractableLetter;  // trigger che attiva il disegno della lettera di interazione
+  boolean isCollidingWithItem = false;
+  FBody collidingItem;
+
   boolean maxHpTrigger;  // attiva la scritta "salute al massimo"
 
   RenderSystem() {
@@ -220,27 +220,9 @@ class RenderSystem {
     //}
   }
 
-
-  // da spostare nel render system
-  //private void displayEnemies()
-  //{
-  //  Iterator<Enemy> iterator = currentLevel.enemies.iterator();
-
-  //  while (iterator.hasNext()) {
-  //    Enemy enemy = iterator.next();
-
-  //    if (isInVisibleArea(enemy.getPosition())) {
-  //      if (enemy.hp > 0) {
-  //        enemy.display(spritesLayer);
-  //      }
-  //    }
-  //  }
-  //}
-
   // da spostare nel render system
   // da rivedere
   void displayChests() {
-    // for (Chest chest : currentLevel.treasures)
     for (Chest chest : game.level.treasures)
     {
       if (isInVisibleArea(chest.getPosition()))
@@ -255,7 +237,8 @@ class RenderSystem {
             // da sistemare ma ci sta
             if ((p1.numberOfSilverKeys > 0 || p1.numberOfGoldenKeys > 0) && !chest.isOpen())
             {
-              // chest.displayHitbox(spritesLayer);
+              chest.displayHitbox(spritesLayer);
+
               // disegna la lettera che indica il tasto per aprire la cassa
               float letterImageX = (chest.getPosition().x);
               float letterImageY = (chest.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
@@ -273,56 +256,59 @@ class RenderSystem {
   }
 
   private void displayCoins() {
-    // for (Coin coin : currentLevel.coins)
     for (Coin coin : game.level.coins)
     {
-      if (isInVisibleArea(coin.getPosition())) {
-        // mostra le monete nell'area visibile
-        if (!coin.isCollected()) {    // se la moneta non è stata raccolta disegnala
-          coin.display(spritesLayer);
-        }
+      if (isInVisibleArea(coin.getPosition())
+        && !coin.IsCollected())
+      {
+        coin.display(spritesLayer);
       }
     }
   }
 
   private void displayDropItems() {
-    // Iterator<Item> iterator = currentLevel.dropItems.iterator();
-    Iterator<Item> iterator = game.level.dropItems.iterator();
-
-    while (iterator.hasNext()) {
-      Item item = iterator.next();
-
-      // controlla che gli elementi droppati siano visibili
-      if (isInVisibleArea(item.getPosition()))
+    for (Item dropItem : game.dropItems)
+    {
+      if (isInVisibleArea(dropItem.getPosition())
+        && !dropItem.IsCollected())
       {
-        item.display(spritesLayer);
+        // mostra le monete nell'area visibile
+        dropItem.display(spritesLayer);
 
-        //if (checkCollision(item, p1))
-        //{
-        //  // item.displayHitbox(spritesLayer);
+        if (dropItem.getBox() == collidingItem)
+        {
+          // se sta collidendo con l'oggetto
+          if (isCollidingWithItem)
+          {
+            dropItem.displayHitbox(spritesLayer);
 
-        //  if (drawInteractableLetter)
-        //  {
-        //    // disegna la lettera ch eindica il tasto per interagire con l'item
-        //    float letterImageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2));
-        //    float letterImageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-        //    spritesLayer.image(letter_k, letterImageX, letterImageY);
-        //  }
+            // aggiungi disegno della lettera
+            if (dropItem.IsCollectible())
+            {
+              // disegna la lettera ch eindica il tasto per interagire con l'item
+              float letterImageX = (dropItem.getPosition().x);
+              float letterImageY = (dropItem.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
+              spritesLayer.image(letter_k, letterImageX, letterImageY);
 
-        //  if (item.isWeapon) {
-        //    if (drawUpBuff)
-        //    {
-        //      float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
-        //      float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-        //      spritesLayer.image(up_buff, imageX, imageY);
-        //    } else if (drawDownBuff)
-        //    {
-        //      float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
-        //      float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
-        //      spritesLayer.image(down_buff, imageX, imageY);
-        //    }
-        //  }
-        //}
+              // aggiungi codice per l'arma
+              if (dropItem.IsWeapon())
+              {
+                // se l'arma droppata è piu forte di quella del giocatore disegna l'up buff
+                if (dropItem.getDamage() > p1.weapon.getDamage())
+                {
+                  float imageX = (dropItem.getPosition().x - 20);
+                  float imageY = (dropItem.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
+                  spritesLayer.image(up_buff, imageX, imageY);
+                } else  // altrimenti disegna il down buff, l'arma droppata è piu debole di quella del giocatore
+                {
+                  float imageX = (dropItem.getPosition().x - 20);
+                  float imageY = (dropItem.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
+                  spritesLayer.image(down_buff, imageX, imageY);
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

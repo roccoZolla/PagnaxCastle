@@ -178,21 +178,19 @@ class Enemy extends Character {
       // drop della chiave d'argento
       Item dropSilverKey = new Item(silver_key_sprite, "dropSilverKey");
       dropSilverKey.updatePosition(dropPosition);
-      // currentLevel.dropItems.add(dropSilverKey);
+      game.addDropItem(dropSilverKey);
     } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY + DROP_HEART)
     {
       // drop del cuore intero
-      // Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
       Item dropHeart = new Item(heart_sprite, "dropHeart", true, 10, false, 0);
       dropHeart.updatePosition(dropPosition);
-      // currentLevel.dropItems.add(dropHeart);
+      game.addDropItem(dropHeart);
     } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY + DROP_HEART + DROP_HALF_HEART)
     {
       // drop del mezzocuore
-      // Healer dropHalfHeart = new Healer(dropPosition, half_heart_sprite, "dropHalfHeart", 5);
       Item dropHalfHeart = new Item(half_heart_sprite, "dropHalfHeart", true, 5, false, 0);
       dropHalfHeart.updatePosition(dropPosition);
-      // currentLevel.dropItems.add(dropHalfHeart);
+      game.addDropItem(dropHalfHeart);
     }
   }
 }

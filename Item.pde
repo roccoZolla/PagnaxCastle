@@ -4,6 +4,7 @@ class Item extends Sprite {
   // int id;
   String name;
   boolean isCollectible = true;    // per vedere se l'oggetto è collezionabile, si puo raccogliere, di base è sempre true
+  boolean isCollected = false;
 
   boolean isHealer = false; // è un oggetto curativo
   boolean isWeapon = false; // è un'arma?
@@ -14,20 +15,25 @@ class Item extends Sprite {
   // String description;
 
   // constructors
-  Item() {}
-  
+  Item() {
+  }
+
   Item(PImage sprite, String name) {
     super();
-    
+
     // sprite
     this.sprite = sprite;
-    
+
     // box settings
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
-    box.setStatic(true);
-    box.setFriction(0.8);
-    box.setRestitution(0.1);
-    
+    box.setName("Item");
+    box.setFillColor(10);
+    box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
+    box.setRotatable(false); 
+    box.setFriction(0.5);
+    box.setRestitution(0.2);
+    box.setSensor(true);  // è un sensore
+
     // charateristics
     this.name = name;
   }
@@ -35,19 +41,23 @@ class Item extends Sprite {
   // costruttore degli oggetti curativi e delle armi
   Item(PImage sprite, String name, boolean isHealer, int bonusHp, boolean isWeapon, int damage) {
     super();
-    
+
     // sprite
     this.sprite = sprite;
-    
+
     // box settings
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
-    box.setStatic(true);
-    box.setFriction(0.8);
-    box.setRestitution(0.1);
-    
+    box.setName("Item");
+    box.setFillColor(10);
+    box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
+    box.setRotatable(false); 
+    box.setFriction(0.5);
+    box.setRestitution(0.2);
+    box.setSensor(true);  // è un sensore
+
     // charateristics
     this.name = name;
-    
+
     this.isHealer = isHealer;
     this.isWeapon = isWeapon;
     this.bonusHp = bonusHp;
@@ -61,22 +71,28 @@ class Item extends Sprite {
   void setName(String name) {
     this.name = name;
   }
-  
+
   int getBonusHp() {
     return bonusHp;
   }
-  
+
   int getDamage() {
     return damage;
   }
-  
-  boolean isWeapon() {
+
+  boolean IsWeapon() {
     return isWeapon;
   }
-  
+
   boolean isHealer() {
     return isHealer;
   }
+  
+  void setCollected() { this.isCollected = true; }
+  
+  boolean IsCollected() { return isCollected; }
+  
+  boolean IsCollectible() { return isCollectible; }
 
   // metodo per il rilevamento delle collisioni ereditato da sprite
 }

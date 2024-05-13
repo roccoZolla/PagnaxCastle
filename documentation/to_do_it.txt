@@ -8,10 +8,10 @@ TO DO:
 [ 🗸 ] - migliorare collision system (aggiungere)
  [ ] - da sistemare movimento nemici che trapassano i muri
  [ 🗸 ] - collisione con chest non proprio immediata 
-[ ] - migliorare organizzazione delle classi
- [ ] - classe Game
- [ ] - classe Player
- [ ] - World, Zone, Level
+[ 🗸 ] - migliorare organizzazione delle classi
+ [ 🗸  ] - classe Game
+ [ 🗸  ] - classe Player
+ [ 🗸 ] - World, Zone, Level
 [ ] - generazione livelli (perimetro stanze) 
 [ ] - migliorare nemici
  [ ] - ia piu efficiente
@@ -38,7 +38,8 @@ TO DO:
 [ ] - fixare danno causato da trappole
 [ ] - fixare schermata sconfitta e vittoria
 [ ] - fixare spawn dei nemici
-[ ] - fixare collisione chest, quando di collide rileva la collisione con tutte le chest
+[ 🗸 ] - fixare collisione chest, quando di collide rileva la collisione con tutte le chest
+[ ] - fixare ui boss battle
 
 Idee game design:
 

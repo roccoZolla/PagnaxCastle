@@ -1,24 +1,3 @@
-class CollisionSystem
-{
-  FWorld world;
-  ArrayList<FBody> bodies;
-
-  CollisionSystem() {
-  }
-
-  void init()
-  {
-    // world = currentLevel.level;
-    // bodies = world.getBodies();
-    println("collision system inizializzato correttamente!");
-  }
-
-  void update()
-  {
-  }
-}
-
-
 // trovare una soluzione piu elegante
 // Questo metodo viene chiamato quando un contatto inizia
 void contactStarted(FContact contact) {
@@ -73,8 +52,23 @@ void contactStarted(FContact contact) {
         game.handleNextLevel();
       }
     }
-    
+
     // dropitem
+    if (bodyName1.equals("Item") && bodyName2.equals("Player")
+      || bodyName2.equals("Item") && bodyName1.equals("Player"))
+    {
+      if (bodyName1.equals("Item"))
+      {
+        game.handleDropItems(body1);
+        render.collidingItem = body1;
+        render.isCollidingWithItem = true;
+      } else
+      {
+        game.handleDropItems(body2);
+        render.collidingItem = body2;
+        render.isCollidingWithItem = true;
+      }
+    }
   }
 
   // collisione con le chest
@@ -88,7 +82,7 @@ void contactStarted(FContact contact) {
       render.isCollidingWithChest = true;
     } else {
       game.handleChest(body2);
-      render.collidingChest = body1;
+      render.collidingChest = body2;
       render.isCollidingWithChest = true;
     }
   }
@@ -129,6 +123,26 @@ void contactPersisted(FContact contact) {
   String bodyName1 = body1.getName();
   String bodyName2 = body2.getName();
 
+  if (body1.isSensor() || body2.isSensor())
+  {
+    // dropitem
+    if (bodyName1.equals("Item") && bodyName2.equals("Player")
+      || bodyName2.equals("Item") && bodyName1.equals("Player"))
+    {
+      if (bodyName1.equals("Item"))
+      {
+        game.handleDropItems(body1);
+        render.collidingItem = body1;
+        render.isCollidingWithItem = true;
+      } else
+      {
+        game.handleDropItems(body2);
+        render.collidingItem = body2;
+        render.isCollidingWithItem = true;
+      }
+    }
+  }
+
   // Puoi gestire il contatto persistente qui, se necessario
   // collisione con le chest
   if (bodyName1.equals("Chest") && bodyName2.equals("Player")
@@ -150,4 +164,5 @@ void contactEnded(FContact contact) {
   // Puoi gestire il contatto terminato qui, se necessario
   // da sistemare ma ci sta
   render.isCollidingWithChest = false;
+  render.isCollidingWithItem = false;
 }
