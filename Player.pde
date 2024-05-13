@@ -278,9 +278,7 @@ class Player extends Character
           } else {
             // non deve stare qui
             // stampa massaggio di salute al massimo
-            PVector text_position = p1.getPosition();
-            TextDisplay healthFull = new TextDisplay(text_position, "Salute al massimo", color(255));
-            healthFull.display(layer);
+
           }
         } else {
           // non deve stare qui

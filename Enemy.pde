@@ -139,8 +139,6 @@ class Enemy extends Character {
       // player.takeDamage(damage);
 
       // fare in modo che rimanga un po piu di tempo a schermo
-      TextDisplay damageHitText = new TextDisplay(p1.getPosition(), Integer.toString(damage), color(255, 0, 0));
-      damageHitText.display(render.spritesLayer);
 
       first_attack = false;
     } else {
