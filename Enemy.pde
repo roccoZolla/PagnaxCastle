@@ -34,10 +34,11 @@ class Enemy extends Character {
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
     box.setName("Enemy");
     box.setFillColor(40);
+    box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
     box.setRotatable(false);
     box.setFriction(0.5);   // quanto attrito fa
     box.setRestitution(0);  // quanto rimbalza
-    box.setDamping(1);      // ammortizza il movimento
+    box.setDamping(0.5);      // ammortizza il movimento
 
     // characteristics
     this.hp = enemyHP;

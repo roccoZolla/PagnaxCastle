@@ -98,7 +98,7 @@ class Level {
     FBox stairs = new FBox(Utils.TILE_SIZE, Utils.TILE_SIZE);
     stairs.setName("Stairs");
     stairs.setPosition(int(rooms.get(endRoomIndex).roomPosition.x) * Utils.TILE_SIZE + Utils.TILE_SIZE / 2, int(rooms.get(endRoomIndex).roomPosition.y) * Utils.TILE_SIZE + Utils.TILE_SIZE / 2);
-    stairs.setFillColor(240);
+    stairs.setFillColor(150);
     stairs.setRotatable(false);
     stairs.setSensor(true);
     game.world.add(stairs);
@@ -117,9 +117,7 @@ class Level {
   }
 
   void initBossLevel() {
-    // println("inizializzo il livello finale...");
-
-    // level.clear();
+    println("inizializzo il livello finale...");
 
     // logica per la creazione del livello (mappa del livello)
     cols = width / Utils.TILE_SIZE;
@@ -130,19 +128,17 @@ class Level {
 
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
+    traps = new ArrayList<Trap>();
 
     // Genera stanze
     generateBossRoom();
 
+    // aggiugne i muri nel mondo fisico
+    addWallsToRooms();
+
     // da rimuovere
     map[int(rooms.get(startRoomIndex).roomPosition.x)][int(rooms.get(startRoomIndex).roomPosition.y)] = Utils.START_ROOM_TILE_TYPE; // Stanza iniziale
-
-    //println("----- BOSS ROOM -----");
-    //println("start room index: " + startRoomIndex);
-    //println("end room index: " + endRoomIndex);
-    //println("start position END LEVEL: " + getStartPosition());
-    //println("end position END LEVEL: " + getEndRoomPosition());
-    // genera il boss
+    println("livello finale inizializzato correttamente");
   }
 
   PVector getStartPosition() {
@@ -174,22 +170,34 @@ class Level {
 
     int roomX = int(random(1, cols - roomWidth - 1));
     int roomY = int(random(1, rows - roomHeight - 1));
+    
+    println("Boss room x: " + roomX);
+    println("Boss room y: " + roomY);
 
     PVector roomPosition = new PVector(roomX + roomWidth / 2, roomY + roomHeight / 2);
     Room room = new Room(roomWidth, roomHeight, roomPosition);
     rooms.add(room);
 
     // Estrai i muri dell'immagine dei muri delle stanze
-    for (int x = roomX; x < roomX + roomWidth; x++) {
-      for (int y = roomY; y < roomY + roomHeight; y++) {
-        if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
+    for (int x = roomX; x < roomX + roomWidth; x++) 
+    {
+      for (int y = roomY; y < roomY + roomHeight; y++) 
+      {
+        if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) 
+        {
           map[x][y] = Utils.WALL_PERIMETER_TILE_TYPE;
-        } else {
+        } else 
+        {
           map[x][y] = Utils.FLOOR_TILE_TYPE;
           // spawn delle trappole all'interno delle stanze
           // da generare solo per la modalita difficile
-          if (random(1) <= TRAP_SPAWN_PROBABILITY) {
+          if (random(1) <= TRAP_SPAWN_PROBABILITY) 
+          {
             map[x][y] = Utils.PEAKS_TILE_TYPE;
+            Trap trap = new Trap(peaksTrapImage, DAMAGE_PEAKS);
+            trap.updatePosition(x, y);
+            traps.add(trap);
+            game.world.add(trap.box);
           }
         }
       }
@@ -232,14 +240,19 @@ class Level {
         rooms.add(room);
 
         // Estrai i muri dell'immagine dei muri delle stanze
-        for (int x = roomX; x < roomX + roomWidth; x++) {
-          for (int y = roomY; y < roomY + roomHeight; y++) {
-            if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) {
+        for (int x = roomX; x < roomX + roomWidth; x++) 
+        {
+          for (int y = roomY; y < roomY + roomHeight; y++) 
+          {
+            if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) 
+            {
               map[x][y] = Utils.WALL_PERIMETER_TILE_TYPE;
-            } else {
+            } else 
+            {
               map[x][y] = Utils.FLOOR_TILE_TYPE;
               // spawn delle trappole all'interno delle stanze
-              if (random(1) <= TRAP_SPAWN_PROBABILITY) {
+              if (random(1) <= TRAP_SPAWN_PROBABILITY) 
+              {
                 map[x][y] = Utils.PEAKS_TILE_TYPE;
                 Trap trap = new Trap(peaksTrapImage, DAMAGE_PEAKS);
                 trap.updatePosition(x, y);
@@ -307,7 +320,7 @@ class Level {
           wall.setName("Wall");
           wall.setPosition(x * Utils.TILE_SIZE + Utils.TILE_SIZE / 2, y * Utils.TILE_SIZE + Utils.TILE_SIZE / 2);
           wall.setStaticBody(true); // Rendi il corpo fisico statico
-          wall.setFriction(0.8);
+          wall.setFriction(0.3);
           wall.setRestitution(0.001);
           game.world.add(wall);
         }
@@ -451,7 +464,7 @@ class Level {
   // genera nemici in ogni stanza in maniera casuale
   private void generateEnemies() {
     // println("genero i nemici...");
-    
+
     boolean positionOccupied;
 
     for (Room room : rooms) {
@@ -509,7 +522,6 @@ class Level {
 
         float centerX = x * tileSize + tileSize / 2;
         float centerY = y * tileSize + tileSize / 2;
-
 
         switch(tileType) {
         case Utils.BACKGROUND_TILE_TYPE:
@@ -636,9 +648,10 @@ class Trap extends Sprite {
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
     box.setName("Trap");
     box.setFillColor(10);
+    box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
     box.setRotatable(false);
     box.setFriction(0.5);
-    box.setRestitution(0.2);
+    box.setRestitution(0);
     box.setSensor(true);  // è un sensore
 
     this.damage = damage;

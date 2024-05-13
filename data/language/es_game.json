@@ -57,20 +57,20 @@
             "defeat": "¡Has sido derrotado, Caballero!\n",
             "pressButton": "Presiona cualquier botón para continuar"
         },
-        "score": "Puntuación",
         "zone": {
-            "castle": "Castillo",
-            "level": "Nivel"
+            "castle": "Castillo"
         },
-        "boss": {
-            "name": "Hechicero Pagnax"
-        },
-        "gametarget": "¡Encuentra las escaleras!",
-        "gametargetboss": "¡Derrota a Pagnax!",
-        "weapon": {
-            "smallSword": "Espada pequeña",
-            "sword": "Espada",
-            "masterSword": "Espada maestra"
+        "ui": {
+            "score": "Puntuación: ",
+            "bossname": "Hechicero Pagnax",
+            "gametarget": "¡Encuentra las escaleras!",
+            "gametargetboss": "¡Derrota a Pagnax!",
+            "level":"Nivel - ",
+            "weapon": {
+                "smallSword": "Espada pequeña",
+                "sword": "Espada",
+                "masterSword": "Espada maestra"
+            }
         }
     }
 }

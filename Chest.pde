@@ -28,10 +28,12 @@ class Chest extends Item {
     // box settings
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
     box.setName("Chest");
+    box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
+    box.setRotatable(false);
     box.setFillColor(3);
     box.setStaticBody(true);
     box.setFriction(0.8);
-    box.setRestitution(0.1);
+    box.setRestitution(0);
     
     // charateristics
     item = null;

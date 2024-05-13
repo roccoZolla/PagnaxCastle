@@ -1,32 +1,31 @@
 // classe del boss
 class Boss extends Character {
-  PVector spriteVelocity;      // velocita corrente del boss
-  float spriteSpeed;           // velocita desiderata a cui deve andare il boss
+  // PVector spriteVelocity;      // velocita corrente del boss
+  float speed = 100.0f;           // velocita desiderata a cui deve andare il boss
   ArrayList<Projectile> projectiles;    // proiettili
+  
+  final float OFFSET = 1.5;
 
-  String name;
+  // String name;
   int maxHP;
-  int HP;
   final float damage_resistence = 0.7; // capacita del boss di resistere ai danni
 
-  Boss(PVector position, PImage sprite, float speed, String name, int HP, int maxHP) {
+  Boss(PImage sprite, int hp, int maxHP) {
     // sprite
     this.sprite = sprite;
     
     // setting's box
-    box = new FBox(SPRITE_SIZE * 1.5, SPRITE_SIZE * 1.5);
+    box = new FBox(SPRITE_SIZE * OFFSET, SPRITE_SIZE * OFFSET);
+    box.setName("Boss");
     box.setFillColor(10);
     box.setRotatable(false);
     box.setFriction(0.5);
-    box.setRestitution(0.2);
+    box.setRestitution(0);
     
-    
-    spriteVelocity = PVector.random2D();
-    this.spriteSpeed = speed;
-    projectiles = new ArrayList<Projectile>();
+    // spriteVelocity = PVector.random2D();
+    // projectiles = new ArrayList<Projectile>();
 
-    this.name = name;
-    this.HP = HP;
+    this.hp = hp;
     this.maxHP = maxHP;
   }
   
@@ -85,20 +84,20 @@ class Boss extends Character {
   //  }
   //}
   
-  void takeDamage(int damage) {
-    int actual_damage = (int) (damage * (1 - damage_resistence));
-    HP -= actual_damage;
+  //void takeDamage(int damage) {
+  //  int actual_damage = (int) (damage * (1 - damage_resistence));
+  //  HP -= actual_damage;
 
-    hurt_sound.play();
+  //  hurt_sound.play();
 
-    //TextDisplay damageHitText = new TextDisplay(position, Integer.toString(actual_damage), color(255, 0, 0));
-    //damageHitText.display(render.spritesLayer);
+  //  //TextDisplay damageHitText = new TextDisplay(position, Integer.toString(actual_damage), color(255, 0, 0));
+  //  //damageHitText.display(render.spritesLayer);
 
-    if (HP < 0) {
-      HP = 0;
-    }
-    // println("vita boss: " + HP);
-  }
+  //  if (HP < 0) {
+  //    HP = 0;
+  //  }
+  //  // println("vita boss: " + HP);
+  //}
 
 // da togliere
 //  @Override
@@ -134,6 +133,7 @@ class Projectile extends Sprite {
     
     // settings box
     box = new FBox(SPRITE_SIZE * 1.5, SPRITE_SIZE * 1.5);
+    box.setName("Projectile");
     box.setFillColor(10);
     box.setRotatable(false);
     box.setFriction(0.5);

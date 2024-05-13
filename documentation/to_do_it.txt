@@ -7,7 +7,7 @@ TO DO:
 [ ] - gestione animazioni
 [ 🗸 ] - migliorare collision system (aggiungere)
  [ ] - da sistemare movimento nemici che trapassano i muri
- [ ] - collisione con chest non proprio immediata 
+ [ 🗸 ] - collisione con chest non proprio immediata 
 [ ] - migliorare organizzazione delle classi
  [ ] - classe Game
  [ ] - classe Player
@@ -24,8 +24,8 @@ TO DO:
 [ 🗸 ] - aggiungere supporto lingua inglese
  [ ] - rendere piu efficiente il language system
 [ ] - fare in modo che il tasto risulti disattivo quando non ci sono piu opzioni
- [ ] - nelle opzioni sistemare il fatto che l'inglese viene prima dell'italiano
- [ ] - nelle opzioni sistemare il fatto che il gamepad viene prima della tastiera
+ [ 🗸 ] - nelle opzioni sistemare il fatto che l'inglese viene prima dell'italiano
+ [ 🗸 ] - nelle opzioni sistemare il fatto che il gamepad viene prima della tastiera
 [ ] - capita ancora che le chest vengano generate nello stesso punto delle scale
 [ 🗸 ] - quando la sound track del menu finisce non riparte
 [ 🗸 ] - aggiungere schermata dei crediti
@@ -37,6 +37,8 @@ TO DO:
 [ ] - logica tramite cui calcolare il numero delle stanze presenti in un livello
 [ ] - fixare danno causato da trappole
 [ ] - fixare schermata sconfitta e vittoria
+[ ] - fixare spawn dei nemici
+[ ] - fixare collisione chest, quando di collide rileva la collisione con tutte le chest
 
 Idee game design:
 

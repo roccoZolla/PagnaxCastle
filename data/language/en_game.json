@@ -57,20 +57,20 @@
       "defeat": "You have been defeated Knight!\n",
       "pressButton": "Press any key to continue"
     },
-    "score": "score",
     "zone": {
-      "castle": "Castle",
-      "level": "Level"
+      "castle": "Castle"
     },
-    "boss": {
-      "name": "Sorcerer Pagnax"
-    },
-    "gametarget": "Find the stairs!",
-    "gametargetboss": "Defeat Pagnax!",
-    "weapon": {
-      "smallSword": "Small sword",
-      "sword": "Sword",
-      "masterSword": "Master Sword"
+    "ui": {
+      "score": "Score: ",
+      "bossname": "Sorcerer Pagnax",
+      "gametarget": "Find the stairs!",
+      "gametargetboss": "Defeat Pagnax!",
+      "level":"Level - ",
+      "weapon": {
+        "smallSword": "Small sword",
+        "sword": "Sword",
+        "masterSword": "Master Sword"
+      }
     }
   }
 }

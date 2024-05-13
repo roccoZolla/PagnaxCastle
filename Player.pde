@@ -38,7 +38,7 @@ class Character extends Sprite
   }
 }
 
-class Player extends Character 
+class Player extends Character
 {
   // componente velocita  del player
   // non definitivo
@@ -90,15 +90,8 @@ class Player extends Character
     left_side = loadImage("data/playerLEFT.png");
 
     this.sprite = right_side;
-
-    // box's settings
-    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
-    box.setName("Player");
-    box.setFillColor(10);
-    box.setRotatable(false);
-    box.setFriction(0.5);   // quanto attrito fa
-    box.setRestitution(0);  // quanto rimbalza
-    box.setDamping(1);      // ammortizza il movimento
+    
+    createBox();
 
     this.direction = Direction.DESTRA;
 
@@ -127,6 +120,18 @@ class Player extends Character
     this.moveDOWN = false;
     this.moveRIGHT = false;
     this.moveLEFT = false;
+  }
+
+  void createBox()
+  {
+    // box's settings
+    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setName("Player");
+    box.setFillColor(90);
+    box.setRotatable(false);
+    box.setFriction(0.5);   // quanto attrito fa
+    box.setRestitution(0);  // quanto rimbalza
+    box.setDamping(0.7);      // ammortizza il movimento
   }
 
   // aggiorna il movimento del giocatore

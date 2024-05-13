@@ -57,20 +57,20 @@
       "defeat": "Sei stato sconfitto Cavaliere!\n",
       "pressButton": "Premi un tasto qualsiasi per continuare"
     },
-    "score": "Punteggio",
     "zone": {
-      "castle": "Castello",
-      "level": "Livello"
+      "castle": "Castello"
     },
-    "boss": {
-      "name": "Stregone Pagnax"
-    },
-    "gametarget": "Trova le scale!",
-    "gametargetboss": "Sconfiggi Pagnax!",
-    "weapon": {
-      "smallSword": "Piccola spada",
-      "sword": "Spada",
-      "masterSword": "Spada Maestra"
+    "ui": {
+      "score": "Punteggio: ",
+      "bossname": "Stregone Pagnax",
+      "gametarget": "Trova le scale!",
+      "gametargetboss": "Sconfiggi Pagnax!",
+      "level":"Livello - ",
+      "weapon": {
+        "smallSword": "Piccola spada",
+        "sword": "Spada",
+        "masterSword": "Spada Maestra"
+      }
     }
   }
 }

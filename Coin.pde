@@ -13,7 +13,8 @@ class Coin extends Sprite {
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
     box.setName("Coin");
     box.setFillColor(10);
-    box.setRotatable(false);
+    box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
+    box.setRotatable(false); 
     box.setFriction(0.5);
     box.setRestitution(0.2);
     box.setSensor(true);  // è un sensore

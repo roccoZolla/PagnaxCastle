@@ -4,20 +4,20 @@ class Game {
 
   // game settings
   Level level;
-  Zone zone;
+  //  Zone zone;
   int numberOfZone = 1;    // numero delle zone che compongono il gioco
   int zoneIndex = 1;
+  int numberOfLevels = 1;
   int levelIndex = 1;
 
   // provvisorio
   String dataPath =  "data/zone_1/";
 
-
   FWorld world; // va aggiornato ogni volta
 
   Boss boss;    // boss del gioco
 
-  boolean isBossLevel;  // indica se ci troviamo nel livello finale, di base è false
+  boolean isBossLevel;          // indica se ci troviamo nel livello finale, di base è false
   boolean isTorchDropped;       // indica se la torcia è stata droppata, di base false
   boolean isMapDropped;         // indica se la mappa è stata droppata, di base false
   boolean isMasterSwordDropped; // indica se la spada suprema è stata droppata, di base false
@@ -26,7 +26,7 @@ class Game {
 
   Game()
   {
-    zone = new Zone();
+    // zone = new Zone();
     level = new Level();
 
     // world physics settings
@@ -52,19 +52,19 @@ class Game {
     silver_key = new Item(null, "silver_key");
 
     // creazione della zona
-    zone = new Zone();
-    zone.setName("test");
-    zone.setNumberLevels(8); // 8 valore di test
-    zone.setFinalZone();
+    //zone = new Zone();
+    //zone.setName("test");
+    //zone.setNumberLevels(8); // 8 valore di test
+    //zone.setFinalZone();
 
-    println(zone.name);
+    //println(zone.name);
 
     // carica una sola volta all'inizio gli assets del livello
     level.loadAssets(dataPath);
     level.init();
 
     // da togliere di qua
-    ui.setActualLevelText(zone.name + " - Livello " + levelIndex);
+    // ui.setActualLevelText(zone.name + " - Livello " + levelIndex);
 
     // inizializza il player
     p1 = new Player(100, 100);
@@ -97,31 +97,41 @@ class Game {
     println("game system inizializzato correttamente!");
   }
 
-  //void initBossBattle() {
-  //  // crea il livello finale
-  //  currentLevel = currentZone.createBossLevel();
+  private void initBossBattle() {
+    // crea il livello finale
+    world = new FWorld(); // ripulisci il mondo fisico
+    world.setGrabbable(false);
+    world.setGravity(0, 0);
+    world.setEdges();
 
-  //  // inizializza il livello del boss
-  //  currentLevel.isFinalLevel = true;
-  //  currentLevel.loadAssetsLevel();
-  //  currentLevel.initBossLevel();
+    level = new Level();
+    level.loadAssets(dataPath);
+    level.initBossLevel();
 
-  //  // posizione il giocatore nel punto di spawn
-  //  p1.updatePosition(currentLevel.getStartPosition());
+    characters = new ArrayList<Character>();
 
-  //  // aggiorna il testo relativo al livello attuale
-  //  ui.setActualLevelText(currentZone.name + " - Livello Finale");
+    // posizione il giocatore nel punto di spawn
+    p1.createBox();
+    p1.updatePosition(level.getStartPosition());
 
-  //  // crea il boss
-  //  PVector spawn_boss_position = new PVector(currentLevel.getStartPosition().x, currentLevel.getStartPosition().y);
-  //  // velocita di base boss 0.1
-  //  boss = new Boss(spawn_boss_position, boss_sprite, 0.07, "Stregone Pagnax", 100, 100);
+    boss = new Boss(boss_sprite, 200, 200);
+    boss.updatePosition(level.getStartPosition().x, level.getStartPosition().y);
 
-  //  ui.game_target = "Sconfiggi Pagnax!";
+    world.add(p1.box);
+    world.add(boss.box);
 
-  //  ui.activateBossUI();
-  //  ui.deactivateMap();
-  //}
+    characters.add(p1);
+    characters.add(boss);
+
+    // da sistemare
+    ui.setBossLevelUI();
+
+    ui.deactivateMap();
+  }
+
+  boolean IsBossLevel() {
+    return isBossLevel;
+  }
 
   // reimposta le variabili di gioco
   void resetGame() {
@@ -133,7 +143,7 @@ class Game {
 
     // reimposta lo stato della mappa, disattivo
     ui.deactivateMap();
-    ui.deactivateBossUI();
+    ui.resetBossLevelUI();
   }
 
   // funzione che gestisce tutti gli eventi in input relativi al giocatore
@@ -146,26 +156,17 @@ class Game {
     // p1.attack();  // deve essere chiamata solo quando viene premuto il tasto
     //p1.usePotion(spritesLayer);  // deve essere chiamata solo quando viene premuto il tasto
 
-    //if (!isBossLevel) {
-    //  // gestione azione nemici
-    // handleEnemyActions();
-
-    //  // gestione casse
-    //  handleChest();
-
-    //  // gestion drop items
-    //  handleDropItems();
-
-    //  // gestione monete
-    //  // handleCoin(); metodo chiamato direttamente dal collider
-
-    //  // gestione livello successivo
-    //  // handleNextLevel(); metodo chiamato direttamente dal collider
-    //} else {
-    //  handlePlayerVictory();
-    //  // gestione azioni boss
-    //  boss.update(p1);
-    //}
+    if (isBossLevel)
+    {
+      // aggiorna movimento boss
+      // boss.update();
+      
+      // handlePlayerVictory();
+    } else
+    {
+      // aggiorna movimento nemici
+      // enemiesUpdate();
+    }
   }
 
   // gestisce la vittoria del giocatore - OK
@@ -186,27 +187,38 @@ class Game {
   }
 
   // da sistemare
+  // viene chiamata solo quando si collide con le scale
   void handleNextLevel()
   {
-    if (levelIndex == zone.getNumberOfLevels())
+    // il livello corrisponde al livello finale della zona
+    if (levelIndex == numberOfLevels)
     {
+      println("levelIndex uguale a numberOfLevels");
       // verifica che la zona sia la zona finale
       // in caso positivo spostati nella sala del boss
-      if (zone.IsFinal() && zoneIndex == numberOfZone)
+      if (zoneIndex == numberOfZone)
       {
-        // initBossBattle();
-      } else  // passa alla prossima macroarea
+        println("zoneIndex uguale a numberOfZone");
+        // inizializza la battaglia finale
+        isBossLevel = true;
+        initBossBattle();
+      } else  // passa alla prossima zona
       {
         zoneIndex += 1;
         // resetta il level index a 1
         levelIndex = 1;
         // carica gli assets della nuova zona nel livello
+        // specifica il datapath magari prendendelo dal json
         // level.loadAssestLevel();
         // una volta caricati quando di passa al livello successivo non ci sara bisogno di ricaricarli
         // inizializza il livello
-        world.clear();
+        world = new FWorld(); // ripulisci il mondo fisico
+        world.setGrabbable(false);
+        world.setGravity(0, 0);
+        world.setEdges();
+
         level.init();
-        ui.setActualLevelText(zone.getName() + " - Livello " + levelIndex);
+        // ui.setActualLevelText(zone.getName() + " - Livello " + levelIndex);
         p1.updatePosition(level.getStartPosition());
         // // aggiorna lo score del player
         p1.updateScore(200);
@@ -216,13 +228,21 @@ class Game {
     {
       println("passa al livello successivo...");
       levelIndex += 1;
-      world.clear(); // ripulisci il mondo fisico
+
+      world = new FWorld(); // ripulisci il mondo fisico
+      world.setGrabbable(false);
+      world.setGravity(0, 0);
+      world.setEdges();
+
       characters.clear();
       // deve essere aggiornato anche characters
       // gli asset sono stati gia caricati
       level.init();
-      ui.setActualLevelText(zone.getName() + " - Livello " + levelIndex);
+      // ui.setActualLevelText(zone.getName() + " - Livello " + levelIndex);
+      p1.createBox();
       p1.updatePosition(level.getStartPosition());
+      println("level get start position: " + level.getStartPosition());
+      println("player start position: " + p1.getPosition());
       // aggiorna lo score del player
       p1.updateScore(100);
 
@@ -307,7 +327,7 @@ class Game {
               if (chest.isRare())
               {    // se la cassa è rara
                 // CASSA RARA
-                if (p1.numberOfGoldenKeys > 0)
+                if (p1.numberOfGoldenKeys > 0 && !chest.isOpen())
                 {
                   if (chest.getOpenWith().equals(p1.golden_key))
                   {
@@ -322,14 +342,11 @@ class Game {
 
                     chest.dropItemSpecialChest();
                   }
-                } else
-                {
-                  render.isPossibleToOpenChest = false;
                 }
               } else
               {  // se la cassa è normale
                 // CASSA NORMALE
-                if (p1.numberOfSilverKeys > 0)
+                if (p1.numberOfSilverKeys > 0 && !chest.isOpen())
                 {
                   if (chest.getOpenWith().equals(p1.silver_key))
                   {
@@ -345,9 +362,6 @@ class Game {
                     // metodo per drop item casuale
                     chest.dropItemNormalChest();
                   }
-                } else
-                {
-                  render.isPossibleToOpenChest = false;
                 }
               }
             }

@@ -9,7 +9,7 @@ class RenderSystem {
 
   // triggers
   boolean isCollidingWithChest = false;
-  boolean isPossibleToOpenChest = false;        // trigger che attiva il disegno della k quando si puo aprire una chest
+  FBody collidingChest;
 
   boolean drawUpBuff;
   boolean drawDownBuff;
@@ -86,10 +86,13 @@ class RenderSystem {
 
     // aggiungere logica per cui quando si è nel livello del boss
     // non vengono eseguite
-     displayCharacter();
-     displayChests();
-     displayCoins();
-     displayDropItems();
+    displayCharacter();
+
+    if (!game.IsBossLevel()) {
+      displayChests();
+      displayCoins();
+      displayDropItems();
+    }
 
     //if (!game.isBossLevel) {
     //  displayEnemies();
@@ -143,8 +146,8 @@ class RenderSystem {
     while (iterator.hasNext()) {
       Character character = iterator.next();
 
-      if (isInVisibleArea(character.getPosition()) &&
-        !character.IsDead()) {
+      if (isInVisibleArea(character.getPosition()) /*&&
+       !character.IsDead()*/) {
         character.display(spritesLayer);
       }
     }
@@ -245,20 +248,24 @@ class RenderSystem {
         // mostra le chest nell'area visibile
         chest.display(spritesLayer);
 
-        if (isCollidingWithChest && !chest.isOpen())
+        if (isCollidingWithChest)
         {
-          if (isPossibleToOpenChest)
+          if (chest.getBox() == collidingChest)
           {
-            // chest.displayHitbox(spritesLayer);
-            // disegna la lettera che indica il tasto per aprire la cassa
-            float letterImageX = (chest.getPosition().x);
-            float letterImageY = (chest.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
-            spritesLayer.image(letter_k, letterImageX, letterImageY);
-          } else
-          {
-            float crossImageX = (p1.getPosition().x);
-            float crossImageY = (p1.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
-            spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+            // da sistemare ma ci sta
+            if ((p1.numberOfSilverKeys > 0 || p1.numberOfGoldenKeys > 0) && !chest.isOpen())
+            {
+              // chest.displayHitbox(spritesLayer);
+              // disegna la lettera che indica il tasto per aprire la cassa
+              float letterImageX = (chest.getPosition().x);
+              float letterImageY = (chest.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
+              spritesLayer.image(letter_k, letterImageX, letterImageY);
+            } else
+            {
+              float crossImageX = (p1.getPosition().x);
+              float crossImageY = (p1.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
+              spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+            }
           }
         }
       }
