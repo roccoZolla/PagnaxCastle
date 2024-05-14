@@ -47,3 +47,4 @@ Idee game design:
  [ ] - obiettivo (run in 10 min ad esempio) sblocca qualcosa
 [ ] - aggiungere il negozio dove il player puo acquistare potenziamenti
  [ ] - prima di entrare nel game o nel menu
+[ ] - introdurre enigmi stile pokemon dove si devono muovere i massi per avanzare (risolvi l'enigma per avanzare) NUOVO TIPO DI STANZA

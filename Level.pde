@@ -325,8 +325,8 @@ class Level {
           wall.setName("Wall");
           wall.setPosition(x * Utils.TILE_SIZE + Utils.TILE_SIZE / 2, y * Utils.TILE_SIZE + Utils.TILE_SIZE / 2);
           wall.setStaticBody(true); // Rendi il corpo fisico statico
-          wall.setFriction(0.3);
-          wall.setRestitution(0.001);
+          wall.setFriction(1);
+          wall.setRestitution(0);
           game.world.add(wall);
         }
       }

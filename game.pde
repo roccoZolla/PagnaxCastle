@@ -262,7 +262,6 @@ class Game {
       // deve essere aggiornato anche characters
       // gli asset sono stati gia caricati
       level.init();
-      // ui.setActualLevelText(zone.getName() + " - Livello " + levelIndex);
       p1.createBox();
       p1.updatePosition(level.getStartPosition());
       println("level get start position: " + level.getStartPosition());

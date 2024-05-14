@@ -23,6 +23,14 @@ class RenderSystem {
   RenderSystem() {
   }
 
+  void setCollidingChest(FBody collidingChest) {
+    this.collidingChest = collidingChest;
+  }
+
+  void setCollidingItem(FBody collidingItem) {
+    this.collidingItem = collidingItem;
+  }
+
   // inizializza i layer
   void init() {
     // inizializza i layer
@@ -70,7 +78,6 @@ class RenderSystem {
     gameLayer.imageMode(CENTER);  // imposto l'image mode a center
 
     // Disegna la mappa del livello corrente
-    // currentLevel.display(gameLayer); // renderizza il 4,6 % della mappa
     game.level.display(gameLayer); // renderizza il 4,6 % della mappa NON DEFINITIVO
     // displayLevel();
 
@@ -86,17 +93,12 @@ class RenderSystem {
     spritesLayer.translate(-camera.x, -camera.y);
     spritesLayer.scale(camera.zoom);
     spritesLayer.imageMode(CENTER);
-
-    // metodo che gestisce le collisioni del player e di ogni altra entita
-    // p1.display(spritesLayer);
-    // p1.displayHitbox(spritesLayer);
-    // p1.displayWeapon(spritesLayer);
-
+    
     // aggiungere logica per cui quando si è nel livello del boss
     // non vengono eseguite
     displayCharacter();
 
-    // se il giocatore sta attaccando mostra l'arma
+    //// se il giocatore sta attaccando mostra l'arma
     if (isAttacking) {
       displayWeaponPlayer();
     }

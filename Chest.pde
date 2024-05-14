@@ -29,7 +29,7 @@ class Chest extends Item {
     box.setRotatable(false);
     box.setFillColor(3);
     box.setStaticBody(true);
-    box.setFriction(0.8);
+    box.setFriction(1);
     box.setRestitution(0);
     
     // charateristics

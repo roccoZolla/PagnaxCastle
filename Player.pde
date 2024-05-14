@@ -103,7 +103,7 @@ class Player extends Character
 
     this.golden_key = new Item(null, "golden_key");
     this.silver_key = new Item(null, "silver_key");
-    
+
     // sistemare generazione arma giocatore
     this.weapon = new Item(small_sword_sprite, "Piccola Spada", false, 0, true, 10);
 
@@ -128,41 +128,50 @@ class Player extends Character
     box.setName("Player");
     box.setFillColor(90);
     box.setRotatable(false);
-    box.setFriction(0.5);   // quanto attrito fa
+    box.setFriction(1);   // quanto attrito fa
     box.setRestitution(0);  // quanto rimbalza
-    box.setDamping(0.7);      // ammortizza il movimento
+    // box.setDamping(0);      // ammortizza il movimento
   }
 
   // aggiorna il movimento del giocatore
   void update()
   {
-    if (moveUP)
-    {
-      box.addForce(0, -1 * speed);
+    float dx = 0;
+    float dy = 0;
+
+    if (moveUP) {
+      dy -= 1; // Spostamento verso l'alto
       direction = Direction.UP;
     }
 
-    if (moveDOWN)
-    {
-      box.addForce(0, 1 * speed);
+    if (moveDOWN) {
+      dy += 1; // Spostamento verso il basso
       direction = Direction.DOWN;
     }
 
-    if (moveLEFT)
-    {
-      box.addForce(-1 * speed, 0);
+    if (moveLEFT) {
+      dx -= 1; // Spostamento verso sinistra
       sprite = left_side;
       direction = Direction.LEFT;
     }
 
-    if (moveRIGHT)
-    {
-      box.addForce(1 * speed, 0);
+    if (moveRIGHT) {
+      dx += 1; // Spostamento verso destra
       sprite = right_side;
       direction = Direction.RIGHT;
     }
+
+    // Normalizza il vettore di movimento
+    PVector movement = new PVector(dx, dy);
+    movement.normalize();
+
+    // Applica la velocità costante
+    movement.mult(speed);
+
+    // Applica l'accelerazione
+    box.setVelocity(movement.x, movement.y);
   }
-  
+
   Direction getDirection() {
     return direction;
   }
@@ -195,7 +204,7 @@ class Player extends Character
   // riproduci suono
   void restoreHP(int HP) {
     drinkPotion.play();
-    
+
     hp += HP;
 
     if (hp > playerMaxHP) hp = playerMaxHP;

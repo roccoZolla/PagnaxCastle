@@ -42,6 +42,7 @@ void contactStarted(FContact contact) {
     }
 
     // stairs
+    // bug: viene chiamata due volte cosi si va avanti di due livelli
     if (bodyName1.equals("Stairs") && bodyName2.equals("Player")
       || bodyName2.equals("Stairs") && bodyName1.equals("Player"))
     {
@@ -60,12 +61,12 @@ void contactStarted(FContact contact) {
       if (bodyName1.equals("Item"))
       {
         game.handleDropItems(body1);
-        render.collidingItem = body1;
+        render.setCollidingItem(body1);
         render.isCollidingWithItem = true;
       } else
       {
         game.handleDropItems(body2);
-        render.collidingItem = body2;
+        render.setCollidingItem(body2);
         render.isCollidingWithItem = true;
       }
     }
@@ -92,11 +93,11 @@ void contactStarted(FContact contact) {
     if (bodyName1.equals("Chest"))
     {
       game.handleChest(body1);
-      render.collidingChest = body1;
+      render.setCollidingChest(body1);
       render.isCollidingWithChest = true;
     } else {
       game.handleChest(body2);
-      render.collidingChest = body2;
+      render.setCollidingChest(body2);
       render.isCollidingWithChest = true;
     }
   }
@@ -146,12 +147,12 @@ void contactPersisted(FContact contact) {
       if (bodyName1.equals("Item"))
       {
         game.handleDropItems(body1);
-        render.collidingItem = body1;
+        render.setCollidingItem(body1);
         render.isCollidingWithItem = true;
       } else
       {
         game.handleDropItems(body2);
-        render.collidingItem = body2;
+        render.setCollidingItem(body2);
         render.isCollidingWithItem = true;
       }
     }
@@ -165,9 +166,11 @@ void contactPersisted(FContact contact) {
     if (bodyName1.equals("Chest"))
     {
       game.handleChest(body1);
+      render.setCollidingChest(body1);
       render.isCollidingWithChest = true;
     } else {
       game.handleChest(body2);
+      render.setCollidingChest(body2);
       render.isCollidingWithChest = true;
     }
   }

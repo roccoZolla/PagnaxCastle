@@ -36,9 +36,9 @@ class Enemy extends Character {
     box.setFillColor(40);
     box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
     box.setRotatable(false);
-    box.setFriction(0.5);   // quanto attrito fa
+    box.setFriction(1);   // quanto attrito fa
     box.setRestitution(0);  // quanto rimbalza
-    box.setDamping(0.5);      // ammortizza il movimento
+    box.setDamping(0);      // ammortizza il movimento
 
     // characteristics
     this.hp = enemyHP;
