@@ -53,24 +53,29 @@
             "zone_2": "",
             "zone_3": "",
             "zone_4": "",
+<<<<<<< HEAD
+            "victory": "¡Finalmente el hechicero Pagnax ha sido derrotado!\nLa princesa Chela está a salvo y nuestro valiente Caballero es ahora el héroe del Reino.\n",
+            "defeat": "¡Has sido derrotado, Caballero!\n",
+=======
             "victory": "¡Finalmente el hechicero Pagnax ha sido derrotado! La princesa Chela está a salvo y nuestro valiente Caballero es ahora el héroe del Reino.",
             "defeat": "¡Has sido derrotado, Caballero!",
+>>>>>>> fix
             "pressButton": "Presiona cualquier botón para continuar"
         },
-        "score": "Puntuación",
         "zone": {
-            "castle": "Castillo",
-            "level": "Nivel"
+            "castle": "Castillo"
         },
-        "boss": {
-            "name": "Hechicero Pagnax"
-        },
-        "gametarget": "¡Encuentra las escaleras!",
-        "gametargetboss": "¡Derrota a Pagnax!",
-        "weapon": {
-            "smallSword": "Espada pequeña",
-            "sword": "Espada",
-            "masterSword": "Espada maestra"
+        "ui": {
+            "score": "Puntuación: ",
+            "bossname": "Hechicero Pagnax",
+            "gametarget": "¡Encuentra las escaleras!",
+            "gametargetboss": "¡Derrota a Pagnax!",
+            "level":"Nivel - ",
+            "weapon": {
+                "smallSword": "Espada pequeña",
+                "sword": "Espada",
+                "masterSword": "Espada maestra"
+            }
         }
     }
 }

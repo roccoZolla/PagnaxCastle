@@ -53,24 +53,29 @@
       "zone_2": "",
       "zone_3": "",
       "zone_4": "",
+<<<<<<< HEAD
+      "victory": "The sorcerer Pagnax has finally been defeated!\nPrincess Chela is safe and our brave Knight is now the hero of the Kingdom.\n",
+      "defeat": "You have been defeated Knight!\n",
+=======
       "victory": "The sorcerer Pagnax has finally been defeated! Princess Chela is safe and our brave Knight is now the hero of the Kingdom.",
       "defeat": "You have been defeated Knight!",
+>>>>>>> fix
       "pressButton": "Press any key to continue"
     },
-    "score": "score",
     "zone": {
-      "castle": "Castle",
-      "level": "Level"
+      "castle": "Castle"
     },
-    "boss": {
-      "name": "Sorcerer Pagnax"
-    },
-    "gametarget": "Find the stairs!",
-    "gametargetboss": "Defeat Pagnax!",
-    "weapon": {
-      "smallSword": "Small sword",
-      "sword": "Sword",
-      "masterSword": "Master Sword"
+    "ui": {
+      "score": "Score: ",
+      "bossname": "Sorcerer Pagnax",
+      "gametarget": "Find the stairs!",
+      "gametargetboss": "Defeat Pagnax!",
+      "level":"Level - ",
+      "weapon": {
+        "smallSword": "Small sword",
+        "sword": "Sword",
+        "masterSword": "Master Sword"
+      }
     }
   }
 }

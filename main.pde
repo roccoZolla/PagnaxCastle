@@ -28,7 +28,10 @@ CreditScreen creditScreen;
 // gioco, render e collision logic
 Game game;
 RenderSystem render;
+<<<<<<< HEAD
+=======
 CollisionSystem collision;
+>>>>>>> fix
 Story storyScreen;
 UI ui;
 
@@ -169,7 +172,10 @@ void setup() {
 
   game = new Game();
   render = new RenderSystem();
+<<<<<<< HEAD
+=======
   collision = new CollisionSystem();
+>>>>>>> fix
   storyScreen = new Story();
 
   languageSystem = new LanguageSystem();
@@ -258,7 +264,11 @@ void setupImages() {
 
 void setupSounds() {
   volumeMusicLevel = 0.0;
+<<<<<<< HEAD
+  volumeEffectsLevel = 0.0;
+=======
   volumeEffectsLevel = 0.3;
+>>>>>>> fix
 
   click = new SoundFile(this, "data/sound/click.wav");
   pickupCoin = new SoundFile(this, "data/sound/pickupCoin.wav");
@@ -352,7 +362,11 @@ void draw() {
     // verifica se è il momento di eseguire il rendering della scena
     // render loop
     if (fps_clock.getTicks() > 1000.f / Utils.SCREEN_FPS_CAP) {
+<<<<<<< HEAD
+      game.world.step();  // aggiornamento del mondo fisico
+=======
       // collision.update();
+>>>>>>> fix
       render.update();
       // ui.update();
 
@@ -400,6 +414,8 @@ void winScreen() {
   storyScreen.setVictoryScreen();
   
   storyScreen.display();
+<<<<<<< HEAD
+=======
   
 
   // chiama la funzione
@@ -410,6 +426,7 @@ void winScreen() {
 
   //image(p1.left_side, width / 2 + 50, height / 2 - 120, 64, 64);
   //image(chela_sprite, width / 2 - 50, height / 2 - 120, 64, 64);
+>>>>>>> fix
 }
 
 void loseScreen() {
@@ -424,6 +441,11 @@ void loseScreen() {
 
   // canzone della sconfitta
   
+<<<<<<< HEAD
+  storyScreen.setLoseScreen();
+  
+  storyScreen.display();
+=======
   // setta storyScreen su isLoseScreen
   storyScreen.setLoseScreen();
   
@@ -435,6 +457,7 @@ void loseScreen() {
   //  "Score totalizzato: " + p1.playerScore);
 
   //image(boss_sprite, width / 2, height / 2 - 120, 64, 64);
+>>>>>>> fix
 }
 
 void tickStats() {

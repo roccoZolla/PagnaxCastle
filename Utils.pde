@@ -24,16 +24,20 @@ void keyPressed() {
     case 'j':
     case 'J':
       p1.moveATCK = true;
+      game.moveATCK = true;
+      render.isAttacking = true;
       break;
 
     case 'k':
     case 'K':
       p1.moveINTR = true;
+      game.moveINTR = true;
       break;
 
     case 'l':
     case 'L':
       p1.moveUSE = true;
+      game.moveUSE = true;
       break;
     }
   } else {
@@ -88,16 +92,20 @@ void keyReleased() {
     case 'j':
     case 'J':
       p1.moveATCK = false;
+      game.moveATCK = false;
+      render.isAttacking = false;
       break;
 
     case 'k':
     case 'K':
       p1.moveINTR = false;
+      game.moveINTR = false;
       break;
 
     case 'l':
     case 'L':
       p1.moveUSE = false;
+      game.moveUSE = false;
       break;
     }
   }
@@ -118,6 +126,8 @@ void windowResized() {
 
 // calcola la posizione di uno sprite all'interno della scena di gioco
 // se lo sprite si trova al di fuori della scena lo sprite non viene renderizzato
+<<<<<<< HEAD
+=======
 //boolean isInVisibleArea(PVector spritePosition) {
 //  // Calcola il rettangolo visibile
 //  int tileSize = currentLevel.tileSize;
@@ -130,9 +140,10 @@ void windowResized() {
 //  return (spritePosition.x >= startX && spritePosition.x <= endX && spritePosition.y >= startY && spritePosition.y <= endY);
 //}
 
+>>>>>>> fix
 boolean isInVisibleArea(PVector boxPosition) {
   // Calcola il rettangolo visibile
-  int tileSize = currentLevel.tileSize;
+  int tileSize = 16;
 
   int startX = floor((camera.x / (tileSize * camera.zoom)));
   int startY = floor((camera.y / (tileSize * camera.zoom)));
@@ -149,25 +160,26 @@ boolean isInVisibleArea(PVector boxPosition) {
 
 
 // controlla che le coordinate si trovino all'interno della mappa
-boolean isWithinMapBounds(int x, int y) {
-  return x >= 0 && x < currentLevel.cols && y >= 0 && y < currentLevel.rows;
-}
+//boolean isWithinMapBounds(int x, int y) {
+//  return x >= 0 && x < level.cols && y >= 0 && y < level.rows;
+//}
 
 // controlla se la posizione che si vuole raggiungere è un muro
 // da sistemare
-boolean isWall(int x, int y) {
-  if (currentLevel.map[x][y] == Utils.WALL_PERIMETER_TILE_TYPE ||
-    currentLevel.map[x][y] == Utils.BACKGROUND_TILE_TYPE ||
-    currentLevel.map[x][y] == Utils.CHEST_TILE_TYPE)
-  {
-    return true;
-  } else {
-    return false;
-  }
-}
+//boolean isWall(int x, int y) {
+//  if (level.map[x][y] == Utils.WALL_PERIMETER_TILE_TYPE ||
+//    level.map[x][y] == Utils.BACKGROUND_TILE_TYPE ||
+//    level.map[x][y] == Utils.CHEST_TILE_TYPE)
+//  {
+//    return true;
+//  } else {
+//    return false;
+//  }
+//}
 
 class Utils {
   // tile types for level
+  static final int TILE_SIZE = 16;
   static final int BACKGROUND_TILE_TYPE = 0;
   static final int FLOOR_TILE_TYPE = 1;
   static final int START_ROOM_TILE_TYPE = 2;

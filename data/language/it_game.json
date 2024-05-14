@@ -53,24 +53,29 @@
       "zone_2": "",
       "zone_3": "",
       "zone_4": "",
+<<<<<<< HEAD
+      "victory": "Finalmente lo stregone Pagnax e' stato sconfitto!\nLa principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.\n",
+      "defeat": "Sei stato sconfitto Cavaliere!\n",
+=======
       "victory": "Finalmente lo stregone Pagnax e' stato sconfitto! La principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.",
       "defeat": "Sei stato sconfitto Cavaliere!",
+>>>>>>> fix
       "pressButton": "Premi un tasto qualsiasi per continuare"
     },
-    "score": "Punteggio",
     "zone": {
-      "castle": "Castello",
-      "level": "Livello"
+      "castle": "Castello"
     },
-    "boss": {
-      "name": "Stregone Pagnax"
-    },
-    "gametarget": "Trova le scale!",
-    "gametargetboss": "Sconfiggi Pagnax!",
-    "weapon": {
-      "smallSword": "Piccola spada",
-      "sword": "Spada",
-      "masterSword": "Spada Maestra"
+    "ui": {
+      "score": "Punteggio: ",
+      "bossname": "Stregone Pagnax",
+      "gametarget": "Trova le scale!",
+      "gametargetboss": "Sconfiggi Pagnax!",
+      "level":"Livello - ",
+      "weapon": {
+        "smallSword": "Piccola spada",
+        "sword": "Spada",
+        "masterSword": "Spada Maestra"
+      }
     }
   }
 }

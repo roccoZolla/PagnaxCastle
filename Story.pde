@@ -43,7 +43,11 @@ class Story
       previous_state = screen_state;
 
       // Estrai il testo della storia corrispondente all'indice di zona
+<<<<<<< HEAD
+      storyText = bundle.getString("zone_" + game.zoneIndex);
+=======
       storyText = bundle.getString("zone_" + currentZone.zoneIndex);
+>>>>>>> fix
 
       writer(storyText);
       image(p1.right_side, width / 2, height / 2 - 130, 64, 64);
