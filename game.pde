@@ -118,6 +118,7 @@ class Game {
     boss.updatePosition(level.getStartPosition().x, level.getStartPosition().y);
 
     world.add(p1.box);
+    // world.add(p1.getWeapon().box);  // aggiungi l'arma del giocatore al mondo fisico
     world.add(boss.box);
 
     characters.add(p1);
@@ -139,6 +140,14 @@ class Game {
     world.add(dropItem.box);
   }
 
+  int getCols() {
+    return level.cols;
+  }
+  
+  int getRows() {
+    return level.rows;
+  }
+
   // funzione che gestisce tutti gli eventi in input relativi al giocatore
   // e alle altre entita
   void update()
@@ -147,11 +156,11 @@ class Game {
     // handlePlayerDeath();
 
     p1.update();
-    
-    if(moveATCK) 
-    {
-      p1.attack();
-    }
+
+    //if(moveATCK)
+    //{
+    //  p1.attack();
+    //}
     // p1.attack();  // deve essere chiamata solo quando viene premuto il tasto
     //p1.usePotion(spritesLayer);  // deve essere chiamata solo quando viene premuto il tasto
 
@@ -456,7 +465,10 @@ class Game {
               // se l'oggetto è un'arma
               if (dropItem.IsWeapon())
               {
+                world.remove(p1.getWeapon().box);
+                // dropItem.setWeapon(true);
                 p1.setWeapon(dropItem);
+                world.add(p1.getWeapon().box);
               } else if (dropItem.IsHealer())
               {
                 // se l'oggetto è una pozione
@@ -476,11 +488,13 @@ class Game {
               else if (dropItem.getName().equals("dropTorch"))
               {
                 // aumenta il raggio della maschera
+                render.applyTorchEffect();
               }
               //
               else if (dropItem.getName().equals("dropMap"))
               {
                 // attiva la minimapp
+                ui.activateMap();
               }
 
               // imposta l'oggetto come collezionato

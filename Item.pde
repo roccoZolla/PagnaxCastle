@@ -29,7 +29,7 @@ class Item extends Sprite {
     box.setName("Item");
     box.setFillColor(10);
     box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
-    box.setRotatable(false); 
+    box.setRotatable(false);
     box.setFriction(0.5);
     box.setRestitution(0.2);
     box.setSensor(true);  // è un sensore
@@ -50,9 +50,7 @@ class Item extends Sprite {
     box.setName("Item");
     box.setFillColor(10);
     box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
-    box.setRotatable(false); 
-    box.setFriction(0.5);
-    box.setRestitution(0.2);
+    box.setRotatable(false);
     box.setSensor(true);  // è un sensore
 
     // charateristics
@@ -84,15 +82,30 @@ class Item extends Sprite {
     return isWeapon;
   }
 
+  void setWeapon(boolean isWeapon) {
+    this.isWeapon = isWeapon;
+
+    //box.setName("Weapon");
+    //box.setFriction(0.5);
+    //box.setRestitution(0.2);
+    //box.setSensor(false);  // non è un sensore
+  }
+
   boolean IsHealer() {
     return isHealer;
   }
-  
-  void setCollected() { this.isCollected = true; }
-  
-  boolean IsCollected() { return isCollected; }
-  
-  boolean IsCollectible() { return isCollectible; }
+
+  void setCollected() {
+    this.isCollected = true;
+  }
+
+  boolean IsCollected() {
+    return isCollected;
+  }
+
+  boolean IsCollectible() {
+    return isCollectible;
+  }
 
   // metodo per il rilevamento delle collisioni ereditato da sprite
 }

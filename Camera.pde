@@ -24,7 +24,7 @@ class Camera {
     this.cols = width / Utils.TILE_SIZE;
     this.rows = width / Utils.TILE_SIZE;
       
-    this.zoom = 5.0;
+    this.zoom = 1.0;
     this.easing = 0.7;
   }
 }

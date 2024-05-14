@@ -19,7 +19,7 @@ class Level {
 
   // tassp di spawn delle chest
   final float CHEST_PER_LEVEL_RATE = 3;      // chest che posso essere generate per livello, da rivedere perche puo rompere il gioco
-  final float COMMON_CHEST_SPAWN_RATE = 0.7; // tasso di spawn per le casse comuni 70%
+  final float COMMON_CHEST_SPAWN_RATE = 0.1; // tasso di spawn per le casse comuni 70%
 
   // danno delle trappole
   final int DAMAGE_PEAKS = 5;

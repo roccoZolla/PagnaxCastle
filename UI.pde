@@ -27,9 +27,12 @@ class UI {
   boolean isHalfHeart;
 
   // ----- MINIMAPPA -----
+  int tilesize = Utils.TILE_SIZE;
+  int rows = 0, cols = 0;
+
   boolean isMapActive; // di base false
-  float miniMapWidth;
-  float miniMapHeight;
+  final float MINIMAP_WIDTH = 230;
+  final float MINIMAP_HEIGHT = 180;
   float miniMapX;
   float miniMapY;
 
@@ -39,27 +42,33 @@ class UI {
   float playerMiniMapX;
   float playerMiniMapY;
 
+  float enemyMiniMapX;
+  float enemyMiniMapY;
+
   float chestMiniMapX;
   float chestMiniMapY;
 
   UI() {
     uiLayer = createGraphics(width, height);
 
+    buttons = new ArrayList();
+
+    buttons.add(new Button(width - 70, 20, 50, 50, "pause", "", "data/ui/Pause.png"));
+  }
+
+  void init() {
     heartFull = loadImage("data/ui/heartFull.png");
     halfHeart = loadImage("data/ui/halfHeart.png");
     emptyHeart = loadImage("data/ui/emptyHeart.png");
 
-    miniMapWidth = 230;
-    miniMapHeight = 210;
-    miniMapX = 20;
-    miniMapY = uiLayer.height - miniMapHeight;
+    cols = game.getCols();
+    rows = game.getRows();
+
+    miniMapX = uiLayer.width - MINIMAP_WIDTH - 20; // Coordinata X dell'angolo in basso a destra
+    miniMapY = height - MINIMAP_HEIGHT - 20; // Coordinata Y dell'angolo in basso a destra
 
     isBossBattle = false;    // di base, false
     isMapActive = false;    // di base, false, si attiva con la minimappa trovata nei livelli
-
-    buttons = new ArrayList();
-
-    buttons.add(new Button(width - 70, 20, 50, 50, "pause", "", "data/ui/Pause.png"));
   }
 
   void update() {
@@ -88,7 +97,29 @@ class UI {
     uiLayer.textSize(24);
     uiLayer.text("tick timer: " + tick_timer.getTicks(), width / 2, 60);
 
-    /////
+    ///// DEBUG
+    //uiLayer.noFill();
+    //uiLayer.stroke(240);
+    //uiLayer.rect(miniMapX, miniMapY, miniMapWidth, miniMapHeight);
+
+    //uiLayer.noFill();
+    //uiLayer.stroke(255);
+    //uiLayer.line(20, height - 20, miniMapX, height - 20);
+
+    //uiLayer.noFill();
+    //uiLayer.stroke(255);
+    //uiLayer.line(width - 20, 20, width - 20, height - 20);
+
+    //uiLayer.noFill();
+    //uiLayer.stroke(255);
+    //uiLayer.line(width - 70, 20, 20, 20);
+
+    //uiLayer.noFill();
+    //uiLayer.stroke(255);
+    //uiLayer.line(20, 20, 20, height - 20);
+
+
+
 
     // pause button
     if (buttons.get(0).isClicked()) {
@@ -137,7 +168,7 @@ class UI {
     uiLayer.image(red_potion_sprite, 20, 110, 20, 20);
 
     // ------- MINIMAPPA ------
-    // if (isMapActive) displayMinimap();
+    if (isMapActive) displayMinimap();
 
     // ------ ARMA GIOCATORE -----
     uiLayer.noFill(); // Nessun riempimento
@@ -254,66 +285,73 @@ class UI {
   //  this.actualLevel = actualLevel;
   //}
 
-  //void displayMinimap() {
-  //  // ------- MINIMAPPA ------
-  //  // Disegna la minimappa nell'angolo in basso a sinistra
-  //  uiLayer.noFill(); // Nessun riempimento
+  void displayMinimap() {
+    // ------- MINIMAPPA ------
+    // Disegna la minimappa nell'angolo in basso a destra
+    uiLayer.noFill(); // Nessun riempimento
 
-  //  for (int x = 0; x < currentLevel.cols; x++) {
-  //    for (int y = 0; y < currentLevel.rows; y++) {
-  //      int tileType = currentLevel.map[x][y];
+    for (int x = 0; x < cols; x++) {
+      for (int y = 0; y < rows; y++) {
+        int tileType = game.level.map[x][y];
 
-  //      // Controlla se il tile è una parete o un corridoio (bordo della stanza)
-  //      if (tileType == 4 || tileType == 5) {
-  //        // Mappa i tile della minimappa nel rettangolo
-  //        miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
-  //        miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
+        // Controlla se il tile è una parete o un corridoio (bordo della stanza)
+        if (tileType == 4 || tileType == 5) {
+          // Mappa i tile della minimappa nel rettangolo
+          miniMapTileX = map(x, 0, cols, miniMapX, miniMapX + MINIMAP_WIDTH);
+          miniMapTileY = map(y, 0, rows, miniMapY, miniMapY + MINIMAP_HEIGHT);
 
-  //        // Disegna il bordo della stanza sulla minimappa
-  //        uiLayer.stroke(255); // Colore del bordo bianco
-  //        uiLayer.point(miniMapTileX, miniMapTileY);
-  //      } else if (tileType == 3) {
-  //        // ----- SCALE QUADRATO AZZURO -----
-  //        miniMapTileX = map(x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
-  //        miniMapTileY = map(y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
+          // Disegna il bordo della stanza sulla minimappa
+          uiLayer.stroke(255); // Colore del bordo bianco
+          uiLayer.point(miniMapTileX, miniMapTileY);
+        } else if (tileType == 3) {
+          // ----- SCALE QUADRATO AZZURO -----
+          miniMapTileX = map(x, 0, cols, miniMapX, miniMapX + MINIMAP_WIDTH);
+          miniMapTileY = map(y, 0, rows, miniMapY, miniMapY + MINIMAP_HEIGHT);
 
-  //        uiLayer.noFill();
-  //        uiLayer.stroke(0, 127, 255);
-  //        uiLayer.rect(miniMapTileX, miniMapTileY, miniMapWidth / currentLevel.cols, miniMapHeight / currentLevel.rows);
-  //      }
-  //    }
-  //  }
+          uiLayer.noFill();
+          uiLayer.stroke(0, 127, 255);
+          uiLayer.rect(miniMapTileX, miniMapTileY, MINIMAP_WIDTH / cols, MINIMAP_HEIGHT / rows);
+        }
+      }
+    }
 
-  //  // ----- PLAYER PALLINO ROSSO -----
-  //  playerMiniMapX = map(p1.getPosition().x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
-  //  playerMiniMapY = map(p1.getPosition().y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
+    playerMiniMapX = map((p1.getPosition().x - tilesize / 2) /  tilesize, 0, cols, miniMapX, miniMapX + MINIMAP_WIDTH);
+    playerMiniMapY = map((p1.getPosition().y - tilesize / 2) /  tilesize, 0, rows, miniMapY, miniMapY + MINIMAP_HEIGHT);
 
-  //  uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
-  //  uiLayer.noStroke();
-  //  uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5);
+    uiLayer.fill(255, 0, 0); // Colore rosso per il giocatore
+    uiLayer.noStroke();
+    uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5);
 
-  //  // ----- NEMICI PALLINI GIALLI -----
-  //  uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
-  //  uiLayer.noStroke();
+    // ----- NEMICI PALLINI GIALLI -----
+    //for (Enemy enemy : game.level.enemies) {
+    //  enemyMiniMapX = map((enemy.getPosition().x - tilesize / 2) /  tilesize, 0, cols, miniMapX, miniMapX + MINIMAP_WIDTH);
+    //  enemyMiniMapY = map((enemy.getPosition().y - tilesize / 2) /  tilesize, 0, rows, miniMapY, miniMapY + MINIMAP_HEIGHT);
 
-  //  for (Chest chest : currentLevel.treasures) {
-  //    chestMiniMapX = map(chest.getPosition().x, 0, currentLevel.cols, miniMapX, miniMapX + miniMapWidth);
-  //    chestMiniMapY = map(chest.getPosition().y, 0, currentLevel.rows, miniMapY, miniMapY + miniMapHeight);
-  //    uiLayer.ellipse(chestMiniMapX, chestMiniMapY, 5, 5);
-  //  }
-  //}
-  
+    //  uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
+    //  uiLayer.noStroke();
+    //  uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
+    //}
+
+    //for (Chest chest : game.level.treasures) {
+    //  chestMiniMapX = map((chest.getPosition().x - tilesize / 2) /  tilesize, 0, cols, miniMapX, miniMapX + MINIMAP_WIDTH);
+    //  chestMiniMapY = map((chest.getPosition().y - tilesize / 2) /  tilesize, 0, rows, miniMapY, miniMapY + MINIMAP_HEIGHT);
+
+    //  uiLayer.fill(0, 255, 255);
+    //  uiLayer.noStroke();
+    //  uiLayer.ellipse(chestMiniMapX, chestMiniMapY, 5, 5);
+    //}
+  }
+
+
+
   void updateScreen() {
     uiLayer = createGraphics(width, height);
-
-    miniMapY = uiLayer.height - miniMapHeight;
 
     // aggiorna posizione bottone
     buttons.get(0).updatePosition(width - 70, 20, 50, 50);  // pause
   }
 
-  // metodo migliore rispetto al mio
-  // piu rapido e modulare
+  // metodi relativi all'aggiornamento della lingua
   void updateLanguage(Language language) {
     strings = getStringsForLanguage(language);
     updateUI();
@@ -341,7 +379,8 @@ class UI {
       break;
 
     case SPANISH:
-      bundle = bundleESP.getJSONObject("game").getJSONObject("ui");;
+      bundle = bundleESP.getJSONObject("game").getJSONObject("ui");
+      ;
       break;
     }
 

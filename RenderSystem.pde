@@ -7,14 +7,18 @@ class RenderSystem {
   // raggio maschera
   float maskRadius;
 
+  int tileSize = 16;
+
   // triggers
+  boolean isAttacking = false;
+
   boolean isCollidingWithChest = false;
   FBody collidingChest;
 
   boolean isCollidingWithItem = false;
   FBody collidingItem;
 
-  boolean maxHpTrigger;  // attiva la scritta "salute al massimo"
+  // boolean maxHpTrigger;  // attiva la scritta "salute al massimo"
 
   RenderSystem() {
   }
@@ -50,7 +54,11 @@ class RenderSystem {
     // disegna il mask layer se non ci troviamo nel livello finale
     // maschera
     // if (!isBossLevel) drawMaskLayer();
-    //updateMaskLayer();
+    // updateMaskLayer();
+  }
+
+  void applyTorchEffect() {
+    maskRadius += 30;  // valore provvisorio
   }
 
   private void updateGameLayer() {
@@ -88,6 +96,11 @@ class RenderSystem {
     // non vengono eseguite
     displayCharacter();
 
+    // se il giocatore sta attaccando mostra l'arma
+    if (isAttacking) {
+      displayWeaponPlayer();
+    }
+
     if (!game.IsBossLevel()) {
       displayChests();
       displayCoins();
@@ -113,23 +126,23 @@ class RenderSystem {
   }
 
   private void updateMaskLayer() {
-    //maskLayer.beginDraw();
-    //maskLayer.background(0, 255);
-    //maskLayer.blendMode(REPLACE);
+    maskLayer.beginDraw();
+    maskLayer.background(0, 255);
+    maskLayer.blendMode(REPLACE);
 
-    //maskLayer.translate(-camera.x, -camera.y);
-    //maskLayer.scale(camera.zoom);
+    maskLayer.translate(-camera.x, -camera.y);
+    maskLayer.scale(camera.zoom);
 
-    //float centerX = p1.getPosition().x * currentLevel.tileSize + currentLevel.tileSize/ 2;
-    //float centerY = p1.getPosition().y * currentLevel.tileSize + currentLevel.tileSize/ 2;
+    float centerX = p1.getPosition().x;
+    float centerY = p1.getPosition().y;
 
-    //maskLayer.fill(255, 0);
-    //maskLayer.ellipseMode(RADIUS);
-    //maskLayer.ellipse(centerX, centerY, maskRadius, maskRadius);
+    maskLayer.fill(255, 0);
+    maskLayer.ellipseMode(RADIUS);
+    maskLayer.ellipse(centerX, centerY, maskRadius, maskRadius);
 
-    //maskLayer.endDraw();
+    maskLayer.endDraw();
 
-    //image(maskLayer, 0, 0);
+    image(maskLayer, 0, 0);
   }
 
   // aggiorna i layer con le dimensioni aggiornate della finestra
@@ -151,6 +164,36 @@ class RenderSystem {
         character.display(spritesLayer);
       }
     }
+  }
+
+  private void displayWeaponPlayer()
+  {
+    PVector new_position = p1.getPosition().copy();
+
+    new_position.x = (new_position.x - tileSize/2) / tileSize;
+    new_position.y = (new_position.y - tileSize/2) / tileSize;
+
+    switch(p1.getDirection())
+    {
+    case UP:
+      new_position.y -= 1;
+      break;
+
+    case DOWN:
+      new_position.y += 1;
+      break;
+
+    case RIGHT:
+      new_position.x += 1;
+      break;
+
+    case LEFT:
+      new_position.x -= 1;
+      break;
+    }
+
+    p1.getWeapon().updatePosition(new_position);
+    p1.getWeapon().display(spritesLayer);
   }
 
   // disegna solo cio che vede il giocatore

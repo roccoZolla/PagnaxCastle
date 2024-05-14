@@ -11,9 +11,9 @@ class Chest extends Item {
   final float DROP_GOLDEN_KEY = 0.3;  // 0.1
   final float DROP_POTION = 0.3;
   
-  final float DROP_TORCH = 0.3;
-  final float DROP_MAP = 0.3;
-  final float DROP_MASTER_SWORD = 0.4;
+  final float DROP_TORCH = 0.0;
+  final float DROP_MAP = 0.9;
+  final float DROP_MASTER_SWORD = 0.0;
   
 
   Chest(PImage sprite) {

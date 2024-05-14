@@ -71,6 +71,20 @@ void contactStarted(FContact contact) {
     }
   }
 
+  // arma del giocatore
+  if (bodyName1.equals("Weapon") && bodyName2.equals("Enemy")||
+    bodyName1.equals("Enemy") && bodyName2.equals("Weapon"))
+  {
+    if (bodyName1.equals("Enemy"))
+    {
+      // game.handleChest(body1);
+      println("collisione nemico arma");
+    } else {
+      // game.handleChest(body2);
+      println("collisione nemico arma");
+    }
+  }
+
   // collisione con le chest
   if (bodyName1.equals("Chest") && bodyName2.equals("Player")
     || bodyName2.equals("Chest") && bodyName1.equals("Player"))
