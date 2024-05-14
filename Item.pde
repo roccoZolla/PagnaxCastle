@@ -15,6 +15,7 @@ class Item extends Sprite {
   // String description;
 
   // constructors
+<<<<<<< HEAD
   Item() {
   }
 
@@ -34,6 +35,22 @@ class Item extends Sprite {
     box.setRestitution(0.2);
     box.setSensor(true);  // è un sensore
 
+=======
+  Item() {}
+  
+  Item(PImage sprite, String name) {
+    super();
+    
+    // sprite
+    this.sprite = sprite;
+    
+    // box settings
+    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setStatic(true);
+    box.setFriction(0.8);
+    box.setRestitution(0.1);
+    
+>>>>>>> fix
     // charateristics
     this.name = name;
   }
@@ -41,6 +58,7 @@ class Item extends Sprite {
   // costruttore degli oggetti curativi e delle armi
   Item(PImage sprite, String name, boolean isHealer, int bonusHp, boolean isWeapon, int damage) {
     super();
+<<<<<<< HEAD
 
     // sprite
     this.sprite = sprite;
@@ -53,6 +71,18 @@ class Item extends Sprite {
     box.setRotatable(false);
     box.setSensor(true);  // è un sensore
 
+=======
+    
+    // sprite
+    this.sprite = sprite;
+    
+    // box settings
+    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setStatic(true);
+    box.setFriction(0.8);
+    box.setRestitution(0.1);
+    
+>>>>>>> fix
     // charateristics
     this.name = name;
 

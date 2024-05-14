@@ -38,11 +38,19 @@ class Character extends Sprite
   }
 }
 
+<<<<<<< HEAD
 class Player extends Character
 {
   // componente velocita  del player
   // non definitivo
   float speed = 120.0f;
+=======
+class Player extends Character 
+{
+  // componente velocita  del player
+  // non definitivo
+  float speed = 100.0f;
+>>>>>>> fix
 
   PImage left_side;  // lato sinistro dello sprite del giocatore
   PImage right_side; // lato destro dello sprite del giocatore
@@ -54,6 +62,11 @@ class Player extends Character
   boolean moveDOWN;
   boolean moveRIGHT;
   boolean moveLEFT;
+<<<<<<< HEAD
+=======
+
+  Direction direction;
+>>>>>>> fix
 
   boolean moveATCK;    // attacco j
   boolean moveINTR;    // interazione k
@@ -69,6 +82,10 @@ class Player extends Character
 
   // caratteristiche del player
   int playerMaxHP;
+<<<<<<< HEAD
+=======
+  // int playerHP;
+>>>>>>> fix
   int playerScore;
   int coins;      // numero di monete che ha il giocatore
   Item weapon;
@@ -88,9 +105,21 @@ class Player extends Character
 
     this.sprite = right_side;
 
+<<<<<<< HEAD
     createBox();
 
     this.direction = Direction.RIGHT;
+=======
+    // box's settings
+    box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
+    box.setName("Player");
+    box.setFillColor(10);
+    box.setRotatable(false);
+    box.setFriction(0.5);
+    box.setRestitution(0.2);
+
+    this.direction = Direction.DESTRA;
+>>>>>>> fix
 
     // charateristics
     this.playerScore = 0;
@@ -103,11 +132,17 @@ class Player extends Character
 
     this.golden_key = new Item(null, "golden_key");
     this.silver_key = new Item(null, "silver_key");
+<<<<<<< HEAD
 
     // sistemare generazione arma giocatore
     this.weapon = new Item(small_sword_sprite, "Piccola Spada", false, 0, true, 10);
 
     this.potion = new Item(null, "red_potion", true, 20, false, 0);
+=======
+    this.weapon = new Item(small_sword_sprite, "Piccola Spada", false, 0, true, 10);
+    this.potion = new Item(null, "red_potion", true, 20, false, 0);
+    // this.potion = new Healer(null, null, "red_potion", 20);
+>>>>>>> fix
 
     // carica lo sprite dell'arma e del giocatore
     weapon.updateSprite(small_sword_sprite);
@@ -121,6 +156,7 @@ class Player extends Character
     this.moveLEFT = false;
   }
 
+<<<<<<< HEAD
   void createBox()
   {
     // box's settings
@@ -182,6 +218,32 @@ class Player extends Character
 
   void setWeapon(Item weapon) {
     this.weapon = weapon;
+=======
+  // aggiorna il movimento del giocatore
+  void update()
+  {
+    if (moveUP)
+    {
+      box.addForce(0, -1 * speed);
+    }
+
+    if (moveDOWN)
+    {
+      box.addForce(0, 1 * speed);
+    }
+
+    if (moveLEFT)
+    {
+      box.addForce(-1 * speed, 0);
+      sprite = left_side;
+    }
+
+    if (moveRIGHT)
+    {
+      box.addForce(1 * speed, 0);
+      sprite = right_side;
+    }
+>>>>>>> fix
   }
 
   void collectCoin() {
@@ -204,9 +266,14 @@ class Player extends Character
   // riproduci suono
   void restoreHP(int HP) {
     drinkPotion.play();
+<<<<<<< HEAD
 
     hp += HP;
 
+=======
+    hp += HP;
+
+>>>>>>> fix
     if (hp > playerMaxHP) hp = playerMaxHP;
   }
 
@@ -234,6 +301,7 @@ class Player extends Character
           //  attackExecuted = true;
           //}
         } else {
+<<<<<<< HEAD
           //// for (Enemy enemy : currentLevel.enemies)
           //for (Enemy enemy : level.enemies)
           //{
@@ -246,6 +314,19 @@ class Player extends Character
           //  //  attackExecuted = true;
           //  //}
           //}
+=======
+          for (Enemy enemy : currentLevel.enemies)
+          {
+            //if (checkCollision(weapon, enemy))
+            //{
+            //  swordAttack.play();
+            //  // enemy.takeDamage(weapon.getDamage());
+            //  // l'attacco è stato eseguito non continuare ad attaccare
+            //  // println("attacco eseguito...");
+            //  attackExecuted = true;
+            //}
+          }
+>>>>>>> fix
         }
       }
     } else
@@ -257,6 +338,39 @@ class Player extends Character
     }
   }
 
+<<<<<<< HEAD
+=======
+  // da migliorare
+  void displayWeapon(PGraphics layer) {
+    if (displayAttack)
+    {
+      PVector new_position = getPosition().copy();
+
+      switch(direction)
+      {
+      case SOPRA:
+        new_position.y -= 1;
+        break;
+
+      case GIU:
+        new_position.y += 1;
+        break;
+
+      case DESTRA:
+        new_position.x += 1;
+        break;
+
+      case SINISTRA:
+        new_position.x -= 1;
+        break;
+      }
+
+      weapon.updatePosition(new_position);
+      weapon.display(layer);
+    }
+  }
+
+>>>>>>> fix
   void usePotion(PGraphics layer) {
     if (moveUSE && (!moveATCK && !moveINTR)) {
       if (!isUsingPotion) {

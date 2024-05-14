@@ -1,21 +1,37 @@
 TO DO:
 
+<<<<<<< HEAD
+=======
+[ ] - implementare ECS ( ? ) 
+>>>>>>> fix
 [ ] - aggiungere supporto per controller
 [ ] - aggiungere difficolta
 [ ] - sistemare il frame rate
 [ ] - gestione animazioni
 [ 🗸 ] - migliorare collision system (aggiungere)
  [ ] - da sistemare movimento nemici che trapassano i muri
+<<<<<<< HEAD
  [ 🗸 ] - collisione con chest non proprio immediata 
 [ 🗸 ] - migliorare organizzazione delle classi
  [ 🗸  ] - classe Game
  [ 🗸  ] - classe Player
  [ 🗸 ] - World, Zone, Level
+=======
+ [ ] - collisione con chest non proprio immediata 
+[ ] - migliorare organizzazione delle classi
+ [ ] - classe Game
+ [ ] - classe Player
+ [ ] - World, Zone, Level
+>>>>>>> fix
 [ ] - generazione livelli (perimetro stanze) 
 [ ] - migliorare nemici
  [ ] - ia piu efficiente
 [ 🗸 ] - aggiungere logo screen
  [ ] - aggiungere suono di boot up
+<<<<<<< HEAD
+=======
+[ 🗸 ] - ricordarti di togliere game.render.spriteslayer
+>>>>>>> fix
 [ ] - rivedere completamente la classe del Boss
 [ ] - aggiungere effetto di cura
 [ ] - a volte non viene caricato il font 
@@ -31,6 +47,7 @@ TO DO:
 [ ] - aggiungere scatto (quarto pulsante)
 [ ] - quando passo al livello successivo che succede al livello precedente? rimane in memoria? 
 [ ] - possibile file json dove mantenere i vari pezzi di storia che in base alla zona vengono mostrati eliminando il collegamento storia zona a livello di classe
+<<<<<<< HEAD
 [ ] - numero di chest e nemici variano in base alla difficolta e vengono gestiti nella classe livello
 [ ] - logica tramite cui calcolare il numero delle stanze presenti in un livello
 [ ] - fixare danno causato da trappole
@@ -40,6 +57,8 @@ TO DO:
 [ ] - fixare ui boss battle
 [ ] - fixare come viene calcolato lo score
  [ ] - sistemare valori di score
+=======
+>>>>>>> fix
 
 Idee game design:
 

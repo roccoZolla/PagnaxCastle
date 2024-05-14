@@ -126,6 +126,21 @@ void windowResized() {
 
 // calcola la posizione di uno sprite all'interno della scena di gioco
 // se lo sprite si trova al di fuori della scena lo sprite non viene renderizzato
+<<<<<<< HEAD
+=======
+//boolean isInVisibleArea(PVector spritePosition) {
+//  // Calcola il rettangolo visibile
+//  int tileSize = currentLevel.tileSize;
+
+//  int startX = floor((camera.x / (tileSize * camera.zoom)));
+//  int startY = floor((camera.y / (tileSize * camera.zoom)));
+//  int endX = ceil((camera.x + width) / (tileSize * camera.zoom));
+//  int endY = ceil((camera.y + height) / (tileSize * camera.zoom));
+
+//  return (spritePosition.x >= startX && spritePosition.x <= endX && spritePosition.y >= startY && spritePosition.y <= endY);
+//}
+
+>>>>>>> fix
 boolean isInVisibleArea(PVector boxPosition) {
   // Calcola il rettangolo visibile
   int tileSize = 16;

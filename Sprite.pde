@@ -34,7 +34,12 @@ class Sprite { //<>// //<>//
   PImage getSprite() {
     return sprite;
   }
+  
+  FBox getBox() {
+    return box;
+  }
 
+<<<<<<< HEAD
   FBox getBox() {
     return box;
   }
@@ -47,6 +52,13 @@ class Sprite { //<>// //<>//
     box.setPosition(position.x * SPRITE_SIZE + SPRITE_SIZE / 2, position.y * SPRITE_SIZE + SPRITE_SIZE / 2);
   }
 
+=======
+  // setters
+  void updatePosition(PVector position) {
+    box.setPosition(position.x * SPRITE_SIZE + SPRITE_SIZE / 2, position.y * SPRITE_SIZE + SPRITE_SIZE / 2);
+  }
+  
+>>>>>>> fix
   void updatePosition(float x, float y) {
     box.setPosition(x * SPRITE_SIZE + SPRITE_SIZE / 2, y * SPRITE_SIZE + SPRITE_SIZE / 2);
   }
@@ -61,11 +73,14 @@ class Sprite { //<>// //<>//
     layer.noFill(); // Nessun riempimento
     // layer.stroke(255); // Colore del bordo bianco
     layer.image(sprite, box.getX(), box.getY(), SPRITE_SIZE, SPRITE_SIZE);
+<<<<<<< HEAD
   }
 
   void displayHitbox(PGraphics layer) {
     layer.noFill(); // Nessun riempimento
     layer.stroke(255); // Colore del bordo rosso per l'hitbox
     layer.rect(box.getX() - SPRITE_SIZE / 2, box.getY() - SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE);
+=======
+>>>>>>> fix
   }
 }

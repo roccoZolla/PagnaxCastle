@@ -3,6 +3,7 @@ class Enemy extends Character {
   int damage;
   String name;
   int scoreValue;
+<<<<<<< HEAD
 
   // componenti fisiche
   float velocity_x = 0;
@@ -25,6 +26,30 @@ class Enemy extends Character {
   final float DROP_HALF_HEART = 0.3;
 
   Enemy(PImage sprite, int enemyHP, String name) {
+=======
+
+  // componenti fisiche
+  float velocity_x = 0;
+  float velocity_y = 0;
+  float speed = 0.1f;
+
+  float currentDirection = random(4);
+  int framesInCurrentDirection = 0;
+  int maxFramesInSameDirection = 30;
+
+  private final int attack_interval = 60; // Tempo di cooldown in millisecondi (3 secondi)
+  private long attack_timer = attack_interval;
+  boolean first_attack;    // di base è true
+  
+  // drop probabilities constant
+  // non definitive
+  final float DROP_NOTHING = 0.3;
+  final float DROP_SILVER_KEY = 0.1;
+  final float DROP_HEART = 0.3;
+  final float DROP_HALF_HEART = 0.3;
+
+  Enemy(PImage sprite, int enemyHP, String name, int damage) {
+>>>>>>> fix
     super();
 
     // sprite
@@ -34,11 +59,17 @@ class Enemy extends Character {
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
     box.setName("Enemy");
     box.setFillColor(40);
+<<<<<<< HEAD
     box.setAllowSleeping(true);  // permette al motore fisico di "addormentare" l'oggetto -> risparmio di risorse
     box.setRotatable(false);
     box.setFriction(1);   // quanto attrito fa
     box.setRestitution(0);  // quanto rimbalza
     box.setDamping(0);      // ammortizza il movimento
+=======
+    box.setRotatable(false);
+    box.setFriction(0.5);
+    box.setRestitution(0.2);
+>>>>>>> fix
 
     // characteristics
     this.hp = enemyHP;
@@ -47,6 +78,7 @@ class Enemy extends Character {
     first_attack = true;
   }
 
+<<<<<<< HEAD
   void setDamage(int damage) {
     this.damage = damage;
   }
@@ -61,6 +93,10 @@ class Enemy extends Character {
 
   int getScoreValue() {
     return scoreValue;
+=======
+  int getDamage() {
+    return damage;
+>>>>>>> fix
   }
 
   // gestisce il movimento del nemico
@@ -188,6 +224,7 @@ class Enemy extends Character {
       // drop della chiave d'argento
       Item dropSilverKey = new Item(silver_key_sprite, "dropSilverKey");
       dropSilverKey.updatePosition(dropPosition);
+<<<<<<< HEAD
       game.addDropItem(dropSilverKey);
     } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY + DROP_HEART)
     {
@@ -201,6 +238,23 @@ class Enemy extends Character {
       Item dropHalfHeart = new Item(half_heart_sprite, "dropHalfHeart", true, 5, false, 0);
       dropHalfHeart.updatePosition(dropPosition);
       game.addDropItem(dropHalfHeart);
+=======
+      currentLevel.dropItems.add(dropSilverKey);
+    } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY + DROP_HEART)
+    {
+      // drop del cuore intero
+      // Healer dropHeart = new Healer(dropPosition, heart_sprite, "dropHeart", 10);
+      Item dropHeart = new Item(heart_sprite, "dropHeart", true, 10, false, 0);
+      dropHeart.updatePosition(dropPosition);
+      currentLevel.dropItems.add(dropHeart);
+    } else if (randomValue <= DROP_NOTHING + DROP_SILVER_KEY + DROP_HEART + DROP_HALF_HEART)
+    {
+      // drop del mezzocuore
+      // Healer dropHalfHeart = new Healer(dropPosition, half_heart_sprite, "dropHalfHeart", 5);
+      Item dropHalfHeart = new Item(half_heart_sprite, "dropHalfHeart", true, 5, false, 0);
+      dropHalfHeart.updatePosition(dropPosition);
+      currentLevel.dropItems.add(dropHalfHeart);
+>>>>>>> fix
     }
   }
 }

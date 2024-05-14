@@ -10,6 +10,7 @@ class RenderSystem {
   int tileSize = 16;
 
   // triggers
+<<<<<<< HEAD
   boolean isAttacking = false;
 
   boolean isCollidingWithChest = false;
@@ -19,6 +20,15 @@ class RenderSystem {
   FBody collidingItem;
 
   // boolean maxHpTrigger;  // attiva la scritta "salute al massimo"
+=======
+  boolean isCollidingWithChest = false;
+  boolean isPossibleToOpenChest = false;        // trigger che attiva il disegno della k quando si puo aprire una chest
+
+  boolean drawUpBuff;
+  boolean drawDownBuff;
+  boolean drawInteractableLetter;  // trigger che attiva il disegno della lettera di interazione
+  boolean maxHpTrigger;  // attiva la scritta "salute al massimo"
+>>>>>>> fix
 
   RenderSystem() {
   }
@@ -93,6 +103,7 @@ class RenderSystem {
     spritesLayer.translate(-camera.x, -camera.y);
     spritesLayer.scale(camera.zoom);
     spritesLayer.imageMode(CENTER);
+<<<<<<< HEAD
     
     // aggiungere logica per cui quando si è nel livello del boss
     // non vengono eseguite
@@ -108,6 +119,34 @@ class RenderSystem {
       displayCoins();
       displayDropItems();
     }
+=======
+
+    // metodo che gestisce le collisioni del player e di ogni altra entita
+    // p1.display(spritesLayer);
+    // p1.displayHitbox(spritesLayer);
+    // p1.displayWeapon(spritesLayer);
+
+    // aggiungere logica per cui quando si è nel livello del boss
+    // non vengono eseguite
+    displayCharacter();
+    displayChests();
+    displayCoins();
+    displayDropItems();
+
+    //if (!game.isBossLevel) {
+    //  displayEnemies();
+    //  displayChests();
+    //  displayCoins();
+    //  displayDropItems();
+    //} else {
+    //  game.boss.display(spritesLayer);
+    //}
+
+    // debug
+    // currentLevel.level.drawDebug(spritesLayer);
+    //currentLevel.level.draw(spritesLayer);
+
+>>>>>>> fix
 
     //if (!game.isBossLevel) {
     //  displayEnemies();
@@ -161,13 +200,19 @@ class RenderSystem {
     while (iterator.hasNext()) {
       Character character = iterator.next();
 
+<<<<<<< HEAD
       if (isInVisibleArea(character.getPosition()) /*&&
        !character.IsDead()*/) {
+=======
+      if (isInVisibleArea(character.getPosition()) &&
+        !character.IsDead()) {
+>>>>>>> fix
         character.display(spritesLayer);
       }
     }
   }
 
+<<<<<<< HEAD
   private void displayWeaponPlayer()
   {
     PVector new_position = p1.getPosition().copy();
@@ -264,17 +309,40 @@ class RenderSystem {
     //  }
     //}
   }
+=======
+
+  // da spostare nel render system
+  //private void displayEnemies()
+  //{
+  //  Iterator<Enemy> iterator = currentLevel.enemies.iterator();
+
+  //  while (iterator.hasNext()) {
+  //    Enemy enemy = iterator.next();
+
+  //    if (isInVisibleArea(enemy.getPosition())) {
+  //      if (enemy.hp > 0) {
+  //        enemy.display(spritesLayer);
+  //      }
+  //    }
+  //  }
+  //}
+>>>>>>> fix
 
   // da spostare nel render system
   // da rivedere
   void displayChests() {
+<<<<<<< HEAD
     for (Chest chest : game.level.treasures)
     {
+=======
+    for (Chest chest : currentLevel.treasures) {
+>>>>>>> fix
       if (isInVisibleArea(chest.getPosition()))
       {
         // mostra le chest nell'area visibile
         chest.display(spritesLayer);
 
+<<<<<<< HEAD
         if (isCollidingWithChest)
         {
           if (chest.getBox() == collidingChest)
@@ -294,6 +362,22 @@ class RenderSystem {
               float crossImageY = (p1.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
               spritesLayer.image(cross_sprite, crossImageX, crossImageY);
             }
+=======
+        if (isCollidingWithChest && !chest.isOpen())
+        {
+          if (isPossibleToOpenChest)
+          {
+            // chest.displayHitbox(spritesLayer);
+            // disegna la lettera che indica il tasto per aprire la cassa
+            float letterImageX = (chest.getPosition().x);
+            float letterImageY = (chest.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
+            spritesLayer.image(letter_k, letterImageX, letterImageY);
+          } else
+          {
+            float crossImageX = (p1.getPosition().x);
+            float crossImageY = (p1.getPosition().y - 20); // Regola l'offset verticale a tuo piacimento
+            spritesLayer.image(cross_sprite, crossImageX, crossImageY);
+>>>>>>> fix
           }
         }
       }
@@ -320,6 +404,7 @@ class RenderSystem {
         // mostra le monete nell'area visibile
         dropItem.display(spritesLayer);
 
+<<<<<<< HEAD
         if (dropItem.getBox() == collidingItem)
         {
           // se sta collidendo con l'oggetto
@@ -354,6 +439,34 @@ class RenderSystem {
             }
           }
         }
+=======
+        //if (checkCollision(item, p1))
+        //{
+        //  // item.displayHitbox(spritesLayer);
+
+        //  if (drawInteractableLetter)
+        //  {
+        //    // disegna la lettera ch eindica il tasto per interagire con l'item
+        //    float letterImageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2));
+        //    float letterImageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+        //    spritesLayer.image(letter_k, letterImageX, letterImageY);
+        //  }
+
+        //  if (item.isWeapon) {
+        //    if (drawUpBuff)
+        //    {
+        //      float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+        //      float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+        //      spritesLayer.image(up_buff, imageX, imageY);
+        //    } else if (drawDownBuff)
+        //    {
+        //      float imageX = (item.getPosition().x * currentLevel.tileSize + (item.sprite.width / 2) - 20);
+        //      float imageY = (item.getPosition().y * currentLevel.tileSize + (item.sprite.height / 2)) - 20; // Regola l'offset verticale a tuo piacimento
+        //      spritesLayer.image(down_buff, imageX, imageY);
+        //    }
+        //  }
+        //}
+>>>>>>> fix
       }
     }
   }

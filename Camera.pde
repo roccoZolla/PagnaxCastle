@@ -8,6 +8,12 @@ class Camera {
   int rows;
 
   void update() {
+<<<<<<< HEAD
+=======
+    //float targetCameraX = p1.getPosition().x * currentLevel.tileSize * zoom - width / 2;
+    //float targetCameraY = p1.getPosition().y * currentLevel.tileSize * zoom - height / 2;    
+    
+>>>>>>> fix
     float targetCameraX = p1.box.getX() * zoom - width / 2;
     float targetCameraY =  p1.box.getY() * zoom - height / 2;
 
