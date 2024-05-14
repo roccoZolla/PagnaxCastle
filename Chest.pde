@@ -16,12 +16,9 @@ class Chest extends Item {
   final float DROP_MASTER_SWORD = 0.4;
   
 
-  Chest(PImage sprite, String name) {
+  Chest(PImage sprite) {
     super();
-
-    // name
-    this.name = name;
-
+    
     // sprite
     this.sprite = sprite;
 

@@ -66,6 +66,6 @@ class Sprite { //<>// //<>//
   void displayHitbox(PGraphics layer) {
     layer.noFill(); // Nessun riempimento
     layer.stroke(255); // Colore del bordo rosso per l'hitbox
-    layer.rect(box.getX(), box.getY(), SPRITE_SIZE, SPRITE_SIZE);
+    layer.rect(box.getX() - SPRITE_SIZE / 2, box.getY() - SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE);
   }
 }

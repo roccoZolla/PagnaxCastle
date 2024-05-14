@@ -2,7 +2,7 @@ class Level {
   boolean completed = false;  // un livello si definisce completo se sono state raccolte tutte le monete e aperte tutte le casse
   int numberOfRooms = 8;  // aggiungere logica per il calcolo del numero delle stanze, 8 valore di test
   // ad esempio in base alle difficolta, facile 5 stanze, 7 normale, 9 difficile
-  boolean isFinalLevel;      // indica se è il livello finale, composto da una singola stanza, di base false
+  // boolean isFinalLevel;      // indica se è il livello finale, composto da una singola stanza, di base false
 
   Sprite stairsNextFloor;
 
@@ -15,7 +15,11 @@ class Level {
   int endRoomIndex;
 
   // probabilita di spawn delle trappole all'interno del livello
-  final double TRAP_SPAWN_PROBABILITY = 0.03;
+  final float TRAP_SPAWN_PROBABILITY = 0.03;
+
+  // tassp di spawn delle chest
+  final float CHEST_PER_LEVEL_RATE = 3;      // chest che posso essere generate per livello, da rivedere perche puo rompere il gioco
+  final float COMMON_CHEST_SPAWN_RATE = 0.7; // tasso di spawn per le casse comuni 70%
 
   // danno delle trappole
   final int DAMAGE_PEAKS = 5;
@@ -43,7 +47,7 @@ class Level {
   ArrayList<Trap> traps;      // contiene le trappole presenti nel livello
   ArrayList<Chest> treasures; // lista delle chest
   ArrayList<Enemy> enemies;   // lista dei nemici
-  
+
 
   Level()
   {
@@ -169,7 +173,7 @@ class Level {
 
     int roomX = int(random(1, cols - roomWidth - 1));
     int roomY = int(random(1, rows - roomHeight - 1));
-    
+
     println("Boss room x: " + roomX);
     println("Boss room y: " + roomY);
 
@@ -178,22 +182,23 @@ class Level {
     rooms.add(room);
 
     // Estrai i muri dell'immagine dei muri delle stanze
-    for (int x = roomX; x < roomX + roomWidth; x++) 
+    for (int x = roomX; x < roomX + roomWidth; x++)
     {
-      for (int y = roomY; y < roomY + roomHeight; y++) 
+      for (int y = roomY; y < roomY + roomHeight; y++)
       {
-        if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) 
+        if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1)
         {
           map[x][y] = Utils.WALL_PERIMETER_TILE_TYPE;
-        } else 
+        } else
         {
           map[x][y] = Utils.FLOOR_TILE_TYPE;
           // spawn delle trappole all'interno delle stanze
           // da generare solo per la modalita difficile
-          if (random(1) <= TRAP_SPAWN_PROBABILITY) 
+          if (random(1) <= TRAP_SPAWN_PROBABILITY)
           {
             map[x][y] = Utils.PEAKS_TILE_TYPE;
-            Trap trap = new Trap(peaksTrapImage, DAMAGE_PEAKS);
+            Trap trap = new Trap(peaksTrapImage);
+            trap.setDamage(DAMAGE_PEAKS);
             trap.updatePosition(x, y);
             traps.add(trap);
             game.world.add(trap.box);
@@ -216,7 +221,7 @@ class Level {
     do {
       // println("assegnazione posizione finale...");
       endRoomIndex = int(random(rooms.size()));
-    } while (endRoomIndex == startRoomIndex && !isFinalLevel);
+    } while (endRoomIndex == startRoomIndex);
 
     rooms.get(startRoomIndex).startRoom = true;
     rooms.get(endRoomIndex).endRoom = true;
@@ -239,21 +244,22 @@ class Level {
         rooms.add(room);
 
         // Estrai i muri dell'immagine dei muri delle stanze
-        for (int x = roomX; x < roomX + roomWidth; x++) 
+        for (int x = roomX; x < roomX + roomWidth; x++)
         {
-          for (int y = roomY; y < roomY + roomHeight; y++) 
+          for (int y = roomY; y < roomY + roomHeight; y++)
           {
-            if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1) 
+            if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1)
             {
               map[x][y] = Utils.WALL_PERIMETER_TILE_TYPE;
-            } else 
+            } else
             {
               map[x][y] = Utils.FLOOR_TILE_TYPE;
               // spawn delle trappole all'interno delle stanze
-              if (random(1) <= TRAP_SPAWN_PROBABILITY) 
+              if (random(1) <= TRAP_SPAWN_PROBABILITY)
               {
                 map[x][y] = Utils.PEAKS_TILE_TYPE;
-                Trap trap = new Trap(peaksTrapImage, DAMAGE_PEAKS);
+                Trap trap = new Trap(peaksTrapImage);
+                trap.setDamage(DAMAGE_PEAKS);
                 trap.updatePosition(x, y);
                 traps.add(trap);
                 game.world.add(trap.box);
@@ -359,15 +365,13 @@ class Level {
   // da sistemare ma decente
   private void generateRandomChests() {
     // println("genero le chest...");
-    int spawnLevel = 3; // Livello di spawn delle chest, tre chest per livello
     boolean positionOccupied;
     Chest chest;
     Room room;
     // la somma dei due tassi deve essere 1
-    float commonChestSpawnRate = 0.7; // tasso di spawn per le casse comuni 70%
     float spawnRadius = 2;    // raggio di spawn della chest rispetto al centro della stanza
 
-    for (int i = 0; i < spawnLevel; i++) {
+    for (int i = 0; i < CHEST_PER_LEVEL_RATE; i++) {
       // se tutte le stanze sono occupate non creare la chest
       if (areAllRoomsOccupied()) {
         // println("tutte le stanze sono occupate!");
@@ -379,7 +383,7 @@ class Level {
       do {
         room = rooms.get((int) random(rooms.size()));
         // println("check chest in the room...");
-      } while (room.isChestPresent());
+      } while (room.IsChestPresent());
 
       room.setIsChestPresent(true);
 
@@ -416,9 +420,9 @@ class Level {
       // di base le casse sono chiuse e non sono rare
       // isOpen è impostato su false nel costruttore
       // isRare è impostato su false nel costruttore
-      if (chestType < commonChestSpawnRate) {
+      if (chestType < COMMON_CHEST_SPAWN_RATE) {
         // Genera una cassa comune
-        chest = new Chest(chest_close_sprite, "Cassa comune" + i);
+        chest = new Chest(chest_close_sprite);
         chest.updatePosition(x, y);
         // chest.setId(i);
         chest.setOpenWith(silver_key);              // Specifica l'oggetto chiave necessario
@@ -426,13 +430,13 @@ class Level {
         // Genera una cassa rara
         // verifica che non siano stati gia droppati i drop della cassa rara
         if (!game.isTorchDropped || !game.isMapDropped || !game.isMasterSwordDropped) {
-          chest = new Chest(special_chest_close_sprite, "Cassa rara" + i);
+          chest = new Chest(special_chest_close_sprite);
           chest.updatePosition(x, y);
           // chest.setId(i);
           chest.setOpenWith(golden_key);              // Specifica l'oggetto chiave necessario
           chest.setIsRare(true);
         } else { // altrimenti genera una cassa normale
-          chest = new Chest(chest_close_sprite, "Cassa comune" + i);
+          chest = new Chest(chest_close_sprite);
           chest.updatePosition(x, y);
           // chest.setId(i);
           chest.setOpenWith(silver_key);
@@ -451,7 +455,7 @@ class Level {
 
   private boolean areAllRoomsOccupied() {
     for (Room room : rooms) {
-      if (!room.isChestPresent()) {
+      if (!room.IsChestPresent()) {
         return false;
       }
     }
@@ -488,7 +492,9 @@ class Level {
         } while (positionOccupied);
 
         // creazione dell'entita nemico
-        Enemy enemy = new Enemy(rat_enemy_sprite, ENEMY_HP, "rat", 5);
+        Enemy enemy = new Enemy(rat_enemy_sprite, ENEMY_HP, "rat");
+        enemy.setDamage(5);
+        enemy.setScoreValue(20);
         enemy.updatePosition(x, y);
 
         // Aggiungi il nemico alla lista
@@ -616,14 +622,14 @@ class Level {
       return horizontalOverlap && verticalOverlap;
     }
 
-    boolean isChestPresent() {
+    boolean IsChestPresent() {
       return isChestPresent;
     }
 
-    boolean isStartRoom() {
+    boolean IsStartRoom() {
       return startRoom;
     }
-    boolean isEndRoom() {
+    boolean IsEndRoom() {
       return endRoom;
     }
 
@@ -636,7 +642,7 @@ class Level {
 class Trap extends Sprite {
   int damage;
 
-  Trap(PImage image, int damage)
+  Trap(PImage image)
   {
     super();
 
@@ -652,7 +658,10 @@ class Trap extends Sprite {
     box.setFriction(0.5);
     box.setRestitution(0);
     box.setSensor(true);  // è un sensore
+  }
 
+  void setDamage(int damage)
+  {
     this.damage = damage;
   }
 

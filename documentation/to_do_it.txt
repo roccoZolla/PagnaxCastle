@@ -1,6 +1,5 @@
 TO DO:
 
-[ ] - implementare ECS ( ? ) 
 [ ] - aggiungere supporto per controller
 [ ] - aggiungere difficolta
 [ ] - sistemare il frame rate
@@ -17,7 +16,6 @@ TO DO:
  [ ] - ia piu efficiente
 [ 🗸 ] - aggiungere logo screen
  [ ] - aggiungere suono di boot up
-[ 🗸 ] - ricordarti di togliere game.render.spriteslayer
 [ ] - rivedere completamente la classe del Boss
 [ ] - aggiungere effetto di cura
 [ ] - a volte non viene caricato il font 
@@ -40,6 +38,8 @@ TO DO:
 [ ] - fixare spawn dei nemici
 [ 🗸 ] - fixare collisione chest, quando di collide rileva la collisione con tutte le chest
 [ ] - fixare ui boss battle
+[ ] - fixare come viene calcolato lo score
+ [ ] - sistemare valori di score
 
 Idee game design:
 

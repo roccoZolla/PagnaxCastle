@@ -69,13 +69,10 @@ class Player extends Character
 
   // caratteristiche del player
   int playerMaxHP;
-  // int playerHP;
   int playerScore;
   int coins;      // numero di monete che ha il giocatore
-  // Weapon weapon;
   Item weapon;
   Item potion;
-  // Healer potion;  // pozione generale
   Item golden_key;
   Item silver_key;
   int numberOfSilverKeys;
@@ -159,6 +156,8 @@ class Player extends Character
       sprite = right_side;
     }
   }
+  
+  void setWeapon(Item weapon) { this.weapon = weapon; }
 
   void collectCoin() {
     this.coins++;

@@ -2,15 +2,15 @@ class Item extends Sprite {
   // classe che rappresenta gli oggetti del gioco
   // cratteristiche
   // int id;
-  String name;
-  boolean isCollectible = true;    // per vedere se l'oggetto è collezionabile, si puo raccogliere, di base è sempre true
-  boolean isCollected = false;
+  private String name;
+  private boolean isCollectible = true;    // per vedere se l'oggetto è collezionabile, si puo raccogliere, di base è sempre true
+  private boolean isCollected = false;
 
-  boolean isHealer = false; // è un oggetto curativo
-  boolean isWeapon = false; // è un'arma?
+  private boolean isHealer = false; // è un oggetto curativo
+  private boolean isWeapon = false; // è un'arma?
 
-  int bonusHp = 0;  // effetto curativo dell'oggetto
-  int damage = 0;  // danno dell'oggetto
+  private int bonusHp = 0;  // effetto curativo dell'oggetto
+  private int damage = 0;  // danno dell'oggetto
 
   // String description;
 
@@ -84,7 +84,7 @@ class Item extends Sprite {
     return isWeapon;
   }
 
-  boolean isHealer() {
+  boolean IsHealer() {
     return isHealer;
   }
   

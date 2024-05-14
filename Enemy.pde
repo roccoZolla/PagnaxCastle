@@ -16,7 +16,7 @@ class Enemy extends Character {
   private final int attack_interval = 60; // Tempo di cooldown in millisecondi (3 secondi)
   private long attack_timer = attack_interval;
   boolean first_attack;    // di base è true
-  
+
   // drop probabilities constant
   // non definitive
   final float DROP_NOTHING = 0.3;
@@ -24,7 +24,7 @@ class Enemy extends Character {
   final float DROP_HEART = 0.3;
   final float DROP_HALF_HEART = 0.3;
 
-  Enemy(PImage sprite, int enemyHP, String name, int damage) {
+  Enemy(PImage sprite, int enemyHP, String name) {
     super();
 
     // sprite
@@ -43,14 +43,24 @@ class Enemy extends Character {
     // characteristics
     this.hp = enemyHP;
     this.name = name;
-    this.damage = damage;
-    this.scoreValue = 20;
 
     first_attack = true;
   }
 
+  void setDamage(int damage) {
+    this.damage = damage;
+  }
+
   int getDamage() {
     return damage;
+  }
+
+  void setScoreValue(int scoreValue) {
+    this.scoreValue = scoreValue;
+  }
+
+  int getScoreValue() {
+    return scoreValue;
   }
 
   // gestisce il movimento del nemico
