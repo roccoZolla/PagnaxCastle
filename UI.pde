@@ -68,7 +68,7 @@ class UI {
     miniMapY = height - MINIMAP_HEIGHT - 20; // Coordinata Y dell'angolo in basso a destra
 
     isBossBattle = false;    // di base, false
-    isMapActive = false;    // di base, false, si attiva con la minimappa trovata nei livelli
+    isMapActive = true;    // di base, false, si attiva con la minimappa trovata nei livelli
   }
 
   void update() {
@@ -323,14 +323,14 @@ class UI {
     uiLayer.ellipse(playerMiniMapX, playerMiniMapY, 5, 5);
 
     // ----- NEMICI PALLINI GIALLI -----
-    //for (Enemy enemy : game.level.enemies) {
-    //  enemyMiniMapX = map((enemy.getPosition().x - tilesize / 2) /  tilesize, 0, cols, miniMapX, miniMapX + MINIMAP_WIDTH);
-    //  enemyMiniMapY = map((enemy.getPosition().y - tilesize / 2) /  tilesize, 0, rows, miniMapY, miniMapY + MINIMAP_HEIGHT);
+    for (Enemy enemy : game.level.enemies) {
+      enemyMiniMapX = map((enemy.getPosition().x - tilesize / 2) /  tilesize, 0, cols, miniMapX, miniMapX + MINIMAP_WIDTH);
+      enemyMiniMapY = map((enemy.getPosition().y - tilesize / 2) /  tilesize, 0, rows, miniMapY, miniMapY + MINIMAP_HEIGHT);
 
-    //  uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
-    //  uiLayer.noStroke();
-    //  uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
-    //}
+      uiLayer.fill(255, 255, 0); // Colore giallo per i nemici
+      uiLayer.noStroke();
+      uiLayer.ellipse(enemyMiniMapX, enemyMiniMapY, 5, 5);
+    }
 
     //for (Chest chest : game.level.treasures) {
     //  chestMiniMapX = map((chest.getPosition().x - tilesize / 2) /  tilesize, 0, cols, miniMapX, miniMapX + MINIMAP_WIDTH);

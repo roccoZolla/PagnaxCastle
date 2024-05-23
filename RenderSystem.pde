@@ -98,7 +98,7 @@ class RenderSystem {
     // non vengono eseguite
     displayCharacter();
 
-    //// se il giocatore sta attaccando mostra l'arma
+    ////// se il giocatore sta attaccando mostra l'arma
     if (isAttacking) {
       displayWeaponPlayer();
     }
@@ -108,15 +108,6 @@ class RenderSystem {
       displayCoins();
       displayDropItems();
     }
-
-    //if (!game.isBossLevel) {
-    //  displayEnemies();
-    //  displayChests();
-    //  displayCoins();
-    //  displayDropItems();
-    //} else {
-    //  game.boss.display(spritesLayer);
-    //}
 
     // debug
     // game.world.drawDebug(spritesLayer);

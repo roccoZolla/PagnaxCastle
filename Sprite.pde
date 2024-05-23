@@ -20,6 +20,9 @@ class Sprite { //<>// //<>//
 
   // getters
   PVector getPosition() {
+    // possibilita di ritornare la posizione gia trasaformata
+    //dropPosition.x = ( dropPosition.x - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
+    //dropPosition.y = ( dropPosition.y - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
     return new PVector(box.getX(), box.getY());
   }
 
@@ -41,9 +44,6 @@ class Sprite { //<>// //<>//
 
   // setters
   void updatePosition(PVector position) {
-    //println("sprite->updatePosition: aggiorno la posizione...");
-    //println("posizione di input: " + position);
-    //println("posizione di output teorica: " + position.x * SPRITE_SIZE + SPRITE_SIZE / 2 + ", " +  position.y * SPRITE_SIZE + SPRITE_SIZE / 2);
     box.setPosition(position.x * SPRITE_SIZE + SPRITE_SIZE / 2, position.y * SPRITE_SIZE + SPRITE_SIZE / 2);
   }
 

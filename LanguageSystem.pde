@@ -10,7 +10,7 @@ class LanguageSystem {
 
   void init() {
     // lingua di defualt
-    language = Language.ITALIAN;
+    language = Language.ENGLISH;
     println("language system inizializzato correttamente");
   }
 

@@ -178,7 +178,6 @@ void contactPersisted(FContact contact) {
 
 // Questo metodo viene chiamato quando un contatto termina
 void contactEnded(FContact contact) {
-  // Puoi gestire il contatto terminato qui, se necessario
   // da sistemare ma ci sta
   render.isCollidingWithChest = false;
   render.isCollidingWithItem = false;

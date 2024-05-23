@@ -40,6 +40,8 @@ TO DO:
 [ ] - fixare ui boss battle
 [ ] - fixare come viene calcolato lo score
  [ ] - sistemare valori di score
+[ ] - per ogni press key un solo movimento, per un key presso piu prolungato movimento stile pokemon per ds
+
 
 Idee game design:
 

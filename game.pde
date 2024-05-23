@@ -140,11 +140,13 @@ class Game {
     world.add(dropItem.box);
   }
 
-  int getCols() {
+  int getCols() 
+  {
     return level.cols;
   }
-  
-  int getRows() {
+
+  int getRows() 
+  {
     return level.rows;
   }
 
@@ -156,6 +158,7 @@ class Game {
     // handlePlayerDeath();
 
     p1.update();
+    // enemiesUpdate();
 
     //if(moveATCK)
     //{
@@ -173,7 +176,16 @@ class Game {
     } else
     {
       // aggiorna movimento nemici
-      // enemiesUpdate();
+    }
+  }
+
+  void enemiesUpdate() {
+    for (Enemy enemy : level.enemies)
+    {
+      if (isInVisibleArea(enemy.getPosition())) 
+      {
+        enemy.update();
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 // da mettere nelle utilities //<>// //<>// //<>//
 enum Direction {
+  NONE,
   LEFT,
     RIGHT,
     UP,
@@ -42,7 +43,7 @@ class Player extends Character
 {
   // componente velocita  del player
   // non definitivo
-  float speed = 120.0f;
+  float speed = 120;
 
   PImage left_side;  // lato sinistro dello sprite del giocatore
   PImage right_side; // lato destro dello sprite del giocatore
@@ -126,11 +127,12 @@ class Player extends Character
     // box's settings
     box = new FBox(SPRITE_SIZE, SPRITE_SIZE);
     box.setName("Player");
+    // box.setStatic(true);
     box.setFillColor(90);
     box.setRotatable(false);
     box.setFriction(1);   // quanto attrito fa
     box.setRestitution(0);  // quanto rimbalza
-    // box.setDamping(0);      // ammortizza il movimento
+    box.setDamping(0);      // ammortizza il movimento
   }
 
   // aggiorna il movimento del giocatore

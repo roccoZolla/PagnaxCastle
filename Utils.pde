@@ -24,20 +24,17 @@ void keyPressed() {
     case 'j':
     case 'J':
       p1.moveATCK = true;
-      game.moveATCK = true;
       render.isAttacking = true;
       break;
 
     case 'k':
     case 'K':
       p1.moveINTR = true;
-      game.moveINTR = true;
       break;
 
     case 'l':
     case 'L':
       p1.moveUSE = true;
-      game.moveUSE = true;
       break;
     }
   } else {
@@ -92,20 +89,17 @@ void keyReleased() {
     case 'j':
     case 'J':
       p1.moveATCK = false;
-      game.moveATCK = false;
       render.isAttacking = false;
       break;
 
     case 'k':
     case 'K':
       p1.moveINTR = false;
-      game.moveINTR = false;
       break;
 
     case 'l':
     case 'L':
       p1.moveUSE = false;
-      game.moveUSE = false;
       break;
     }
   }

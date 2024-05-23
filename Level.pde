@@ -74,8 +74,8 @@ class Level {
 
     tileSize = Utils.TILE_SIZE;
 
-    println("cols: " + cols);
-    println("rows: " + rows);
+    //println("cols: " + cols);
+    //println("rows: " + rows);
 
     map = new int[cols][rows];
     rooms = new ArrayList<Room>();
@@ -144,6 +144,9 @@ class Level {
     println("livello finale inizializzato correttamente");
   }
 
+  int startPosX = 0;
+  int startPosY = 0;
+
   PVector getStartPosition() {
     Room startRoom = rooms.get(startRoomIndex);
     int randomX, randomY;
@@ -156,6 +159,9 @@ class Level {
       // Verifica se la posizione è già occupata da un muro, una parete o un'altra entità
       positionOccupied = (map[randomX][randomY] != Utils.FLOOR_TILE_TYPE);
     } while (positionOccupied);
+
+    startPosX = 0;
+    startPosY = 0;
 
     PVector randomPosition = new PVector(randomX, randomY);
     println("start position: " + randomPosition);

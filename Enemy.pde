@@ -7,11 +7,11 @@ class Enemy extends Character {
   // componenti fisiche
   float velocity_x = 0;
   float velocity_y = 0;
-  float speed = 0.1f;
+  float speed = 10f;
 
-  float currentDirection = random(4);
-  int framesInCurrentDirection = 0;
-  int maxFramesInSameDirection = 30;
+  // sara settabile per i vari tipi di nemici
+  int SPRITE_SIZE = 16;
+  final float INFLUENCE_RADIUS = 2.0;  // raggio di influenza dei nemici
 
   private final int attack_interval = 60; // Tempo di cooldown in millisecondi (3 secondi)
   private long attack_timer = attack_interval;
@@ -65,82 +65,80 @@ class Enemy extends Character {
 
   // gestisce il movimento del nemico
   // da migliorare
-  void update() {
-    // Ottieni la posizione del giocatore
-    //PVector playerPosition = p1.getPosition();
-    //PVector position = getPosition();
+  void update()
+  {
+    followPattern();
 
-    //// distanza tra il nemico e il giocatore
-    //float distance = dist(position.x, position.y, playerPosition.x, playerPosition.y);
-
-    //// distanza minima
-    //float threshold = 4;
-
-    //// Verifica se il giocatore è abbastanza vicino
-    //if (distance <= threshold) {
-    //  // Calcola la direzione verso il giocatore
-    //  PVector direction = PVector.sub(p1.getPosition(), getPosition());
-    //  direction.normalize();
-
-    //  // Calcola il movimento in base alla direzione
-    //  float newX = position.x + direction.x * speed;
-    //  float newY = position.y + direction.y * speed;
-
-    //  //if (isWithinMapBounds(round(newX), round(newY)) && !check_collision_wall(round(newX), round(newY)) && !collision.check_collision(this, p1)) {
-    //  //  updatePosition(new PVector(newX, newY));
-    //  //  damageTileHandler.handleDamageTiles(this, round(newX), round(newY));
-    //  //}
-    //}
-
-    //else
-    //{
-    //  // metodo leggermente migliore rispetto al metodo parkinson
-    //  float x = position.x;
-    //  float y = position.y;
-
-    //  // Incrementa il numero di frame nella direzione corrente
-    //  framesInCurrentDirection++;
-
-    //  // Cambia direzione se è il momento opportuno o se si incontra un ostacolo
-    //  if (framesInCurrentDirection >= maxFramesInSameDirection || check_collision_wall(round(x), round(y))) {
-    //    currentDirection = random(4);
-    //    framesInCurrentDirection = 0;
-    //  }
-
-    //  // Sposta il nemico in base alla direzione corrente
-    //  if (currentDirection < 1 && isWithinMapBounds(round(x + 1), round(y)) && !check_collision_wall(round(x + 1), round(y))) {  // x + 1
-    //    x += 1 * speed;
-    //  } else if (currentDirection < 2 && isWithinMapBounds(round(x - 1), round(y)) && !check_collision_wall(round(x - 1), round(y))) {   // x - 1
-    //    x += -1 * speed;
-    //  } else if (currentDirection < 3 && isWithinMapBounds(round(x), round(y + 1)) && !check_collision_wall(round(x), round(y + 1))) {    // y + 1
-    //    y += 1 * speed;
-    //  } else {      // y - 1
-    //    if (isWithinMapBounds(round(x), round(y - 1)) && !check_collision_wall(round(x), round(y - 1))) {
-    //      y += -1 * speed;
-    //    }
-    //  }
-
-    //  updatePosition(new PVector(x, y));
-    //  damageTileHandler.handleDamageTiles(this, round(x), round(y));
-    //}
+    if (isPlayerInfluenced())
+    {
+      // moveToPlayer();
+    }
   }
 
-  //boolean check_collision_wall(int x, int y) {
-  //  // se è un muro controlla la possibile collisione con lo sprite
-  //  if (isWall(x, y)) {
-  //    // println("è un muro...");
+  private void followPattern()
+  {
+    // Calcola una direzione casuale
+    float dx = random(-1, 1);
+    float dy = random(-1, 1);
 
-  //    if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (x * currentLevel.tileSize) - (sprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
-  //      (position.x * currentLevel.tileSize) - (sprite.width / 2) <= x * currentLevel.tileSize + (sprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
-  //      position.y * currentLevel.tileSize + (sprite.height / 2) >= (y * currentLevel.tileSize) - (sprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
-  //      (position.y * currentLevel.tileSize) - (sprite.height / 2) <= y * currentLevel.tileSize + (sprite.height / 2)) {
-  //      // println("collisione rilevata...");
-  //      return true;
-  //    }
-  //  }
+    // Normalizza la direzione
+    PVector direction = new PVector(dx, dy);
+    direction.normalize();
 
-  //  return false;
-  //}
+    // Moltiplica la direzione per una velocità costante
+    //float speed = 1.0; // Velocità desiderata
+    //direction.mult(speed);
+
+    //// Applica il movimento al nemico
+    //box.addForce(direction.x, direction.y);
+    
+    PVector movement = new PVector(dx, dy);
+    movement.normalize();
+
+    // Applica la velocità costante
+    movement.mult(speed);
+
+    // Applica l'accelerazione
+    box.setVelocity(movement.x, movement.y);
+  }
+
+  private boolean isPlayerInfluenced()
+  {
+    // Calcola la distanza tra il nemico e il giocatore
+    PVector enemyPos = getPosition().copy();
+    enemyPos.x = ( enemyPos.x - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
+    enemyPos.y = ( enemyPos.y - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
+
+    PVector playerPos = p1.getPosition().copy();
+    playerPos.x = ( playerPos.x - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
+    playerPos.y = ( playerPos.y - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
+
+    float distanceToPlayer = PVector.dist(enemyPos, playerPos);
+
+    // Verifica se il giocatore è all'interno dell'area di influenza del nemico
+    return (distanceToPlayer <= INFLUENCE_RADIUS);
+  }
+
+  private void moveToPlayer()
+  {
+    println("move to player");
+    // Ottieni la posizione corrente del nemico
+    PVector enemyPos = getPosition();
+
+    // Ottieni la posizione corrente del giocatore
+    PVector playerPos = p1.getPosition();
+
+    // Calcola il vettore di direzione dal nemico al giocatore
+    PVector directionToPlayer = PVector.sub(playerPos, enemyPos);
+    directionToPlayer.normalize();
+
+    // Moltiplica il vettore di direzione per la velocità desiderata
+    directionToPlayer.mult(speed);
+
+    // Imposta la velocità del nemico
+    box.setVelocity(directionToPlayer.x, directionToPlayer.y);
+  }
+
 
   // attacca il giocatore
   void attack(Player player) {
