@@ -140,4 +140,8 @@ class Button {
   boolean isMouseOver() {
     return mouseX >= pos.x && mouseX <= pos.x + w && mouseY >= pos.y && mouseY <= pos.y + h;
   }
+  
+  void setLabel(String label) {
+    this.label = label;
+  }
 }

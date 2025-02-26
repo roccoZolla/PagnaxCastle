@@ -2,13 +2,20 @@ class Pause {
   ArrayList<Button> buttons;
   PGraphics pauseLayer;
 
+  HashMap<String, String> strings;
+
+  String title = "";
+  String resume = "";
+  String options = "";
+  String back = "";
+
   Pause() {
     pauseLayer = createGraphics(width, height);
     buttons = new ArrayList();
 
-    buttons.add(new Button(width / 2 - 100, height / 2, 200, 80, "resume", "Resume", ""));
-    buttons.add(new Button(width / 2 - 100, height / 2 + 100, 200, 80, "option", "Option", ""));
-    buttons.add(new Button(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80, "back", "Back to menu", ""));
+    buttons.add(new Button(width / 2 - 100, height / 2, 200, 80, "resume", resume, ""));
+    buttons.add(new Button(width / 2 - 100, height / 2 + 100, 200, 80, "option", options, ""));
+    buttons.add(new Button(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80, "back", back, ""));
   }
 
   void display() {
@@ -21,7 +28,7 @@ class Pause {
     pauseLayer.fill(255);
     pauseLayer.textSize(36);
     pauseLayer.textAlign(CENTER, CENTER);
-    pauseLayer.text("PAUSA", width / 2, height / 2 - 100);
+    pauseLayer.text(title, width / 2, height / 2 - 100);
 
     for (Button button : buttons) {
       if (button.isClicked()) {
@@ -53,7 +60,6 @@ class Pause {
 
           // stoppa la traccia di sottofondo
           dungeon_background.stop();
-          isDungeonBackgroundPlaying = false;
           break;
         }
       }
@@ -73,5 +79,49 @@ class Pause {
     buttons.get(0).updatePosition(width / 2 - 100, height / 2, 200, 80);  // resume
     buttons.get(1).updatePosition(width / 2 - 100, height / 2 + 100, 200, 80);  // option
     buttons.get(2).updatePosition(width / 2 - 100, pauseLayer.height / 2 + 200, 200, 80);  // back to the menu
+  }
+
+  // da mettere nel language system
+  // metodo migliore rispetto al mio
+  // piu rapido e modulare
+  void updateLanguage(Language language) {
+    strings = getStringsForLanguage(language);
+    updateUI();
+  }
+
+  void updateUI() {
+    title = strings.get("pause");
+    resume = strings.get("resume");
+    buttons.get(0).setLabel(resume);
+    options = strings.get("options");
+    buttons.get(1).setLabel(options);
+    back = strings.get("backtomenu");
+    buttons.get(2).setLabel(back);
+  }
+
+  HashMap<String, String> getStringsForLanguage(Language language) {
+    HashMap<String, String> languageStrings = new HashMap<String, String>();
+    JSONObject bundle = null;
+
+    switch(language) {
+    case ITALIAN:
+      bundle = bundleITA.getJSONObject("menu").getJSONObject("pause");
+      break;
+
+    case ENGLISH:
+      bundle = bundleENG.getJSONObject("menu").getJSONObject("pause");
+      break;
+
+    case SPANISH:
+      bundle = bundleESP.getJSONObject("menu").getJSONObject("pause");
+      break;
+    }
+
+    languageStrings.put("pause", bundle.getString("pause"));
+    languageStrings.put("resume", bundle.getString("resume"));
+    languageStrings.put("options", bundle.getString("option"));
+    languageStrings.put("backtomenu", bundle.getString("backtomenu"));
+
+    return languageStrings;
   }
 }

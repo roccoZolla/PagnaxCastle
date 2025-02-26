@@ -1,0 +1,81 @@
+{
+    "menu": {
+        "main": {
+            "title": "El Castillo de Pagnax",
+            "play": "Iniciar juego",
+            "options": "Opciones",
+            "quit": "Salir"
+        },
+        "options": {
+            "title": "Opciones",
+            "audio": "Audio",
+            "soundEffect": "Efectos de sonido",
+            "music": "Música",
+            "difficulty": "Dificultad",
+            "easy": "Fácil",
+            "normal": "Normal",
+            "hard": "Difícil",
+            "controller": "Control de juego",
+            "keypad": "Teclado",
+            "gamepad": "Gamepad",
+            "language": "Idioma",
+            "italian": "Italiano",
+            "english": "Inglés",
+            "spanish": "Español",
+            "commands": "Comandos",
+            "credits": "Créditos",
+            "back": "Volver"
+        },
+        "pause": {
+            "pause": "Pausa",
+            "resume": "Continuar",
+            "option": "Opciones",
+            "backtomenu": "Volver al menú"
+        },
+        "commands": {
+            "title": "Comandos",
+            "playerMovement": "Mover al jugador",
+            "attack": "Atacar a los enemigos",
+            "interact": "Interactuar con objetos",
+            "use": "Usar pociones",
+            "back": "Volver"
+        },
+        "credits": {
+            "credits": "Créditos",
+            "studioName": "Estudio Ocarina",
+            "description": "",
+            "back": "Volver"
+        }
+    },
+    "game": {
+        "story": {
+            "zone_1": "En el lejano Reino de Lejos, la princesa Chela ha sido secuestrada por el hechicero Pagnax.\nHas sido enviado al castillo del loco hechicero, donde se dice que cada piso cambia constantemente.\nDebes salvar a la princesa y derrotar a Pagnax. ¡Que la suerte esté de tu lado, Caballero!\n",
+            "zone_2": "",
+            "zone_3": "",
+            "zone_4": "",
+<<<<<<< HEAD
+            "victory": "¡Finalmente el hechicero Pagnax ha sido derrotado!\nLa princesa Chela está a salvo y nuestro valiente Caballero es ahora el héroe del Reino.\n",
+            "defeat": "¡Has sido derrotado, Caballero!\n",
+=======
+            "victory": "¡Finalmente el hechicero Pagnax ha sido derrotado! La princesa Chela está a salvo y nuestro valiente Caballero es ahora el héroe del Reino.",
+            "defeat": "¡Has sido derrotado, Caballero!",
+>>>>>>> fix
+            "pressButton": "Presiona cualquier botón para continuar"
+        },
+        "zone": {
+            "castle": "Castillo"
+        },
+        "ui": {
+            "score": "Puntuación: ",
+            "bossname": "Hechicero Pagnax",
+            "gametarget": "¡Encuentra las escaleras!",
+            "gametargetboss": "¡Derrota a Pagnax!",
+            "level":"Nivel - ",
+            "weapon": {
+                "smallSword": "Espada pequeña",
+                "sword": "Espada",
+                "masterSword": "Espada maestra"
+            }
+        }
+    }
+}

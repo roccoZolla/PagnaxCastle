@@ -1,7 +1,0 @@
-TO DO:
-
-[ ] - aggiungere supporto per controller
-[ ] - aggiungere difficolta
-[ ] - sistemare il frame rate
-[ ] - gestione animazioni
-[ ] - migliorare collision system
