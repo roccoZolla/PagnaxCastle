@@ -1,8 +1,4 @@
-int letterIndex = 0; // Indice della lettera corrente
-boolean isTyping = true; // Indica se il testo sta ancora venendo digitato
-int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
-
-// gestione comandi
+// gestione comandi //<>// //<>// //<>//
 void keyPressed() {
   if (screen_state == ScreenState.GAME_SCREEN) {
     switch(key) {
@@ -28,6 +24,7 @@ void keyPressed() {
     case 'j':
     case 'J':
       p1.moveATCK = true;
+      render.isAttacking = true;
       break;
 
     case 'k':
@@ -92,6 +89,7 @@ void keyReleased() {
     case 'j':
     case 'J':
       p1.moveATCK = false;
+      render.isAttacking = false;
       break;
 
     case 'k':
@@ -111,39 +109,71 @@ void keyReleased() {
 // un proprio layer di cui si devono aggiornare le dimensioni
 void windowResized() {
   menu.updateScreen();
-  game.updateScreen();
+  render.updateWindowsScreen();
   ui.updateScreen();
   pauseMenu.updateScreen();
   optionMenu.updateScreen();
-  tutorial.updateScreen();
+  commandScreen.updateScreen();
+  creditScreen.updateScreen();
 }
+
 
 // calcola la posizione di uno sprite all'interno della scena di gioco
 // se lo sprite si trova al di fuori della scena lo sprite non viene renderizzato
-boolean isInVisibleArea(PVector spritePosition) {
+boolean isInVisibleArea(PVector boxPosition) {
   // Calcola il rettangolo visibile
-  int tileSize = currentLevel.tileSize;
+  int tileSize = 16;
 
   int startX = floor((camera.x / (tileSize * camera.zoom)));
   int startY = floor((camera.y / (tileSize * camera.zoom)));
   int endX = ceil((camera.x + width) / (tileSize * camera.zoom));
   int endY = ceil((camera.y + height) / (tileSize * camera.zoom));
 
+  // Calcola le coordinate del centro del box rispetto alle coordinate del tile
+  int boxTileX = floor(boxPosition.x / tileSize);
+  int boxTileY = floor(boxPosition.y / tileSize);
 
-  return (spritePosition.x >= startX && spritePosition.x <= endX && spritePosition.y >= startY && spritePosition.y <= endY);
+  // Controlla se il centro del box è all'interno del rettangolo visibile
+  return (boxTileX >= startX && boxTileX <= endX && boxTileY >= startY && boxTileY <= endY);
 }
+
 
 // controlla che le coordinate si trovino all'interno della mappa
-boolean isWithinMapBounds(int x, int y) {
-  return x >= 0 && x < currentLevel.cols && y >= 0 && y < currentLevel.rows;
-}
+//boolean isWithinMapBounds(int x, int y) {
+//  return x >= 0 && x < level.cols && y >= 0 && y < level.rows;
+//}
 
 // controlla se la posizione che si vuole raggiungere è un muro
-boolean isWall(int x, int y) {
-  // println("valore casella mappa: " + currentLevel.map[x][y]);
-  if(currentLevel.map[x][y] == 4 || currentLevel.map[x][y] == 0 || currentLevel.map[x][y] == 6) {
-    return true;
-  } else {
-    return false;
-  }
+// da sistemare
+//boolean isWall(int x, int y) {
+//  if (level.map[x][y] == Utils.WALL_PERIMETER_TILE_TYPE ||
+//    level.map[x][y] == Utils.BACKGROUND_TILE_TYPE ||
+//    level.map[x][y] == Utils.CHEST_TILE_TYPE)
+//  {
+//    return true;
+//  } else {
+//    return false;
+//  }
+//}
+
+class Utils {
+  // tile types for level
+  static final int TILE_SIZE = 16;
+  static final int BACKGROUND_TILE_TYPE = 0;
+  static final int FLOOR_TILE_TYPE = 1;
+  static final int START_ROOM_TILE_TYPE = 2;
+  static final int STAIRS_TILE_TYPE = 3;
+  static final int WALL_PERIMETER_TILE_TYPE = 4;
+  static final int HALLWAY_TILE_TYPE = 5;
+  static final int CHEST_TILE_TYPE = 6;
+  static final int PEAKS_TILE_TYPE = 7;
+
+  // for the writer function
+  static final int typingSpeed = 1; // Velocità di scrittura 2 quella ideale
+
+  // fps rate
+  static final int SCREEN_FPS_CAP = 240;
+
+  // tick rate
+  static final int TICK_RATE = 70;
 }

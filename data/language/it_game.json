@@ -1,0 +1,76 @@
+{
+  "menu": {
+    "main": {
+      "title": "Il Castello di Pagnax",
+      "play": "Avvia il gioco",
+      "options": "Opzioni",
+      "quit": "Esci"
+    },
+    "options": {
+      "title": "Opzioni",
+      "audio": "Audio",
+      "soundEffect": "Effetti Sonori",
+      "music": "Musica",
+      "difficulty": "Difficolta",
+      "easy": "Facile",
+      "normal": "Normale",
+      "hard": "Difficile",
+      "controller": "Controlli di gioco",
+      "keypad": "Tastiera",
+      "gamepad": "Gamepad",
+      "language": "Lingua",
+      "italian": "Italiano",
+      "english": "Inglese",
+      "spanish": "Spagnolo",
+      "commands": "Comandi",
+      "credits": "Crediti",
+      "back": "Indietro"
+    },
+    "pause": {
+      "pause": "Pausa",
+      "resume": "Riprendi",
+      "option": "Opzioni",
+      "backtomenu": "Torna al menu"
+    },
+    "commands": {
+      "title": "Comandi",
+      "playerMovement": "Muovi il giocatore",
+      "attack": "Attacca i nemici",
+      "interact": "Interagisci con gli oggetti",
+      "use": "Usa le pozioni",
+      "back": "Indietro"
+    },
+    "credits": {
+      "credits": "Crediti",
+      "studioName": "Studio Ocarina",
+      "description": "",
+      "back": "Indietro"
+    }
+  },
+  "game": {
+    "story": {
+      "zone_1": "Nel lontano Regno di Lontano la principessa Chela e' stata rapita dallo stregone Pagnax.\nSei stato mandato al castello dello stregone pazzo dove si dice che ogni piano cambi in continuazione.\nDevi salvare la principessa e sconfiggere Pagnax, che la casualita' ti aiuti Cavaliere.\n",
+      "zone_2": "",
+      "zone_3": "",
+      "zone_4": "",
+      "victory": "Finalmente lo stregone Pagnax e' stato sconfitto!\nLa principessa Chela e' in salvo e il nostro coraggioso Cavaliere e' ora l'eroe del Regno.\n",
+      "defeat": "Sei stato sconfitto Cavaliere!\n",
+      "pressButton": "Premi un tasto qualsiasi per continuare"
+    },
+    "zone": {
+      "castle": "Castello"
+    },
+    "ui": {
+      "score": "Punteggio: ",
+      "bossname": "Stregone Pagnax",
+      "gametarget": "Trova le scale!",
+      "gametargetboss": "Sconfiggi Pagnax!",
+      "level":"Livello - ",
+      "weapon": {
+        "smallSword": "Piccola spada",
+        "sword": "Spada",
+        "masterSword": "Spada Maestra"
+      }
+    }
+  }
+}

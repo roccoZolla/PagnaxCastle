@@ -1,0 +1,34 @@
+To Do:
+
+[ ] - Add controller support
+[ ] - Implement difficulty levels
+[ ] - Fix frame rate issues
+[ ] - Animation management
+[ ] - Improve collision system (additions)
+[ ] - Enhance class organization
+ [ ] - Game class
+ [ ] - Player class
+ [ ] - World, Zone, Level classes
+[ ] - Level generation (room perimeter)
+[ ] - Improve enemy behaviors
+ [ ] - More efficient AI
+[🗸] - Add logo screen
+[ ] - Include boot-up sound
+[🗸] - Remember to remove game.render.spriteslayer
+[ ] - Completely revise Boss class
+[ ] - Add healing effect
+[ ] - Sometimes font fails to load
+[🗸] - Add English language support
+ [ ] - Optimize language system
+[ ] - Disable button when no options available
+ [ ] - In options, fix English appearing before Italian
+ [ ] - In options, fix gamepad appearing before keyboard
+[ ] - Chests still occasionally generate on top of stairs
+[ ] - Menu soundtrack sometimes fails to loop
+
+Game Design Ideas:
+
+[ ] - Add timer to track player's completion time
+ [ ] - Objective (complete run in 10 minutes, for example) unlocks something
+[ ] - Introduce a shop where players can purchase upgrades
+ [ ] - Translate "before entering the game or menu" into English

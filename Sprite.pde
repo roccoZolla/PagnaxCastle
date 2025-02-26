@@ -1,63 +1,71 @@
-class Sprite {
-  PVector position;
+class Sprite { //<>// //<>//
+  final static int SPRITE_SIZE = 16;
+  FBox box;
   PImage sprite;
 
-  Sprite(PVector position, PImage sprite) {
-    this.position = position;
+  // constructors
+  Sprite() {
+  }
+
+  Sprite(PImage sprite)
+  {
     this.sprite = sprite;
   }
 
+  Sprite(PImage sprite, FBox box)
+  {
+    this.sprite = sprite;
+    this.box = box;
+  }
+
+  // getters
   PVector getPosition() {
-    return position;
+    // possibilita di ritornare la posizione gia trasaformata
+    //dropPosition.x = ( dropPosition.x - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
+    //dropPosition.y = ( dropPosition.y - (SPRITE_SIZE/2) ) / SPRITE_SIZE;
+    return new PVector(box.getX(), box.getY());
+  }
+
+  int getWidth() {
+    return sprite.width;
+  }
+
+  int getHeight() {
+    return sprite.height;
   }
 
   PImage getSprite() {
     return sprite;
   }
 
+  FBox getBox() {
+    return box;
+  }
+
+  // setters
   void updatePosition(PVector position) {
-    this.position = position;
+    box.setPosition(position.x * SPRITE_SIZE + SPRITE_SIZE / 2, position.y * SPRITE_SIZE + SPRITE_SIZE / 2);
+  }
+
+  void updatePosition(float x, float y) {
+    box.setPosition(x * SPRITE_SIZE + SPRITE_SIZE / 2, y * SPRITE_SIZE + SPRITE_SIZE / 2);
   }
 
   void updateSprite(PImage sprite) {
     this.sprite = sprite;
   }
 
+  // other methods
   // metodo che si occupa di mostrare lo sprite
   void display(PGraphics layer) {
     layer.noFill(); // Nessun riempimento
-    layer.stroke(255); // Colore del bordo bianco
-
-    float centerX = position.x * currentLevel.tileSize + sprite.width / 2;
-    float centerY = position.y * currentLevel.tileSize + sprite.height / 2;
-
-    // layer.imageMode(CENTER); // Imposta l'imageMode a center, viene impostata nel codice principale in game
-    layer.image(sprite, centerX, centerY, sprite.width, sprite.height);
+    // layer.stroke(255); // Colore del bordo bianco
+    layer.image(sprite, box.getX(), box.getY(), SPRITE_SIZE, SPRITE_SIZE);
   }
 
   void displayHitbox(PGraphics layer) {
     layer.noFill(); // Nessun riempimento
-    layer.stroke(255); // Colore del bordo bianco
-    layer.rectMode(CENTER);
-    layer.rect(position.x * currentLevel.tileSize + (sprite.width/2), position.y * currentLevel.tileSize + (sprite.height / 2), sprite.width, sprite.height);
-
-    layer.stroke(255, 0, 0);
-    layer.point(position.x * currentLevel.tileSize + (sprite.width / 2), position.y * currentLevel.tileSize + sprite.height / 2);
-  }
-
-  // metodo che si occupa delle collisioni tra sprite
-  // da sistemare
-  boolean sprite_collision(Sprite other) {
-    PVector otherPosition = other.getPosition();
-    PImage otherSprite = other.getSprite();
-
-    if (position.x * currentLevel.tileSize + (sprite.width / 2) >= (otherPosition.x * currentLevel.tileSize) - (otherSprite.width / 2)  &&      // x1 + w1/2 > x2 - w2/2
-      (position.x * currentLevel.tileSize) - (sprite.width / 2) <= otherPosition.x * currentLevel.tileSize + (otherSprite.width / 2) &&                               // x1 - w1/2 < x2 + w2/2
-      position.y * currentLevel.tileSize + (sprite.height / 2) >= (otherPosition.y * currentLevel.tileSize) - (otherSprite.height / 2) &&                                      // y1 + h1/2 > y2 - h2/2
-      (position.y * currentLevel.tileSize) - (sprite.height / 2) <= otherPosition.y * currentLevel.tileSize + (otherSprite.height / 2)) {                              // y1 - h1/2 < y2 + h2/2
-      return true;
-    }
-
-    return false;
+    layer.stroke(255); // Colore del bordo rosso per l'hitbox
+    layer.rect(box.getX() - SPRITE_SIZE / 2, box.getY() - SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE);
   }
 }
